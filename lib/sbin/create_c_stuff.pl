@@ -176,7 +176,6 @@ sub CreateCStructureParameterHeader
   my(%parameters);
   my($type, $type_string);
   my(@definition);
-  my(@use);
 
   # Create the structure
   push(@data, '#ifdef __cplusplus');
@@ -187,7 +186,6 @@ sub CreateCStructureParameterHeader
   push(@data, 'extern struct');
   push(@data, '{');
 
-  push(@use, "  const void *${structure}_use = ( \\");
   foreach $parameter (&order_params($rhparameters, $rhparameter_db))
   {
     my $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
@@ -207,11 +205,8 @@ sub CreateCStructureParameterHeader
     my $realname = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E realname"};
 
     push(@data, "  $type_string $realname$suffix;");
-    push(@definition, "  $type_string$varprefix const $parameter = $structure.$realname; \\");
-    push(@use, "    ${structure}_use = \&$parameter, \\");
+    push(@definition, "  CCTK_DECLARE_INIT ($type_string$varprefix const, $parameter, $structure.$realname); \\");
   }
-  push(@use, "    &${structure}_use \\");
-  push(@use, '  );');
 
   # Some compilers don't like an empty structure.
   if((keys %$rhparameters) == 0)
@@ -229,7 +224,7 @@ sub CreateCStructureParameterHeader
 
   push(@data, "#define DECLARE_${structure}_PARAMS \\");
   push(@data, @definition);
-  push(@data, @use);
+##  push(@data, @use);
 
   push(@data, "\n");   # workaround for perl 5.004_04 to add a trailing newline
 
@@ -244,7 +239,7 @@ sub order_params
   my(@int_params)   = ();
   my(@string_params)= ();
 
-  foreach $parameter (sort(keys %$rhparameters))
+  foreach $parameter (sort keys %$rhparameters)
   {
     $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
 

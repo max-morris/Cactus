@@ -225,14 +225,13 @@ sub CreateVariableBindings
     push(@data, "static int CCTKi_BindingsFortranWrapper$thorn(void *_GH, void *fpointer)");
     push(@data, '{');
     push(@data, '  cGH *GH = _GH;');
-    push(@data, '  const int _cctk_zero = 0;');
+    push(@data, '  CCTK_DECLARE_INIT (const int, _cctk_zero, 0);');
     push(@data, '#ifndef CCTK_DEBUG');
     push(@data, '  CCTK_COMPLEX _cctk_dummy_var[4];');
     push(@data, '#endif');
     push(@data, "  void (*function)(\U$thorn\E_C2F_PROTO);");
     push(@data, "  DECLARE_\U$thorn\E_C2F");
     push(@data, "  INITIALISE_\U$thorn\E_C2F");
-    push(@data, '  (void) (_cctk_zero + 0);');
     push(@data, '#ifndef CCTK_DEBUG');
     push(@data, '  (void) (_cctk_dummy_var + 0);');
     push(@data, '#endif');
@@ -497,7 +496,9 @@ sub CreateFortranArgumentDeclarations
 
     for($level = 0; $level < $ntimelevels; $level++)
     {
-      push(@declarations, "CCTK_$type $argument$dimensions");
+      # This is a macro which is expanded by a traditional CPP.
+      # Do not put spaces around the arguments.
+      push(@declarations, "CCTK_DECLARE (CCTK_$type,$argument,$dimensions)");
 
       # Modify the name for the time level
       $argument .= '_p';
@@ -526,25 +527,40 @@ sub CreateFortranArgumentDeclarations
 sub CreateCArgumentDeclarations
 {
   my(%arguments) = @_;
-  my($varname, $imp, $type, $fullname, $ntimelevels);
   my(@declarations) = ();
 
 
+  # Put all storage arguments first.
+  foreach my $argument (sort keys %arguments)
+  {
+    if($arguments{$argument} =~ m/STORAGESIZE/)
+    {
+      # do nothing
+    }
+    elsif($arguments{$argument} =~ m/GROUPLENGTH\(([^,]*)::([^,)]*)/)
+    {
+      my $thorn=$1;
+      my $group=$2;
+      push(@declarations, "CCTK_DECLARE_INIT (static int, S$argument, -99);");
+      push(@declarations, "CCTK_DECLARE_INIT (int const, $argument, S$argument==-99 ? S$argument = CCTKi_GroupLength(\"$thorn\::$group\") : S$argument);");
+    }
+  }
+
   # Now deal with the rest of the arguments
-  foreach $varname (sort keys %arguments)
+  foreach my $varname (sort keys %arguments)
   {
     next if ($arguments{$varname} =~ m:STORAGESIZE|GROUPLENGTH:);
 
-    $arguments{$varname} =~ m\^([^! ]+) ?([^!]*)?!([^!]*)::([^!]*)!([^!]*)!([^!]*)\;
+    $arguments{$varname} =~ m,^([^! ]+) ?([^!]*)?!([^!]*)::([^!]*)!([^!]*)!([^!]*),;
 
-    $type           = $1;
-    $implementation = "\U\"$3\"";
-    $ntimelevels    = $5;
-    $var            = "\"$varname$6\"";
+    my $type           = $1;
+    my $implementation = "\U\"$3\"";
+    my $ntimelevels    = $5;
+    my $var            = "\"$varname$6\"";
 
-    for($level = 0; $level < $ntimelevels; $level++)
+    for(my $level = 0; $level < $ntimelevels; $level++)
     {
-      push(@declarations, "CCTK_$type * CCTK_RESTRICT $varname = (cctki_dummy_int = \&$varname - \&$varname, (CCTK_$type *) CCTKi_VarDataPtr(cctkGH, $level, $implementation, $var));");
+      push(@declarations, "CCTK_DECLARE_INIT (CCTK_$type * CCTK_RESTRICT const, $varname, (CCTK_$type *) CCTKi_VarDataPtr(cctkGH, $level, $implementation, $var));");
 
       # Modify the name for the time level
       $varname .= '_p';
@@ -625,7 +641,7 @@ sub CreateCArgumentStatics
   {
     next if ($arguments{$argument} =~ m:STORAGESIZE|GROUPLENGTH:);
 
-    push(@declarations, "static int CCTKARGNUM_$argument = -1;");
+    push(@declarations, "static int CCTKARGNUM_$argument = -99;");
     $arguments{$argument} =~ /::([^!]+)![0-9]+/;
     $group = $1;
 
@@ -634,7 +650,7 @@ sub CreateCArgumentStatics
     if ($allgroups !~ / $group /)
     {
       $allgroups .= " $group ";
-      push(@declarations, "static int CCTKGROUPNUM_$group = -1;");
+      push(@declarations, "static int CCTKGROUPNUM_$group = -99;");
     }
   }
 
@@ -653,26 +669,27 @@ sub CreateCArgumentStatics
 sub CreateCArgumentInitialisers
 {
   my(%arguments) = @_;
-  my($argument, $allgroups, $group, $qualifier);
   my(@initialisers) = ();
 
-  $allgroups = '';
-  foreach $argument (sort keys %arguments)
+  my $allgroups = ' ';
+  foreach my $argument (sort keys %arguments)
   {
     next if ($arguments{$argument} =~ m:STORAGESIZE|GROUPLENGTH:);
 
     $arguments{$argument} =~ m,^([^! ]+) ?([^!]*)?!([^!]*)\::([^!]*)!([^!]*)!([^!]*),;
-    $qualifier = $3;
-    $varsuffix = $6;
+    my $qualifier = $3;
+    my $varsuffix = $6;
 
-    push(@initialisers, "if(CCTKARGNUM_$argument == -1) CCTKARGNUM_$argument = CCTK_VarIndex(\"$qualifier\::$argument$varsuffix\");");
+    my $var = $argument;
+
+    push(@initialisers, "if(CCTKARGNUM_$argument == -99) CCTKARGNUM_$argument = CCTK_VarIndex(\"$qualifier\::$var$varsuffix\");");
 
     $arguments{$argument} =~ /\::([^!]+)/;
-    $group = $1;
+    my $group = $1;
     if ($allgroups !~ / $group /)
     {
-      $allgroups .= " $group ";
-      push(@initialisers, "if(CCTKGROUPNUM_$group == -1) CCTKGROUPNUM_$group = CCTK_GroupIndex(\"$qualifier\::$group\");");
+      $allgroups .= "$group ";
+      push(@initialisers, "if(CCTKGROUPNUM_$group == -99) CCTKGROUPNUM_$group = CCTK_GroupIndex(\"$qualifier\::$group\");");
     }
   }
 
@@ -707,24 +724,19 @@ sub CreateCArgumentPrototype
   {
     next if ($arguments{$argument} =~ m:STORAGESIZE|GROUPLENGTH:);
 
-    $arguments{$argument} =~ m:^([^! ]+) ?([^!]*)?!([^!]*):;
+    $arguments{$argument} =~ m:^([^! ]+) ?([^!]*)?!([^!]*)!([^!]*):;
 
-    if($arguments{$argument} !~ m:STORAGESIZE|GROUPLENGTH:)
+    $type        = $1;
+    $ntimelevels = $4;
+
+    for($level = 0; $level < $ntimelevels; $level++)
     {
-      $arguments{$argument} =~ m:^([^! ]+) ?([^!]*)?!([^!]*)!([^!]*):;
+      push(@prototype, "CCTK_$type *");
+    }
 
-      $type        = $1;
-      $ntimelevels = $4;
-
-      for($level = 0; $level < $ntimelevels; $level++)
-      {
-        push(@prototype, "CCTK_$type *");
-      }
-
-      if($type !~ /^(CHAR|BYTE|INT|INT1|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
-      {
-        &CST_error(0,"Unknown argument type $type","",__LINE__,__FILE__);
-      }
+    if($type !~ /^(CHAR|BYTE|INT|INT1|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
+    {
+      &CST_error(0,"Unknown argument type $type","",__LINE__,__FILE__);
     }
   }
 
@@ -775,7 +787,7 @@ sub CreateCArgumentList
 
     for($level = 0; $level < $ntimelevels; $level++)
     {
-      push(@arglist, "(CCTK_$type *)(PASS_REFERENCE($argument, $level))");
+      push(@arglist, "(CCTK_$type *)PASS_REFERENCE($argument, $level)");
     }
 
     if($type =~ /^(CHAR|BYTE|INT|INT1|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
@@ -841,7 +853,7 @@ sub CreateThornArgumentHeaderFile
     # Remember if there actually are any arguments here.
     $hasvars{$block} = 1 if(keys %data > 0) ;
 
-    # Do the fortran definitions
+    # Do the Fortran definitions
     push(@returndata, '#ifdef FCODE');
 
     # Create the fortran argument declarations
@@ -867,7 +879,7 @@ sub CreateThornArgumentHeaderFile
     # Create the C argument declarations
     push(@returndata, "#define DECLARE_${thorn}_${block}_CARGUMENTS \\");
     @data = &CreateCArgumentDeclarations(%data);
-    push(@returndata, join (" \\\n", @data));
+    push(@returndata, join (" \\\n", @data) . ' \\');
     push(@returndata, '');
 
     # Create the C argument variable number statics
@@ -942,7 +954,10 @@ sub CreateThornArgumentHeaderFile
   push(@returndata, '');
   push(@returndata, $c_initialize_statics);
   push(@returndata, '');
-  push(@returndata, "#define ${thorn}_CARGUMENTS cGH *cctkGH");
+  # Cannot make this a "cGH const *"
+  # because C++ aborts on const correctness errors
+  # and much user code converts between cGH * and CCTK_ARGUMENTS
+  push(@returndata, "#define ${thorn}_CARGUMENTS cGH * CCTK_RESTRICT const cctkGH");
   push(@returndata, '');
   push(@returndata, '#endif /* CCODE */');
 

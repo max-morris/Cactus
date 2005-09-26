@@ -200,7 +200,6 @@ sub CreateParameterBindings
     push(@data, "  DECLARE_PRIVATE_\U$thorn\E_STRUCT_PARAMS \\")
       if($header_files{"\U$thorn\E PRIVATE"});
 
-    @use = ();
     foreach $friend (split(' ',$rhparameter_db->{"\U$thorn\E SHARES implementations"}))
     {
       $rhinterface_db->{"IMPLEMENTATION \U$friend\E THORNS"} =~ m:([^ ]*):;
@@ -221,18 +220,10 @@ sub CreateParameterBindings
           $varprefix = ' const *';
         }
 
-        push(@data, "  $type_string$varprefix const $parameter = RESTRICTED_\U$friend\E_STRUCT.$realname; \\");
-        push(@use, "    RESTRICTED_FRIENDS_STRUCT_use = \&$parameter, \\");
+        push(@data, "  CCTK_DECLARE_INIT ($type_string$varprefix const, $parameter, RESTRICTED_\U$friend\E_STRUCT.$realname); \\");
       }
     }
 
-    if(@use)
-    {
-      push(@data, '  const void *RESTRICTED_FRIENDS_STRUCT_use = ( \\');
-      push(@data, @use);
-      push(@data,  '    RESTRICTED_FRIENDS_STRUCT_use = &RESTRICTED_FRIENDS_STRUCT_use \\');
-      push(@data,  '  );');
-    }
     push(@data, '');
     push(@data, "#endif  /* _\U$thorn\E_PARAMETERS_H_ */");
     push(@data, "\n");  # workaround for perl 5.004_04 to add a trailing newline

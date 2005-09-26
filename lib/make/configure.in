@@ -535,6 +535,11 @@ CCTK_CHECK_CXX_RESTRICT
 CCTK_C_BOOL
 CCTK_CXX_BOOL
 
+# Find out whether the C compiler supports __attribute__((unused))
+CCTK_C_ATTRIBUTE_UNUSED
+CCTK_CXX_ATTRIBUTE_UNUSED
+
+
 dnl Do we have crypt(3)
 CCTK_CHECK_FUNC(crypt, , CCTK_CHECK_LIB_FUNC(crypt, crypt))
 

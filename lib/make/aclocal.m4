@@ -330,3 +330,28 @@ if test "$cctk_cv_have_cxx_bool" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_CXX_BOOL)
 fi
 ])
+
+
+
+AC_DEFUN(CCTK_C_ATTRIBUTE_UNUSED,
+[AC_CACHE_CHECK([for C __attribute__((unused))], cctk_cv_have_c_attribute_unused,
+[cctk_cv_have_c_attribute_unused=no
+AC_TRY_COMPILE(, double * foo __attribute__((unused));, cctk_cv_have_c_attribute_unused=yes, cctk_cv_have_c_attribute_unused=no)
+])
+if test "$cctk_cv_have_c_attribute_unused" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_UNUSED)
+fi
+])
+
+AC_DEFUN(CCTK_CXX_ATTRIBUTE_UNUSED,
+[AC_CACHE_CHECK([for CXX __attribute__((unused))], cctk_cv_have_cxx_attribute_unused,
+[cctk_cv_have_cxx_attribute_unused=no
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(, double * foo __attribute__((unused));, cctk_cv_have_cxx_attribute_unused=yes, cctk_cv_have_cxx_attribute_unused=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_cxx_attribute_unused" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_CXX_ATTRIBUTE_UNUSED)
+fi
+])

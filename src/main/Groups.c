@@ -2733,12 +2733,108 @@ static CCTK_INT **CCTKi_ExtractSize (int dimension,
 }
 
  /*@@
+   @routine    CCTKi_GroupLength
+   @date       Sat Jan 22 2005
+   @author     Erik Schnetter
+   @desc
+               Get the number of vector elements in a group
+   @enddesc
+
+   @var     fullgroupname
+   @vdesc   The full name of a GV group
+   @vtype   const char *
+   @vio     in
+   @endvar
+
+   @returntype int
+   @returndesc
+               the number of vector elements in the group
+               -1
+   @endreturndesc
+@@*/
+int CCTKi_GroupLength(const char *fullgroupname)
+{
+  int group;
+  int retval;
+  char *impname, *groupname;
+
+
+  retval = -1;
+  impname = groupname = NULL;
+
+  if (! CCTK_DecomposeName (fullgroupname, &impname, &groupname))
+  {
+    for (group = 0; group < n_groups; group++)
+    {
+      if (CCTK_Equals (impname, groups[group].implementation) &&
+          CCTK_Equals (groupname, groups[group].name))
+      {
+        retval = groups[group].vectorlength;
+        break;
+      }
+    }
+  }
+
+  if (retval == -1)
+  {
+    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                "CCTKi_GroupLength: No group named '%s' found",
+                fullgroupname);
+  }
+
+  /* Free memory from CCTK_DecomposeName */
+  free (impname);
+  free (groupname);
+
+  return retval;
+}
+
+ /*@@
+   @routine    CCTKi_GroupLengthI
+   @date       Thu Mar 24 2005
+   @author     Erik Schnetter
+   @desc
+               Get the number of vector elements in a group
+   @enddesc
+
+   @var     group
+   @vdesc   The group index of a GV group
+   @vtype   int
+   @vio     in
+   @endvar
+
+   @returntype int
+   @returndesc
+               the number of vector elements in the group
+               -1
+   @endreturndesc
+@@*/
+int CCTKi_GroupLengthI(int group)
+{
+  int retval;
+
+  retval = -1;
+
+  if (group < 0 || group >= n_groups)
+  {
+    CCTK_VWarn (6, __LINE__, __FILE__, "Cactus",
+                "CCTKi_GroupLengthI: Illegal group index %d",
+                group);
+  }
+  else
+  {
+    retval = groups[group].vectorlength;
+  }
+
+  return retval;
+}
+
+ /*@@
    @routine    CCTKi_GroupLengthAsPointer
    @date       Sun Oct  7 03:58:44 2001
    @author     Tom Goodale
    @desc
-               Get the number of variables in a group,
-               or the number of elements in a vector group
+               Get the number of vector elements in a group
    @enddesc
 
    @var     fullgroupname
@@ -2749,7 +2845,7 @@ static CCTK_INT **CCTKi_ExtractSize (int dimension,
 
    @returntype const int *
    @returndesc
-               pointer to an integer containing the number of variables in the group
+               pointer to an integer containing the number of vector elements in the group
                NULL if group doesn't exist
    @endreturndesc
 @@*/
@@ -2770,8 +2866,7 @@ const int *CCTKi_GroupLengthAsPointer(const char *fullgroupname)
       if (CCTK_Equals (impname, groups[group].implementation) &&
           CCTK_Equals (groupname, groups[group].name))
       {
-        retval = groups[group].vectorlength ?
-                 &groups[group].vectorlength : &groups[group].n_variables;
+        retval = &groups[group].vectorlength;
         break;
       }
     }
@@ -2787,6 +2882,52 @@ const int *CCTKi_GroupLengthAsPointer(const char *fullgroupname)
   /* Free memory from CCTK_DecomposeName */
   free (impname);
   free (groupname);
+
+  return retval;
+}
+
+ /*@@
+   @routine    CCTKi_GroupLengthAsPointerI
+   @date       Sun Jan 27 19:13 2002
+   @author     Erik Schnetter
+   @desc 
+               Get the number of vector elements in a group
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     group
+   @vdesc   The index of a GV group
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype const int *
+   @returndesc
+               pointer to an integer containing the number of vector elements in the group
+               NULL if group doesn't exist
+   @endreturndesc
+@@*/
+const int *CCTKi_GroupLengthAsPointerI(int group)
+{
+  const int *retval;
+
+  retval = NULL;
+  
+  if (group < 0 || group >= n_groups)
+  {
+    CCTK_VWarn (6, __LINE__, __FILE__, "Cactus",
+                "CCTKi_GroupLengthAsPointerI: Group index %d does not exist",
+                group);
+  }
+  else
+  {
+    retval = &groups[group].vectorlength;
+  }
 
   return retval;
 }

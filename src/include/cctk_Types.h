@@ -21,6 +21,33 @@
 /* Define stuff for C. */
 #ifdef CCODE
 
+
+/* Declare and initialise a variable and tell the compiler that it may
+   be unused.  This is used for CCTK_PARAMETERS and CCTK_ARGUMENTS.
+
+   The macro CCTK_DECLARE_INIT (typ, nam, val) is used with
+   typ: a type, used to declare the variable (e.g. "const int")
+   nam: the variable name (e.g. "x")
+   val: the value used to initialise it (e.g. "42")
+*/
+
+#if    (! __cplusplus && HAVE_CCTK_C_ATTRIBUTE_UNUSED  )  \
+    || (  __cplusplus && HAVE_CCTK_CXX_ATTRIBUTE_UNUSED)
+
+/* We have __attribute__((unused)), so use it */
+#define CCTK_DECLARE_INIT(typ,nam,val)          \
+  typ nam __attribute__((unused)) = (val);
+
+#else
+
+/* Some fallback, bound to fool most compilers */
+#define CCTK_DECLARE_INIT(typ,nam,val)                                  \
+  typ nam = (val);                                                      \
+  void const * cctki_use_##nam = (cctki_use_##nam = &nam, &cctki_use_##nam);
+
+#endif
+
+
 typedef void *CCTK_POINTER;
 typedef const void *CCTK_POINTER_TO_CONST;
 typedef void (*CCTK_FPOINTER)(void);
@@ -63,8 +90,35 @@ typedef unsigned char CCTK_BYTE;
 
 #endif /* CCODE */
 
-/* Define stuff for fortran. */
+/* Define stuff for Fortran. */
 #ifdef FCODE
+
+
+/* Declare a variable and tell the compiler that it may be unused.
+   This is used for CCTK_ARGUMENTS.
+
+   The macro CCTK_DECLARE (typ, nam, dim) is used with
+   typ: a type, used to declare the variable (e.g. "CCTK_REAL")
+   nam: the variable name (e.g. "x")
+   dim: optional array dimensions, (e.g. "(10,10)")
+*/
+
+#ifdef F90CODE
+
+/* Declare it, and use it for a dummy operation  */
+#define CCTK_DECLARE(typ,nam,dim)                       \
+  typ nam dim &&                                        \
+  integer, parameter :: cctki_use_/**/nam = kind(nam)
+
+#else
+
+/* Just declare it; FORTRAN 77 has no good way of marking it as used
+   within a block of declarations  */
+#define CCTK_DECLARE(typ,nam,dim)               \
+  typ nam dim
+
+#endif
+
 
 #define CCTK_POINTER          integer*SIZEOF_CHAR_P
 #define CCTK_POINTER_TO_CONST integer*SIZEOF_CHAR_P
