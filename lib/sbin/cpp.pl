@@ -806,6 +806,13 @@ sub ExpandMacro
   my $retcode = 0;
   my @arguments = &SplitArgs($args);
 
+  # SplitArgs returns one (empty) argument for macros without arguments,
+  # because it cannot distinguish between no arguments and one empty argument.
+  if (@{$defines{$macro}{"ARGS"}} == 0)
+  {
+    @arguments = ();
+  }
+
   my $outstring = $defines{$macro}{"BODY"};
 
   if($macro eq "__FILE__")
@@ -949,11 +956,8 @@ sub SplitArgs
     push(@thistoken, $splitargs[$pos]);
   }
 
-  # Push any remaining token
-  if(@thistoken > 0)
-  {
-    push(@outargs, join("",@thistoken));
-  }
+  # Push the remaining token
+  push(@outargs, join("",@thistoken));
 
   return @outargs;
 }
