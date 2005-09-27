@@ -57,10 +57,10 @@ $(MASTER_FILE).dvi: $(MASTER_FILE).tex
 	-latex $< < /dev/null 2>&1 | tee LOG_LATEX_FULL_MSGS | grep -v Underfull | grep -v Overfull | grep -v OT1 > LOG_LATEX_MSGS
 	if test -e "$@"; then                                    \
 	   if grep "^\! " "LOG_LATEX_FULL_MSGS"; then            \
-	     echo "  Problem in $<.  See doc/ThornGuide/build/LOG_LATEX_* .";  \
+	     echo "  Problem in $<.  See $(DOCBUILDDIR)/LOG_LATEX_* .";  \
 	     exit 1;                                             \
 	   elif grep "^LaTeX Warning:" "LOG_LATEX_FULL_MSGS"; then         \
-	     echo "  Warnings in $<.  See doc/ThornGuide/build/LOG_LATEX_* ."; \
+	     echo "  Warnings in $<.  See $(DOCBUILDDIR)/LOG_LATEX_* ."; \
 	     exit 0;                                             \
 	   fi;                                                    \
 	else                                                     \

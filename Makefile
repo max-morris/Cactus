@@ -19,7 +19,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.172 2005-09-26 00:09:04 schnetter Exp $
+#   @version $Id: Makefile,v 1.173 2005-09-27 12:02:14 swhite Exp $
 # @@*/
 
 ##################################################################################
@@ -1090,7 +1090,7 @@ ThornGuide:
 	rm -rf $(THORNBUILD);
 	mkdir $(THORNBUILD);
 	cd $(THORNBUILD); \
-	$(MAKE) -f $(DOCDIR)/ThornGuide/Makefile
+	$(MAKE) -f $(DOCDIR)/ThornGuide/Makefile DOCBUILDDIR=doc/ThornGuide/build
 	if test -e "$(THORNBUILD)/ThornGuide.ps"; then \
 	  mv "$(THORNBUILD)/ThornGuide.ps" $(DOCDIR)/ThornGuide.ps; \
 	  echo "  ThornGuide.ps created in doc directory."; \
@@ -1133,7 +1133,7 @@ $(addsuffix -ThornGuide,$(CONFIGURATIONS)):
 	mkdir $(CONFIGBUILDDIR)
 	if test -r $(CONFIGDIR)/ThornList ; then \
 	  cd $(CONFIGBUILDDIR); \
-	  $(MAKE) -f $(DOCDIR)/ThornGuide/Makefile THORNLIST=$(CONFIGDIR)/ThornList MASTER_FILE=$(GUIDENAME); \
+	  $(MAKE) -f $(DOCDIR)/ThornGuide/Makefile THORNLIST=$(CONFIGDIR)/ThornList MASTER_FILE=$(GUIDENAME) DOCBUILDDIR=$(CONFIGBUILDDIR); \
 	  if test -e "$(CONFIGBUILDDIR)/$(GUIDENAME).ps"; then \
 	    mv "$(CONFIGBUILDDIR)/$(GUIDENAME).ps" $(DOCDIR)/$(GUIDENAME).ps; \
 	    echo "  $(GUIDENAME).ps created in doc directory."; \
