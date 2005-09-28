@@ -173,9 +173,6 @@ typedef enum {false, true} bool;
 #endif /* HAVE_CCTK_CXX_BOOL */
 #endif
 
-/* Whether __attribute__((unused)) exists. */
-#undef HAVE_CCTK_C_ATTRIBUTE_UNUSED
-
 #endif /* ! defined __cplusplus */
 /****************************************************************************/
 
@@ -193,9 +190,6 @@ typedef enum {false, true} bool;
 /* deprecated in beta15 */
 #define CCTK_HAVE_CXX_BOOL
 #endif
-
-/* Whether __attribute__((unused)) exists. */
-#undef HAVE_CCTK_CXX_ATTRIBUTE_UNUSED
 
 /* Some C++ compilers recognise the restrict keyword */
 #undef CCTK_CXX_RESTRICT

@@ -22,7 +22,7 @@ $version = "Cactus CPP 1.0";
 # Symbol table
 %defines = ();
 
-# Initial symbols
+#Initial symbols
 
 &Define("__FILE__", "\"replace-me\"", "<main>",__LINE__);
 &Define("__LINE__", "\"replace-me\"", "<main>",__LINE__);
@@ -371,11 +371,7 @@ sub ParseFile
       next;
     }
 
-    # Remove comments
-    my $linewithcomments = $line;
-    $line =~ s,\(__CCTK_COMMENT_PLACEHOLDER__\),,g;
-
-    if($linewithcomments=~m/^\s*#\s*define\s+([a-zA-Z_][a-zA-Z0-9_]*(?:\(.*?\))?)(\s+(.*))?/)
+    if($line=~m/^\s*#\s*define\s+([a-zA-Z_][a-zA-Z0-9_]*(?:\(.*?\))?)(\s+(.*))?/)
     {
       # Define a macro
       &Define($1,$3,$filename, $linenumber) if($active);
@@ -389,7 +385,7 @@ sub ParseFile
     }
     elsif($line =~ m/^\s*#\s*if(.+)/)
     {
-      # Deal with a #if clause - do it recursively
+      #Deal with a #if clause - do it recursively
       my $newactive;
 
       # Parse the if statement and see if the first clause is active
@@ -399,7 +395,7 @@ sub ParseFile
       }
       else
       {
-        # If not active before, still inactive
+        #If not active before, still inactive
         $newactive = 0;
       }
       my $beenactive = $newactive;
@@ -410,10 +406,6 @@ sub ParseFile
       {
         # Parse the clause
         ($currentline, $linenumber) = &ParseFile(*INFILE,$filename,$linenumber,$newactive && $active,$printline);
-	if ($currentline)
-        {
-	  $currentline =~ s,\(__CCTK_COMMENT_PLACEHOLDER__\),,g;
-	}
         if(! $currentline)
         {
           # Got EOF !
@@ -462,7 +454,7 @@ sub ParseFile
         {
           if($currentline =~ m/^\s*#\s*else/ || $currentline =~ m/^\s*#\s*elsif/)
           {
-            print STDERR "Extraneous #else or #elsif found at $filename:$linenumber\n";
+            print STDERR "Extraneous #else of #elsif found at $filename:$linenumber\n";
             $newactive = 0;
           }
           else
@@ -567,7 +559,7 @@ sub ReadLine
   # Deal with C-style comments
 
   # Deal with completely enclosed comments
-  $line =~ s,/\*.*\*/,(__CCTK_COMMENT_PLACEHOLDER__),g;
+  $line =~ s,/\*.*\*/, ,g;
 
   # Are we already processing a comment ?
   if($incomment)
@@ -575,14 +567,14 @@ sub ReadLine
     if($line =~ m,\*/,)
     {
       # Get rid of line up to end of comment
-      $line =~ s,^.*\*/,(__CCTK_COMMENT_PLACEHOLDER__),;
+      $line =~ s,^.*\*/, ,;
       # Line finished the comment
       $incomment = 0;
     }
     else
     {
       # Line doesn't finish the comment
-      $line = "(__CCTK_COMMENT_PLACEHOLDER__)";
+      $line = " ";
     }
   }
 
@@ -591,7 +583,7 @@ sub ReadLine
     if($line =~ m,/\*,)
     {
       # Get rid of line after beginning of comment
-      $line =~ s,/\*.*$,(__CCTK_COMMENT_PLACEHOLDER__),;
+      $line =~ s,/\*.*$, ,;
       # Line starts the comment
       $incomment = 1;
     }
@@ -600,7 +592,7 @@ sub ReadLine
   # Get rid of C++ comments too
   if(! $incomment)
   {
-    $line =~ s,//.*$,(__CCTK_COMMENT_PLACEHOLDER__),;
+    $line =~ s,//.*$, ,;
   }
 
   return ($line, $linenumber);
@@ -814,13 +806,6 @@ sub ExpandMacro
   my $retcode = 0;
   my @arguments = &SplitArgs($args);
 
-  # SplitArgs returns one (empty) argument for macros without arguments,
-  # because it cannot distinguish between no arguments and one empty argument.
-  if (@{$defines{$macro}{"ARGS"}} == 0)
-  {
-    @arguments = ();
-  }
-
   my $outstring = $defines{$macro}{"BODY"};
 
   if($macro eq "__FILE__")
@@ -964,8 +949,11 @@ sub SplitArgs
     push(@thistoken, $splitargs[$pos]);
   }
 
-  # Push the remaining token
-  push(@outargs, join("",@thistoken));
+  # Push any remaining token
+  if(@thistoken > 0)
+  {
+    push(@outargs, join("",@thistoken));
+  }
 
   return @outargs;
 }
@@ -1111,11 +1099,7 @@ sub ParseAndExpand
     }
   }
 
-  # Replace comments by nothing, allowing old-style token concatenation
-  my $output = join("",@outline);
-  $output =~ s,\(__CCTK_COMMENT_PLACEHOLDER__\),,g;
-
-  return ($output,$retcode);
+  return (join("",@outline),$retcode);
 }
 
 ###############################################################################

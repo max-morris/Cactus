@@ -92,11 +92,7 @@ const char *CCTK_VarTypeName(int vartype);
 
 int         CCTK_VarTypeSize(int vtype);
 
-int         CCTKi_GroupLength(const char *fullgroupname);
-int         CCTKi_GroupLengthI(int group);
-
 const int * CCTKi_GroupLengthAsPointer(const char *fullgroupname);
-const int * CCTKi_GroupLengthAsPointerI(int group);
 
 /* traverse a string of group and/or variable names */
 int CCTK_TraverseString (const char *parsestring,
