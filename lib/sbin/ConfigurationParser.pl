@@ -111,33 +111,24 @@ sub CreateConfigurationDatabase
     }
   }
 
-# Disable the check for cyclic dependencies.
-# The code is very useful in principle, and will probably be re-enabled
-# soon (today is 2005-08-23), so I keep it, but comment it out.
-# Unfortunately, there is currently code that needs to have these cyclic
-# dependencies, so it is not possible to abort and not desirable to warn
-# for these cases.
-# Any problems with cyclic dependencies will be reported by the linker
-# later anyway.
-#
-## Check for cyclic dependencies
-## create a hash with thorn-> used thorns (no prefix)
-#  foreach $thorn (sort keys %thorns)
-#  {
-#    $thorn_dependencies{uc($thorn)}=$cfg{"\U$thorn\E USES THORNS"};
-#  }
-#
-#  $message = &find_dep_cycles(%thorn_dependencies);
-#  
-#  if ("" ne  $message)
-#  {
-#   $message  =~ s/^\s*//g;
-#   $message  =~ s/\s*$//g;
-#   $message =~ s/\s+/->/g;
-#   $message = "Found a cyclic dependency in configuration requirements:".$message."\n";
-#   &CST_error(0,$message,$hint,__LINE__,__FILE__);
-#  }
-#
+# Check for cyclic dependencies
+# create a hash with thorn-> used thorns (no prefix)
+  foreach $thorn (sort keys %thorns)
+  {
+    $thorn_dependencies{uc($thorn)}=$cfg{"\U$thorn\E USES THORNS"};
+  }
+
+  $message = &find_dep_cycles(%thorn_dependencies);
+  
+  if ("" ne  $message)
+  {
+   $message  =~ s/^\s*//g;
+   $message  =~ s/\s*$//g;
+   $message =~ s/\s+/->/g;
+   $message = "Found a cyclic dependency in configuration requirements:".$message."\n";
+   &CST_error(0,$message,$hint,__LINE__,__FILE__);
+  }
+
 
 #  # Print configuration database
 #     my($field);
@@ -207,7 +198,9 @@ sub ParseConfigurationCCL
     }
     elsif($line =~ m/^\s*REQUIRES\s+THORNS\s*:\s*(.*)/i)
     {
-      $cfg->{"\U$thorn\E REQUIRES THORNS"} .= "$1";
+      my $temp = $1;
+      $temp =~ s/\b$thorn\b//i;
+      $cfg->{"\U$thorn\E REQUIRES THORNS"} .= $temp;
 #      if ($cfg->{"\U$thorn\E REQUIRES THORNS"})
 #      {
 #        &CST_error (3, '\'Requires Thorns\' will not be supported in release beta-14' .
@@ -216,7 +209,9 @@ sub ParseConfigurationCCL
     }
     elsif($line =~ m/^\s*REQUIRES\s*(.*)/i)
     {
-      $cfg->{"\U$thorn\E REQUIRES"} .= "$1 ";
+      my $temp = $1;
+      $temp =~ s/\b$thorn\b//i;
+      $cfg->{"\U$thorn\E REQUIRES"} .= "$temp ";
     }
     elsif($line =~ m/^\s*OPTIONAL\s*/i)
     {
