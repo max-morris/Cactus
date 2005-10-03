@@ -1155,7 +1155,7 @@ int CCTK_RegexMatch(const char *string,
      Handle this case specially.  */
   if (strcmp(pattern, "") == 0)
   {
-    retval = 1;			/* report success */
+    retval = 1;                 /* report success */
   }
   else
   {

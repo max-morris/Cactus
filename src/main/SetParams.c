@@ -92,7 +92,7 @@ int CCTKi_SetParameter (const char *parameter, const char *value, int lineno)
     {
       CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
                  "CCTKi_SetParameter: Error at line %d in parameter file %s "
-		 "while activating thorns",lineno,parfile);
+                 "while activating thorns",lineno,parfile);
     }
     retval = 0;
   }
@@ -105,7 +105,7 @@ int CCTKi_SetParameter (const char *parameter, const char *value, int lineno)
   {
     CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
                 "Major error in parameter file '%s' line %d: "
-		"Range error setting parameter "
+                "Range error setting parameter "
                 "'%s' to '%s'", parfile, lineno, parameter, value);
     num_0errors++;
   }
@@ -115,17 +115,17 @@ int CCTKi_SetParameter (const char *parameter, const char *value, int lineno)
     if (parameter_check == CCTK_PARAMETER_RELAXED)
     {
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-		  "Minor error in parameter file '%s' line %d: "
-		  "Parameter '%s' not found",
-		  parfile, lineno, parameter);
+                  "Minor error in parameter file '%s' line %d: "
+                  "Parameter '%s' not found",
+                  parfile, lineno, parameter);
       num_1errors++;
     }
     else
     {
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-		  "Major error in parameter file '%s' line %d: "
-		  "Parameter '%s' not found",
-		  parfile, lineno, parameter);
+                  "Major error in parameter file '%s' line %d: "
+                  "Parameter '%s' not found",
+                  parfile, lineno, parameter);
       num_0errors++;
     }
   }
@@ -135,17 +135,17 @@ int CCTKi_SetParameter (const char *parameter, const char *value, int lineno)
     if (parameter_check == CCTK_PARAMETER_RELAXED)
     {
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-		  "Minor error in parameter file '%s' line %d: "
-		  "Parameter '%s' set in two "
-		  "different thorns", parfile, lineno, parameter);
+                  "Minor error in parameter file '%s' line %d: "
+                  "Parameter '%s' set in two "
+                  "different thorns", parfile, lineno, parameter);
       num_1errors++;
     }
     else
     {
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-		  "Major error in parameter file '%s' line %d: "
-		  "Parameter '%s' set in two "
-		  "different thorns", parfile, lineno, parameter);
+                  "Major error in parameter file '%s' line %d: "
+                  "Parameter '%s' set in two "
+                  "different thorns", parfile, lineno, parameter);
       num_0errors++;
     }
   }
@@ -155,19 +155,19 @@ int CCTKi_SetParameter (const char *parameter, const char *value, int lineno)
     if (parameter_check == CCTK_PARAMETER_STRICT)
     {
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-		  "Major error in parameter file '%s' line %d: "
-		  "Parameter '%s' is not "
-		  "associated with an active thorn", 
-		  parfile, lineno, parameter);
+                  "Major error in parameter file '%s' line %d: "
+                  "Parameter '%s' is not "
+                  "associated with an active thorn", 
+                  parfile, lineno, parameter);
       num_0errors++;
     }
     else if (parameter_check == CCTK_PARAMETER_NORMAL)
     {
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-		  "Minor error in parameter file '%s' line %d: "
-		  "Parameter '%s' is not "
-		  "associated with an active thorn", 
-		  parfile, lineno, parameter);
+                  "Minor error in parameter file '%s' line %d: "
+                  "Parameter '%s' is not "
+                  "associated with an active thorn", 
+                  parfile, lineno, parameter);
       num_1errors++;
     }
   }
@@ -176,9 +176,9 @@ int CCTKi_SetParameter (const char *parameter, const char *value, int lineno)
     /* Parameter value is not a valid number */
     CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
                 "Major error in parameter file '%s' line %d: "
-		"Error setting parameter '%s' "
+                "Error setting parameter '%s' "
                 "'%s' is not a valid number", 
-		parfile, lineno, parameter, value);
+                parfile, lineno, parameter, value);
     num_0errors++;
   }    
   else if (retval == -7)
@@ -187,19 +187,19 @@ int CCTKi_SetParameter (const char *parameter, const char *value, int lineno)
     if (parameter_check == CCTK_PARAMETER_STRICT)
     {
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-		  "Major error in parameter file '%s' line %d: "
-		  "Parameter '%s' is an "
-		  "accumulator parameter; it cannot be set directly", 
-		  parfile, lineno, parameter);
+                  "Major error in parameter file '%s' line %d: "
+                  "Parameter '%s' is an "
+                  "accumulator parameter; it cannot be set directly", 
+                  parfile, lineno, parameter);
       num_0errors++;
     }
     else if (parameter_check == CCTK_PARAMETER_NORMAL)
     {
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-		  "Minor error in parameter file '%s' line %d: "
-		  "Parameter '%s' is an "
-		  "accumulator parameter; it cannot be set directly", 
-		  parfile, lineno, parameter);
+                  "Minor error in parameter file '%s' line %d: "
+                  "Parameter '%s' is an "
+                  "accumulator parameter; it cannot be set directly", 
+                  parfile, lineno, parameter);
       num_1errors++;
     }
   }
@@ -209,19 +209,19 @@ int CCTKi_SetParameter (const char *parameter, const char *value, int lineno)
     if (parameter_check == CCTK_PARAMETER_STRICT)
     {
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-		  "Major error in parameter file '%s' line %d: "
-		  "Parameter '%s' is an "
-		  "array base parameter; please use %s[<number>]", 
-		  parfile, lineno, parameter, parameter);
+                  "Major error in parameter file '%s' line %d: "
+                  "Parameter '%s' is an "
+                  "array base parameter; please use %s[<number>]", 
+                  parfile, lineno, parameter, parameter);
       num_0errors++;
     }
     else if (parameter_check == CCTK_PARAMETER_NORMAL)
     {
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-		  "Minor error in parameter file '%s' line %d: "
-		  "Parameter '%s' is an "
-		  "array base parameter; please use %s[<number>]", 
-		  parfile, lineno, parameter, parameter);
+                  "Minor error in parameter file '%s' line %d: "
+                  "Parameter '%s' is an "
+                  "array base parameter; please use %s[<number>]", 
+                  parfile, lineno, parameter, parameter);
       num_1errors++;
     }
   }
@@ -230,9 +230,9 @@ int CCTKi_SetParameter (const char *parameter, const char *value, int lineno)
     /* Parameter adds to an accumulator and that value would be out of range. */
     CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
                 "Major error in parameter file '%s' line %d: "
-		"Range error setting parameter "
+                "Range error setting parameter "
                 "'%s' to '%s' - out of range in accumulator", 
-		parfile, lineno, parameter, value);
+                parfile, lineno, parameter, value);
     num_0errors++;
   }
 

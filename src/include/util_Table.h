@@ -5,9 +5,9 @@
   @desc
         This header defines the programmer API for Cactus key-value tables.
         This is documented in the Cactus Reference Manual,
-	and there's a tutorial introduction to the API
-	in chapter C of the Cactus Users' Guide.
-	A slightly-out-of-date draft of this API can also be found in
+        and there's a tutorial introduction to the API
+        in chapter C of the Cactus Users' Guide.
+        A slightly-out-of-date draft of this API can also be found in
            http://www.cactuscode.org/Development/Specs/KeyValueLookup.txt
   @enddesc
   @seefile      seefile Table.c
@@ -50,7 +50,7 @@ extern "C"
   @defines      UTIL_TABLE_FLAGS_CASE_INSENSITIVE
   @desc         flags-word macro: key comparisons are case-insensitive
   @@*/
-#define UTIL_TABLE_FLAGS_CASE_INSENSITIVE       1	/* 0x1 */
+#define UTIL_TABLE_FLAGS_CASE_INSENSITIVE       1       /* 0x1 */
 
 /*@@
   @defines      UTIL_TABLE_FLAGS_USER_DEFINED_BASE
@@ -59,7 +59,7 @@ extern "C"
                 all bit positions below this one are reserved for
                 current or future Cactus use)
   @@*/
-#define UTIL_TABLE_FLAGS_USER_DEFINED_BASE      65536	/* 0x10000 */
+#define UTIL_TABLE_FLAGS_USER_DEFINED_BASE      65536   /* 0x10000 */
 
 /******************************************************************************/
 /***** Error Codes ************************************************************/

@@ -491,7 +491,7 @@ cctk_complex CCTK_Cmplx##Sqrt (cctk_complex complex_number)                   \
     x = fabs (complex_number.Re);                                             \
     y = fabs (complex_number.Im);                                             \
     if (x >= y)                                                               \
-	{                                                                         \
+        {                                                                         \
       t = y / x;                                                              \
       w = sqrt (x) * sqrt (0.5 * (1.0 + sqrt (1.0 * t * t)));                 \
     }                                                                         \
@@ -500,9 +500,9 @@ cctk_complex CCTK_Cmplx##Sqrt (cctk_complex complex_number)                   \
       t = x / y;                                                              \
       w = sqrt (y) * sqrt (0.5 * (t + sqrt (1.0 * t * t)));                   \
     }                                                                         \
-	                                                                          \
+                                                                                  \
     if (complex_number.Re >= 0.0)                                             \
-	{                                                                         \
+        {                                                                         \
       result.Re = w;                                                          \
       result.Im = complex_number.Im / (2.0 * w);                              \
     }                                                                         \

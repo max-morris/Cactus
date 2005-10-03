@@ -156,7 +156,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_CoordLocalRange)
    @@*/
 int CCTKi_CoordRegisterSystem (int dim,
                               const char *thorn,
-			      const char *systemname)
+                              const char *systemname)
 {
   int retval=-1;
   struct Coordsystem *new_system;
@@ -175,14 +175,14 @@ int CCTKi_CoordRegisterSystem (int dim,
       if (dim > 0)
       {
         new_system->dimension  = dim;
-	new_system->implementation = CCTK_ThornImplementation (thorn);
+        new_system->implementation = CCTK_ThornImplementation (thorn);
         new_system->systemname = strdup (systemname);
         new_system->coords = (struct Coordprops *) calloc (dim,
                                                      sizeof(struct Coordprops));
         retval = Util_NewHandle (&CoordSystems, systemname, new_system);
 
-	/* Remember how many systems there are */
-	num_systems++;
+        /* Remember how many systems there are */
+        num_systems++;
 
       }
       else
@@ -313,8 +313,8 @@ int CCTK_CoordRegisterData(int dir,
         {
           CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
                       "CCTK_CoordRegisterData: Invalid grid variable "
-		      "specified");
-	  retval = -5;
+                      "specified");
+          retval = -5;
         }
       }
     }
@@ -1103,7 +1103,7 @@ int CCTK_CoordRange (const cGH *GH,
       }
       if (coord)
       {
-	gotrange = 0;
+        gotrange = 0;
         for (curr = coord->listcomp; curr; curr = curr->next)
         {
 
@@ -1116,7 +1116,7 @@ int CCTK_CoordRange (const cGH *GH,
 
           if (curr->GH == GH)
           {
-	    gotrange = 1;
+            gotrange = 1;
             *lower = curr->lower;
             *upper = curr->upper;
 
@@ -1125,10 +1125,10 @@ int CCTK_CoordRange (const cGH *GH,
 #endif
           }
         }
-	if (!gotrange)
-	{
-	  retval = -6;
-	}
+        if (!gotrange)
+        {
+          retval = -6;
+        }
       }
     }
   }
@@ -1437,7 +1437,7 @@ int CCTK_NumCoordSystems (void)
    @author     Gabrielle Allen
    @desc
                Provide the implementation which registered a coordinate
-	       system
+               system
    @enddesc
    @var        handle
    @vdesc      handle of coordinate system
@@ -1484,7 +1484,7 @@ const char *CCTK_CoordSystemImplementation (int handle)
    @returntype const char *
    @returndesc
                the coordinate name or NULL if handle is coordinate name
-	       cannot be found
+               cannot be found
    @endreturndesc
 @@*/
 const char *CCTK_CoordName (int dir, const char *systemname)
@@ -1496,7 +1496,7 @@ const char *CCTK_CoordName (int dir, const char *systemname)
   if (! coord_system)
   {
     CCTK_VWarn (4, __LINE__, __FILE__, "Cactus",
-		"CCTK_CoordName: System '%s' not registered", systemname);
+                "CCTK_CoordName: System '%s' not registered", systemname);
       retval = NULL;
   }
   else

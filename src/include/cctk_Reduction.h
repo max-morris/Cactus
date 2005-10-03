@@ -9,7 +9,7 @@
  @@*/
 
 #ifndef _CCTK_REDUCTION_H_
-#define _CCTK_REDUCTION_H_
+#define _CCTK_REDUCTION_H_ 1
 
 #define REDUCTION_OPERATOR_REGISTER_ARGLIST  \
           const cGH *arg_GH, \
@@ -63,12 +63,12 @@ extern "C"
 
 /* prototype for reduction operator routine */
 typedef int (*cReduceOperator) (const cGH *GH,
-				int arg_proc,
-				int arg_num_outvals,
-				int arg_outtype,
-				void *arg_outvals,
-				int arg_num_invars,
-				const int arg_varlist[]);
+                                int arg_proc,
+                                int arg_num_outvals,
+                                int arg_outtype,
+                                void *arg_outvals,
+                                int arg_num_invars,
+                                const int arg_varlist[]);
 
 /* prototype for local array reduction operator routine */
 typedef int (*cLocalArrayReduceOperator) (int N_dims, int operator_handle, 
@@ -105,8 +105,8 @@ int CCTK_ReductionHandle(const char *reduction);
         CCTKi_RegisterReductionOperator(CCTK_THORNSTRING,a,b)
 
 int CCTKi_RegisterReductionOperator(const char *thorn,
-				    cReduceOperator operatorGV,
-				    const char *name);
+                                    cReduceOperator operatorGV,
+                                    const char *name);
 
 int CCTK_ReductionArrayHandle(const char *reduction);
 
@@ -138,8 +138,8 @@ int CCTK_LocalArrayReductionHandle(const char *reduction);
         CCTKi_RegisterLocalArrayReductionOperator(CCTK_THORNSTRING,a,b)
 
 int CCTKi_RegisterLocalArrayReductionOperator(const char *thorn,
-		           cLocalArrayReduceOperator operatorGV,
-				              const char *name);
+                           cLocalArrayReduceOperator operatorGV,
+                                              const char *name);
 
 int CCTK_RegisterReductionLocalArrayOperator(
          int (*function)(REDUCTION_LOCAL_ARRAY_OPERATOR_REGISTER_ARGLIST),

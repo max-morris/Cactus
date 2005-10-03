@@ -4,7 +4,7 @@
    @author    David Rideout
    @desc 
               Macros for generic specification of sets of 'faces' of an 
-	      'n-cube'
+              'n-cube'
    @enddesc 
    @version   $Header$
  @@*/

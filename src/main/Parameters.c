@@ -1979,8 +1979,8 @@ static int ParameterSetKeyword (t_param *param, const char *value)
     if (*(char **) param->data == NULL)
     {
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-		  "Since this was the default value, "
-		  "setting anyway - please fix!");
+                  "Since this was the default value, "
+                  "setting anyway - please fix!");
       CCTK_SetString (param->data, value);
     }
   }
@@ -2023,8 +2023,8 @@ static int ParameterSetString (t_param *param, const char *value)
     if (*(char **) param->data == NULL)
     {
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-		  "Since this was the default value, "
-		  "setting anyway - please fix!");
+                  "Since this was the default value, "
+                  "setting anyway - please fix!");
       CCTK_SetString (param->data, value);
     }
   }
@@ -2067,8 +2067,8 @@ static int ParameterSetSentence (t_param *param, const char *value)
     if (*(char **) param->data == NULL)
     {
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-		  "Since this was the default value, "
-		  "setting anyway - please fix!");
+                  "Since this was the default value, "
+                  "setting anyway - please fix!");
       CCTK_SetString (param->data, value);
     }
   }

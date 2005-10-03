@@ -154,7 +154,7 @@ const cParamData *CCTK_ParameterData (const char *name,
 
   /* Return number of times a parameter has been set */
 int CCTK_ParameterQueryTimesSet(const char *name,
-				const char *thorn);
+                                const char *thorn);
 
 
 #ifdef __cplusplus

@@ -1399,7 +1399,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_TimerPrintData)
 unsigned int
 CCTK_NumTimerClocks( const cTimerData *info )
 {
-	return info->n_vals;
+        return info->n_vals;
 }
 
  /*@@
@@ -1434,10 +1434,10 @@ CCTK_NumTimerClocks( const cTimerData *info )
 const cTimerVal *
 CCTK_GetClockValueI( int valno, const cTimerData *info )
 {
-	if( valno < info->n_vals )
-		return (cTimerVal *)&info->vals[valno];
-	else
-		return NULL;
+        if( valno < info->n_vals )
+                return (cTimerVal *)&info->vals[valno];
+        else
+                return NULL;
 }
 
  /*@@
@@ -1474,13 +1474,13 @@ CCTK_GetClockValueI( int valno, const cTimerData *info )
 const cTimerVal *
 CCTK_GetClockValue( const char * clockName, const cTimerData *info )
 {
-	int i;
+        int i;
 
-	for (i = 0; i < info->n_vals; i++)
-		if( strcmp( clockName, info->vals[i].heading ) == 0 )
-			return (cTimerVal *)&info->vals[i];
+        for (i = 0; i < info->n_vals; i++)
+                if( strcmp( clockName, info->vals[i].heading ) == 0 )
+                        return (cTimerVal *)&info->vals[i];
 
-	return NULL;
+        return NULL;
 }
 
  /*@@
@@ -1507,9 +1507,9 @@ CCTK_GetClockValue( const char * clockName, const cTimerData *info )
 double
 CCTK_TimerClockSeconds( const cTimerVal *clockVal )
 {
-	if( clockVal != NULL )
-		return clockVal->seconds;
-	return 0.0;
+        if( clockVal != NULL )
+                return clockVal->seconds;
+        return 0.0;
 }
 
  /*@@
@@ -1539,9 +1539,9 @@ CCTK_TimerClockSeconds( const cTimerVal *clockVal )
 double
 CCTK_TimerClockResolution( const cTimerVal *clockVal )
 {
-	if( clockVal != NULL )
-		return clockVal->resolution;
-	return 0.0;
+        if( clockVal != NULL )
+                return clockVal->resolution;
+        return 0.0;
 }
 
  /*@@
@@ -1568,8 +1568,8 @@ CCTK_TimerClockResolution( const cTimerVal *clockVal )
 const char *
 CCTK_TimerClockName( const cTimerVal *clockVal )
 {
-	if( clockVal != NULL )
-		return clockVal->heading;
-	return NULL;
+        if( clockVal != NULL )
+                return clockVal->heading;
+        return NULL;
 }
 

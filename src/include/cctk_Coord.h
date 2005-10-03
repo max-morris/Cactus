@@ -9,7 +9,7 @@
  @@*/
 
 #ifndef _CCTK_COORD_H_
-#define _CCTK_COORD_H_
+#define _CCTK_COORD_H_ 1
 
 #ifdef __cplusplus
 extern "C"
@@ -47,8 +47,8 @@ int CCTK_CoordRegisterData(int dir,
 #define CCTK_CoordRegisterSystem(a,b) \
         CCTKi_CoordRegisterSystem (a,CCTK_THORNSTRING,b)
 int CCTKi_CoordRegisterSystem(int dim, 
-			      const char *implementation, 
-			      const char *systemname);
+                              const char *implementation, 
+                              const char *systemname);
 
 int CCTK_CoordSystemDim(const char *systemname);
 

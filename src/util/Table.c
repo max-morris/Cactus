@@ -9,7 +9,7 @@
  @desc
                 This program implements the key-value table API defined
                 in util_Table.h, the Cactus Reference Manual, and in
-		chapter C of the the Cactus User's Guide.  A slightly
+                chapter C of the the Cactus User's Guide.  A slightly
                 earlier version of this API is documented in
                   http://www.cactuscode.org/Development/Specs/KeyValueLookup.txt
  @enddesc

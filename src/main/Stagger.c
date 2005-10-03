@@ -145,7 +145,7 @@ int CCTK_StaggerIndex(const char *stype)
       case 'P':m=2; break;
       default:
         CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-		   "CCTK_StaggerIndex: Unknown stagger type %s",stype);
+                   "CCTK_StaggerIndex: Unknown stagger type %s",stype);
         return(-1);
     }
     scode+= m*base;
@@ -251,7 +251,7 @@ int CCTK_StaggerDirArray(int *dindex , int dim, int sindex)
   if (dim>4) 
   {
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus", 
-	      "CCTK_StaggerDirArray: Dimension %d exceeds maximum of 4",dim);
+              "CCTK_StaggerDirArray: Dimension %d exceeds maximum of 4",dim);
     return(-1);
   }
 
@@ -331,8 +331,8 @@ int CCTK_StaggerDirName(int dir, const char *stype)
   if (dir> (int) strlen(hs)) 
   {
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-	      "CCTK_StaggerDirName: Stagger name too short for direction %d",
-	      dir);
+              "CCTK_StaggerDirName: Stagger name too short for direction %d",
+              dir);
   }
 
   switch (toupper(hs[dir]))
@@ -342,7 +342,7 @@ int CCTK_StaggerDirName(int dir, const char *stype)
     case 'P': scode = 2; break;
     default:
       CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-		"CCTK_StaggerDirName: Unknown stagger type %s",hs);
+                "CCTK_StaggerDirName: Unknown stagger type %s",hs);
       return(-1);
   }
   return(scode);
@@ -394,8 +394,8 @@ int CCTKi_ParseStaggerString(int dim,
   if (dim>10) 
   {
     CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
-	       "CCTKi_ParseStaggerString: Dimension %d exceeds maximum of 10",
-	       dim);
+               "CCTKi_ParseStaggerString: Dimension %d exceeds maximum of 10",
+               dim);
   }
 
   /* change possible SHORTCUTS into the official notation*/
@@ -412,8 +412,8 @@ int CCTKi_ParseStaggerString(int dim,
     if ((int) strlen(stype)!=dim) 
     {  
       CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-		"CCTKi_ParseStaggerString: Staggering %s for %s unequal to group dimension %d",
-		stype,gname,dim);
+                "CCTKi_ParseStaggerString: Staggering %s for %s unequal to group dimension %d",
+                stype,gname,dim);
     }
 
     sprintf(hs,"%s",stype);
@@ -428,8 +428,8 @@ int CCTKi_ParseStaggerString(int dim,
       case 'P':m=2; break;
       default:
         CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-		   "CCTKi_ParseStaggerString: Unknown stagger type %s for %s::%s",
-		   stype,imp,gname);
+                   "CCTKi_ParseStaggerString: Unknown stagger type %s for %s::%s",
+                   stype,imp,gname);
         return(-1);
     }
     scode+= m*base;
