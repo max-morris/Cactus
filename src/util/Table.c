@@ -257,7 +257,7 @@ void **ip_array = NULL;
 /***** Misc Macros for This File **********************************************/
 /******************************************************************************/
 
-#define min(x,y)        ((x < y) ? (x) : (y))
+#define MIN(x,y)        ((x < y) ? (x) : (y))
 
 
 /******************************************************************************/
@@ -1603,7 +1603,7 @@ int Util_TableGetString(int handle,
                                   /* internal_get() should return an error */
                                   /* if buffer != NULL and buffer_length <= 0 */
       {
-    const int null_posn = min(string_length, buffer_length-1);
+    const int null_posn = MIN(string_length, buffer_length-1);
     buffer[null_posn] = '\0';
       }
   }
@@ -4670,7 +4670,7 @@ int Util_TableItQueryKeyValueInfo(int ihandle,
 
   if (key_buffer != NULL)
   {
-    const int N_key_copy = min(key_buffer_length-1, actual_key_length);
+    const int N_key_copy = MIN(key_buffer_length-1, actual_key_length);
     if (N_key_copy < 0)     /* can only happen if key_buffer_length <= 0 */
     {
       /*
@@ -5115,7 +5115,7 @@ static
       return UTIL_ERROR_BAD_INPUT;
     }
       {
-    const int N_copy = min(N_value_buffer, tep->N_elements);
+    const int N_copy = MIN(N_value_buffer, tep->N_elements);
     const size_t sizeof_N_copy_elements = N_copy * CCTK_VarTypeSize(type_code);
     #ifdef UTIL_TABLE_DEBUG
     printf(
