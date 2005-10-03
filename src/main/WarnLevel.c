@@ -506,13 +506,13 @@ int CCTK_VWarn (int level,
 
     cctk_full_warnings_ptr =
       CCTK_ParameterGet ("cctk_full_warnings", "Cactus", &param_type);
-    // Default to yes
+    /* Default to yes */
     cctk_full_warnings =
       cctk_full_warnings_ptr && *cctk_full_warnings_ptr;
 
     highlight_warning_messages_ptr =
       CCTK_ParameterGet ("highlight_warning_messages", "Cactus", &param_type);
-    // Default to no
+    /* Default to no */
     highlight_warning_messages =
       ! highlight_warning_messages_ptr || *highlight_warning_messages_ptr;
 
@@ -655,13 +655,13 @@ int CCTK_ParamWarn (const char *thorn, const char *message)
 
   cctk_strong_param_check_ptr =
     CCTK_ParameterGet ("cctk_strong_param_check", "Cactus", &param_type);
-  // Default to yes
+  /* Default to yes */
   cctk_strong_param_check =
     cctk_strong_param_check_ptr && *cctk_strong_param_check_ptr;
 
   highlight_warning_messages_ptr =
     CCTK_ParameterGet ("highlight_warning_messages", "Cactus", &param_type);
-  // Default to no
+  /* Default to no */
   highlight_warning_messages =
     ! highlight_warning_messages_ptr || *highlight_warning_messages_ptr;
 
@@ -732,13 +732,13 @@ int CCTK_VParamWarn (const char *thorn,
 
   cctk_strong_param_check_ptr =
     CCTK_ParameterGet ("cctk_strong_param_check", "Cactus", &param_type);
-  // Default to yes
+  /* Default to yes */
   cctk_strong_param_check =
     cctk_strong_param_check_ptr && *cctk_strong_param_check_ptr;
 
   highlight_warning_messages_ptr =
     CCTK_ParameterGet ("highlight_warning_messages", "Cactus", &param_type);
-  // Default to no
+  /* Default to no */
   highlight_warning_messages =
     ! highlight_warning_messages_ptr || *highlight_warning_messages_ptr;
 
@@ -1130,7 +1130,7 @@ void CCTKi_FinaliseParamWarn (void)
   {
     cctk_strong_param_check_ptr =
       CCTK_ParameterGet ("cctk_strong_param_check", "Cactus", &param_type);
-    // Default to yes
+    /* Default to yes */
     cctk_strong_param_check =
       cctk_strong_param_check_ptr && *cctk_strong_param_check_ptr;
 
