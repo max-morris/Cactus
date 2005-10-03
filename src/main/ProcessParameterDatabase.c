@@ -8,8 +8,11 @@
    @version   $Id$
  @@*/
 
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include "cctk_Flesh.h"
 #include "cctk_Parameter.h"
@@ -20,6 +23,15 @@
 static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_ProcessParameterDatabase_c);
+
+/********************************************************************
+ *********************  Macro Definitions  **************************
+ ********************************************************************/
+
+/* some systems (eg. Windows NT) don't define this macro */
+#ifndef S_ISDIR
+#define S_ISDIR(mode)   (((mode) & S_IFMT) == S_IFDIR)
+#endif
 
 /********************************************************************
  ********************* Other Routine Prototypes *********************
@@ -62,6 +74,7 @@ int CCTKi_ProcessParameterDatabase (tFleshConfig *ConfigData)
   int parse_errors;
   int major, minor;
   FILE *parameter_file;
+  struct stat statbuf;
 
 
   CCTKi_SetParameterSetMask (PARAMETER_RECOVERY_PRE);
@@ -70,11 +83,66 @@ int CCTKi_ProcessParameterDatabase (tFleshConfig *ConfigData)
   {
     parameter_file = stdin;
   }
+  else if (!stat(ConfigData->parameter_file_name, &statbuf))
+  {
+    if(S_ISDIR(statbuf.st_mode))
+    {
+      parameter_file = NULL;
+      CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                  "Cannot open parameter file '%s': it is a directory", 
+                  ConfigData->parameter_file_name);
+    }
+    else
+    {
+      parameter_file = fopen (ConfigData->parameter_file_name, "r");
+    }
+  }
   else
   {
-    parameter_file = fopen (ConfigData->parameter_file_name, "r");
-  }
+    /* Stat failed */
+    parameter_file = NULL;
 
+    switch(errno)
+    {
+      case ENOENT:
+        CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                    "Cannot open parameter file '%s': file doesn't exist", 
+                    ConfigData->parameter_file_name);
+        break;
+      case ENOTDIR:
+        CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                    "Cannot open parameter file '%s': the path is invalid", 
+                    ConfigData->parameter_file_name);
+        break;
+#ifdef ELOOP
+      case ELOOP:
+        CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                    "Cannot open parameter file '%s': too many symbolic links", 
+                    ConfigData->parameter_file_name);
+        break;
+#endif /* ELOOP */
+      case EACCES:
+        CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                    "Cannot open parameter file '%s': permission denied",
+                    ConfigData->parameter_file_name);
+        break;
+      case ENAMETOOLONG:
+        CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                    "Cannot open parameter file '%s': filename too long",
+                    ConfigData->parameter_file_name);
+        break;
+      case ENOMEM:
+        CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                    "Cannot open parameter file '%s': out of system memory",
+                    ConfigData->parameter_file_name);
+        break;
+      default:
+        CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                    "Cannot open parameter file '%s'",
+                    ConfigData->parameter_file_name);
+    }
+  }
+  
   if (parameter_file == NULL)
   {
     CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
