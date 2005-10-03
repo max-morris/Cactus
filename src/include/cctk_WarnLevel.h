@@ -78,17 +78,17 @@ int CCTK_InfoCallbackRegister(void *data,
 #endif  /* CCODE */
 
 /* suggested values for warning levels (courtesy of Steve, PR#1742) */
-#define CCTK_WARN_ABORT    0	/* abort the Cactus run */
-#define CCTK_WARN_ALERT    1	/* the results of this run will be wrong, */
+#define CCTK_WARN_ABORT    0    /* abort the Cactus run */
+#define CCTK_WARN_ALERT    1    /* the results of this run will be wrong, */
                                 /* and this will surprise the user, */
-				/* but we can still continue the run */
-#define CCTK_WARN_COMPLAIN 2	/* the user should know about this, */
+                                /* but we can still continue the run */
+#define CCTK_WARN_COMPLAIN 2    /* the user should know about this, */
                                 /* but the problem is not terribly */
                                 /* surprising */
-#define CCTK_WARN_PICKY    3	/* this is for small problems that can */
-				/* probably be ignored, but that careful */
-				/* people may want to know about */
-#define CCTK_WARN_DEBUG    4	/* these messages are probably useful */
-				/* only for debugging purposes */
+#define CCTK_WARN_PICKY    3    /* this is for small problems that can */
+                                /* probably be ignored, but that careful */
+                                /* people may want to know about */
+#define CCTK_WARN_DEBUG    4    /* these messages are probably useful */
+                                /* only for debugging purposes */
 
-#endif	/* ! _CCTK_WARNLEVEL_H_ */
+#endif  /* ! _CCTK_WARNLEVEL_H_ */
