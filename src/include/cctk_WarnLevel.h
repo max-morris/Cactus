@@ -47,11 +47,35 @@ __attribute__ ((format (printf, 2, 3)))
 #endif
 ;
 
+/* prototypes for warn/info callback routines */
+
+typedef void (*cctk_warnfunc)(int level,
+                              int line,
+                              const char *file, 
+                              const char *thorn,
+                              const char *message,
+                              void *data);
+                            
+typedef void (*cctk_infofunc)(const char *thorn,
+                              const char *message,
+                              void *data);                            
+
+/* prototypes for warn/info registration routines */
+int CCTK_WarnCallbackRegister(int minlevel,
+                              int maxlevel,
+                              void *data,
+                              cctk_warnfunc callback);
+                              
+
+int CCTK_InfoCallbackRegister(void *data, 
+                              cctk_infofunc callback);
+                              
+
 #ifdef __cplusplus 
 }
 #endif
 
-#endif	/* CCODE */
+#endif  /* CCODE */
 
 /* suggested values for warning levels (courtesy of Steve, PR#1742) */
 #define CCTK_WARN_ABORT    0	/* abort the Cactus run */

@@ -66,11 +66,45 @@ void CCTK_FCALL CCTK_FNAME (CCTK_Warn)
                             THREE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_ParamWarn)
                            (TWO_FORTSTRING_ARG);
-int CCTK_FCALL CCTK_FNAME (CCTK_MessageFormat)
+int  CCTK_FCALL CCTK_FNAME (CCTK_MessageFormat)
                           (ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTKi_NotYetImplemented)
                            (ONE_FORTSTRING_ARG);
 
+/********************************************************************
+ ********************    Internal Typedefs   ************************
+ ********************************************************************/
+/* structure holding a callback function pointer together with other 
+ * information to warn/info*/
+
+typedef struct warncallback
+{
+  struct warncallback *next;
+  cctk_warnfunc function;
+  void *data;
+  int minlevel;
+  int maxlevel;
+} t_warncallback;
+
+typedef struct infocallback
+{
+  struct infocallback *next;
+  cctk_infofunc function;
+  void *data;
+} t_infocallback;
+
+
+/********************************************************************
+ ********************    Internal Functions  ************************
+ ********************************************************************/
+ 
+static void CCTKi_WarnCallbacksCall(int level,
+                                    int line,
+                                    const char *file,
+                                    const char *thorn,
+                                    const char *message);
+
+static void CCTKi_InfoCallbacksCall(const char *thorn, const char *message);
 
 /********************************************************************
  *********************    Static Data   *****************************
@@ -100,6 +134,10 @@ static int error_level = 0;
 /* Store a list of format strings */
 static int n_formats = 0;
 static pKeyedData *formatlist = NULL;
+
+/* Store registered warn and info methods */
+static t_warncallback *warncallbacks = NULL;
+static t_infocallback *infocallbacks = NULL;
 
 
 /*@@
@@ -179,11 +217,44 @@ void CCTK_FCALL CCTK_FNAME (CCTK_Info)
 int CCTK_VInfo (const char *thorn, const char *format, ...)
 {
   va_list ap;
-
+  int retval = -1;
   static int info_format_decoded = 0;   /* are the following two flags valid? */
   /* Boolean flags decoded from  cactus::info_format */
   static int info_format_numeric = 0;         /* print a numeric timestamp? */
   static int info_format_human_readable = 0;  /* print a human-readable timestamp? */
+
+/* necessary for wrapping up the final message */
+  int msg_size;
+  char *message = NULL;
+
+/* Start generating message only if the infocallback list is not NULL */
+  if(infocallbacks)
+  { 
+    va_start(ap,format);
+
+/* one way to get the final string size */
+    msg_size = Util_vsnprintf(NULL, 0, format, ap);
+
+/* Empty string is ok */
+    if(msg_size >= 0)
+    {
+      message = (char *)malloc(msg_size+1);
+    }
+    
+/* Try to print in the allocated space. */
+    if(message)
+    {
+      va_start(ap,format);
+      Util_vsnprintf(message,msg_size+1,format,ap);
+      va_end(ap);
+    } 
+
+/* call the callback function */
+    CCTKi_InfoCallbacksCall(thorn,message);
+
+/* free the memory allocated for temp messsage */
+    free (message);
+  }
 
   /*
    * if we haven't already decoded  cactus::info_format  into the
@@ -394,6 +465,39 @@ int CCTK_VWarn (int level,
   int param_type;
   int myproc;
   va_list ap, aq;
+  int retval = -1;
+
+/* Necessary for wrapping up the final message */
+
+  int msg_size;
+  char *message = NULL;
+
+/* Start generating message only if the warbcallback list is not NULL */
+  if(warncallbacks)
+  {
+    va_start(ap,format);
+    msg_size = Util_vsnprintf(NULL, 0, format, ap);
+
+/* Empty string is ok */
+    if(msg_size >= 0)
+    {
+      message = (char *)malloc(msg_size+1);
+    }
+    
+/* Try to print in the allocated space. */
+    if(message)
+    {
+      va_start(ap,format);
+      Util_vsnprintf(message,msg_size+1,format,ap);
+      va_end(ap);
+    } 
+
+/* call the callback function */
+    CCTKi_WarnCallbacksCall(level,line,file,thorn,message);
+
+/* free the memory allocated for temp messsage */
+    free (message);
+  }  
 
   if (level <= warning_level || level <= logging_level)
   {
@@ -657,6 +761,121 @@ int CCTK_VParamWarn (const char *thorn,
   param_errors++;
 
   return (0);
+}
+
+/*@@
+   @routine    CCTK_WarnCallbackRegister
+   @date       05/17/2005
+   @author     Jian Tao
+   @desc
+            Register warn callback function
+   @enddesc
+   @endvar
+   @var     minlevel
+   @vdesc   minimum warning level
+   @vtype   int 
+   @vio     in
+   @endvar
+   @var     maxlevel
+   @vdesc   maximum warning level
+   @vtype   int
+   @vio     in
+   @endvar
+   @var     data
+   @vdesc   
+   @vtype   int*
+   @vio     in
+   @endvar
+   @var     function
+   @vdesc   Callback function (see cctk_WarnLevel.h)
+   @vtype   cctk_warnfunc
+   @vio     in
+   @endvar
+@@*/
+
+int CCTK_WarnCallbackRegister(int minlevel,
+                              int maxlevel,
+                              void *data,
+                              cctk_warnfunc callback)
+
+{
+  int retval;
+  t_warncallback *newcallback;
+   
+  newcallback = (t_warncallback *)malloc(sizeof(t_warncallback));
+
+/* Create a one way chain for all registered callbacks */
+  if(newcallback) 
+  {
+    newcallback->next = warncallbacks;
+    warncallbacks = newcallback;
+    newcallback->function = callback;
+    newcallback->data = data;
+    newcallback->minlevel = minlevel;
+    newcallback->maxlevel = maxlevel;
+    retval = 0;                          
+  }
+  else
+  {
+    retval = -1;
+  }
+  return retval;
+}
+
+
+/*@@
+   @routine    CCTK_InfoCallbackRegister
+   @date       05/17/2005
+   @author     Jian Tao
+   @desc
+            Register info callback function
+   @enddesc
+   @endvar
+   @var     minlevel
+   @vdesc   minimum warning level
+   @vtype   int
+   @vio     in
+   @endvar
+   @var     maxlevel
+   @vdesc   maximum warning level
+   @vtype   int
+   @vio     in
+   @endvar
+   @var     data
+   @vdesc
+   @vtype   int*
+   @vio     in
+   @endvar
+   @var     function
+   @vdesc   Callback function (see cctk_WarnLevel.h)
+   @vtype   cctk_infofunc
+   @vio     in
+   @endvar
+@@*/
+
+int CCTK_InfoCallbackRegister(void *data, cctk_infofunc callback)
+
+{
+  int retval;
+  t_infocallback *newcallback;
+
+  newcallback = (t_infocallback *)malloc(sizeof(t_infocallback));
+
+/* Create a one way chain for all registered callbacks */
+  if(newcallback) 
+  {
+    newcallback->next = infocallbacks;
+    infocallbacks = newcallback;
+    newcallback->function = callback;
+    newcallback->data = data;
+    retval = 0;
+  }
+  
+  else
+  {
+    retval = -1;
+  }
+  return retval;
 }
 
 
@@ -1043,4 +1262,100 @@ void CCTK_FCALL CCTK_FNAME (CCTK_VInfo)
   }
 
 }
+
 #endif
+
+/*@@
+   @routine    CCTKi_WarnCallbacksCall
+   @date       05/17/2005
+   @author     Jian Tao
+   @desc
+            Call callback functions
+   @enddesc
+   @var     level
+   @vdesc   Warning level
+   @vtype   int
+   @vio     in
+   @endvar
+   @var     line
+   @vdesc   Line number of warning in originating file
+   @vtype   int
+   @vio     in
+   @endvar
+   @var     file
+   @vdesc   Name of originating file
+   @vtype   const char *
+   @vio     in
+   @endvar
+   @var     thorn
+   @vdesc   Name of originating thorn
+   @vtype   const char *
+   @vio     in
+   @endvar
+   @var     message
+   @vdesc   warning message to output to stderr
+   @vtype   const char *
+   @vio     in
+   @endvar   
+@@*/
+
+static void CCTKi_WarnCallbacksCall(int level,
+                                    int line,
+                                    const char *file,
+                                    const char *thorn,
+                                    const char *message)
+{
+  t_warncallback *current;
+
+/*
+ * Go through all the registered call back functions 
+ * static variable warncallbacks has already been checked to be not empty 
+ */
+
+  for(current=warncallbacks; current; current=current->next)
+  {
+
+/* Check valid level */
+    if(level >= current->minlevel && level <= current->maxlevel)
+    {
+      current->function(level,line,file,thorn,message,current->data);
+    }
+
+  }
+  return;
+}
+
+/*@@
+   @routine    CCTKi_InfoCallbacksCall
+   @date       05/17/2005
+   @author     Jian Tao
+   @desc
+            Call callback functions
+   @enddesc
+   @var     thorn
+   @vdesc   Name of originating thorn
+   @vtype   const char *
+   @vio     in
+   @endvar
+   @var     message
+   @vdesc   warning message to output to stderr
+   @vtype   const char *
+   @vio     in
+   @endvar   
+@@*/
+
+static void CCTKi_InfoCallbacksCall(const char *thorn, const char *message)
+{
+  t_infocallback *current;
+
+/*
+ * Go through all the registered call back functions 
+ * static variable infocallbacks has already been checked to be not empty 
+ */
+
+  for(current=infocallbacks; current; current=current->next)
+  { 
+    current->function(thorn,message,current->data);
+  }
+  return;
+}
