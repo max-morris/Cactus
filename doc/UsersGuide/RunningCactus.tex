@@ -645,11 +645,16 @@ by the options
         depending on the installation.
   \end{Lentry}
 
-If {\tt MPICH\_DEVICE} is chosen to be {\tt globus},
+If {\tt MPICH\_DEVICE} is chosen to be {\tt globus}
 (\url{http://www.globus.org}), an additional variable must be set
   \begin{Lentry}
-  \item[{\tt GLOBUS\_LIB\_DIR}] * directory in which Globus libraries are installed.
+  \item[{\tt GLOBUS\_LOCATION}] * directory in which Globus is installed.
   \end{Lentry}
+The Globus flavor may be chosen optionally
+  \begin{Lentry}
+  \item[{\tt GLOBUS\_FLAVOR}] * Globus flavor to build Cactus with
+  \end{Lentry}
+If it is not set, the first Globus flavor found will be used.
 
 If {\tt MPICH\_DEVICE} is chosen to be {\tt ch\_gm},
 (\url{http://www.myri.com}), an additional variable must be set
