@@ -24,7 +24,7 @@ sub CreateConfigurationDatabase
 {
   my($config_dir, %thorns) = @_;
   my(%cfg) = ();
-  my($thorn, $required, @missing, @foundlist, $founderrlist, $filename, %thorncap, $foundcap, $temp,$cap,$message,$hint);
+  my($thorn, $required, @missing, @foundlist, $founderrlist, $filename, %thorncap, $foundcap, $temp,$cap,$message,$hint, %thorn_dependencies);
 
   # Loop through each thorn's configuration file.
   foreach $thorn (sort keys %thorns)
@@ -115,7 +115,8 @@ sub CreateConfigurationDatabase
 # create a hash with thorn-> used thorns (no prefix)
   foreach $thorn (sort keys %thorns)
   {
-    $thorn_dependencies{uc($thorn)}=$cfg{"\U$thorn\E USES THORNS"};
+    $thorn_dependencies{uc($thorn)}=$cfg{"\U$thorn\E USES THORNS"}; 
+    $thorn_dependencies{uc($thorn)} =~ s/\b$thorn\b//i;
   }
 
   $message = &find_dep_cycles(%thorn_dependencies);
@@ -209,9 +210,7 @@ sub ParseConfigurationCCL
     }
     elsif($line =~ m/^\s*REQUIRES\s*(.*)/i)
     {
-      my $temp = $1;
-      $temp =~ s/\b$thorn\b//i;
-      $cfg->{"\U$thorn\E REQUIRES"} .= "$temp ";
+      $cfg->{"\U$thorn\E REQUIRES"} .= "$1 ";
     }
     elsif($line =~ m/^\s*OPTIONAL\s*/i)
     {
