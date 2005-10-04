@@ -63,9 +63,9 @@ while (<STDIN>)
     {
       # reference to a module in this thorn?
       my $dirhdl;
-      if( opendir( $dirhdl, "$srcdir" ) )
+      if( opendir( DIRHDL, "$srcdir" ) )
       {
-        while( defined( my $filename = readdir( $dirhdl ) ) )
+        while( defined( my $filename = readdir( DIRHDL ) ) )
         {
           loop: foreach my $suffix (@suffixes)
           {
@@ -77,7 +77,7 @@ while (<STDIN>)
             }
           }
         }
-        closedir $dirhdl;
+        closedir DIRHDL;
       }
     }
     if (! $found)
@@ -88,10 +88,9 @@ while (<STDIN>)
         # note: we could also use the SUBDIRS from the make.code.defn here
         foreach my $subdir (".", "include")
         {
-          my $dirhdl;
-          if( opendir( $dirhdl, "$dir/$subdir" ) )
+          if( opendir( DIRHDL, "$dir/$subdir" ) )
           {
-            while( defined( my $filename = readdir( $dirhdl ) ) )
+            while( defined( my $filename = readdir( DIRHDL ) ) )
             {
               foreach my $suffix (@suffixes)
               {
@@ -103,7 +102,7 @@ while (<STDIN>)
                 }
               }
             }
-            closedir $dirhdl;
+            closedir DIRHDL;
           }
         }
       }
