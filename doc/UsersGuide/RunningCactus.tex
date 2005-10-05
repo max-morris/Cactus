@@ -357,6 +357,21 @@ There is a plethora of available options.
 
 \begin{itemize}
 
+\item {Cross Compiling}
+
+If you are compiling on an architecture other than the one you are
+producing an executable for, you will need to pass the
+
+\begin{Lentry}
+
+\item [{\tt HOST\_MACHINE=x-x-x}]
+
+\end{Lentry}
+
+option, where x-x-x is the canonical name of the architecture you are
+compiling for, such as {\tt sx6-nec-superux};  the format is {\tt
+  processor-vendor-OS}.
+
 \item {Compiled Thorns}
 
 These specify the chosen set of thorns for compilation. If the thorn choice is not provided
@@ -1213,10 +1228,10 @@ This is similar to {\tt -W}, but for fatal errors: Cactus treats all
 warnings with level $\le$ {\tt <level>} as fatal errors, and aborts
 the Cactus run immediately (after printing the warning message%%%
 \footnote{%%%
-	 Cactus imposes the constraints that
-	 $\hbox{the {\tt -W} level} \ge \hbox{the {\tt -E} level} \ge 0$,
-	 so any fatal-error message will always be printed (first).
-	 }%%%
+         Cactus imposes the constraints that
+         $\hbox{the {\tt -W} level} \ge \hbox{the {\tt -E} level} \ge 0$,
+         so any fatal-error message will always be printed (first).
+         }%%%
 ).  The default value is zero, \ie{} only level~0 warnings
 will abort the Cactus run.
 \item [{\tt -r[o|e|oe|eo]} or {\tt -redirect=[o|e|oe|eo]}]
@@ -1442,8 +1457,8 @@ are listed, in the order that they will be executed. For example
 
 \item [Thorn banners]
         Usually a thorn registers a short piece of text as a \emph{banner}.
-	This banner of each thorn is displayed in the standard output when
-	the thorn is initialised.
+        This banner of each thorn is displayed in the standard output when
+        the thorn is initialised.
 
 \end{Lentry}
 
