@@ -312,14 +312,16 @@ else
 fi
 
 # Find the X libraries in case people need them
+# Commented out as should now be able able to use configure.ccl scripts
+# to do this on an individual basis.
 
-AC_PATH_X
+dnl AC_PATH_X
 
-AC_SUBST(X_LIB_DIR)
-AC_SUBST(X_INC_DIR)
+dnl AC_SUBST(X_LIB_DIR)
+dnl AC_SUBST(X_INC_DIR)
 
-X_LIB_DIR="$x_libraries"
-X_INC_DIR="$x_includes"
+dnl X_LIB_DIR="$x_libraries"
+dnl X_INC_DIR="$x_includes"
 
 # Various flags
 
