@@ -1390,10 +1390,10 @@ The options define various characteristics of the schedule item.
 \item[\texttt{BEFORE} or \texttt{AFTER}]
 These specify either
 \begin{itemize}
-\item	a function or group before or after which this item will be
-	scheduled, or
-\item	a list of functions and/or groups; this item will be scheduled
-	(once) before any of them or after all of them respectively.
+\item   a function or group before or after which this item will be
+        scheduled, or
+\item   a list of functions and/or groups; this item will be scheduled
+        (once) before any of them or after all of them respectively.
 \end{itemize}
 Note that a single schedule item may have multiple \texttt{BEFORE}
 and/or \texttt{AFTER} options; the scheduler will honor all of these
@@ -3146,12 +3146,12 @@ Along with the warning message, an integer is given to indicate the
 severity of the warning.  Only warnings with severity levels less
 than or equal to the global Cactus warning level threshold%%%
 \footnote{%%%
-	 As discussed in section~\ref{sec:command_line_options}
-	 of this manual, the Cactus warning level threshold is
-	 set with the \texttt{-W} or \texttt{-warning-level}
-	 command-line option when running Cactus; see
-	 section~\ref{sec:command_line_options}.
-	 }%%%
+         As discussed in section~\ref{sec:command_line_options}
+         of this manual, the Cactus warning level threshold is
+         set with the \texttt{-W} or \texttt{-warning-level}
+         command-line option when running Cactus; see
+         section~\ref{sec:command_line_options}.
+         }%%%
 {} will be printed.  A level~0 warning indicates the highest severity
 (and is guaranteed to abort the Cactus run), while larger numbers
 indicate less severe warnings.  The global Cactus warning level threshold
@@ -3196,16 +3196,16 @@ Note that \texttt{CCTK\_WARN} is just a macro which expands to a call
 to an internal function.  The macro automatically includes the thorn name
 and the source code file name and line number in the message.%%%
 \footnote{%%%
-	 In calling \texttt{CCTK\_VWarn()} you need to
-	 provide this information yourself.  Cactus
-	 provides the macro \texttt{CCTK\_THORNSTRING}
-	 which is the character-string name of the
-	 current thorn.  In C, you can get the source
-	 file name and line number from the predefined
-	 preprocessor macros \texttt{\_\_FILE\_\_} and
-	 \texttt{\_\_LINE\_\_} respectively.  In Fortran
-	 you're out of luck. :(
-	 }%%%
+         In calling \texttt{CCTK\_VWarn()} you need to
+         provide this information yourself.  Cactus
+         provides the macro \texttt{CCTK\_THORNSTRING}
+         which is the character-string name of the
+         current thorn.  In C, you can get the source
+         file name and line number from the predefined
+         preprocessor macros \texttt{\_\_FILE\_\_} and
+         \texttt{\_\_LINE\_\_} respectively.  In Fortran
+         you're out of luck. :(
+         }%%%
 {}  (For this reason it is important for Fortran code that capital
 letters are always used in order to expand the macro.)
 
@@ -3249,11 +3249,48 @@ In Fortran 90, you can also do:
   call CCTK_WARN (CCTK_WARN_ALERT, message)
 \end{verbatim}
 
-The Flesh will be implementing standard error return codes
-which can be used by the thorns, although this is not
-yet ready. In general, thorns should attempt to handle errors
-without terminating, and warning messages should be liberally
-used.
+Besides the default methods to handle warning and information
+messages, the Flesh also implements a callback scheme to let thorn
+writers get information and warning messages as they are produced. \footnote{These
+functions can, for the moment, only be used from C.}
+
+For warning messages, a function with the following prototype
+\begin{verbatim}
+void my_warnfunc(int level,
+                 int line,
+                 const char *file,
+                 const char *thorn,
+                 const char *message,
+                 void *data);
+\end{verbatim}
+should be implemented and then registered with 
+\begin{verbatim}
+CCTK_WarnCallbackRegister(int minlevel,
+                          int maxlevel,
+                          void *data,
+                          cctk_warnfunc my_warnfunc);
+\end{verbatim}
+
+The data pointer can be used to pass arbitrary information to the
+registered function, e.g. a file descriptor or a format string.
+
+Multiple functions can be registered as above; when
+\texttt{CCTK\_VWarn()} is called, all the registered functions will be
+called if the warning is within the minimum and maximum levels
+indicated.
+
+The basic procedure is exactly the same for information messages.
+
+A function registered for information messages will look like
+\begin{verbatim}
+void my_infofunc(const char *thorn,
+                 const char *message,
+                 void *data);
+\end{verbatim}
+while the registration function looks like 
+\begin{verbatim}
+CCTK_InfoCallbackRegister(void *data, cctk_infofunc my_infofunc);
+\end{verbatim}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -4115,9 +4152,9 @@ work. These are
     CCTK\_FPOINTER}, or an array or pointer type \texttt{CCTK\_INT ARRAY,
     CCTK\_REAL ARRAY, \texttt{CCTK\_POINTER ARRAY}}.%%%
 \footnote{%%%
-	 Unfortunately, neither \texttt{CCTK\_FPOINTER ARRAY}
-	 nor \texttt{CCTK\_STRING ARRAY} will work.
-	 }%%%
+         Unfortunately, neither \texttt{CCTK\_FPOINTER ARRAY}
+         nor \texttt{CCTK\_STRING ARRAY} will work.
+         }%%%
   {}  The scalar types are assumed to be not
   modifiable. Any changes made to a scalar argument by a providing
   function may be silently lost, or may not; it is dependent on the
