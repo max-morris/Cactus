@@ -380,6 +380,10 @@ from Fortran.
 \item[\code{CCTK\_INFO}] [\pageref{CCTK-INFO}]
   Macro to print a single string as an information message to screen
 
+\item[\code{CCTK\_InfoCallbackRegister}] [\pageref{CCTK-INFOCallbackRegister}]
+  Register one or more routines for dealing with information messages 
+  in addition to printing them to screen
+
 \item[\code{CCTK\_InterpGridArrays}] [\pageref{CCTK-InterpGridArrays}]
   Performs an interpolation on a list of CCTK grid arrays,
   using a chosen external local interpolation operator
@@ -746,6 +750,10 @@ from Fortran.
 \item[\code{CCTK\_WARN}] [\pageref{CCTK-WARN}]
   Macro to print a single string as a warning message to standard error and
   possibly stop the code
+
+\item[\code{CCTK\_WarnCallbackRegister}] [\pageref{CCTK-WARNCallbackRegister}]
+  Register one or more routines for dealing with warning messages in addition 
+  to printing them to standard error
 
 \end{Lentry}
 
@@ -4489,6 +4497,113 @@ character*200 message
 write(message, '(A32, G12.7, A5, I8)')
 &     'Your info message, including ', myreal, ' and ', myint
 call CCTK_INFO(message)
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
+
+\begin{FunctionDescription}{CCTK\_InfoCallbackRegister}
+\label{CCTK-INFOCallbackRegister}
+Register one or more routines for dealing with information messages in 
+addition to printing them to screen
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+#include "cctk_WarnLevel.h"
+
+CCTK_InfoCallbackRegister(void *data, cctk_infofunc callback);
+
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{data}
+The void pointer holding extra information about the registered call back
+routine
+\end{Parameter}
+
+\begin{Parameter}{callback}
+The function pointer pointing to the call back function dealing with
+information messages. The definition of the function pointer is:
+\begin{verbatim}
+
+typedef void (*cctk_infofunc)(const char *thorn,
+                              const char *message,
+                              void *data);
+
+\end{verbatim}
+
+The argument list is the same as those in \verb|CCTK_Info()|
+(see the discussion of \verb|CCTK_INFO()| page~\pageref{CCTK-INFO})
+except an extra void pointer to hold the information about the call
+back routine.
+
+\end{Parameter}
+
+\end{ParameterSection}
+
+\begin{Discussion}
+ 
+This function can be used by thorns to register their own routines to
+deal with information messages. The registered function pointers will be
+stored in a pointer chain. When \verb|CCTK_VInfo()| is called, the
+registered routines will be called in the same order as they get
+registered in addition to dumping warning messages to \code{stderr}.
+
+The function can only be called in C.
+
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_VInfo()}
+prints a formatted string with a variable argument list as an info message to
+screen
+\end{SeeAlso}
+
+\begin{SeeAlso}{CCTK\_WarnCallbackRegister}
+Register one or more routines for dealing with warning messages in addition 
+to printing them to standard error
+\end{SeeAlso}
+
+\end{SeeAlsoSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+/*DumpInfo will dump information messages to a file*/
+
+void DumpInfo(const char *thorn,
+              const char *message,
+              void *data)
+{
+  DECLARE_CCTK_PARAMETERS
+  FILE *fp;
+  char *str = (char *)malloc((strlen(thorn)
+                            +strlen(message)
+                            +100)*sizeof(char));
+
+  /*info_dump_file is a string set in the parameter file*/
+
+  if((fp = fopen (info_dump_file, "a"))==0)
+  {
+    fprintf(stderr, "fatal error: can not open the file %s\n",info_dump_file);
+    return;
+  }
+
+  sprintf(str, "\n[INFO]\nThorn->%s\nMsg->%s\n",thorn,message);
+
+  fprintf(fp, "%s", str);
+  free(str);
+  fclose(fp);
+}
+
+...
+
+/*data = NULL; callback = DumpInfo*/
+
+CCTK_InfoCallbackRegister(NULL,DumpInfo);
 \end{verbatim}
 \end{Example}
 \end{ExampleSection}
@@ -9935,6 +10050,135 @@ write(message, '(A32, G12.7, A5, I8)')
 &     'Your warning message, including ', myreal, ' and ', myint
 call CCTK_WARN(CCTK_WARN_ALERT, message)
 \end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
+
+
+\begin{FunctionDescription}{CCTK\_WarnCallbackRegister}
+\label{CCTK-WARNCallbackRegister}
+Register one or more routines for dealing with warning messages in 
+addition to printing them to standard error
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+#include "cctk_WarnLevel.h"
+
+CCTK_WarnCallbackRegister(int minlevel,
+                          int maxlevel,
+                          void *data,
+                          cctk_warnfunc callback);
+
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{minlevel}
+The minimum warning level to use.
+
+You can find a detailed discussion of the Cactus macros for standard 
+warning levels on page~\pageref{CCTK-VInfo}. Both minlevel and maxlevel follow
+that definition.
+
+\end{Parameter}
+
+\begin{Parameter}{maxlevel}
+The maximum warning level to use
+
+\end{Parameter}
+
+\begin{Parameter}{data}
+The void pointer holding extra information about the registered call back
+routine
+\end{Parameter}
+
+\begin{Parameter}{callback}
+The function pointer pointing to the call back function dealing with 
+warning messages. The definition of the function pointer is:
+\begin{verbatim}
+
+typedef void (*cctk_warnfunc)(int level,
+                              int line,
+                              const char *file,
+                              const char *thorn,
+                              const char *message,
+                              void *data);
+
+\end{verbatim}
+
+The argument list is the same as those in \verb|CCTK_Warn()|
+(see the footnote of \verb|CCTK_WARN()| page~\pageref{CCTK-WARN}) 
+except an extra void pointer to hold the information about the call 
+back routine.
+ 
+\end{Parameter}
+
+\end{ParameterSection}
+
+\begin{Discussion}
+This function can be used by thorns to register their own routines to 
+deal with warning messages. The registered function pointers will be 
+stored in a pointer chain. When \verb|CCTK_VWarn()| is called, the 
+registered routines will be called in the same order as they get 
+registered in addition to dumping warning messages to \code{stderr}.
+
+The function can only be called in C.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_InfoCallbackRegister()}
+Register one or more routines for dealing with information messages in 
+addition to printing them to screen
+\end{SeeAlso}
+
+\begin{SeeAlso}{CCTK\_VWarn()}
+Prints a formatted string with a variable argument list as a warning message 
+to standard error and possibly stops the code
+\end{SeeAlso}
+
+\end{SeeAlsoSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+/*DumpWarn will dump warning messages to a file*/
+
+void DumpWarn(int level,
+              int line,
+              const char *file,
+              const char *thorn,
+              const char *message,
+              void *data)
+{
+  DECLARE_CCTK_PARAMETERS
+  FILE *fp;
+  char *str = (char *)malloc((strlen(file)+strlen(thorn)+strlen(message)+100);
+
+  /*warn_dump_file is a string set in the parameter file*/
+
+  if((fp = fopen (warn_dump_file, "a"))==0)
+  {
+    fprintf(stderr, "fatal error: can not open the file %s\n",warn_dump_file);
+    return;
+  }
+  sprintf(str, "\n[WARN]\nLevel->%d\nLine->%d\nFile->%s\nThorn->%s\nMsg->%s\n",
+               level,line,file,thorn,message);
+  fprintf(fp, "%s", str);
+  free(str);
+  fclose(fp);
+}
+
+...
+
+/*minlevel = 0; maxlevel = 5; data = NULL; callback = DumpWarn*/
+
+CCTK_WarnCallbackRegister(0,5,NULL,DumpWarn);
+
+\end{verbatim}
+
 \end{Example}
 \end{ExampleSection}
 \end{FunctionDescription}
