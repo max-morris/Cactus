@@ -341,6 +341,7 @@ a copy of a specified C-style null-terminated character string
 
 \chapter{Full Descriptions of Miscellaneous Functions}
 
+%Entering a function descrpition for Util\_sprintf
 \begin{FunctionDescription}{Util\_sprintf}
 \label{Util-snprintf}
 Safely format data into a caller-supplied buffer.
@@ -469,6 +470,7 @@ if (len >= N_BUFFER)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_StrCmpi
 \begin{FunctionDescription}{Util\_StrCmpi}
 \label{Util-StrCmpi}
 Compare two strings, ignoring upper/lower case.
@@ -605,6 +607,7 @@ else
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_Strdup
 \begin{FunctionDescription}{Util\_Strdup}
 \label{Util-Strdup}
 ``Duplicate'' a string, i.e.\ copy it to a newly--\code{malloc}ed buffer.
@@ -652,9 +655,9 @@ to copy a string to a buffer.
 {\em This does not check that the buffer is big enough to hold the string,
 and is thus very dangerous.  Use \code{Util\_Strlcpy()} instead!}
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_Strlcpy()}
+\begin{SeeAlso2} {Util\_Strlcpy()} {Util-Strlcpy}
 Safely copy a string.
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -698,6 +701,7 @@ return 42;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_Strlcat
 \begin{FunctionDescription}{Util\_Strlcat}
 \label{Util-Strlcat}
 Concatenate strings safely.
@@ -769,9 +773,9 @@ to concatenate two strings.
 {\em This does not check that the buffer is big enough to hold the result,
 and is thus very dangerous.  Use \code{Util\_Strlcat()} instead!}
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_Strlcpy()}
+\begin{SeeAlso2} {Util\_Strlcpy()} {Util-Strlcpy}
 Safely copy a string.
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ExampleSection}
@@ -830,6 +834,7 @@ return OK;                                    /*** NORMAL RETURN ***/
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_Strlcpy
 \begin{FunctionDescription}{Util\_Strlcpy}
 \label{Util-Strlcpy}
 Copies a string safely.
@@ -902,12 +907,12 @@ to copy a string to a buffer.
 {\em This does not check that the buffer is big enough to hold the string,
 and is thus very dangerous.  Use \code{Util\_Strlcpy()} instead!}
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_Strdup()}
+\begin{SeeAlso2} {Util\_Strdup()} {Util-Strdup}
 ``Duplicate'' a string, i.e.\ copy it to a newly-\code{malloc}ed buffer.
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_Strlcat()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_Strlcat()} {Util-Strlcat}
 Safely concatenates two strings.
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ExampleSection}
@@ -966,6 +971,7 @@ return OK;                                    /*** NORMAL RETURN ***/
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_StrSep
 \begin{FunctionDescription}{Util\_StrSep}
 \label{Util-StrSep}
 Separate off the first token from a string.
@@ -1116,6 +1122,7 @@ return i;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableClone
 \begin{FunctionDescription}{Util\_TableClone}
 \label{Util-TableClone}
 Creates a new table which is a ``clone'' (exact copy) of an existing
@@ -1174,16 +1181,16 @@ tables with identical key/value contents.)
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreate()}
+\begin{SeeAlso2} {Util\_TableCreate()} {Util-TableCreate}
 create a table
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableCreateFromString()} {Util-TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableDestroy()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableDestroy()} {Util-TableDestroy}
 destroy a table
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -1242,6 +1249,7 @@ return 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableCreate
 \begin{FunctionDescription}{Util\_TableCreate}
 \label{Util-TableCreate}
 Creates a new (empty) table
@@ -1305,20 +1313,20 @@ in \code{"util\_Table.h"}:
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_StrCmpi()}
+\begin{SeeAlso2} {Util\_StrCmpi()} {Util-StrCmpi}
 compare two strings, ignoring upper/lower case
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableClone()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableClone()} {Util-TableClone}
 create a new table which is a ``clone'' (exact copy) of an existing
 table
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableCreateFromString()} {Util-TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableDestroy()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableDestroy()} {Util-TableDestroy}
 destroy a table
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -1348,6 +1356,7 @@ int handle2 = Util_TableCreate(UTIL_TABLE_FLAGS_CASE_INSENSITIVE);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableCreateFromString
 \begin{FunctionDescription}{Util\_TableCreateFromString}
 \label{Util-TableCreateFromString}
 Creates a new table (with the case-insensitive flag set) and sets
@@ -1386,22 +1395,22 @@ for a full description of the syntax and semantics of this string
 \end{ParameterSection}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableClone()}
+\begin{SeeAlso2} {Util\_TableClone()} {Util-TableClone}
 Create a new table which is a ``clone'' (exact copy) of an existing
 table
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableCreate()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableCreate()} {Util-TableCreate}
 create a table
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetFromString()} {Util-TableSetFromString}
 sets values in a table based on a string argument
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetInt()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetInt()} {Util-TableSetInt}
 store a \code{CCTK\_INT} value in a table
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetReal()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetReal()} {Util-TableSetReal}
 store a \code{CCTK\_REAL} value in a table
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -1453,6 +1462,7 @@ Util_TableSetIntArray(handle, 4, array, "myarray");
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableDeleteKey
 \begin{FunctionDescription}{Util\_TableDeleteKey}
 \label{Util-TableDeleteKey}
 Deletes a specified key/value entry from a table
@@ -1546,17 +1556,17 @@ Of course, this function invalidates any and all iterators for the table. :)
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableClone()}
+\begin{SeeAlso2} {Util\_TableClone()} {Util-TableClone}
 Create a new table which is a ``clone'' (exact copy) of an existing
 table
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableCreate()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableCreate()} {Util-TableCreate}
 create a table
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableCreateFromString()} {Util-TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -1588,6 +1598,7 @@ Util_TableDestroy(handle);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableGet*
 \begin{FunctionDescription}{Util\_TableGet*}
 \label{Util-TableGet*}
 This is a family of functions, one for each Cactus data type,
@@ -1673,35 +1684,35 @@ If any error code is returned, the user's value buffer
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\begin{SeeAlso2} {Util\_TableCreateFromString()} {Util-TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
-\end{SeeAlso}
+\end{SeeAlso2}
 \begin{SeeAlso}{Util\_TableGet*Array()}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetString()}
+\begin{SeeAlso2} {Util\_TableGetString()} {Util-TableGetString}
 get a character-string value
-\end{SeeAlso}
+\end{SeeAlso2}
 \begin{SeeAlso}{Util\_TableSet*()}
 set a single (1-element array) value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric()}
+\begin{SeeAlso2} {Util\_TableSetGeneric()} {Util-TableSetGeneric}
 set a single (1-element array) value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetGenericArray()} {Util-TableSetGenericArray}
 set an array value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetFromString()} {Util-TableSetFromString}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetString()} {Util-TableSetString}
 set a character-string value
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -1750,6 +1761,7 @@ N = Util_TableGetInt(handle, &x, "empty array");
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableGet*Array
 \begin{FunctionDescription}{Util\_TableGet*Array}
 \label{Util-TableGet*Array}
 This is a family of functions, one for each Cactus data type,
@@ -1837,42 +1849,42 @@ If any error code is returned, the user's value buffer
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\begin{SeeAlso2} {Util\_TableCreateFromString()} {Util-TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
-\end{SeeAlso}
+\end{SeeAlso2}
 \begin{SeeAlso}{Util\_TableGet*()}
 get a single (1-element array) value,
 or more generally the first array element of an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric()}
+\begin{SeeAlso2} {Util\_TableGetGeneric()} {Util-TableGetGeneric}
 get a single (1-element array) value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableGetGenericArray()} {Util-TableGetGenericArray}
 get an array value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableGetString()} {Util-TableGetString}
 get a character-string value
-\end{SeeAlso}
+\end{SeeAlso2}
 \begin{SeeAlso}{Util\_TableSet*()}
 set a single (1-element array) value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric()}
+\begin{SeeAlso2} {Util\_TableSetGeneric()} {Util-TableSetGeneric}
 set a single (1-element array) value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetGenericArray()} {Util-TableSetGenericArray}
 set an array value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetFromString()} {Util-TableSetFromString}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetString()} {Util-TableSetString}
 set a character-string value
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -1919,6 +1931,7 @@ N = Util_TableGetRealArray(handle, N_OUTPUT, output, "blah blah blah");
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableGetGeneric
 \begin{FunctionDescription}{Util\_TableGetGeneric}
 \label{Util-TableGetGeneric}
 Get the single (1-element array) value, or more generally the
@@ -1993,46 +2006,46 @@ If any error code is returned, the user's value buffer
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\begin{SeeAlso2} {Util\_TableCreateFromString()} {Util-TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
-\end{SeeAlso}
+\end{SeeAlso2}
 \begin{SeeAlso}{Util\_TableGet*()}
 get a single (1-element array) value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableGet*Array()}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetString()}
+\begin{SeeAlso2} {Util\_TableGetString()} {Util-TableGetString}
 get a character-string value
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableItQueryValueInfo()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableItQueryValueInfo()} {Util-TableItQueryValueInfo}
 query key present/absent in table, and optionally type and/or number
 of elements, using an iterator
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableQueryValueInfo()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableQueryValueInfo()} {Util-TableQueryValueInfo}
 query key present/absent in table, and optionally type and/or number
 of elements
-\end{SeeAlso}
+\end{SeeAlso2}
 \begin{SeeAlso}{Util\_TableSet*()}
 set a single (1-element array) value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric()}
+\begin{SeeAlso2} {Util\_TableSetGeneric()} {Util-TableSetGeneric}
 set a single (1-element array) value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetGenericArray()} {Util-TableSetGenericArray}
 set an array value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetFromString()} {Util-TableSetFromString}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetString()} {Util-TableSetString}
 set a character-string value
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -2083,6 +2096,7 @@ N = Util_TableGetGeneric(handle, CCTK_VARIABLE_INT, &x, "empty array");
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableGetGenericArray
 \begin{FunctionDescription}{Util\_TableGetGenericArray}
 \label{Util-TableGetGenericArray}
 Get a copy of the value associated with a specified key, and store
@@ -2166,50 +2180,50 @@ If any error code is returned, the user's value buffer
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\begin{SeeAlso2} {Util\_TableCreateFromString()} {Util-TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
-\end{SeeAlso}
+\end{SeeAlso2}
 \begin{SeeAlso}{Util\_TableGet*()}
 get a single (1-element array) value,
 or more generally the first array element of an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric()}
+\begin{SeeAlso2} {Util\_TableGetGeneric()} {Util-TableGetGeneric}
 get a single (1-element array) value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableGetGenericArray()} {Util-TableGetGenericArray}
 get an array value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableGetString()} {Util-TableGetString}
 get a character-string value
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableItQueryValueInfo()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableItQueryValueInfo()} {Util-TableItQueryValueInfo}
 query key present/absent in table, and optionally type and/or number
 of elements, using an iterator
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableQueryValueInfo()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableQueryValueInfo()} {Util-TableQueryValueInfo}
 query key present/absent in table, and optionally type and/or number
 of elements
-\end{SeeAlso}
+\end{SeeAlso2}
 \begin{SeeAlso}{Util\_TableSet*()}
 set a single (1-element array) value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric()}
+\begin{SeeAlso2} {Util\_TableSetGeneric()} {Util-TableSetGeneric}
 set a single (1-element array) value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetGenericArray()} {Util-TableSetGenericArray}
 set an array value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetFromString()} {Util-TableSetFromString}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetString()} {Util-TableSetString}
 set a character-string value
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -2264,6 +2278,7 @@ N = Util_TableGetGenericArray(handle,
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableGetString
 \begin{FunctionDescription}{Util\_TableGetString}
 \label{Util-TableGetString}
 Gets a copy of the character-string value associated with a specified
@@ -2336,10 +2351,10 @@ string length.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\begin{SeeAlso2} {Util\_TableCreateFromString()} {Util-TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
-\end{SeeAlso}
+\end{SeeAlso2}
 \begin{SeeAlso}{Util\_TableGet*()}
 get a single (1-element array) value,
 or more generally the first array element of an array value
@@ -2347,37 +2362,37 @@ or more generally the first array element of an array value
 \begin{SeeAlso}{Util\_TableGet*Array()}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetCharArray()}
+\begin{SeeAlso2} {Util\_TableGetCharArray()} {Util-TableGetCharArray}
 get an array-of-\code{CCTK\_CHAR} value
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableGetGeneric()} {Util-TableGetGeneric}
 get a single (1-element array) value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableGetGenericArray()} {Util-TableGetGenericArray}
 get an array value with generic data type
-\end{SeeAlso}
+\end{SeeAlso2}
 \begin{SeeAlso}{Util\_TableSet*()}
 set a single (1-element array) value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric()}
+\begin{SeeAlso2} {Util\_TableSetGeneric()} {Util-TableSetGeneric}
 set a single (1-element array) value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetGenericArray()} {Util-TableSetGenericArray}
 set an array value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetString()} {Util-TableSetString}
 set a character-string value
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetFromString()} {Util-TableSetFromString}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetCharArray()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetCharArray()} {Util-TableSetCharArray}
 set an array-of-\code{CCTK\_CHAR} value
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -2426,6 +2441,7 @@ Util_TableGetString(handle, N_BUFFER, buffer, "Einstein");
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableItAdvance
 \begin{FunctionDescription}{Util\_TableItAdvance}
 \label{Util-TableItAdvance}
 Advance a table iterator to the next entry in the table
@@ -2533,16 +2549,16 @@ by a change in the table's contents.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableClone()}
+\begin{SeeAlso2} {Util\_TableClone()} {Util-TableClone}
 create a new table which is a ``clone'' (exact copy) of an existing
 table
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableItCreate()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableItCreate()} {Util-TableItCreate}
 create a table iterator
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableItDestroy()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableItDestroy()} {Util-TableItDestroy}
 destroy a table iterator
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -2620,6 +2636,7 @@ return clone_ihandle;                                  /* normal return */
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableItCreate
 \begin{FunctionDescription}{Util\_TableItCreate}
 \label{Util-TableItCreate}
 Create a new table iterator
@@ -2652,9 +2669,9 @@ points at the starting table entry.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItDestroy()}
+\begin{SeeAlso2} {Util\_TableItDestroy()} {Util-TableItDestroy}
 destroy a table iterator
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -2687,6 +2704,7 @@ Util_TableItDestroy(ihandle);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableItDestroy
 \begin{FunctionDescription}{Util\_TableItDestroy}
 \label{Util-TableItDestroy}
 Destroy a table iterator
@@ -2717,9 +2735,9 @@ handle to the table iterator
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItCreate()}
+\begin{SeeAlso2} {Util\_TableItCreate()} {Util-TableItCreate}
 create a table iterator
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -2752,6 +2770,7 @@ Util_TableItDestroy(ihandle);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableItQueryIsNonNull
 \begin{FunctionDescription}{Util\_TableItQueryIsNonNull}
 \label{Util-TableItQueryIsNonNull}
 Query whether a table iterator is {\em not\/} in the ``null-pointer'' state
@@ -2794,9 +2813,9 @@ by a change in the table's contents.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItQueryIsNull()}
+\begin{SeeAlso2} {Util\_TableItQueryIsNull()} {Util-TableItQueryIsNull}
 query whether a table iterator is in the ``null-pointer'' state
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -2826,6 +2845,7 @@ Util_TableItDestroy(ihandle);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableItQueryIsNull
 \begin{FunctionDescription}{Util\_TableItQueryIsNull}
 \label{Util-TableItQueryIsNull}
 Query whether a table iterator is in the ``null-pointer'' state
@@ -2868,10 +2888,10 @@ by a change in the table's contents.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItQueryIsNonNull()}
+\begin{SeeAlso2} {Util\_TableItQueryIsNonNull()} {Util-TableItQueryIsNonNull}
 query whether a table iterator is {\em not\/} in the ``null-pointer'' state,
 i.e.\ whether the iterator points to some table entry
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -2901,6 +2921,7 @@ Util_TableItDestroy(ihandle);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableItQueryKeyValueInfo
 \begin{FunctionDescription}{Util\_TableItQueryKeyValueInfo}
 \label{Util-TableItQueryKeyValueInfo}
 Query the key and the type and number of elements of the value
@@ -2972,10 +2993,10 @@ buffer.  If any other error code is returned, the user's key buffer
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableQueryValueInfo()}
+\begin{SeeAlso2} {Util\_TableQueryValueInfo()} {Util-TableQueryValueInfo}
 query key present/absent in table, and optionally type and/or number
 of elements, but using the key instead of an iterator
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -3060,6 +3081,7 @@ return 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableItQueryTableHandle
 \begin{FunctionDescription}{Util\_TableItQueryTableHandle}
 \label{Util-TableItQueryTableHandle}
 Query what table a table iterator iterates over
@@ -3095,9 +3117,9 @@ invalidated by a change in the table's contents.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItCreate()}
+\begin{SeeAlso2} {Util\_TableItCreate()} {Util-TableItCreate}
 create an iterator (which iterates over a specified table)
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -3109,6 +3131,7 @@ iterator handle is invalid
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableItResetToStart
 \begin{FunctionDescription}{Util\_TableItResetToStart}
 \label{Util-TableItResetToStart}
 Reset a table iterator to point to the starting table entry
@@ -3153,12 +3176,12 @@ invalidated by a change in the table's contents.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItSetToNull()}
+\begin{SeeAlso2} {Util\_TableItSetToNull()} {Util-TableItSetToNull}
 set an iterator to the ``null-pointer'' state
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableItSetToKey()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableItSetToKey()} {Util-TableItSetToKey}
 set an iterator to point to a specified table entry
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -3170,6 +3193,7 @@ iterator handle is invalid
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableItSetToKey
 \begin{FunctionDescription}{Util\_TableItSetToKey}
 \label{Util-TableItSetToKey}
 Set a table iterator to point to a specified table entry
@@ -3210,12 +3234,12 @@ invalidated by a change in the table's contents.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItResetToStart()}
+\begin{SeeAlso2} {Util\_TableItResetToStart()} {Util-TableItResetToStart}
 reset an iterator to point to the starting table entry
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableItSetToNull()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableItSetToNull()} {Util-TableItSetToNull}
 set a table iterator to the "null-pointer" state
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -3233,6 +3257,7 @@ no such key in table
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableItSetToNull
 \begin{FunctionDescription}{Util\_TableItSetToNull}
 \label{Util-TableItSetToNull}
 Set a table iterator to the "null-pointer" state
@@ -3268,12 +3293,12 @@ invalidated by a change in the table's contents.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItResetToStart()}
+\begin{SeeAlso2} {Util\_TableItResetToStart()} {Util-TableItResetToStart}
 reset an iterator to point to the starting table entry
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableItSetToKey()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableItSetToKey()} {Util-TableItSetToKey}
 set an iterator to point to a specified table entry
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -3285,6 +3310,7 @@ iterator handle is invalid
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableQueryFlags
 \begin{FunctionDescription}{Util\_TableQueryFlags}
 Query a table's flags word
 \label{Util-TableQueryFlags}
@@ -3323,18 +3349,18 @@ of flag words.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableClone()}
+\begin{SeeAlso2} {Util\_TableClone()} {Util-TableClone}
 create a new table which is a ``clone'' (exact copy) of an existing
 table
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableCreate()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableCreate()} {Util-TableCreate}
 create a table (flags word specified explicitly)
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableCreateFromString()} {Util-TableCreateFromString}
 convenience routine to create a table (with certain default flags)
 and set key/value entries in it based on a parameter-file--like
 character string
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -3367,6 +3393,7 @@ return (flags & UTIL_TABLE_FLAGS_CASE_INSENSITIVE)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableQueryValueInfo
 \begin{FunctionDescription}{Util\_TableQueryValueInfo}
 \label{Util-TableQueryValueInfo}
 Query whether or not a specified key is in the table, and optionally
@@ -3437,10 +3464,10 @@ unchanged.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableItQueryKeyValueInfo()}
+\begin{SeeAlso2} {Util\_TableItQueryKeyValueInfo()} {Util-TableItQueryKeyValueInfo}
 query key present/absent in table, and optionally type and/or number
 of elements, but using an iterator instead of the key
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -3490,6 +3517,7 @@ assert( N_elements == N_DATA );
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableQueryMaxKeyLength
 \begin{FunctionDescription}{Util\_TableQueryMaxKeyLength}
 \label{Util-TableQueryMaxKeyLength}
 Query the maximum key length in a table
@@ -3682,10 +3710,10 @@ not in the ``null-pointer'' state.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\begin{SeeAlso2} {Util\_TableCreateFromString()} {Util-TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
-\end{SeeAlso}
+\end{SeeAlso2}
 \begin{SeeAlso}{Util\_TableGet*()}
 get a single (1-element array) value,
 or more generally the first array element of an array value
@@ -3693,31 +3721,31 @@ or more generally the first array element of an array value
 \begin{SeeAlso}{Util\_TableGet*Array()}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric()}
+\begin{SeeAlso2} {Util\_TableGetGeneric()} {Util-TableGetGeneric}
 get a single (1-element array) value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableGetGenericArray()} {Util-TableGetGenericArray}
 get an array value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableGetString()} {Util-TableGetString}
 get a character-string value
-\end{SeeAlso}
+\end{SeeAlso2}
 \begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric()}
+\begin{SeeAlso2} {Util\_TableSetGeneric()} {Util-TableSetGeneric}
 set a single (1-element array) value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetGenericArray()} {Util-TableSetGenericArray}
 set an array value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetFromString()} {Util-TableSetFromString}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetString()} {Util-TableSetString}
 set a character-string value
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -3754,6 +3782,7 @@ Util_TableSetComplex16(handle, z, "my complex number");
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableSet*Array
 \begin{FunctionDescription}{Util\_TableSet*Array}
 \label{Util-TableSet*Array}
 This is a family of functions, one for each Cactus data type,
@@ -3841,10 +3870,10 @@ data is still valid whenever that \verb|CCTK_POINTER| is used.)
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\begin{SeeAlso2} {Util\_TableCreateFromString()} {Util-TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
-\end{SeeAlso}
+\end{SeeAlso2}
 \begin{SeeAlso}{Util\_TableGet*()}
 get a single (1-element array) value,
 or more generally the first array element of an array value
@@ -3852,31 +3881,31 @@ or more generally the first array element of an array value
 \begin{SeeAlso}{Util\_TableGet*Array()}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric()}
+\begin{SeeAlso2} {Util\_TableGetGeneric()} {Util-TableGetGeneric}
 get a single (1-element array) value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableGetGenericArray()} {Util-TableGetGenericArray}
 get an array value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableGetString()} {Util-TableGetString}
 get a character-string value
-\end{SeeAlso}
+\end{SeeAlso2}
 \begin{SeeAlso}{Util\_TableSet*()}
 set a single (1-element array) value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric()}
+\begin{SeeAlso2} {Util\_TableSetGeneric()} {Util-TableSetGeneric}
 set a single (1-element array) value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetGenericArray()} {Util-TableSetGenericArray}
 set an array value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetFromString()} {Util-TableSetFromString}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetString()} {Util-TableSetString}
 set a character-string value
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -3912,6 +3941,7 @@ Util_TableSetIntArray(handle, N_DIGITS, pi_digits, "digits of pi");
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableSetFromString
 \begin{FunctionDescription}{Util\_TableSetFromString}
 \label{Util-TableSetFromString}
 Sets values in a table based on a string argument, which is interpreted
@@ -4007,10 +4037,10 @@ find out where the error was detected. :(
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\begin{SeeAlso2} {Util\_TableCreateFromString()} {Util-TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
-\end{SeeAlso}
+\end{SeeAlso2}
 \begin{SeeAlso}{Util\_TableGet*()}
 get a single (1-element array) value,
 or more generally the first array element of an array value
@@ -4018,30 +4048,30 @@ or more generally the first array element of an array value
 \begin{SeeAlso}{Util\_TableGet*Array()}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric()}
+\begin{SeeAlso2} {Util\_TableGetGeneric()} {Util-TableGetGeneric}
 get a single (1-element array) value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableGetGenericArray()} {Util-TableGetGenericArray}
 get an array value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableGetString()} {Util-TableGetString}
 get a character-string value
-\end{SeeAlso}
+\end{SeeAlso2}
 \begin{SeeAlso}{Util\_TableSet*()}
 set a single (1-element array) value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric()}
+\begin{SeeAlso2} {Util\_TableSetGeneric()} {Util-TableSetGeneric}
 set a single (1-element array) value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetGenericArray()} {Util-TableSetGenericArray}
 set an array value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetString()} {Util-TableSetString}
 set a character-string value
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -4096,6 +4126,7 @@ Util_TableSetIntArray(handle, 3, array, "array");
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableSetGeneric
 \begin{FunctionDescription}{Util\_TableSetGeneric}
 \label{Util-TableSetGeneric}
 Set the value associated with a specified key to be a specified
@@ -4162,10 +4193,10 @@ not in the ``null-pointer'' state.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\begin{SeeAlso2} {Util\_TableCreateFromString()} {Util-TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
-\end{SeeAlso}
+\end{SeeAlso2}
 \begin{SeeAlso}{Util\_TableGet*()}
 get a single (1-element array) value,
 or more generally the first array element of an array value
@@ -4173,34 +4204,34 @@ or more generally the first array element of an array value
 \begin{SeeAlso}{Util\_TableGet*Array()}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric()}
+\begin{SeeAlso2} {Util\_TableGetGeneric()} {Util-TableGetGeneric}
 get a single (1-element array) value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableGetGenericArray()} {Util-TableGetGenericArray}
 get an array value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableGetString()} {Util-TableGetString}
 get a character-string value
-\end{SeeAlso}
+\end{SeeAlso2}
 \begin{SeeAlso}{Util\_TableSet*()}
 set a single (1-element array) value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric()}
+\begin{SeeAlso2} {Util\_TableSetGeneric()} {Util-TableSetGeneric}
 set a single (1-element array) value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetGenericArray()} {Util-TableSetGenericArray}
 set an array value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetFromString()} {Util-TableSetFromString}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetString()} {Util-TableSetString}
 set a character-string value
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -4249,6 +4280,7 @@ Util_TableGetReal(handle, &xcopy, "speed of light");
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableSetGenericArray
 \begin{FunctionDescription}{Util\_TableSetGenericArray}
 \label{Util-TableSetGenericArray}
 Set the value associated with a specified key to be a copy of a
@@ -4330,10 +4362,10 @@ data is still valid whenever that \verb|CCTK_POINTER| is used.)
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\begin{SeeAlso2} {Util\_TableCreateFromString()} {Util-TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
-\end{SeeAlso}
+\end{SeeAlso2}
 \begin{SeeAlso}{Util\_TableGet*()}
 get a single (1-element array) value,
 or more generally the first array element of an array value
@@ -4341,31 +4373,31 @@ or more generally the first array element of an array value
 \begin{SeeAlso}{Util\_TableGet*Array()}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric()}
+\begin{SeeAlso2} {Util\_TableGetGeneric()} {Util-TableGetGeneric}
 get a single (1-element array) value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableGetGenericArray()} {Util-TableGetGenericArray}
 get an array value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableGetString()} {Util-TableGetString}
 get a character-string value
-\end{SeeAlso}
+\end{SeeAlso2}
 \begin{SeeAlso}{Util\_TableSet*()}
 set a single (1-element array) value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric()}
+\begin{SeeAlso2} {Util\_TableSetGeneric()} {Util-TableSetGeneric}
 set a single (1-element array) value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetFromString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetFromString()} {Util-TableSetFromString}
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetString()} {Util-TableSetString}
 set a character-string value
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -4422,6 +4454,7 @@ Util_TableGetRealArray(handle, N_XARRAY, xarray2, "my real array");
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function descrpition for Util\_TableSetString
 \begin{FunctionDescription}{Util\_TableSetString}
 \label{Util-TableSetString}
 Sets the value associated with a specified key in a table, to be
@@ -4488,10 +4521,10 @@ not in the ``null-pointer'' state.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{Util\_TableCreateFromString()}
+\begin{SeeAlso2} {Util\_TableCreateFromString()} {Util-TableCreateFromString}
 convenience routine to create a table and set key/value entries
 in it based on a parameter-file--like character string
-\end{SeeAlso}
+\end{SeeAlso2}
 \begin{SeeAlso}{Util\_TableGet*()}
 get a single (1-element array) value,
 or more generally the first array element of an array value
@@ -4499,33 +4532,33 @@ or more generally the first array element of an array value
 \begin{SeeAlso}{Util\_TableGet*Array()}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGeneric()}
+\begin{SeeAlso2} {Util\_TableGetGeneric()} {Util-TableGetGeneric}
 get a single (1-element array) value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetGenericArray()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableGetGenericArray()} {Util-TableGetGenericArray}
 get an array value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableGetString()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableGetString()} {Util-TableGetString}
 get a character-string value
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetCharArray()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetCharArray()} {Util-TableSetCharArray}
 get an array-of-\code{CCTK\_CHAR} value
-\end{SeeAlso}
+\end{SeeAlso2}
 \begin{SeeAlso}{Util\_TableSet*()}
 set a single (1-element array) value
 \end{SeeAlso}
 \begin{SeeAlso}{Util\_TableSet*Array()}
 set an array value
 \end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGeneric()}
+\begin{SeeAlso2} {Util\_TableSetGeneric()} {Util-TableSetGeneric}
 set a single (1-element array) value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetGenericArray()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetGenericArray()} {Util-TableSetGenericArray}
 set an array value with generic data type
-\end{SeeAlso}
-\begin{SeeAlso}{Util\_TableSetCharArray()}
+\end{SeeAlso2}
+\begin{SeeAlso2} {Util\_TableSetCharArray()} {Util-TableSetCharArray}
 set an array-of-\code{CCTK\_CHAR} value
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
