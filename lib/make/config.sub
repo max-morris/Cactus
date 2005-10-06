@@ -2,6 +2,7 @@
 #
 # CCTK_MODIFICATION:  11/5/2001 Added info for sx5-nec.  Tom Goodale
 # CCTK_MODIFICATION:  13/3/2002 Added info for Fujitsu VPP5000. Thomas Radke
+# CCTK_MODIFICATION:  10/6/2005 Added info for Bluegene. Tom Goodale
 #
 #
 # Configuration validation subroutine script.
@@ -1134,6 +1135,10 @@ case $os in
 		os=-superux
 		;;
 	-none)
+		;;
+	-bgl)
+		basic_machine=powerpc-ibm
+                os=-bgl
 		;;
 	*)
 		# Get rid of the `-' at the beginning of $os.
