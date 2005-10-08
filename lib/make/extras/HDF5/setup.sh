@@ -98,14 +98,22 @@ if test  "X$choose_hdf5" = 'Xyes' ; then
   is_windows=$?
 
 
+# check whether we run MacOS or not
+  $PERL -we 'exit (`uname` =~ /^Darwin/)' 
+  is_macos=$?
+
+
+
 # Check whether we have to link with libsz.a
   grep -qe '#define H5_HAVE_LIBSZ 1' ${HDF5_DIR}/include/H5pubconf.h 2> /dev/null
   test_szlib=$?
   if [ $test_szlib -eq 0 ]; then
-    if [ $is_windows -eq 0 ]; then
-      libsz='libsz.a'
-    else
+    if [ $is_windows -ne 0 ]; then
       libsz='szlib.lib'
+    elif [ $is_macos -ne 0 ]; then
+      libsz='libsz.dylib'
+    else
+      libsz='libsz.a'
     fi
 
     if [ -z "$LIBSZ_DIR" -a ! -r /usr/lib/$libsz ]; then
@@ -140,10 +148,12 @@ if test  "X$choose_hdf5" = 'Xyes' ; then
   fi
 
   if [ $test_zlib -eq 0 ]; then
-    if [ $is_windows -eq 0 ]; then
-      libz='libz.a'
-    else
+    if [ $is_windows -ne 0 ]; then
       libz='zlib.lib'
+    elif [ $is_macos -ne 0 ]; then
+      libz='libz.dylib'
+    else
+      libz='libz.a'
     fi
     if [ -z "$LIBZ_DIR" -a ! -r /usr/lib/$libz ]; then
       echo "  HDF5 library was built with external deflate I/O filter, searching for library $libz ..."
