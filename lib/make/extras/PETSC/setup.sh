@@ -81,6 +81,8 @@ PETSC_LIB_DIRS='$(PETSC_DIR)/lib/libO/$(PETSC_ARCH)'
 PETSC_INC_DIRS='$(PETSC_DIR)/include $(PETSC_DIR)/bmake/$(PETSC_ARCH)'
 PETSC_LIBS="petscfortran petscts petscsnes $PETSC_SLES_LIBS petscdm petscmat petscvec petsc   $PETSC_ARCH_LIBS"
 
+# Get the main configure script to search for the X libraries
+CCTK_NEED_X=yes
 
 # Write the data out to the header and make files.
 CCTK_WriteLine cctk_Extradefs.h "#define CCTK_PETSC 1"

@@ -311,18 +311,6 @@ else
   CCTK_FIND_NULLDEVICE
 fi
 
-# Find the X libraries in case people need them
-# Commented out as should now be able able to use configure.ccl scripts
-# to do this on an individual basis.
-
-dnl AC_PATH_X
-
-dnl AC_SUBST(X_LIB_DIR)
-dnl AC_SUBST(X_INC_DIR)
-
-dnl X_LIB_DIR="$x_libraries"
-dnl X_INC_DIR="$x_includes"
-
 # Various flags
 
 AC_SUBST(ARFLAGS)
@@ -1023,6 +1011,19 @@ do
     fi
   fi
 done
+
+# Find the X libraries in case people need them
+# Commented out as should now be able able to use configure.ccl scripts
+# to do this on an individual basis.
+
+if test "x$CCTK_NEED_X" = 'xyes' ; then 
+AC_PATH_X
+fi
+AC_SUBST(X_LIB_DIR)
+AC_SUBST(X_INC_DIR)
+
+X_LIB_DIR="$x_libraries"
+X_INC_DIR="$x_includes"
 
 # Finish the cctk_Extradefs.h file
 CCTK_WriteLine cctk_Extradefs.h '#endif /*_CCTK_EXTRADEFS_H*/'

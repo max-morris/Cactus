@@ -150,8 +150,8 @@ CPU    = @host_cpu@
 VENDOR = @host_vendor@
 
 # X stuff
-#X_LIB_DIR  = @X_LIB_DIR@
-#X_INC_DIR  = @X_INC_DIR@
+X_LIB_DIR  = @X_LIB_DIR@
+X_INC_DIR  = @X_INC_DIR@
 
 # GNU stuff
 BUILD_GETOPT = @BUILD_GETOPT@
