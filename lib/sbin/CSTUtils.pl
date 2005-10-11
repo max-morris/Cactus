@@ -176,9 +176,14 @@ sub WriteFile
   $data_in = "";
   if (-e $filename) 
   {
-    open(IN, "< $filename");
-    $data_in = join ('', <IN>);
-    close IN;
+    # only read the file if it its size equals the length of the rdata string
+    my @fileinfo = stat ($filename);
+    if ($fileinfo[7] == length ($$rdata))
+    {
+      open(IN, "< $filename");
+      $data_in = join ('', <IN>);
+      close IN;
+    }
   }
 
   if ($$rdata ne $data_in)   
