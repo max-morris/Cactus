@@ -199,7 +199,7 @@ else
       : ${F77FLAGS='-Mx,125,0x200'}
       : ${F90FLAGS='-Mx,125,0x200'}
       : ${F77_OPTIMISE_FLAGS='-fast -Minfo -Mneginfo -Mvect=assoc'}
-      : ${F90_OPTIMISE_FLAGS='$(F77_OPTIMISE_FLAGS)'}
+      : ${F90_OPTIMISE_FLAGS='-fast -Minfo -Mneginfo -Mvect=assoc'}
       : ${F77_DEBUG_FLAGS='-g'}
       : ${F90_DEBUG_FLAGS='-g'}
       F90_VERSION="`$F90 -V 2>&1 | grep -i pgf90 | head -n1`"
