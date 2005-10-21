@@ -1328,7 +1328,7 @@ const char *CCTK_ReduceOperatorImplementation(int handle)
    @enddesc
    @returntype int
    @returndesc
-               Implementation which supplied the interpolation operator
+               Implementation which supplied the reduction operator
    @endreturndesc
 @@*/
 const char *CCTK_LocalArrayReduceOperatorImplementation(int handle)
