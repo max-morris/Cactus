@@ -516,20 +516,23 @@ void CCTKi_ParameterAccumulatorBase(const char *thorn,
 
    @returntype int
    @returndesc
-                0 for success, or<br>
+                0  for success, or<br>
                return code of @seeroutine ParameterSet, or<br>
-               -1 if parameter is out of range<br>
-               -2 if parameter was not found<br>
-               -3 if trying to steer a non-steerable parameter<br>
-               -6 if not a valid integer or float<br>
-               -7 if tried to set an accumulator parameter directly<br>
-               -8 if tried to set an accumulator parameter directly<br>
-               -9 if final value of accumulator out of range<br>
+               -1  if parameter is out of range<br>
+               -2  if parameter was not found<br>
+               -3  if trying to steer a non-steerable parameter<br>
+               -6  if not a valid integer or float<br>
+               -7  if tried to set an accumulator parameter directly<br>
+               -8  if tried to set an accumulator parameter directly<br>
+               -9  if final value of accumulator out of range<br>
+               -10 if parameter has already been set to a different value<br>
+               -11 if parameter has already been set to the same value<br>
    @endreturndesc
 @@*/
 int CCTK_ParameterSet (const char *name, const char *thorn, const char *value)
 {
   int retval;
+  char *old_value, *new_value;
   t_param *param;
 
   param = ParameterFind (name, thorn, SCOPE_ANY);
@@ -586,7 +589,28 @@ int CCTK_ParameterSet (const char *name, const char *thorn, const char *value)
     }
     else
     {
+      if (cctk_parameter_set_mask == PARAMETER_RECOVERY_PRE &&
+          param->props->n_set > 0)
+      {
+        old_value = CCTK_ParameterValString (param->props->name,
+                                             param->props->thorn);
+      }
+
       retval = ParameterSet (param, value);
+
+      /* check if a parameter is set more than once in a parfile */
+      if (cctk_parameter_set_mask == PARAMETER_RECOVERY_PRE &&
+          param->props->n_set > 0)
+      {
+        if (retval == 0)
+        {
+          new_value = CCTK_ParameterValString (param->props->name,
+                                               param->props->thorn);
+          retval = strcmp (old_value, new_value) ? -10 : -11;
+        }
+        free (old_value);
+        free (new_value);
+      }
 
       /* register another set operation */
       param->props->n_set++;

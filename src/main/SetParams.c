@@ -157,7 +157,7 @@ int CCTKi_SetParameter (const char *parameter, const char *value, int lineno)
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
                   "Major error in parameter file '%s' line %d: "
                   "Parameter '%s' is not "
-                  "associated with an active thorn", 
+                  "associated with an active thorn",
                   parfile, lineno, parameter);
       num_0errors++;
     }
@@ -166,7 +166,7 @@ int CCTKi_SetParameter (const char *parameter, const char *value, int lineno)
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
                   "Minor error in parameter file '%s' line %d: "
                   "Parameter '%s' is not "
-                  "associated with an active thorn", 
+                  "associated with an active thorn",
                   parfile, lineno, parameter);
       num_1errors++;
     }
@@ -177,10 +177,10 @@ int CCTKi_SetParameter (const char *parameter, const char *value, int lineno)
     CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
                 "Major error in parameter file '%s' line %d: "
                 "Error setting parameter '%s' "
-                "'%s' is not a valid number", 
+                "'%s' is not a valid number",
                 parfile, lineno, parameter, value);
     num_0errors++;
-  }    
+  }
   else if (retval == -7)
   {
     /* Tried to set an accumulator parameter directly */
@@ -189,7 +189,7 @@ int CCTKi_SetParameter (const char *parameter, const char *value, int lineno)
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
                   "Major error in parameter file '%s' line %d: "
                   "Parameter '%s' is an "
-                  "accumulator parameter; it cannot be set directly", 
+                  "accumulator parameter; it cannot be set directly",
                   parfile, lineno, parameter);
       num_0errors++;
     }
@@ -198,7 +198,7 @@ int CCTKi_SetParameter (const char *parameter, const char *value, int lineno)
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
                   "Minor error in parameter file '%s' line %d: "
                   "Parameter '%s' is an "
-                  "accumulator parameter; it cannot be set directly", 
+                  "accumulator parameter; it cannot be set directly",
                   parfile, lineno, parameter);
       num_1errors++;
     }
@@ -211,7 +211,7 @@ int CCTKi_SetParameter (const char *parameter, const char *value, int lineno)
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
                   "Major error in parameter file '%s' line %d: "
                   "Parameter '%s' is an "
-                  "array base parameter; please use %s[<number>]", 
+                  "array base parameter; please use %s[<number>]",
                   parfile, lineno, parameter, parameter);
       num_0errors++;
     }
@@ -220,20 +220,50 @@ int CCTKi_SetParameter (const char *parameter, const char *value, int lineno)
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
                   "Minor error in parameter file '%s' line %d: "
                   "Parameter '%s' is an "
-                  "array base parameter; please use %s[<number>]", 
+                  "array base parameter; please use %s[<number>]",
                   parfile, lineno, parameter, parameter);
       num_1errors++;
     }
   }
-  else if (retval == -9)
+  else if (retval == -10)
   {
-    /* Parameter adds to an accumulator and that value would be out of range. */
-    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                "Major error in parameter file '%s' line %d: "
-                "Range error setting parameter "
-                "'%s' to '%s' - out of range in accumulator", 
-                parfile, lineno, parameter, value);
-    num_0errors++;
+    /* parameter has already been set to a different value in the parfile */
+    if (parameter_check == CCTK_PARAMETER_RELAXED)
+    {
+      CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                  "Minor error in parameter file '%s' line %d: "
+                  "Parameter '%s' has already been set to a different value "
+                  "before", parfile, lineno, parameter);
+      num_1errors++;
+    }
+    else
+    {
+      CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                  "Major error in parameter file '%s' line %d: "
+                  "Parameter '%s' has already been set to a different value "
+                  "before", parfile, lineno, parameter);
+      num_0errors++;
+    }
+  }
+  else if (retval == -11)
+  {
+    /* parameter has already been set to the same value in the parfile */
+    if (parameter_check != CCTK_PARAMETER_STRICT)
+    {
+      CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                  "Minor error in parameter file '%s' line %d: "
+                  "Parameter '%s' has already been set to the same value "
+                  "before", parfile, lineno, parameter);
+      num_1errors++;
+    }
+    else
+    {
+      CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                  "Major error in parameter file '%s' line %d: "
+                  "Parameter '%s' has already been set to the same value "
+                  "before", parfile, lineno, parameter);
+      num_0errors++;
+    }
   }
 
   return (retval);
@@ -310,14 +340,15 @@ int CCTKi_NumParameterFileErrors (int level)
 
    @returntype int
    @returndesc
-                0 = success,<BR>
-               -9 = final value of accumulator out of range<br>
-               -6 = not a valid integer or float<br>
-               -5 = thorn/imp not active,<BR>
-               -4 = tried to set parameter in two different thorns,<BR>
-               -3 = tried to steer nonsteerable parameter,<BR>
-               -2 = parameter not defined in the active thorn,<BR>
-               -1 = parameter out of range
+                0  = success,<BR>
+               -10 = parameter is set more than once in the parfile<BR>
+               -9  = final value of accumulator out of range<br>
+               -6  = not a valid integer or float<br>
+               -5  = thorn/imp not active,<BR>
+               -4  = tried to set parameter in two different thorns,<BR>
+               -3  = tried to steer nonsteerable parameter,<BR>
+               -2  = parameter not defined in the active thorn,<BR>
+               -1  = parameter out of range
    @endreturndesc
 @@*/
 static int ReallySetParameter(const char *parameter, const char *value)
