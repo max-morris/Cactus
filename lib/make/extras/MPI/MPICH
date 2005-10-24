@@ -6,7 +6,7 @@
 #   @desc
 #            Configuration options for MPI=MPICH
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.24 2005-10-18 15:41:32 tradke Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.25 2005-10-24 09:12:21 tradke Exp $
 # @@*/
 
 
@@ -64,13 +64,13 @@ if test -d "$MPICH_DIR/build/$MPICH_ARCH" ; then
     fi
     echo "  MPICH device is $MPICH_DEVICE"
   fi
-elif test -n "$MPICH_DEVICE" -a "$MPICH_DEVICE" != 'globus'; then
-  found_device=`$MPICH_DIR/bin/tdevice`
-  echo "  MPICH device is $found_device"
-  if test "$MPICH_DEVICE" != "$found_device"; then
-    echo "  Your setting of MPICH_DEVICE = '$MPICH_DEVICE' is inconsistent with the device found in MPICH_DIR = $MPICH_DIR/. Please fix !"
-    exit 2
-  fi
+#elif test -n "$MPICH_DEVICE" -a "$MPICH_DEVICE" != 'globus'; then
+#  found_device=`$MPICH_DIR/bin/tdevice`
+#  echo "  MPICH device is $found_device"
+#  if test "$MPICH_DEVICE" != "$found_device"; then
+#    echo "  Your setting of MPICH_DEVICE = '$MPICH_DEVICE' is inconsistent with the device found in MPICH_DIR = $MPICH_DIR/. Please fix !"
+#    exit 2
+#  fi
 fi
 
 # Work out MPICH version
