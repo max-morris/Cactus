@@ -901,7 +901,7 @@ sub parse_interface_ccl
       $interface_db{"\U$thorn GROUP $current_group\E VTYPE"} = "\U$vtype\E";
 
       # Grab optional group description from end of $options_list
-      if ($options_list =~ /(=?)\s*"([^"]*)"\s*$/) #"
+      if ($options_list =~ /(=?)\s*"([^"]*)"\s*$/)
       {
         if (!$1)
         {
@@ -914,7 +914,8 @@ sub parse_interface_ccl
           } else
           {
             $description = $2;
-            $options_list =~ s/\s*"$description"//;
+            $quoted_description = quotemeta ($description);
+            $options_list =~ s/\s*"$quoted_description"//;
           }
         }
       }
@@ -1066,7 +1067,7 @@ sub parse_interface_ccl
             @functions = split(/[^a-zA-Z_0-9]+/, $data[$line_number]);
             foreach $function (@functions)
             {
-	      if ($function eq $current_group)
+              if ($function eq $current_group)
               {
                 if ($#functions == 1)
                 {
