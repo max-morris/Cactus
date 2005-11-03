@@ -206,16 +206,7 @@ int CCTKi_SetParameter (const char *parameter, const char *value, int lineno)
   else if (retval == -8)
   {
     /* Tried to set an array base parameter */
-    if (parameter_check == CCTK_PARAMETER_STRICT)
-    {
-      CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                  "Major error in parameter file '%s' line %d: "
-                  "Parameter '%s' is an "
-                  "array base parameter; please use %s[<number>]",
-                  parfile, lineno, parameter, parameter);
-      num_0errors++;
-    }
-    else if (parameter_check == CCTK_PARAMETER_NORMAL)
+    if (parameter_check == CCTK_PARAMETER_RELAXED)
     {
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
                   "Minor error in parameter file '%s' line %d: "
@@ -223,6 +214,15 @@ int CCTKi_SetParameter (const char *parameter, const char *value, int lineno)
                   "array base parameter; please use %s[<number>]",
                   parfile, lineno, parameter, parameter);
       num_1errors++;
+    }
+    else
+    {
+      CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                  "Major error in parameter file '%s' line %d: "
+                  "Parameter '%s' is an "
+                  "array base parameter; please use %s[<number>]",
+                  parfile, lineno, parameter, parameter);
+      num_0errors++;
     }
   }
   else if (retval == -10)
