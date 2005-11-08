@@ -56,6 +56,20 @@
   const CCTK_INT output_value_type_codes[],  \
   void* const output_values[]
 
+#define POINTWISE_REDUCTION_OPERATOR_REGISTER_ARGLIST \
+  const cGH *GH,  \
+  int dest_proc,  \
+  int local_reduce_handle, \
+  int param_table_handle,  \
+  int N_input_arrays,  \
+  const void *const input_arrays[], \
+  int N_dims,\
+  const CCTK_INT input_array_dims[], \
+  const CCTK_INT input_array_type_codes[], \
+  int M_output_values,  \
+  const CCTK_INT output_value_type_codes[],  \
+  void* const output_values[]
+    
 #ifdef __cplusplus
 extern "C"
 {
@@ -87,6 +101,20 @@ typedef int (*cGridArrayReduceOperator) (const cGH *GH,
                                          int param_table_handle,
                                          int N_input_arrays,
                                          const CCTK_INT input_array_variable_indices[],
+                                         int M_output_values,
+                                         const CCTK_INT output_value_type_codes[],
+                                         void* const output_values[]);
+
+/* prototype for pointwise reduction operator routine */
+typedef int (*cPointwiseReduceOperator) (const cGH *GH,
+                                         int dest_proc,
+                                         int local_reduce_handle,
+                                         int param_table_handle,
+                                         int N_input_arrays,
+                                         const void * const input_arrays[],
+                                         int input_dims,
+                                         const CCTK_INT input_array_dims[],
+                                         const CCTK_INT input_array_type_codes[],
                                          int M_output_values,
                                          const CCTK_INT output_value_type_codes[],
                                          void* const output_values[]);
@@ -169,6 +197,29 @@ int CCTKi_RegisterGridArrayReductionOperator(const char *thorn, cGridArrayReduce
 
 const char *CCTK_GridArrayReductionOperator(void);
 int CCTK_NumGridArrayReductionOperators(void);
+
+/* new pointwise reduction API */
+int CCTK_ReducePointwise(const cGH *GH,
+                          int dest_proc,
+                          int local_reduce_handle,
+                          int param_table_handle,
+                          int N_input_arrays,
+                          const void * const input_arrays[],
+                          int input_dims,
+                          const CCTK_INT input_array_dims[],
+                          const CCTK_INT input_array_type_codes[],
+                          int M_output_values,
+                          const CCTK_INT output_value_type_codes[],
+                          void* const output_values[]);
+
+#define CCTK_RegisterPointwiseReductionOperator(a) \
+        CCTKi_RegisterPointwiseReductionOperator(CCTK_THORNSTRING,a)
+
+int CCTKi_RegisterPointwiseReductionOperator(const char *thorn, cPointwiseReduceOperator 
+        operatorGV);
+
+const char *CCTK_PointwiseReductionOperator(void);
+int CCTK_NumPointwiseReductionOperators(void);
 
 /* FIXME: old interface - should go */
 int CCTK_ReduceLocalScalar (const cGH *GH, int proc, int operation_handle,
