@@ -87,8 +87,8 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceGridArrays)
       const CCTK_INT output_value_type_codes[],
       void* const output_values[]);
 
-/* new pointwise reduction API */
-void CCTK_FCALL CCTK_FNAME(CCTK_ReducePointwise)
+/* new reduce arrays globally API */
+void CCTK_FCALL CCTK_FNAME(CCTK_ReduceArraysGlobally)
      (int *fortranreturn,
       const cGH **GH,
       int *dest_proc,
@@ -200,19 +200,19 @@ typedef struct
   int (*function) (REDUCTION_GRID_ARRAY_OPERATOR_REGISTER_ARGLIST);
 } t_reduction_grid_array_op;
 
-/* structure holding the routines for a registered pointwise reduction operator */
+/* structure holding the routines for a registered global array reduction operator */
 typedef struct
 {
   const char *implementation;
   const char *name;
-  cPointwiseReduceOperator reduce_operator;
-} t_pointwise_reduce_operator;
+  cReduceArraysGloballyOperator reduce_operator;
+} t_reduce_arrays_globally_operator;
 
-/* structure holding a function pointer to a pointwise reduction operator */
+/* structure holding a function pointer to a global array reduction operator */
 typedef struct
 {
-  int (*function) (POINTWISE_REDUCTION_OPERATOR_REGISTER_ARGLIST);
-} t_reduction_pointwise_op;
+  int (*function) (REDUCTION_ARRAYS_GLOBALLY_OPERATOR_REGISTER_ARGLIST);
+} t_reduction_arrays_globally_op;
 
 /********************************************************************
  ********************    Static Variables   *************************
@@ -231,11 +231,11 @@ static int num_GA_reductions = 0;
 static cGridArrayReduceOperator GA_reduc = NULL;
 static char global[] ="c";
 
-static cHandledData *PointwiseReductionOperators = NULL;
-static int num_Pointwise_reductions = 0;
+static cHandledData *ReductionArraysGloballyOperators = NULL;
+static int num_reductions_arrays_globally = 0;
 
-static cPointwiseReduceOperator Pointwise_reduc = NULL;
-static char pointwise_global[] ="Y";
+static cReduceArraysGloballyOperator ArraysGlobally_reduc = NULL;
+static char reduction_arrays_globally_global[] ="Y";
 
  /*@@
    @routine    CCTKi_RegisterReductionOperator
@@ -1703,7 +1703,7 @@ const char *CCTK_GridArrayReductionOperator (void)
 }
 
 /*@@
-   @routine    CCTKi_RegisterPointwiseReductionOperator
+   @routine    CCTKi_RegisterReduceArraysGloballyOperator
    @date       Mon Aug 30 11:27:43 2004
    @author     Gabrielle Allen, Yaakoub El Khamra
    @desc
@@ -1720,28 +1720,28 @@ const char *CCTK_GridArrayReductionOperator (void)
    @vio     in
    @endvar
 @@*/
-int CCTKi_RegisterPointwiseReductionOperator(const char *thorn, 
-                                             cPointwiseReduceOperator  operator)
+int CCTKi_RegisterReduceArraysGloballyOperator(const char *thorn, 
+                                             cReduceArraysGloballyOperator  operator)
 {
   int handle;
-  t_pointwise_reduce_operator *reduce_operator;
+  t_reduce_arrays_globally_operator *reduce_operator;
 
   /* Check that there is no other registered GA reduction */
-  if(num_Pointwise_reductions == 0)
+  if(num_reductions_arrays_globally == 0)
   {
-    reduce_operator = (t_pointwise_reduce_operator *)malloc (sizeof (t_pointwise_reduce_operator));
+    reduce_operator = (t_reduce_arrays_globally_operator *)malloc (sizeof (t_reduce_arrays_globally_operator));
     reduce_operator->implementation = CCTK_ThornImplementation(thorn);
     reduce_operator->reduce_operator = operator;
-    Pointwise_reduc = operator;
-    handle = Util_NewHandle(&PointwiseReductionOperators, pointwise_global, reduce_operator);
+    ArraysGlobally_reduc = operator;
+    handle = Util_NewHandle(&ReductionArraysGloballyOperators, reduction_arrays_globally_global, reduce_operator);
     /* Remember how many reduction operators there are */
-    num_Pointwise_reductions++;
+    num_reductions_arrays_globally++;
   }
   else
   {
     /* Reduction operator with this name already exists. */
     CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
-              "CCTKi_RegisterPointwiseReductionOperator: Reduction operator "
+              "CCTKi_RegisterReduceArraysGloballyOperator: Reduction operator "
               "already exists");
     handle = -1;
   }
@@ -1749,12 +1749,12 @@ int CCTKi_RegisterPointwiseReductionOperator(const char *thorn,
 }
 
  /*@@
-   @routine    CCTK_ReducePointwise
+   @routine    CCTK_ReduceArraysGlobally
    @date       
    @author     Yaakoub El Khamra
    @desc
                Generic routine for doing a reduction operation on a set of
-               Cactus variables in a pointwise manner
+               arrays in a global manner
    @enddesc
    @var     GH
    @vdesc   pointer to the grid hierarchy
@@ -1821,7 +1821,7 @@ int CCTKi_RegisterPointwiseReductionOperator(const char *thorn,
             negative for errors
    @endreturndesc
 @@*/
-int CCTK_ReducePointwise(const cGH *GH,
+int CCTK_ReduceArraysGlobally(const cGH *GH,
                           int dest_proc,
                           int local_reduce_handle,
                           int param_table_handle,
@@ -1837,15 +1837,15 @@ int CCTK_ReducePointwise(const cGH *GH,
   int retval;
 
   /* Get the pointer to the reduction operator */
-  if (num_Pointwise_reductions == 0)
+  if (num_reductions_arrays_globally == 0)
   {
     CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
-              "CCTK_ReducePointwise: no grid array reduction registered");
+              "CCTK_ReduceArraysGlobally: no grid array reduction registered");
     retval = -1;
   }
   else
   {
-    retval = Pointwise_reduc (GH,
+    retval = ArraysGlobally_reduc (GH,
                        dest_proc,
                        local_reduce_handle, param_table_handle,
                        N_input_arrays, input_arrays, input_dims,
@@ -1856,7 +1856,7 @@ int CCTK_ReducePointwise(const cGH *GH,
   return retval;
 }
 
-void CCTK_FCALL CCTK_FNAME(CCTK_ReducePointwise)
+void CCTK_FCALL CCTK_FNAME(CCTK_ReduceArraysGlobally)
      (int *fortranreturn,
       const cGH **GH,
       int *dest_proc,
@@ -1874,15 +1874,15 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReducePointwise)
   int retval;
 
   /* Get the pointer to the reduction operator */
-  if (num_Pointwise_reductions == 0)
+  if (num_reductions_arrays_globally == 0)
   {
     CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
-              "CCTK_ReducePointwise: no grid array reduction registered");
+              "CCTK_ReduceArraysGlobally: no grid array reduction registered");
     retval = -1;
   }
   else
   {
-    retval = Pointwise_reduc (*GH,
+    retval = ArraysGlobally_reduc (*GH,
                        *dest_proc,
                        *local_reduce_handle, *param_table_handle,
                        *N_input_arrays, input_arrays, *input_dims,
@@ -1894,7 +1894,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReducePointwise)
 }
 
  /*@@
-   @routine    CCTK_NumPointwiseReductionOperators
+   @routine    CCTK_NumReductionArraysGloballyOperators
    @date       
    @author     Yaakoub El Khamra
    @desc
@@ -1906,13 +1906,13 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReducePointwise)
    @endreturndesc
 @@*/
 
-int CCTK_NumPointwiseReductionOperators(void)
+int CCTK_NumReductionArraysGloballyOperators(void)
 {
-  return num_Pointwise_reductions;
+  return num_reductions_arrays_globally;
 }
 
  /*@@
-   @routine    CCTK_PointwiseReductionOperator
+   @routine    CCTK_ReductionArraysGloballyOperator
    @date       
    @author     Yaakoub El Khamra
    @desc
@@ -1930,19 +1930,19 @@ int CCTK_NumPointwiseReductionOperators(void)
    is invalid
    @endreturndesc
 @@*/
-const char *CCTK_PointwiseReductionOperator (void)
+const char *CCTK_ReductionArraysGloballyOperator (void)
 {
   const char *thorn=NULL;
-  t_pointwise_reduce_operator *operator;
+  t_reduce_arrays_globally_operator *operator;
 
-  if (num_Pointwise_reductions == 0)
+  if (num_reductions_arrays_globally == 0)
   {
     CCTK_VWarn (6, __LINE__, __FILE__, "Cactus",
-                "CCTK_PointwiseReductionOperator: no Pointwise reduction operator");
+                "CCTK_ReductionArraysGloballyOperator: no reduction of arrays globally operator");
   }
   else
   {
-    Util_GetHandle (PointwiseReductionOperators, global, (void **)&operator);
+    Util_GetHandle (ReductionArraysGloballyOperators, global, (void **)&operator);
     if (operator)
     {
       thorn = operator->implementation;
@@ -1950,7 +1950,7 @@ const char *CCTK_PointwiseReductionOperator (void)
     else
     {
       CCTK_VWarn (6, __LINE__, __FILE__, "Cactus",
-                  "CCTK_PointwiseReductionOperator: no Pointwise reduction operator");
+                  "CCTK_ReductionArraysGloballyOperator: no reduction of arrays globally operator");
     }
   }
 

@@ -56,7 +56,7 @@
   const CCTK_INT output_value_type_codes[],  \
   void* const output_values[]
 
-#define POINTWISE_REDUCTION_OPERATOR_REGISTER_ARGLIST \
+#define REDUCTION_ARRAYS_GLOBALLY_OPERATOR_REGISTER_ARGLIST \
   const cGH *GH,  \
   int dest_proc,  \
   int local_reduce_handle, \
@@ -105,8 +105,8 @@ typedef int (*cGridArrayReduceOperator) (const cGH *GH,
                                          const CCTK_INT output_value_type_codes[],
                                          void* const output_values[]);
 
-/* prototype for pointwise reduction operator routine */
-typedef int (*cPointwiseReduceOperator) (const cGH *GH,
+/* prototype for global array reduction operator routine */
+typedef int (*cReduceArraysGloballyOperator) (const cGH *GH,
                                          int dest_proc,
                                          int local_reduce_handle,
                                          int param_table_handle,
@@ -199,7 +199,7 @@ const char *CCTK_GridArrayReductionOperator(void);
 int CCTK_NumGridArrayReductionOperators(void);
 
 /* new pointwise reduction API */
-int CCTK_ReducePointwise(const cGH *GH,
+int CCTK_ReduceArraysGlobally(const cGH *GH,
                           int dest_proc,
                           int local_reduce_handle,
                           int param_table_handle,
@@ -212,14 +212,14 @@ int CCTK_ReducePointwise(const cGH *GH,
                           const CCTK_INT output_value_type_codes[],
                           void* const output_values[]);
 
-#define CCTK_RegisterPointwiseReductionOperator(a) \
-        CCTKi_RegisterPointwiseReductionOperator(CCTK_THORNSTRING,a)
+#define CCTK_RegisterReduceArraysGloballyOperator(a) \
+        CCTKi_RegisterReduceArraysGloballyOperator(CCTK_THORNSTRING,a)
 
-int CCTKi_RegisterPointwiseReductionOperator(const char *thorn, cPointwiseReduceOperator 
+int CCTKi_RegisterReduceArraysGloballyOperator(const char *thorn, cReduceArraysGloballyOperator 
         operatorGV);
 
-const char *CCTK_PointwiseReductionOperator(void);
-int CCTK_NumPointwiseReductionOperators(void);
+const char *CCTK_ReductionArraysGloballyOperator(void);
+int CCTK_NumReductionArraysGloballyOperators(void);
 
 /* FIXME: old interface - should go */
 int CCTK_ReduceLocalScalar (const cGH *GH, int proc, int operation_handle,
