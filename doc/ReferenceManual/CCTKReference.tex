@@ -493,6 +493,9 @@ from Fortran.
 \item[\code{CCTK\_NumLocalArrayReduceOperators}] [\pageref{CCTK-NumLocalArrayReduceOperators}]
   The number of local reduction operators registered
 
+\item[\code{CCTK\_NumReductionArraysGloballyOperators}] [\pageref{CCTK-NumReductionArraysGloballyOperators}]
+  The number of global array reduction operators registered
+  
 \item[\code{CCTK\_NumTimeLevels}] [\pageref{CCTK-NumTimeLevels}]
   Returns the number of active timelevels from a group name
   \textbf{(deprecated)}
@@ -595,6 +598,9 @@ from Fortran.
 \item[\code{CCTK\_QueryGroupStorageI}] [\pageref{CCTK-QueryGroupStorageI}]
   Queries storage for a group given by its group index
 
+\item[\code{CCTK\_ReduceArraysGlobally}] [\pageref{CCTK-ReduceArraysGlobally}]
+  Reduces a list of local arrays globally
+  
 \item[\code{CCTK\_ReduceGridArrays}] [\pageref{CCTK-ReduceGridArrays}]
   Reduces a list of local arrays (new grid array reduction API)
 
@@ -604,9 +610,9 @@ from Fortran.
   from a Fortran routine
 
 %\item[\code{CCTK\_Reduce}]
-%  [\pageref{CCTK-Reduce}]
+%  [\pageref{CCTK-Reduce}]   
 %  Perform a reduction operation using a registered operator
-
+  
 \item[\code{CCTK\_ReductionHandle}] [\pageref{CCTK-ReductionHandle}]
   Get the handle for a registered reduction operator
 
@@ -656,6 +662,10 @@ from Fortran.
 \item[\code{CCTK\_RegisterLocalArrayReductionOperator}] [\pageref{CCTK-RegisterLocalArrayReductionOperator}]
   Registers a function as a reduction operator of a certain name
 
+\item[\code{CCTK\_RegisterReduceArraysGloballyOperator}]
+  [\pageref{CCTK-RegisterReduceArraysGloballyOperator}]
+  Register a function as providing a global array reduction operation
+  
 \item[\code{CCTK\_RegisterReductionOperator}]
   [\pageref{CCTK-RegisterReductionOperator}]
   Register a function as providing a reduction operation
@@ -6921,6 +6931,52 @@ Returns the name of a registered reduction operator
 \end{SeeAlsoSection}
 \end{FunctionDescription}
 
+%Reduction.c
+\begin{FunctionDescription}{CCTK\_NumReductionArraysGloballyOperators}
+\label{CCTK-NumReductionArraysGloballyOperators}
+The number of global array reduction operators registered, either 1 or 0.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int num_reduc = CCTK_NumReductionArraysGloballyOperators();
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{num\_reduc}
+The number of registered global array operators
+\end{Result}
+\end{ResultSection}
+
+%\begin{ParameterSection}
+%\end{ParameterSection}
+
+\begin{Discussion}
+This function returns the total number of registered global array
+reduction operators, it is either 1 or 0 as we do not allow multiple
+array reductions.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_ReduceArraysGlobally()}
+Reduces a list of arrays globally
+\end{SeeAlso}
+
+\begin{SeeAlso}{CCTK\_LocalArrayReductionHandle()}
+Returns the handle of a given local array reduction operator
+\end{SeeAlso}
+
+\begin{SeeAlso}{CCTK\_RegisterReduceArraysGloballyOperator()}
+Registers a function as a reduction operator of a certain name
+\end{SeeAlso}
+
+\end{SeeAlsoSection}
+\end{FunctionDescription}
+
 
 % cctk_GroupsOnGH.h
 %Entering a function descrpition for CCTK\_NumTimeLevels
@@ -8181,6 +8237,216 @@ A negative error code is returned for an invalid group name.
 % RRR
 %%%%%
 
+%Entering a function descrpition for CCTK\_ReduceArraysGlobally
+\begin{FunctionDescription}{CCTK\_ReduceArraysGlobally}
+\label{CCTK-ReduceArraysGlobally}
+Performs global reduction on a list of arrays
+
+The computation is optimized for the case of reducing a
+number of grid arrays at a time; in this case all the interprocessor
+communication can be done together.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int CCTK_ReduceArraysGlobally(const cGH *GH,
+                          int dest_proc,
+                          int local_reduce_handle,
+                          int param_table_handle,
+                          int N_input_arrays,
+                          const void * const input_arrays[],
+                          int input_dims,
+                          const CCTK_INT input_array_dims[],
+                          const CCTK_INT input_array_type_codes[],
+                          int M_output_values,
+                          const CCTK_INT output_value_type_codes[],
+                          void* const output_values[]);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_ReduceGridArrays(status,
+.                          GH,
+.                          dest_processor,
+.                          local_reduce_handle,
+.                          param_table_handle,
+.                          N_input_arrays,
+.                          input_arrays,
+.                          input_dims,
+.                          input_array_dims,
+.                          input_array_type_codes,
+.                          M_output_values,
+.                          output_value_type_codes,
+.                          output_values)
+integer                  status
+CCTK_POINTER_TO_CONST    GH
+integer                  dest_processor
+integer                  local_reduce_handle
+integer                  param_table_handle
+integer                  N_input_arrays
+CCTK_INT                 input_arrays(N_input_arrays)
+integer                  input_dims
+CCTK_INT                 input_array_dims(input_dims)
+CCTK_INT                 input_array_type_codes(N_input_arrays)
+integer                  M_output_values
+CCTK_INT                 output_value_type_codes(M_output_values)
+CCTK_POINTER             output_values(M_output_values)
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{\rm 0} success \end{Result}
+\begin{Result}{$< 0$} indicates an error condition \end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{cctkGH ($\ne$ NULL)}
+Pointer to a valid Cactus grid hierarchy.
+\end{Parameter}
+\begin{Parameter}{dest\_processor}
+The destination processor. $-1$ will distribute the result to all processors.
+\end{Parameter}
+\begin{Parameter}{local\_reduce\_handle ($\ge 0$)}
+Handle to the local reduction operator as returned by \newline
+\code{CCTK\_LocalArrayReductionHandle()}. It is the caller's responsibility
+to ensure that the specified reducer supports any optional
+parameter-table entries that \newline \code{CCTK\_ReduceGridArrays()} passes to it.
+Each thorn providing a \newline \code{CCTK\_ReduceGridArrays()} reducer should
+document what options it requires from the local reducer.
+\end{Parameter}
+\begin{Parameter}{param\_table\_handle ($\ge 0$)}
+Handle to a key-value table containing zero or more additional parameters
+for the reduction operation. The table can be modified by the local
+and/or global reduction routine(s).
+
+Also, the global reducer will typically need to specify some options
+of its own for the local reducer.  These will override any entries
+with the same keys in the  param\_table\_handle  table.  The discussion
+of individual table entries below says if these are modified in this
+manner.
+
+Finally, the  param\_table\_handle  table can be used to pass back arbitrary
+information by the local and/or global reduction routine(s) by
+adding/modifying appropriate key/value pairs.
+\end{Parameter}
+\begin{Parameter}{N\_input\_arrays ($\ge 0$)}
+The number of input arrays to be reduced.  If  N\_input\_arrays is zero,
+then no reduction is done; such a call may be useful for setup,
+reducer querying, etc.  If the  operand\_indices  parameter table
+entry is used to specify a nontrivial (eg 1-to-many) mapping of input
+arrays to output values, only the unique set of input arrays should
+be given here.
+\end{Parameter}
+\begin{Parameter}{input\_arrays}
+(Pointer to) an array of  \code{N\_input\_arrays}  local arrays specifying the input arrays
+for the reduction.
+\end{Parameter}
+\begin{Parameter}{input\_dims ($\ge 0$)}
+The number of dimensions of the input arrays
+\end{Parameter}
+\begin{Parameter}{input\_array\_dims ($\ge 0$)}
+(Pointer to) an array  of size \code{input\_dims} containing the dimensions of the arrays to be reduced.
+\end{Parameter}
+\begin{Parameter}{input\_array\_type\_codes ($\ge 0$)}
+(Pointer to) an array  of \code{input\_dims} \code{CCTK\_VARIABLE\_*}  type
+codes giving the data types of the arrays to be reduced.
+\end{Parameter}
+\begin{Parameter}{M\_output\_values ($\ge 0$)}
+The number of output values to be returned from the reduction.
+If \code{N\_input\_arrays == 0}  then no reduction is done; such a call
+may be useful for setup, reducer querying, etc.  Note that
+\code{M\_output\_values}  may differ from  \code{N\_input\_arrays} , eg if the
+\code{operand\_indices}  parameter table entry is used to specify a
+nontrivial (eg many-to-1) mapping of input arrays to output values,
+If such a mapping is specified, only the unique set of output values
+should be given here.
+\end{Parameter}
+\begin{Parameter}{output\_value\_type\_codes}
+(Pointer to) an array of  \code{M\_output\_values} \code{CCTK\_VARIABLE\_*}  type
+codes giving the data types of the output values pointed to by
+\code{output\_values[]}.
+\end{Parameter}
+\begin{Parameter}{output\_values}
+(Pointer to) an array of  \code{M\_output\_values}  pointers to the
+(caller-supplied) output values for the reduction.
+If \code{output\_values[out]}  is \code{NULL} for some index or indices  \code{out} ,
+then that reduction is skipped.  (This may be useful if the main
+purpose of the call is (eg) to do some query or setup computation.)
+These pointers may (and typically will) vary from processor to
+processor in a multiprocessor Cactus run.  However, any given pointer
+must be either \code{NULL} on all processors, or non-\code{NULL} on all processors.
+\end{Parameter}
+\end{ParameterSection}4
+
+\begin{Discussion}
+This function reduces a list of CCTK local arrays globally. This function does not perform the actual reduction, it only handles interprocessor communication. The actual reduction is performed by the local reduction implementation, that is passed arguments and parameters
+from the grid array reduction implementation.
+
+Note that \code{CCTK\_ReduceArraysGlobally} is a collective operation, so in the
+multiprocessor case you {\em must\/} call this function in parallel on
+{\em each\/} processor, passing identical arguments.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_LocalArrayReductionHandle()}
+Returns the handle of a given local array reduction operator
+\end{SeeAlso}
+
+\begin{SeeAlso}{CCTK\_RegisterGridArrayReductionOperator()}
+Registers a function as a grid array reduction operator of a certain name
+\end{SeeAlso}
+
+\begin{SeeAlso}{CCTK\_GridArrayReductionOperator()}
+The name of the grid reduction operator, or NULL if the handle is invalid
+\end{SeeAlso}
+
+\begin{SeeAlso}{CCTK\_GridArrayReductionOperator()}
+The number of grid array reduction operators registered
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+Here's a simple example to perform grid array reduction of two grids arrays of different types.
+\begin{verbatim}
+
+#include "cctk.h"
+#include "util_Table.h"
+
+#define N_INPUT_ARRAYS  2
+#define M_OUTPUT_VALUES 2
+const cGH *GH;                                                  /* input */
+
+/* create empty parameter table */
+const int param_table_handle = Util_CreateTable(UTIL_TABLE_FLAGS_CASE_INSENSITIVE);
+/* input arrays and output values */
+const CCTK_INT input_array_variable_indices[N_INPUT_ARRAYS]
+        = { CCTK_VarIndex("my_thorn::real_array"),      /* no error checking */
+            CCTK_VarIndex("my_thorn::complex_array") }; /* here  */
+const CCTK_INT output_value_type_codes[M_OUTPUT_VALUES]
+        = { CCTK_VARIABLE_REAL, CCTK_VARIABLE_COMPLEX };
+void *const output_numbers[M_OUTPUT_values]
+        = { (void *) output_for_real_values,
+            (void *) output_for_complex_values };
+
+const int status
+  = CCTK_ReduceGridArrays(GH,
+                          0,
+                          param_table_handle,
+                          N_INPUT_ARRAYS, input_array_variable_indices,
+                          M_OUTPUT_VALUES, output_value_type_codes,
+                                           output_values);
+
+Util_TableDestroy(param_table_handle);
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
+
+
 % CCTK\_Reduce here
 %Reduction.c
 %Entering a function descrpition for CCTK\_ReduceGridArrays
@@ -8931,6 +9197,52 @@ Returns the name of a registered reduction operator
 The number of local reduction operators registered
 \end{SeeAlso}
 \end{SeeAlsoSection}
+\end{FunctionDescription}
+
+%Entering a function descrpition for CCTK\_RegisterReduceArraysGloballyOperator
+\begin{FunctionDescription}{CCTK\_RegisterReduceArraysGloballyOperator}
+\label{CCTK-RegisterReduceArraysGloballyOperator}
+Registers a function as a reduction operator of a certain name
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int handle = CCTK_RegisterReduceArraysGloballyOperator(
+                cReduceArraysGloballyOperator operator, const char *name);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{handle}
+The handle corresponding to the registered global array reduction operator, \code{-1}
+if an error occured.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{operator}
+The function to be registered as a global array reduction operator
+\end{Parameter}
+\begin{Parameter}{name}
+The name under which the operator is registered as a global array reduction operator
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+This function registers a global array reduction operator. It registers an \code{operator}
+under a \code{name} with the flesh and returns its assigned handle. If another reduction
+operator exists with the same \code{name}, an error is returned.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_ReduceArraysGlobally()}
+Reduces a list of local arrays globally
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
 \end{FunctionDescription}
 
 \begin{CCTKFunc}{CCTK\_RegisterReductionOperator}{}
