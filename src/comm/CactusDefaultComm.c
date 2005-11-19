@@ -185,7 +185,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
     n_variables = CCTK_NumVars();
 
     /* Allocate memory for the variable data pointers.
-     * Note we want at least one to prevent memory allocattion from failing !
+     * Note we want at least one to prevent memory allocation from failing!
      */
     thisGH->data = malloc((n_variables ? n_variables:1)*sizeof(void **));
     if(thisGH->data)
@@ -205,7 +205,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
     thisGH->extensions = NULL;
 
     /* Allocate memory for the group data pointers.
-     * Note we want at least one to prevent memory allocattion from failing !
+     * Note we want at least one to prevent memory allocation from failing !
      */
     n_groups = CCTK_NumGroups();
     thisGH->GroupData = malloc((n_groups ? n_groups:1)*sizeof(cGHGroupData));
