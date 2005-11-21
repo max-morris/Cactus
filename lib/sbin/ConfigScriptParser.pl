@@ -50,7 +50,7 @@ sub ParseConfigScript
       chomp $line;
       while($line !~ m/^\s*END\s+DEFINE\s*/i)
       {
-        $cfg->{"\U$thorn $provides\E DEFINE"} .= $line;
+        $cfg->{"\U$thorn $provides\E DEFINE"} .= $line . "\n";
         $line_number++;
         $line = $data[$line_number];
         chomp $line;
@@ -77,7 +77,7 @@ sub ParseConfigScript
       chomp $line;
       while($line !~ m/^\s*END\s+MESSAGE\s*/i)
       {
-        $cfg->{"\U$thorn $provides\E MESSAGE"} .= "  " . $line . "\n";
+        $cfg->{"\U$thorn $provides\E MESSAGE"} .= $line . "\n";
         $line_number++;
         $line = $data[$line_number];
         chomp $line;
@@ -88,11 +88,9 @@ sub ParseConfigScript
       $line_number++;
       $line = $data[$line_number];
       chomp $line;
-      $cfg->{"\U$thorn $provides\E MAKE_DEFINITION"} .= "\n"
-        if defined $cfg->{"\U$thorn $provides\E MAKE_DEFINITION"};
       while($line !~ m/^\s*END\s+MAKE_DEFINITION\s*/i)
       {
-        $cfg->{"\U$thorn $provides\E MAKE_DEFINITION"} .= $line;
+        $cfg->{"\U$thorn $provides\E MAKE_DEFINITION"} .= $line . "\n";
         $line_number++;
         $line = $data[$line_number];
         chomp $line;
@@ -105,7 +103,7 @@ sub ParseConfigScript
       chomp $line;
       while($line !~ m/^\s*END\s+MAKE_DEPENDENCY\s*/i)
       {
-        $cfg->{"\U$thorn $provides\E MAKE_DEPENDENCY"} .= $line;
+        $cfg->{"\U$thorn $provides\E MAKE_DEPENDENCY"} .= $line . "\n";
         $line_number++;
         $line = $data[$line_number];
         chomp $line;
@@ -113,15 +111,15 @@ sub ParseConfigScript
     }
     elsif($line =~ m/^\s*INCLUDE_DIRECTORY\s+(.*)$/i)
     {
-      $cfg->{"\U$thorn $provides\E INCLUDE_DIRECTORY"} .= $1 . ' ';
+      $cfg->{"\U$thorn $provides\E INCLUDE_DIRECTORY"} .= ' ' . $1;
     }
     elsif($line =~ m/^\s*LIBRARY_DIRECTORY\s+(.*)$/i)
     {
-      $cfg->{"\U$thorn $provides\E LIBRARY_DIRECTORY"} .= $1 . ' ';
+      $cfg->{"\U$thorn $provides\E LIBRARY_DIRECTORY"} .= ' ' . $1;
     }
     elsif($line =~ m/^\s*LIBRARY\s+(.*)$/i)
     {
-      $cfg->{"\U$thorn $provides\E LIBRARY"} .= $1 . ' ';
+      $cfg->{"\U$thorn $provides\E LIBRARY"} .= ' ' . $1;
     }
     else
     {
