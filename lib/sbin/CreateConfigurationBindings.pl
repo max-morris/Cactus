@@ -168,10 +168,22 @@ sub CreateConfigurationBindings
       }
     }
 
-    # write everything to file
-    &WriteFile("./Thorns/make.$thorn.defn",\$defs);
-    &WriteFile("./Thorns/$thorn.h",\$incs);
-    &WriteFile("./Thorns/make.$thorn.deps",\$deps);
+    if ($cfg->{"\U$thorn\E REQUIRES"} || $cfg->{"\U$thorn\E OPTIONAL"})
+    {
+      # write everything to file
+      # (write the files even if they are empty)
+      &WriteFile("./Thorns/make.$thorn.defn",\$defs);
+      &WriteFile("./Thorns/$thorn.h",\$incs);
+      &WriteFile("./Thorns/make.$thorn.deps",\$deps);
+    }
+    else
+    {
+      # remove the files
+      # (we cannot have old files staying around)
+      unlink "./Thorns/make.$thorn.defn";
+      unlink "./Thorns/$thorn.h";
+      unlink "./Thorns/make.$thorn.deps";
+    }
     
   }
 
