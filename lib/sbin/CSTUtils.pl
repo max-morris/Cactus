@@ -172,8 +172,11 @@ sub WriteFile
   $filename =~ s/^\s*\"(.*)\"\s*$/\1/;
   $filename =~ s/^\s*\'(.*)\'\s*$/\1/;
 
+# Set this to an illegal value,
+# so that the comparison later is guaranteed to fail if this is not changed
+  $data_in = undefined;
+
 # Read in file
-  $data_in = "";
   if (-e $filename) 
   {
     # only read the file if it its size equals the length of the rdata string
