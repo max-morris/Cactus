@@ -104,7 +104,7 @@ sub CreateConfigurationBindings
           $temp .=  "#define " . $cfg->{"\U$thorn $providedcap\E DEFINE"};
         }
 
-        &WriteFile("Capabilities/\U$providedcap\E.h",\$temp);
+        &WriteFile("Capabilities/cctki_\U$providedcap\E.h",\$temp);
         $temp = '';
 
         # put make.capability.deps in one file: make.capabiltiy.deps
@@ -148,7 +148,7 @@ sub CreateConfigurationBindings
       {
         # put reference to provided capability
         $defs .= "include $bindings_dir/Configuration/Capabilities/make.\U$providedcap\E.defn\n";
-        $incs .= "#include \"../Capabilities/\U$providedcap\E.h\"\n";
+        $incs .= "#include \"../Capabilities/cctki_\U$providedcap\E.h\"\n";
         $deps .= "include $bindings_dir/Configuration/Capabilities/make.\U$providedcap\E.deps\n";
       }
     }
@@ -162,7 +162,7 @@ sub CreateConfigurationBindings
           $defs .= $providedcap . " = 1\n";
           $defs .= "include $bindings_dir/Configuration/Capabilities/make.\U$providedcap\E.defn\n";
           $incs .= "#define " . $cfg->{"\U$thorn\E OPTIONAL \U$providedcap\E DEFINE"} . " 1\n";
-          $incs .= "#include \"../Capabilities/\U$providedcap\E.h\"\n";
+          $incs .= "#include \"../Capabilities/cctki_\U$providedcap\E.h\"\n";
           $deps .= "include $bindings_dir/Configuration/Capabilities/make.\U$providedcap\E.deps\n";
         }
       }
@@ -173,7 +173,7 @@ sub CreateConfigurationBindings
       # write everything to file
       # (write the files even if they are empty)
       &WriteFile("./Thorns/make.$thorn.defn",\$defs);
-      &WriteFile("./Thorns/$thorn.h",\$incs);
+      &WriteFile("./Thorns/cctki_$thorn.h",\$incs);
       &WriteFile("./Thorns/make.$thorn.deps",\$deps);
     }
     else
@@ -181,7 +181,7 @@ sub CreateConfigurationBindings
       # remove the files
       # (we cannot have old files staying around)
       unlink "./Thorns/make.$thorn.defn";
-      unlink "./Thorns/$thorn.h";
+      unlink "./Thorns/cctki_$thorn.h";
       unlink "./Thorns/make.$thorn.deps";
     }
     
@@ -211,7 +211,7 @@ sub CreateConfigurationBindings
     if ($cfg->{"\U$thorn\E REQUIRES"} || $cfg->{"\U$thorn\E OPTIONAL"})
     {
       $temp .= "#ifdef THORN_IS_$thorn\n";
-      $temp .= "#include \"../Configuration/Thorns/$thorn.h\"\n";
+      $temp .= "#include \"../Configuration/Thorns/cctki_$thorn.h\"\n";
       $temp .= "#endif\n";
       $temp .= "\n";
     }
