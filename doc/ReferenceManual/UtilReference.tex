@@ -464,6 +464,32 @@ if (len >= N_BUFFER)
 \end{ExampleSection}
 \end{FunctionDescription}
 
+%Entering a function descrpition for Util\_sprintf
+\begin{FunctionDescription}{Util\_vsnprintf}
+\label{Util-vsnprintf}
+Safely format data into a caller-supplied buffer.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "util_String.h"
+int count = Util_snprintf(char* buffer, size_t size, const char* format,-
+va_list arg)
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{Discussion}
+This function is identical to Util\_snprintf, with the exception of accepting its data arguements in the form of a {\tt va\_list}, instead of in the from of a variable length parameter list.  See the entry on {\tt snprintf}-
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{Util\_snprintf}{Util-snprintf}
+Standard C library function which this function tries to clone.
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+\end{FunctionDescription}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Full Descriptions of String Functions}
@@ -2019,10 +2045,6 @@ get an array value
 \begin{SeeAlso2} {Util\_TableGetString()} {Util-TableGetString}
 get a character-string value
 \end{SeeAlso2}
-\begin{SeeAlso2} {Util\_TableItQueryValueInfo()} {Util-TableItQueryValueInfo}
-query key present/absent in table, and optionally type and/or number
-of elements, using an iterator
-\end{SeeAlso2}
 \begin{SeeAlso2} {Util\_TableQueryValueInfo()} {Util-TableQueryValueInfo}
 query key present/absent in table, and optionally type and/or number
 of elements
@@ -2197,10 +2219,6 @@ get an array value with generic data type
 \begin{SeeAlso2} {Util\_TableGetString()} {Util-TableGetString}
 get a character-string value
 \end{SeeAlso2}
-\begin{SeeAlso2} {Util\_TableItQueryValueInfo()} {Util-TableItQueryValueInfo}
-query key present/absent in table, and optionally type and/or number
-of elements, using an iterator
-\end{SeeAlso2}
 \begin{SeeAlso2} {Util\_TableQueryValueInfo()} {Util-TableQueryValueInfo}
 query key present/absent in table, and optionally type and/or number
 of elements
@@ -2362,7 +2380,7 @@ or more generally the first array element of an array value
 \begin{SeeAlso}{Util\_TableGet*Array()}
 get an array value
 \end{SeeAlso}
-\begin{SeeAlso2} {Util\_TableGetCharArray()} {Util-TableGetCharArray}
+\begin{SeeAlso2} {Util\_TableGetCharArray()} {Util-TableGet*Array}
 get an array-of-\code{CCTK\_CHAR} value
 \end{SeeAlso2}
 \begin{SeeAlso2} {Util\_TableGetGeneric()} {Util-TableGetGeneric}
@@ -2390,7 +2408,7 @@ set a character-string value
 convenience routine to set key/value entries in a table based on a
 parameter-file--like character string
 \end{SeeAlso2}
-\begin{SeeAlso2} {Util\_TableSetCharArray()} {Util-TableSetCharArray}
+\begin{SeeAlso2} {Util\_TableSetCharArray()} {Util-TableSet*Array}
 set an array-of-\code{CCTK\_CHAR} value
 \end{SeeAlso2}
 \end{SeeAlsoSection}
@@ -3307,6 +3325,100 @@ iterator handle is invalid
 \end{Error}
 \end{ErrorSection}
 \end{FunctionDescription}
+
+
+\begin{FunctionDescription}{Util\_TableSetInt}
+\label{Util-TableSetInt}
+Sets the value of entry {\tt key} in the given table.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+int retval = Util\_TableSetInt(int handle, CCTK\_INT value, const char *key);
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{UTIL\_ERROR\_BAD\_HANDLE}-----------
+handle is invalid
+\end{Result}
+\begin{Result}{UTIL\_ERROR\_TABLE\_BAD\_KEY}--------
+key contains '/' character
+\end{Result}
+\begin{Result}{UTIL\_ERROR\_BAD\_INPUT}------------
+N\_value\_buffer {$<$} 0
+\end{Result}
+\begin{Result}{UTIL\_ERROR\_BAD\_INPUT}------------
+value\_buffer != NULL and N\_value\_buffer $<$ 0
+\end{Result}
+\begin{Result}{UTIL\_ERROR\_TABLE\_NO\_SUCH\_KEY}----
+no such key in table
+\end{Result}
+\begin{Result}{UTIL\_ERROR\_TABLE\_WRONG\_DATA\_TYPE}-
+value has wrong data type
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{handle}
+handle to the table
+\end{Parameter}
+\begin{Parameter}{value}
+The value you wish to set {\tt key} to
+\end{Parameter}
+\begin{Parameter}{key}
+The key of the value to set
+\end{Parameter}
+\end{ParameterSection}
+
+%\begin{Discussion}
+%\end{Discussion}
+\end{FunctionDescription}
+
+\begin{FunctionDescription}{Util\_TableSetReal}
+\label{Util-TableSetReal}
+Sets the value of entry {\tt key} in the given table.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+int retval = Util\_TableSetReal(int handle, CCTK\_REAL value, const char *key);
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{UTIL\_ERROR\_BAD\_HANDLE}-----------
+handle is invalid
+\end{Result}
+\begin{Result}{UTIL\_ERROR\_TABLE\_BAD\_KEY}--------
+key contains '/' character
+\end{Result}
+\begin{Result}{UTIL\_ERROR\_BAD\_INPUT}------------
+N\_value\_buffer {$<$} 0
+\end{Result}
+\begin{Result}{UTIL\_ERROR\_BAD\_INPUT}------------
+value\_buffer != NULL and N\_value\_buffer $<$ 0
+\end{Result}
+\begin{Result}{UTIL\_ERROR\_TABLE\_NO\_SUCH\_KEY}----
+no such key in table
+\end{Result}
+\begin{Result}{UTIL\_ERROR\_TABLE\_WRONG\_DATA\_TYPE}-
+value has wrong data type
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{handle}
+handle to the table
+\end{Parameter}
+\begin{Parameter}{value}
+The value you wish to set {\tt key} to
+\end{Parameter}
+\begin{Parameter}{key}
+The key of the value to set
+\end{Parameter}
+\end{ParameterSection}
+
+%\begin{Discussion}
+%\end{Discussion}
+\end{FunctionDescription}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -4541,7 +4653,7 @@ get an array value with generic data type
 \begin{SeeAlso2} {Util\_TableGetString()} {Util-TableGetString}
 get a character-string value
 \end{SeeAlso2}
-\begin{SeeAlso2} {Util\_TableSetCharArray()} {Util-TableSetCharArray}
+\begin{SeeAlso2} {Util\_TableSetCharArray()} {Util-TableSet*Array}
 get an array-of-\code{CCTK\_CHAR} value
 \end{SeeAlso2}
 \begin{SeeAlso}{Util\_TableSet*()}
@@ -4556,7 +4668,7 @@ set a single (1-element array) value with generic data type
 \begin{SeeAlso2} {Util\_TableSetGenericArray()} {Util-TableSetGenericArray}
 set an array value with generic data type
 \end{SeeAlso2}
-\begin{SeeAlso2} {Util\_TableSetCharArray()} {Util-TableSetCharArray}
+\begin{SeeAlso2} {Util\_TableSetCharArray()} {Util-TableSet*Array}
 set an array-of-\code{CCTK\_CHAR} value
 \end{SeeAlso2}
 \end{SeeAlsoSection}

@@ -176,13 +176,13 @@ from Fortran.
 \item[\code{CCTK\_EnableGroupComm}] [\pageref{CCTK-EnableGroupComm}]
   Enable the communication for a group
 
-\item[\code{CCTK\_EnableGroupCommI}] [\pageref{CCTK-EnableGroupComm}]
+\item[\code{CCTK\_EnableGroupCommI}] [\pageref{CCTK-EnableGroupCommI}]
   Enable the communication for a group
 
 \item[\code{CCTK\_EnableGroupStorage}] [\pageref{CCTK-EnableGroupStorage}]
   Enable the storage for a group
 
-\item[\code{CCTK\_EnableGroupStorageI}] [\pageref{CCTK-EnableGroupStorage}]
+\item[\code{CCTK\_EnableGroupStorageI}] [\pageref{CCTK-EnableGroupStorageI}]
   Enable the storage for a group
 
 \item[\code{CCTK\_Equals}] [\pageref{CCTK-Equals}]
@@ -459,7 +459,7 @@ from Fortran.
 \item[\code{CCTK\_MaxTimeLevelsGN}] [\pageref{CCTK-MaxTimeLevelsGN}]
   Gives the maximum number of timelevels for a group
 
-\item[\code{CCTK\_MaxTimeLevelsVI}] [\pageref{CCTK-MaxTimeLevelsVarI}]
+\item[\code{CCTK\_MaxTimeLevelsVI}] [\pageref{CCTK-MaxTimeLevelsVI}]
   Gives the maximum number of timelevels for a variable
 
 \item[\code{CCTK\_MaxTimeLevelsVN}] [\pageref{CCTK-MaxTimeLevelsVN}]
@@ -2178,6 +2178,55 @@ communications are all off.
 \end{errorcodes}
 \end{CCTKFunc}
 
+\begin{FunctionDescription}{CCTK\_DisableGroupCommI}
+\label{CCTK-DisableGroupCommI}
+Turn communications off for a group of grid variables.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+int istat = CCTK_DisableGroupCommI(cGH * cctkGH, int group);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{0}
+The Group has been disabled.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{cctkGH}
+pointer to CCTK grid hierarchy
+\end{Parameter}
+\begin{Parameter}{group}
+number of group of grid variables to turn off
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Turning off communications means that ghost zones will not be
+communicated during a call to \code{CCTK\_SyncGroup}. By default
+communications are all off.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2} {CCTK\_DisableGroupComm} {CCTK-DisableGroupComm}
+Turn communications off for a group of grid variables.
+\end{SeeAlso2}
+\begin{SeeAlso2} {CCTK\_EnableGroupCommI} {CCTK-EnableGroupCommI}
+Turn communications on for a group of grid variables.
+\end{SeeAlso2}
+\begin{SeeAlso2} {CCTK\_EnableGroupComm} {CCTK-EnableGroupComm}
+Turn communications on for a group of grid variables.
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+%\begin{ErrorSection}
+%\end{ErrorSection}
+
+\end{FunctionDescription}
+
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_DisableGroupStorage}{Free the storage associated with a group of grid variables}
 \label{CCTK-DisableGroupStorage}
@@ -2198,6 +2247,41 @@ communications are all off.
 \end{errorcodes}
 \end{CCTKFunc}
 
+\begin{FunctionDescription}{CCTK\_DisableGroupStorageI}
+\label{CCTK-DisableGroupStorageI}
+Deallocates memory for a group based upon its index
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+int  CCTK\_DisableGroupStorageI(const cGH *GH, int group);
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{0}
+The group previously had storage
+\end{Result}
+\begin{Result}{1}
+The group did not have storage to disable storage
+\end{Result}
+\begin{Result}{-1}
+The decrease storage routine was not overloaded
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{GH}
+pointer to grid hierarchy
+\end{Parameter}
+\begin{Parameter}{group}
+index of the group to deallocate storage for
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+The disable group storage routine should deallocate memory for a group and return the previous status of that memory.
+This default function checks for the presence of the newer GroupStorageDecrease function, and if that is not available it flags an error. If it is available it makes a call to it, passing -1 as the timelevel argument, which is supposed to mean disable all timelevels, i.e. preserving this obsolete behaviour.
+\end{Discussion}
+\end{FunctionDescription}
 
 %%%%%
 % EEE
@@ -2227,29 +2311,137 @@ file.
 \end{errorcodes}
 \end{CCTKFunc}
 
-% CommOverloadables.c
-\begin{CCTKFunc}{CCTK\_EnableGroupStorage}{Assign the storage for a group of grid variables}
+\begin{FunctionDescription}{CCTK\_EnableGroupCommI}
+\label{CCTK-EnableGroupCommI}
+Turn communications on for a group of grid variables.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+int istat = CCTK_EnableGroupCommI(cGH * cctkGH, int group);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{0}
+The Group has been enabled.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{cctkGH}
+pointer to CCTK grid hierarchy
+\end{Parameter}
+\begin{Parameter}{group}
+number of the group of grid variables to turn on
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Grid variables with communication enabled will have their ghost zones communicated during a call
+to \code{CCTK\_SyncGroup}. In general, this function does not need to be used, since communication
+is automatically enabled for grid variables who have assigned storage via the \code{schedule.ccl}
+file.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2} {CCTK\_DisableGroupComm} {CCTK-DisableGroupComm}
+Turn communications off for a group of grid variables.
+\end{SeeAlso2}
+\begin{SeeAlso2} {CCTK\_DisableGroupCommI} {CCTK-DisableGroupCommI}
+Turn communications off for a group of grid variables.
+\end{SeeAlso2}
+\begin{SeeAlso2} {CCTK\_EnableGroupComm} {CCTK-EnableGroupCommI}
+Turn communications on for a group of grid variables.
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+%\begin{ErrorSection}
+%\end{ErrorSection}
+\end{FunctionDescription}
+
+\begin{FunctionDescription}{CCTK\_EnableGroupStorage}
 \label{CCTK-EnableGroupStorage}
-\subroutine{int}{integer}{istat}
-\argument{cGH *}{CCTK\_POINTER}{cctkGH}
-\argument{const char *}{character*(*)}{group}
-\showcargs
-\begin{params}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\end{params}
-\begin{discussion}
+Assign the storage for a group of grid variables
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+int istat = CCTK_EnableGroupGroupStorage(cGH * cctkGH, const char * group);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{0}
+The Storage has been enabled.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{cctkGH}
+pointer to CCTK grid hierarchy
+\end{Parameter}
+\begin{Parameter}{group}
+name of the group to allocate storage for
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
 In general this function does not need to be used, since storage assignment is best handled by
 the Cactus scheduler via a thorn's \code{schedule.ccl} file.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
 
-% CommOverloadables.c
+%\begin{SeeAlsoSection}
+%\end{SeeAlsoSection}
+%\begin{ErrorSection}
+%\end{ErrorSection}
+\end{FunctionDescription}
+
+\begin{FunctionDescription}{CCTK\_EnableGroupStorageI}
+\label{CCTK-EnableGroupStorageI}
+Assign the storage for a group of grid variables
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+int istat = CCTK_EnableGroupGroupStorageI(cGH * cctkGH, int group);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{0}
+The Storage has been enabled.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{cctkGH}
+pointer to CCTK grid hierarchy
+\end{Parameter}
+\begin{Parameter}{group}
+Index of the group to allocate storage for
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+In general this function does not need to be used, since storage assignment is best handled by
+the Cactus scheduler via a thorn's \code{schedule.ccl} file.
+\end{Discussion}
+
+%\begin{SeeAlsoSection}
+%\end{SeeAlsoSection}
+%\begin{ErrorSection}
+%\end{ErrorSection}
+\end{FunctionDescription}
+
+%Entering a function descrpition for CCTK\_Equals
+\begin{FunctionDescription}{CCTK\_Equals}
+\label{CCTK-Equals}
+Checks a STRING or KEYWORD parameter for equality with a given string
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
 %Entering a function descrpition for CCTK\_Equals
 \begin{FunctionDescription}{CCTK\_Equals}
 \label{CCTK-Equals}
@@ -3165,7 +3357,7 @@ Gets the group index for a given variable name.
 \begin{SeeAlso2} {CCTK\_GroupName} {CCTK-GroupName}
 Gets the group name for a given group index.
 \end{SeeAlso2}
-\begin{SeeAlso2} {CCTK\_GroupNameFromVar} {CCTK-GroupNameFromVar}
+\begin{SeeAlso2} {CCTK\_GroupNameFromVarI} {CCTK-GroupNameFromVarI}
 Gets the group name for a given variable name.
 \end{SeeAlso2}
 \begin{SeeAlso2} {CCTK\_GroupTypeI} {CCTK-GroupTypeI}
@@ -3215,6 +3407,71 @@ printf("this group's arrays are %-dimensional and have %d time levels\n",
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%Entering a function descrpition for CCTK\_GroupDynamicData}{
+\begin{FunctionDescription}{CCTK\_GroupDynamicData}{}
+\label{CCTK-GroupDynamicData}
+Returns the driver's internal data for a given group
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+int retval = PUGH_GroupDynamicData (const cGH *GH, int group, cGroupDynamicData *data);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin {Result}{0}
+Sucess
+\end{Result}
+\begin{Result}{-1}
+the given pointer to the data structure data is null
+\end{Result}
+\begin{Result}{-3}
+the givenGH pointer is invalid
+\end{Result}
+\begin{Result}{-77}
+the requested group has zero variables
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{GH}
+a valid initialized GH structure for your driver
+\end{Parameter}
+\begin{Parameter}{group}
+the index of the group you're interested in
+\end{Parameter}
+\begin{Parameter}{data}
+a pointer to a caller-supplied data structure to store the group data
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+This function returns information about the given grid hierarchy.
+The data structure used to store the information in is of type cGroupDynamicData.
+The members of this structure that are set are :
+\begin{itemize}
+\item{dim:} The number of dimensions in this grid hierarchy.
+\item {lsh:} The local(on this processor) size.
+\item{gsh:} The global grid size.
+\item{lbnd:} An array of integers containing the lowest index of the local grid as seen on the global grid.(These use zero based indexing)
+\item{ubnd:} An arry of integers containing the largest index of the local grid as seen on the global grid.(These use zero based indexing)
+\item{nghostzones:} An array of integers with the number of ghostzones for each dimension.
+\item{bbox:} An array of integers containing which indicate whether the boundaries are internal(e.g. artificial boundaries between processors) or actual physical boundaries. A value of 1 indicates an actual physical boundary while a 0 indicates an internal one.
+\item{activetimelevels:}An array of which time levels this grid hierarchy is active.
+\end{itemize}-
+\end{Discussion}
+
+%\begin{SeeAlsoSection}
+%\end{SeeAlsoSection}
+%\begin{ErrorSection}
+%\end{ErrorSection}
+%\begin{ExampleSection}
+%\end{ExampleSection}
+\end{FunctionDescription}
 
 %Entering a function descrpition for CCTK\_GroupgshGI, CCTK\_GroupgshGN
 \begin{FunctionDescription}{CCTK\_GroupgshGI, CCTK\_GroupgshGN}
@@ -3923,6 +4180,91 @@ Returns the number of ghostzones for a given group.
 
 \end{FunctionDescription}
 
+
+
+\begin{FunctionDescription}{CCTK\_GroupStorageDecrease}
+\label{CCTK-GroupStorageDecrease}
+Increases the number of timelevels allocated for the given variable groups.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+int numTL = CactusDefaultGroupStorageDecrease (const cGH *GH, int n\_groups, const int *groups, const int *timelevels, int *status);
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{}
+The total number of timelevels with storage enabled for all groups queried or modified.\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{GH}
+pointer to grid hierarchy
+\end{Parameter}
+\begin{Parameter}{n\_groups}
+Number of groups
+\end{Parameter}
+\begin{Parameter}{groups}
+list of group indices to reduce storage for
+\end{Parameter}
+\begin{Parameter}{timelevels}
+number of time levels to reduce storage for for each group
+\end{Parameter}
+\begin{Parameter}{groups}
+list of group indices to allocate storage for
+\end{Parameter}
+\begin{Parameter}{status}
+optional return array which, if not NULL, will, on return, contain the number of timelevels which were previously allocated storage for each group
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+ The decrease group storage routine should decrease the memory allocated to the specified number of timelevels for each listed group, returning the previous number of timelevels enabled for that group in the status array, if that is not NULL.  It should never increase the number of timelevels enabled, i.e. if it is asked to reduce to more timelevels than are enabled it should not change the storage for that group.
+ This default checks for the presence of the older DisableGroupStorage function, and if that is not available it flags an error. If it is available it makes a call to it, and puts its return value in the status flag for the group.  A driver should replace the appropriate GV pointers on the cGH structure when they change the storage state of a GV.
+\end{Discussion}
+\end{FunctionDescription}
+
+
+\begin{FunctionDescription}{CCTK\_GroupStorageIncrease}
+\label{CCTK-GroupStorageIncrease}
+Increases the number of timelevels allocated for the given variable groups.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+int numTL = CactusDefaultGroupStorageIncrease (const cGH *GH, int n\_groups, const int *groups, const int *timelevels, int *status);
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{}
+The total number of timelevels with storage enabled for all groups queried or modified.\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{GH}
+pointer to grid hierarchy
+\end{Parameter}
+\begin{Parameter}{n\_groups}
+Number of groups
+\end{Parameter}
+\begin{Parameter}{groups}
+list of group indices to allocate storage for
+\end{Parameter}
+\begin{Parameter}{timelevels}
+number of time levels to allocate storage for for each group
+\end{Parameter}
+\begin{Parameter}{groups}
+list of group indices to allocate storage for
+\end{Parameter}
+\begin{Parameter}{status}
+optional return array which, if not NULL, will, on return, contain the number of timelevels which were previously allocated storage for each group
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+The increase group storage routine should increase the allocated memory to the specified number of timelevels of each listed group, returning the previous number of timelevels enabled for that group in the status array, if that is not NULL. It should never decrease the number of timelevels enabled, i.e. if it is asked to enable less timelevels than are already enabled it should not change the storage for that group.
+ This default checks for the presence of the older
+  EnableGroupStorage function, and if that is not available it flags an error. If it is available it makes a call to it, and puts its return value in the status flag for the group.
+\end{Discussion}
+\end{FunctionDescription}
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_GroupTypeFromVarI}{Provides a group's group type
@@ -5226,7 +5568,7 @@ A negative value is returned for invalid/unregistered interpolation operator nam
 %notyet values of the error codes (or more commonly, to find which error code
 %notyet corresponds to a given numerical value), look in the files
 %notyet \code{cctk\_Interp.h}, \code{util\_ErrorCodes.h}, and/or \code{util\_Table.h}
-%notyet	in the \code{src/include/} directory in the Cactus flesh.
+%notyet in the \code{src/include/} directory in the Cactus flesh.
 %notyet \end{Error}
 %notyet \begin{Error}{CCTK\_ERROR\_INTERP\_POINT\_OUTSIDE}
 %notyet one or more of the interpolation points is out of range
@@ -5841,7 +6183,7 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet values of the error codes (or more commonly, to find which error code
 %notyet corresponds to a given numerical value), look in the files
 %notyet \code{cctk\_Interp.h}, \code{util\_ErrorCodes.h}, and/or \code{util\_Table.h}
-%notyet	in the \code{src/include/} directory in the Cactus flesh.
+%notyet in the \code{src/include/} directory in the Cactus flesh.
 %notyet \end{Error}
 %notyet \begin{Error}{CCTK\_ERROR\_INTERP\_POINT\_OUTSIDE}
 %notyet one or more of the interpolation points is out of range
@@ -6512,6 +6854,32 @@ The variable name should be in the form \code{<implementation>::<variable>}
 \end{errorcodes}
 \end{CCTKFunc}
 
+\begin{FunctionDescription}{CCTK\_MaxTimeLevelsGN}
+\label{CCTK-MaxTimeLevelsGN}
+Gives the number of timelevels for a group
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+int retval = CCTK\_MaxTimeLevelsGN(const char *group);
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{}
+The maximum number of timelevels this group has, or -1 if the group name is incorrect.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{group}
+The variable group's name
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+This function and its relatives return the maximum number of timelevels that the given variable group can have active.  This function does not tell you anything about how many time levels are active at the time.
+\end{Discussion}
+\end{FunctionDescription}
+
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_MaxTimeLevelsGI}{Gives the number of timelevels for a group}
@@ -7083,7 +7451,7 @@ Returns the number of active time levels for a group.
 \begin{SeeAlso2}{CCTK\_MaxTimeLevels}{CCTK-MaxTimeLevels}
 Return the maximum number of active timelevels.
 \end{SeeAlso2}
-\begin{SeeAlso2}{CCTK\_GroupStorageDecrease}{CCTK-GroupStoragDecrease}
+\begin{SeeAlso2}{CCTK\_GroupStorageDecrease}{CCTK-GroupStorageDecrease}
 Base function, overloaded by the driver, which decreases the number of
 active timelevels, and also returns the number of active timelevels.
 \end{SeeAlso2}
@@ -10154,12 +10522,12 @@ int status = CCTK_VWarn(int level,
 \begin{Result}{0}
 ok%%%
 \footnote{%%%
-	 When this function is called, the calling code almost
-	 always ignores the return result.  However, it's still
-	 useful for this function to be declared as returning a
-	 value, rather than having type \texttt{void}, since this
-	 allows it to be used in C conditional expressions.
-	 }%%%
+         When this function is called, the calling code almost
+         always ignores the return result.  However, it's still
+         useful for this function to be declared as returning a
+         value, rather than having type \texttt{void}, since this
+         allows it to be used in C conditional expressions.
+         }%%%
 \end{Result}
 \end{ResultSection}
 
@@ -10320,12 +10688,12 @@ to \code{stderr}.
 function which is equivalent to \verb|CCTK_VWarn()|, but without the
 variable-number-of-arguments feature (so it can be used from Fortran).%%%
 \footnote{%%%
-	 Some code calls this internal function directly.
-	 For reference, the function is:\\
-	 \texttt{\hbox{}int CCTK\_Warn(int level,}\\
-	 \texttt{\hbox{}~~~~~~~~~~~~~~int line\_number, const char* file\_name, const char* thorn\_name,}\\
-	 \texttt{\hbox{}~~~~~~~~~~~~~~const char* message)}
-	 }%%%
+         Some code calls this internal function directly.
+         For reference, the function is:\\
+         \texttt{\hbox{}int CCTK\_Warn(int level,}\\
+         \texttt{\hbox{}~~~~~~~~~~~~~~int line\_number, const char* file\_name, const char* thorn\_name,}\\
+         \texttt{\hbox{}~~~~~~~~~~~~~~const char* message)}
+         }%%%
 {}  The macro automatically includes details about the origin of the warning
 (the thorn name, the source code file name and the line number where the macro
 occurs).
