@@ -278,6 +278,7 @@ sub FindTestParameterFiles
   my($testdata,$config_data) = @_;
   my($config,$config_dir);
   my($thorn);
+  my(%found_thorns) = ();
 
   $config      = $config_data->{"CONFIG"};
   $configs_dir = $config_data->{"CONFIGSDIR"};
@@ -294,17 +295,22 @@ sub FindTestParameterFiles
     $fullthorn = $1;
     next if (! $fullthorn);
 
-    $testdata->{"FULL"} .= "$fullthorn ";
-
     $fullthorn =~ m:^\s*([^\s]*)/([^\s]*)\s*:;
 
+    $arrangement = $1;
     $thorn = $2;
-    $testdata->{"THORNS"} .= "$thorn ";
-    $testdata->{"$thorn ARRANGEMENT"} = "$1";
 
-    if ($testdata->{"ARRANGEMENTS"} !~ m:\s$1\s:)
+    # skip duplicate entries in the ThornList
+    next if (defined $found_thorns{"$arrangement/$thorn"});
+    $found_thorns{"$arrangement/$thorn"} = 1;
+
+    $testdata->{"FULL"} .= "$fullthorn ";
+    $testdata->{"THORNS"} .= "$thorn ";
+    $testdata->{"$thorn ARRANGEMENT"} = "$arrangement";
+
+    if ($testdata->{"ARRANGEMENTS"} !~ m:\s$arrangement\s:)
     {
-      $testdata->{"ARRANGEMENTS"} .= "$1 ";
+      $testdata->{"ARRANGEMENTS"} .= "$arrangement ";
     }
 
     $thorntestdir = "$config_data->{\"CCTK_DIR\"}${sep}arrangements${sep}$fullthorn${sep}test";
