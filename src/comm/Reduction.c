@@ -65,12 +65,12 @@ void CCTK_FCALL CCTK_FNAME(CCTK_LocalArrayReductionHandle)
      (int *handle, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocalArrays)
      (int *fortran_return,
-      int N_dims, int *operation_handle, 
-      int param_table_handle,   int N_input_arrays,
+      int *N_dims, int *operation_handle, 
+      int *param_table_handle,   int *N_input_arrays,
       const CCTK_INT input_array_dims[], 
       const CCTK_INT input_array_type_codes[],
       const void *const input_arrays[],
-      int M_output_values,
+      int *M_output_values,
       const CCTK_INT output_number_type_codes[],
       void *const output_values[]);
 
@@ -1218,8 +1218,8 @@ int CCTK_ReduceLocalArrays(int N_dims,
   /* Get the pointer to the reduction operator */
   if (local_reduce_handle < 0)
   {
-    CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
-              "CCTK_LocalArraysReduce: Invalid handle passed to CCTK_LocalArraysReduce");
+    CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
+              "CCTK_LocalArraysReduce: Invalid handle passed to CCTK_ReduceLocalArrays");
     retval = -1;
   }
   else
@@ -1229,8 +1229,8 @@ int CCTK_ReduceLocalArrays(int N_dims,
 
     if (!operator)
     {
-      CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
-                "CCTK_LocalArraysReduce: Reduction operation is not registered"
+      CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
+                "CCTK_ReduceLocalArrays: Reduction operation is not registered"
                 "and cannot be called");
       retval = -1;
     }
@@ -1247,12 +1247,12 @@ int CCTK_ReduceLocalArrays(int N_dims,
 }
 
 void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocalArrays)
-     (int *fortranreturn,int N_dims, int *operation_handle, 
-      int param_table_handle, int N_input_arrays,
+     (int *fortranreturn,int * N_dims, int *operation_handle, 
+      int *param_table_handle, int * N_input_arrays,
       const CCTK_INT input_array_dims[], 
       const CCTK_INT input_array_type_codes[],
       const void *const input_arrays[],
-      int M_output_numbers, const CCTK_INT output_number_type_codes[],
+      int * M_output_numbers, const CCTK_INT output_number_type_codes[],
       void *const output_numbers[])
 {
   int retval;
@@ -1281,10 +1281,10 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceLocalArrays)
     }
     else
     {
-      retval = operator->reduce_operator (N_dims, *operation_handle, 
-                          param_table_handle, N_input_arrays,
+      retval = operator->reduce_operator (*N_dims, *operation_handle, 
+                          *param_table_handle, *N_input_arrays,
                           input_array_dims, input_array_type_codes,
-                          input_arrays, M_output_numbers,
+                          input_arrays, *M_output_numbers,
                           output_number_type_codes, output_numbers);
     }
   }
