@@ -680,7 +680,7 @@ sub ProcessIf
     else
     {
 #      print STDERR "#if <constant> called on non-digit and non-define $val at $filename\::$linenumber !\n";
-      $retval = defined($defines{$val}) ? $defines{$val} : 0;
+      $retval = defined($defines{$val}) ? ($defines{$val} ? 1 : 0) : 0;
     }
   }
   else
