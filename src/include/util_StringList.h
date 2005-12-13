@@ -23,6 +23,7 @@ struct iInternalStringList
 
 typedef struct
 {
+  int max_size;
   int fill;
   struct iInternalStringList *list;
   struct iInternalStringList *head;

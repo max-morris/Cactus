@@ -80,6 +80,7 @@ uStringList *Util_StringListCreate(int size)
 
     this->current = NULL;
     this->head = NULL;
+    this->max_size = size;
     this->fill=0;
   }
 
@@ -118,6 +119,7 @@ uStringList *Util_StringListCreate(int size)
    1  - added
    0  - duplicate
    -1 - internal error
+   -2 - out of space
    @endreturndesc
 @@*/
 int Util_StringListAdd(uStringList *list, const char *item)
@@ -128,11 +130,18 @@ int Util_StringListAdd(uStringList *list, const char *item)
 
   if(list->fill == 0)
   {
-    list->head = list->list;
-    list->head->string = Util_Strdup(item);
-    list->head->next   = NULL;
-    list->fill++;
-    retval = 1;
+    if (list->max_size < list->fill + 1)
+    {
+      retval = -2;
+    }
+    else
+    {
+      list->head = list->list;
+      list->head->string = Util_Strdup(item);
+      list->head->next   = NULL;
+      list->fill++;
+      retval = 1;
+    }
   }
   else
   {
@@ -142,19 +151,26 @@ int Util_StringListAdd(uStringList *list, const char *item)
     {
       if((position = Util_StrCmpi(item,this->string)) < 0)
       {
-        list->list[list->fill].string = Util_Strdup(item);
-        list->list[list->fill].next   = this;
-        if(prev)
+        if (list->max_size < list->fill + 1)
         {
-          prev->next= &(list->list[list->fill]);
+          retval = -2;
         }
         else
         {
-          list->head=&(list->list[list->fill]);
+          list->list[list->fill].string = Util_Strdup(item);
+          list->list[list->fill].next   = this;
+          if(prev)
+          {
+            prev->next= &(list->list[list->fill]);
+          }
+          else
+          {
+            list->head=&(list->list[list->fill]);
+          }
+            
+          list->fill++;
+          retval = 1;
         }
-
-        list->fill++;
-        retval = 1;
         break;
       }
       else if (position == 0)
@@ -168,11 +184,18 @@ int Util_StringListAdd(uStringList *list, const char *item)
     
     if(!this)
     {
-      list->list[list->fill].string = Util_Strdup(item);
-      list->list[list->fill].next   = NULL;
-      prev->next=&(list->list[list->fill]);
-      list->fill++;
-      retval = 1;
+      if (list->max_size < list->fill + 1)
+      {
+        retval = -2;
+      }
+      else
+      {
+        list->list[list->fill].string = Util_Strdup(item);
+        list->list[list->fill].next   = NULL;
+        prev->next=&(list->list[list->fill]);
+        list->fill++;
+        retval = 1;
+      }
     }
   }
 
