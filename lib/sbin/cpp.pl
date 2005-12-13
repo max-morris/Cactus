@@ -43,8 +43,14 @@ $current_wd = ".";
 # Are we in the middle of a comment ?
 $incomment = 0;
 
+# Number of non-fatal errors encountered
+$errorcount = 0;
+
 ###############################################################################
 ###############################################################################
+
+my $empty_args_warning = 1;
+my $empty_args_error = 0;
 
 # Parse the command line
 ($source_file, $output_file, $do_deps, @include_path) = &ParseCommandLine(@ARGV);
@@ -112,6 +118,13 @@ if($do_deps)
   }
 }
 
+if ($errorcount > 0)
+{
+  # There were non-fatal errors
+  exit 1;
+}
+
+# There were no errors
 exit;
 
 ###############################################################################
@@ -804,13 +817,39 @@ sub ExpandMacro
   my ($macro, $args, $filename, $linenumber) = @_;
 
   my $retcode = 0;
-  my @arguments = &SplitArgs($args);
+  my @arguments;
 
   # SplitArgs returns one (empty) argument for macros without arguments,
   # because it cannot distinguish between no arguments and one empty argument.
   if (@{$defines{$macro}{"ARGS"}} == 0)
   {
     @arguments = ();
+  }
+  else
+  {
+    @arguments = &SplitArgs($args);
+  }
+
+  # Test for empty arguments
+  my $have_empty_args = 0;
+  foreach my $arg (@arguments)
+  {
+    if ($arg eq '')
+    {
+      $have_empty_args = 1;
+    }
+  }
+  if ($have_empty_args)
+  {
+    if ($empty_args_error)
+    {
+      print STDERR "$filename:$linenumber: Error: Empty macro argument\n";
+      ++ $errorcount;
+    }
+    elsif ($empty_args_warning)
+    {
+      print STDERR "$filename:$linenumber: Warning: Empty macro argument\n";
+    }
   }
 
   my $outstring = $defines{$macro}{"BODY"};
