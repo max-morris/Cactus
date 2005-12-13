@@ -219,7 +219,6 @@ void CCTK_FCALL CCTK_FNAME (CCTK_Info)
 int CCTK_VInfo (const char *thorn, const char *format, ...)
 {
   va_list ap;
-  int retval = -1;
   static int info_format_decoded = 0;   /* are the following two flags valid? */
   /* Boolean flags decoded from  cactus::info_format */
   static int info_format_numeric = 0;         /* print a numeric timestamp? */
@@ -340,7 +339,7 @@ int CCTK_VInfo (const char *thorn, const char *format, ...)
   fprintf (stdout, "\n");
   va_end (ap);
 
-  return (0);
+  return 0;
 }
 
 
@@ -467,7 +466,6 @@ int CCTK_VWarn (int level,
   int param_type;
   int myproc;
   va_list ap, aq;
-  int retval = -1;
 
 /* Necessary for wrapping up the final message */
 
@@ -601,7 +599,7 @@ int CCTK_VWarn (int level,
     CCTK_Abort (NULL, 0);
   }
 
-  return (0);
+  return 0;
 }
 
 
