@@ -467,24 +467,24 @@ int CCTK_VWarn (int level,
   int myproc;
   va_list ap, aq;
 
-/* Necessary for wrapping up the final message */
+  /* Necessary for wrapping up the final message */
 
   int msg_size;
   char *message = NULL;
 
-/* Start generating message only if the warbcallback list is not NULL */
+  /* Start generating message only if the warbcallback list is not NULL */
   if(warncallbacks)
   {
     va_start(ap,format);
     msg_size = Util_vsnprintf(NULL, 0, format, ap);
 
-/* Empty string is ok */
+    /* Empty string is ok */
     if(msg_size >= 0)
     {
       message = (char *)malloc(msg_size+1);
     }
     
-/* Try to print in the allocated space. */
+    /* Try to print in the allocated space. */
     if(message)
     {
       va_start(ap,format);
@@ -492,10 +492,10 @@ int CCTK_VWarn (int level,
       va_end(ap);
     } 
 
-/* call the callback function */
+    /* call the callback function */
     CCTKi_WarnCallbacksCall(level,line,file,thorn,message);
 
-/* free the memory allocated for temp messsage */
+    /* free the memory allocated for temp messsage */
     free (message);
   }  
 
