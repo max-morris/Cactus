@@ -35,6 +35,7 @@
 #include "cctki_WarnLevel.h"
 
 #include "util_String.h"
+#include "util_Network.h"
 
 static const char *rcsid = "$Header$";
 CCTK_FILEVERSION(main_WarnLevel_c);
@@ -53,6 +54,8 @@ CCTK_FILEVERSION(main_WarnLevel_c);
 #define BOLD_OFF ""
 #endif
 
+/* maximum buffer length to hold the hostname */
+#define MAXNAMELEN 255
 
 /********************************************************************
  *********************     External Routines   **********************
@@ -471,6 +474,7 @@ int CCTK_VWarn (int level,
 
   int msg_size;
   char *message = NULL;
+  char hostname[MAXNAMELEN+1];
 
   /* Start generating message only if the warbcallback list is not NULL */
   if(warncallbacks)
@@ -503,6 +507,7 @@ int CCTK_VWarn (int level,
   {
 
     myproc = CCTK_MyProc(NULL);
+    Util_GetHostName (hostname, MAXNAMELEN);
 
     cctk_full_warnings_ptr =
       CCTK_ParameterGet ("cctk_full_warnings", "Cactus", &param_type);
@@ -534,10 +539,10 @@ int CCTK_VWarn (int level,
 
       if (level <= error_level || cctk_full_warnings)
       {
-        fprintf (stderr, "WARNING level %d in thorn %s processor %d\n"
+        fprintf (stderr, "WARNING level %d in thorn %s processor %d host %s\n"
                          "  (line %d of %s): \n"
                          "  ->",
-                         level, thorn, myproc, line, file);
+                         level, thorn, myproc, hostname, line, file);
       }
       else
       {
@@ -567,10 +572,10 @@ int CCTK_VWarn (int level,
 
       if (level <= error_level || cctk_full_warnings)
       {
-        fprintf (stdout, "WARNING level %d in thorn %s processor %d\n"
+        fprintf (stdout, "WARNING level %d in thorn %s processor %d host %s\n"
                          "  (line %d of %s): \n"
                          "  ->",
-                         level, thorn, myproc, line, file);
+                         level, thorn, myproc, hostname, line, file);
       }
       else
       {
