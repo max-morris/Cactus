@@ -75,7 +75,7 @@
 #define CCTK_ORIGIN_SPACE(x) (cctk_origin_space(x)+cctk_delta_space(x)/cctk_levfac(x)*cctk_levoff(x)/cctk_levoffdenom(x))
 #define CCTK_DELTA_SPACE(x) (cctk_delta_space(x)/cctk_levfac(x))
 #define CCTK_DELTA_TIME (cctk_delta_time/cctk_timefac)
-#define CCTK_LSSH(stag,dim) cctk_lssh((stag)+CCTK_NSTAGGER+(dim))
+#define CCTK_LSSH(stag,dim) cctk_lssh((stag)+CCTK_NSTAGGER*(dim))
 #define CCTK_LSSH_IDX(stag,dim) ((stag)+CCTK_NSTAGGER*(dim))
 
 #ifdef F90CODE
