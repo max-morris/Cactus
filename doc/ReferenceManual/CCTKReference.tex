@@ -5281,8 +5281,6 @@ int operator_handle, coord_system_handle;
 CCTK_REAL interp_x[N_INTERP_POINTS],
           interp_y[N_INTERP_POINTS],
           interp_z[N_INTERP_POINTS];
-static const CCTK_INT interp_coord_type_codes[N_DIMS]
-        = { CCTK_VARIABLE_REAL, CCTK_VARIABLE_REAL, CCTK_VARIABLE_REAL };
 const void *interp_coords[N_DIMS];
 
 /* input and output arrays */
@@ -5317,7 +5315,7 @@ if (CCTK_InterpGridArrays(GH, N_DIMS,
                           operator_handle,
                           Util_TableCreateFromString("order=4"),
                           coord_system_handle,
-                          N_INTERP_POINTS, interp_coord_type_codes,
+                          N_INTERP_POINTS, CCTK_VARIABLE_REAL,
                                            interp_coords,
                           N_INPUT_ARRAYS, input_array_variable_indices,
                           N_OUTPUT_ARRAYS, output_array_type_codes,
