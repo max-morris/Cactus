@@ -1175,8 +1175,9 @@ end
 \end{Lentry}
 
 Exceptions are the functions that are scheduled in the bins {\tt
-CCTK\_STARTUP} and {\tt CCTK\_SHUTDOWN}.  They do not take arguments,
-but they return an error indicator.  They must be declared as
+CCTK\_STARTUP}, {\tt CCTK\_RECOVER\_PARAMETERS}, and {\tt
+CCTK\_SHUTDOWN}.  They do not take arguments,
+and they return an integer.  They must be declared as
 \begin{Lentry}
 
 \item[In C:]
@@ -1196,8 +1197,12 @@ end
 \end{verbatim}
 \end{Lentry}
 
-The return value is unused, and might in the future be used to
-indicate whether an error occurred.  You should return 0.
+The return value in {\tt CCTK\_STARTUP} and {\tt CCTK\_SHUTDOWN} is
+unused, and might in the future be used to indicate whether an error
+occurred.  You should return 0.  The return value in {\tt
+  CCTK\_RECOVER\_PARAMETERS} should be zero, positive, or negative,
+indicating that no parameters were recovered, that parameters were
+recovered successfully, or that an error occurred, respectively.
 
 
 
@@ -1213,6 +1218,7 @@ indicate whether an error occurred.  You should return 0.
 \item[{\tt CCTK\_RECOVER\_PARAMETERS}]
         Used by thorns with relevant IO methods as the point 
         to read parameters when recovering from checkpoint files.
+        Grid variables are not available in this timebin.
 
 \item[{\tt CCTK\_WRAGH}]
         This timebin is executed when all parameters are known, but
