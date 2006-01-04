@@ -1208,17 +1208,17 @@ recovered successfully, or that an error occurred, respectively.
 
 \begin{Lentry}
 
+\item[{\tt CCTK\_RECOVER\_PARAMETERS}]
+        Used by thorns with relevant IO methods as the point 
+        to read parameters when recovering from checkpoint files.
+        Grid variables are not available in this timebin.
+
 \item[{\tt CCTK\_STARTUP}] 
         Run before any grids are constructed, this is 
         the timebin for example where grid independent information 
         (e.g.\ output methods, reduction operators) is registered. 
         Note that since no grids are setup at this point, grid 
         variables cannot be used in routines scheduled here.
-
-\item[{\tt CCTK\_RECOVER\_PARAMETERS}]
-        Used by thorns with relevant IO methods as the point 
-        to read parameters when recovering from checkpoint files.
-        Grid variables are not available in this timebin.
 
 \item[{\tt CCTK\_WRAGH}]
         This timebin is executed when all parameters are known, but
