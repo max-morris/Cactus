@@ -477,20 +477,31 @@ Safely format data into a caller-supplied buffer.
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_String.h"
-int count = Util_snprintf(char* buffer, size_t size, const char* format,-
-va_list arg)
+int count = Util_vsnprintf(char* buffer, size_t size, const char* format,
+                           va_list arg)
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{Discussion}
-This function is identical to Util\_snprintf, with the exception of accepting its data arguements in the form of a {\tt va\_list}, instead of in the from of a variable length parameter list.  See the entry on {\tt snprintf}-
+This function is identical to \verb|Util_snprintf|, except that it
+takes its data arguements in the form of a \verb|va_list| ``cookie''
+(as defined by \verb|<stdarg.h>|, which is already included by
+\verb|"util_String.h"|), instead of in the from of a variable length
+argument list.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
 \begin{SeeAlso2}{Util\_snprintf}{Util-snprintf}
-Standard C library function which this function tries to clone.
+Similar function which takes a variable length argument list.
 \end{SeeAlso2}
+\begin{SeeAlso}{vsnprintf()}
+Standard C library function which this function tries to clone.
+\end{SeeAlso}
+\begin{SeeAlso}{vsprintf()}
+Unsafe and dangerous C library function similar to \verb|vsnprintf()|,
+which doesn't check the buffer length.
+\end{SeeAlso}
 \end{SeeAlsoSection}
 \end{FunctionDescription}
 
