@@ -4245,7 +4245,7 @@ int Util_TableGetComplex32Array(int handle,
                                 const char *key)
 {
   return internal_get(handle,
-                      CCTK_VARIABLE_COMPLEX16, N_elements, (void *) array,
+                      CCTK_VARIABLE_COMPLEX32, N_elements, (void *) array,
                       key);
 }
 
