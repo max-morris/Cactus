@@ -5405,7 +5405,7 @@ else
 assert(tep->key != NULL);
 free(tep->key);
 
-assert(tep->value != NULL);
+assert(tep->N_elements == 0 || tep->value != NULL);
 free(tep->value);
 
 free(tep);
