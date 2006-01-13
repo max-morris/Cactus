@@ -677,7 +677,10 @@ from Fortran.
   Synchronize the ghost zones for a group of variables
 
 \item[\code{CCTK\_TerminateNext}] [\pageref{CCTK-TerminateNext}]
-  Flags a Cactus simulation to terminate after the next iteration
+  Causes a Cactus simulation to terminate after the next iteration
+
+\item[\code{CCTK\_TerminationReached}] [\pageref{CCTK-TerminationReached}]
+  Returns true if {\tt CCTK\_TerminateNext} has been called.
 
 \item[\code{CCTK\_ThornImplementation}]
   [\pageref{CCTK-ThornImplementation}]
@@ -9695,7 +9698,7 @@ the preferred method from synchronising variables.
 %Entering a function descrpition for CCTK\_TerminateNext
 \begin{FunctionDescription}{CCTK\_TerminateNext}
 \label{CCTK-TerminateNext}
-Flags a Cactus simulation to terminate after the next iteration
+Causes a Cactus simulation to terminate after present iteration finishes
 
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -9716,16 +9719,68 @@ CCTK_POINTER_TO_CONST    cctkGH
 \end{SynopsisSection}
 
 \begin{ParameterSection}
-\begin{Parameter}{cctkGH ($\ne$ NULL)}
-Pointer to a valid Cactus grid hierarchy.
+\begin{Parameter}{cctkGH}
+Pointer to a Cactus grid hierarchy.
 \end{Parameter}
 \end{ParameterSection}
 
 \begin{Discussion}
-This function triggers unconditional termination of Cactus after the next iteration.
+This function triggers unconditional termination of Cactus after the
+present iteration.
 It bypasses all other termination conditions specified in the
 {\t Cactus::terminate} keyword parameter.
+
+At this time, the {\tt cctkGH} parameter does nothing.
 \end{Discussion}
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_TerminationReached}{CCTK-TerminationReached}
+  Returns true if {\tt CCTK\_TerminateNext} has been called.
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\end{FunctionDescription}
+
+
+%Entering a function description for CCTK\_TerminationReached
+\begin{FunctionDescription}{CCTK\_TerminationReached}
+\label{CCTK-TerminationReached}
+Returns true if {\tt CCTK\_TerminateNext} has been called.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+void CCTK_TerminationReached (const cGH *cctkGH)
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+#include "cctk.h"
+
+call CCTK_TerminationReached (cctkGH)
+CCTK_POINTER_TO_CONST    cctkGH
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{cctkGH}
+Pointer to a Cactus grid hierarchy.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Returns true if Cactus has been requested to terminate after the present
+iteration by the {\tt CCTK\_TerminateNext} function.
+
+At this time, the {\tt cctkGH} parameter does nothing.
+\end{Discussion}
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_TerminateNext}{CCTK-TerminateNext}
+  Causes a Cactus simulation to terminate after the present iteration.
+\end{SeeAlso2}
+\end{SeeAlsoSection}
 
 \end{FunctionDescription}
 
