@@ -1941,8 +1941,14 @@ incorporate the effects of \texttt{cctk\_levfac}, \texttt{cctk\_levoff},
 \texttt{cctk\_levoffdenom}, and \texttt{cctk\_timefac}, so that you do not
 explicitly have to take them into account.
 
-Putting the above information together, the global Cactus $xyz$
-coordinates of the current grid point can be calculated as follows:
+Putting the above information together, figure~\ref{fig-global-xyz-coords}
+shows two different ways to compute the global Cactus $xyz$ coordinates
+of the current grid point.  Because the ``alternate calculation'' (the
+one using \verb|Grid::x|, \verb|Grid::y|, and \verb|Grid::z|) gives the
+true global $xyz$ coordinates even in a multipatch/multiblock context,
+this is generally the preferred form for general use.
+
+\begin{figure}[bp]
 \begin{verbatim}
 #include "cctk.h"
 
@@ -1959,11 +1965,13 @@ int i,j,k;
     const int posn = CCTK_GFINDEX3D(cctkGH, i,j,k);
 
     /* calculate the global xyz coordinates of the (i,j,k) grid point */
+    /* (in a multipatch/multiblock context, this gives the per-patch coordinates) */
     const CCTK_REAL xcoord = CCTK_ORIGIN_SPACE(0) + (cctk_lbnd[0] + i)*CCTK_DELTA_SPACE(0);
     const CCTK_REAL ycoord = CCTK_ORIGIN_SPACE(1) + (cctk_lbnd[1] + j)*CCTK_DELTA_SPACE(1);
     const CCTK_REAL zcoord = CCTK_ORIGIN_SPACE(2) + (cctk_lbnd[2] + k)*CCTK_DELTA_SPACE(2);
 
-    /* an alternate calculation if this thorn inherits from  Grid */
+    /* an alternate calculation, which requires that this thorn inherit from  Grid */
+    /* (in a multipatch/multiblock context, this gives the true global xyz coordinates) */
     const CCTK_REAL xcoord2 = /* Grid:: */ x[posn];
     const CCTK_REAL ycoord2 = /* Grid:: */ y[posn];
     const CCTK_REAL zcoord2 = /* Grid:: */ z[posn];
@@ -1972,6 +1980,16 @@ int i,j,k;
     }
 }
 \end{verbatim}
+\caption{%%%
+	This figure shows two different ways to compute the global
+	Cactus $xyz$ coordinates of the current grid point.  Because
+	the ``alternate calculation'' (the one one using \texttt{Grid::x},
+	\texttt{Grid::y}, and \texttt{Grid::z}) gives the true global
+	$xyz$ coordinates even in a multipatch/multiblock context,
+	this is generally the preferred form for general use.
+	}
+\label{fig-global-xyz-coords}
+\end{figure}
 
 \subsection{Cactus Data Types}
 
