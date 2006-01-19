@@ -1863,12 +1863,7 @@ CCTK\_REAL}s with the grid spacing in each direction.
 %\item [\texttt{cctk\_to}] ... end loops.
 \item [\texttt{cctk\_origin\_space}] An array of \texttt{cctk\_dim} {\tt
       CCTK\_REAL}s with the spatial coordinates of the global origin
-      of the grid.  The coordinates of the $i$th local grid point in
-      the $x$ direction can in C be calculated by \texttt{x =
-      CCTK\_ORIGIN\_SPACE(0) + (cctk\_lbnd[0] + i) *
-      CCTK\_DELTA\_SPACE(0)}, and in Fortran by \texttt{x =
-      CCTK\_ORIGIN\_SPACE(1) + (cctk\_lbnd(1) + i - 1) *
-      CCTK\_DELTA\_SPACE(1)}.
+      of the grid.
 \item [\texttt{cctk\_lssh}]  This is an internal array used to hold
 array extents for staggering.  One should use the macro CCTK\_LSSH(,)
 to access its elements.
@@ -1945,6 +1940,38 @@ step sizes, and spatial origins in your thorns.  In doing so, you
 incorporate the effects of \texttt{cctk\_levfac}, \texttt{cctk\_levoff},
 \texttt{cctk\_levoffdenom}, and \texttt{cctk\_timefac}, so that you do not
 explicitly have to take them into account.
+
+Putting the above information together, the global Cactus $xyz$
+coordinates of the current grid point can be calculated as follows:
+\begin{verbatim}
+#include "cctk.h"
+
+void MyThorn_MyFunction(CCTK_ARGUMENTS)
+{
+int i,j,k;
+
+    for (k = 0 ; k < cctk_lsh[2] ; ++k)
+    {
+    for (j = 0 ; j < cctk_lsh[1] ; ++j)
+    {
+    for (i = 0 ; i < cctk_lsh[0] ; ++i)
+    {
+    const int posn = CCTK_GFINDEX3D(cctkGH, i,j,k);
+
+    /* calculate the global xyz coordinates of the (i,j,k) grid point */
+    const CCTK_REAL xcoord = CCTK_ORIGIN_SPACE(0) + (cctk_lbnd[0] + i)*CCTK_DELTA_SPACE(0);
+    const CCTK_REAL ycoord = CCTK_ORIGIN_SPACE(1) + (cctk_lbnd[1] + j)*CCTK_DELTA_SPACE(1);
+    const CCTK_REAL zcoord = CCTK_ORIGIN_SPACE(2) + (cctk_lbnd[2] + k)*CCTK_DELTA_SPACE(2);
+
+    /* an alternate calculation if this thorn inherits from  Grid */
+    const CCTK_REAL xcoord2 = /* Grid:: */ x[posn];
+    const CCTK_REAL ycoord2 = /* Grid:: */ y[posn];
+    const CCTK_REAL zcoord2 = /* Grid:: */ z[posn];
+    }
+    }
+    }
+}
+\end{verbatim}
 
 \subsection{Cactus Data Types}
 
