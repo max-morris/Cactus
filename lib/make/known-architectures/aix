@@ -51,7 +51,7 @@ else
 
   # Fortran compilers
   : ${F90FLAGS="-q$AIX_BITS -qmaxmem=-1 -qspill=10000"}
-  : ${F77FLAGS="-q$AIX_BITS -qmaxmem=-1 -qfixed"}
+  : ${F77FLAGS="-q$AIX_BITS -qmaxmem=-1"}
   : ${F90_OPTIMISE_FLAGS='-O5'}
   : ${F77_OPTIMISE_FLAGS='-O5'}
   : ${F90_DEBUG_FLAGS='-g'}
@@ -59,8 +59,11 @@ else
 
   : ${F90_SUFFIX='f'}
   CCTK_WriteLine make.arch.defn 'F90FLAGS += $(AIX_$(subst .,,$(suffix $<))_FLAGS)'
+  CCTK_WriteLine make.arch.defn 'F77FLAGS += $(AIX_$(subst .,,$(suffix $<))_FLAGS)'
   CCTK_WriteLine make.arch.defn 'AIX_F90_FLAGS ='
   CCTK_WriteLine make.arch.defn 'AIX_f90_FLAGS ='
+  CCTK_WriteLine make.arch.defn 'AIX_F77_FLAGS = -qfixed'
+  CCTK_WriteLine make.arch.defn 'AIX_f77_FLAGS = -qfixed'
   CCTK_WriteLine make.arch.defn 'AIX_F_FLAGS = -qfixed'
   CCTK_WriteLine make.arch.defn 'AIX_f_FLAGS = -qfixed'
   FPP='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl'

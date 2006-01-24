@@ -6,7 +6,7 @@
 #    @desc
 #               Known-architectures file for IBM Bluegene/L systems
 #    @enddesc
-#    @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/bgl,v 1.2 2006-01-22 17:35:46 goodale Exp $
+#    @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/bgl,v 1.3 2006-01-24 15:08:03 schnetter Exp $
 #  @@*/
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
@@ -43,7 +43,7 @@ else
   cross_compiling=yes
   # Fortran compilers
   : ${F90FLAGS="-qmaxmem=64000"}
-  : ${F77FLAGS="-qmaxmem=64000 -qfixed"}
+  : ${F77FLAGS="-qmaxmem=64000"}
   : ${F90_OPTIMISE_FLAGS='-O2 -qarch=440'}
   : ${F77_OPTIMISE_FLAGS='-O2 -qarch=440'}
   : ${F90_DEBUG_FLAGS='-g'}
