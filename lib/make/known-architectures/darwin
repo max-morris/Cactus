@@ -6,7 +6,7 @@
 #   @desc
 #            Known architecture stuff for MacOS X (Darwin)
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.12 2006-01-24 15:08:03 schnetter Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.13 2006-01-27 16:41:12 schnetter Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
@@ -33,7 +33,28 @@ if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
     echo Setting FPPFLAGS to $FPPFLAGS
   fi
 
+  if test -z "$F90" ; then
+    echo Setting F90 compiler to gfortran
+    F90=gfortran
+  fi
+
 else
+
+  if test "`$CC --version 2>&1 | head -n 1 | grep -i gcc`" ; then
+      MAC_C_COMP=gcc
+  elif test "`$CC -version 2>&1 | grep xlc`" ; then
+      MAC_C_COMP=ibm
+  else
+      MAC_C_COMP=unknown
+  fi
+
+  if test "`$CXX --version 2>&1 | head -n 1 | grep -i gcc`" ; then
+      MAC_CXX_COMP=gcc
+  elif test "`$CXX -version 2>&1 | grep xlc`" ; then
+      MAC_CXX_COMP=ibm
+  else
+      MAC_CXX_COMP=unknown
+  fi
 
   # Find out which CPP we are using and its version
 
@@ -49,8 +70,11 @@ else
       CPP_VERSION_MINOR="`echo $CPP_VERSION | sed 's:\([^. ]*\)\.\([^. ]*\).*:\2:'`"
   fi
 
-  # C_DEPEND='$(CC) -M $(CFLAGS) $(CPPFLAGS)'
-  if test -e '/usr/lib/gcc/darwin/3.3' ; then
+  if test "$MAC_C_COMP" = "gcc" ; then
+    C_DEPEND='$(CC) -M $(CPPFLAGS)'
+    CXX_DEPEND='$(CXX) -M $(CPPFLAGS)'
+  elif test -e '/usr/lib/gcc/darwin/3.3' ; then
+    # This is dangerous -- it could pick up the wrong gcc
     C_DEPEND='gcc -M -no-cpp-precomp $(CPPFLAGS)'
     CXX_DEPEND='g++ -E -M $(CPPFLAGS)'
   else
@@ -58,29 +82,15 @@ else
     CXX_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'
   fi
 
-  if test "`$CC -version 2>&1 | head -1 | grep -i gcc`" ; then
-      MAC_C_COMP=gcc
-  elif test "`$CC -version 2>&1 | grep xlc`" ; then
-      MAC_C_COMP=ibm
-  else
-      MAC_C_COMP=unknown
-  fi
-
-  if test "`$CXX -version 2>&1 | head -1 | grep -i gcc`" ; then
-      MAC_CXX_COMP=gcc
-  elif test "`$CXX -version 2>&1 | grep xlc`" ; then
-      MAC_CXX_COMP=ibm
-  else
-      MAC_CXX_COMP=unknown
-  fi
-
   # Determine which Fortran 90 compiler is in use
   MAC_F90_COMP=none
   if test -n "$F90" && test "$F90" != 'none' ; then
     if test "`$F90 -version 2>&1 | grep xlf`" ; then
-	MAC_F90_COMP=ibm
+      MAC_F90_COMP=ibm
     elif test "`$F90 -? 2>&1 | grep -i absoft`" ; then
-	MAC_F90_COMP=absoft
+      MAC_F90_COMP=absoft
+    elif test "`$F90 --version 2>&1 | head -n 1 | grep -i gcc`" ; then
+      MAC_F90_COMP=gcc
     else
       # Ok, those were the easy ones, now try more
       # obscure things
@@ -104,6 +114,8 @@ else
       MAC_F77_COMP=ibm77
     elif test "`$F77 -? 2>&1 | grep -i absoft`" ; then
       MAC_F77_COMP=absoft77
+    elif test "`$F77 --version 2>&1 | head -n 1 | grep -i gcc`" ; then
+      MAC_F77_COMP=gcc
     else
       echo Unknown MacOS X f77 compiler.
       echo Please add appropriate information to
@@ -117,7 +129,8 @@ else
  
   case "$MAC_C_COMP" in
       gcc)
-      : ${CFLAGS="-no-cpp-precomp"}
+      CC_VERSION="`$CC --version 2>&1 | head -n 1`"
+      : ${CFLAGS="-no-cpp-precomp -mlongcall"}
       ;;
       *)
       :
@@ -126,7 +139,8 @@ else
 
   case "$MAC_CXX_COMP" in
       gcc)
-      : ${CXXFLAGS="-no-cpp-precomp"}
+      CXX_VERSION="`$CXX --version 2>&1 | head -n 1`"
+      : ${CXXFLAGS="-no-cpp-precomp -mlongcall"}
       ;;
       *)
       :
@@ -160,6 +174,13 @@ else
       : ${F90_DEBUG_FLAGS='-g'}
       : ${F77_WARN_FLAGS='-m0'}
       : ${F90_WARN_FLAGS='-m0'}
+      ;;
+    gcc)
+      F77_VERSION="`$F77 --version 2>&1 | head -n 1`"
+      F90_VERSION="`$F90 --version 2>&1 | head -n 1`"
+      : ${F77FLAGS='-mlongcall'}
+      : ${F90FLAGS='-mlongcall'}
+      : ${LIBS='gfortran'}
       ;;
     ibm)
 #      : ${LD='xlC'}
