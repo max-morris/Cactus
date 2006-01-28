@@ -822,15 +822,28 @@ and has a working directory of \texttt{<config>/build/<thorn\_name>} .
 \subsection{Other makefile variables}
 
 \begin{itemize}
-\item \texttt{CC}
-\item \texttt{CXX}
-\item \texttt{F90}
-\item \texttt{F77}
-\item \texttt{CFLAGS}
-\item \texttt{CXXFLAGS}
-\item \texttt{F90FLAGS}
-\item \texttt{F77FLAGS}
-\item \texttt{LD}
+\item \texttt{CPP}: The C preprocessor which is used to preprocess C
+  and C++ source code, and to determine the C and C++ make
+  dependencies
+\item \texttt{FPP}: The C preprocessor which is used to preprocess
+  Fortran source code
+\item \texttt{CPPFLAGS}: Flags which are passed to \texttt{CPP}, to
+  \texttt{CC}, and to \texttt{CXX}
+\item \texttt{FPPFLAGS}: Flags which are passed to \texttt{FPP}
+\item \texttt{CC}: The C compiler
+\item \texttt{CXX}: The C++ compiler
+\item \texttt{F77}: The Fortran 77 compiler.  This is only used if
+  there is no Fortran 90 compilers
+\item \texttt{F90}: The Fortran 90 compiler.  If this variables is
+  set, it is also used to compile Fortran 77 files
+\item \texttt{CFLAGS}: Flags which are passed to \texttt{CC}
+\item \texttt{CXXFLAGS}: Flags which are passed to \texttt{CXX}
+\item \texttt{F77FLAGS}: Flags which are passed to \texttt{F77}
+\item \texttt{F90FLAGS}: Flags which are passed to \texttt{F90}
+\item \texttt{LD}: The binder.  This should not be directly
+  \texttt{ld}, but should be a compiler driver such as \texttt{c++}.
+  Often, \texttt{LD} is the same as \texttt{CXX}
+\item \texttt{LDFLAGS}: Flags which are passed to \texttt{LD}
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
