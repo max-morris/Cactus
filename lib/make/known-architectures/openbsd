@@ -6,7 +6,7 @@
 #   @desc
 #              generic known-architectures file for all versions of OpenBSD
 #   @enddesc 
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/openbsd,v 1.4 2006-01-27 11:36:57 jthorn Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/openbsd,v 1.5 2006-01-31 17:09:37 jthorn Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
@@ -25,7 +25,7 @@ else
   if test -n "$F90" -a "`$F90 --version 2>&1 | grep -i 'GNU Fortran'`" ; then
     : ${F90_WARN_FLAGS='-Wall'}
     : ${LIBS='gfortran m'}
-echo "##DEBUG## got LIBS :${LIBS}:"
+  ##echo "##DEBUG## got LIBS :${LIBS}:"
   fi
 
   ARFLAGS=-ruc
