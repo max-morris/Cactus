@@ -6,7 +6,7 @@
 #   @desc
 #            Known architecture stuff for MacOS X (Darwin)
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.13 2006-01-27 16:41:12 schnetter Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.14 2006-02-02 16:50:18 schnetter Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
@@ -31,11 +31,6 @@ if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
 
     echo Setting FPP to $FPP
     echo Setting FPPFLAGS to $FPPFLAGS
-  fi
-
-  if test -z "$F90" ; then
-    echo Setting F90 compiler to gfortran
-    F90=gfortran
   fi
 
 else
