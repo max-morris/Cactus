@@ -539,6 +539,8 @@ int CCTK_ParameterSet (const char *name, const char *thorn, const char *value)
 
   if (param)
   {
+    old_value = CCTK_ParameterValString (param->props->name,
+                                         param->props->thorn);
 
     if(param->array)
     {
@@ -550,8 +552,8 @@ int CCTK_ParameterSet (const char *name, const char *thorn, const char *value)
     else if(param->props->accumulator_expression)
     {
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                  "CCTK_ParameterSet: Cannot set accumulator parameter '%s::%s' directly"
-                  , thorn, name);
+                  "CCTK_ParameterSet: Cannot set accumulator parameter '%s::%s'"
+                  " directly", thorn, name);
       retval = -7;
     }
     /* before parameter recovery (which is while parsing the parameter file)
@@ -572,12 +574,15 @@ int CCTK_ParameterSet (const char *name, const char *thorn, const char *value)
        from the parameter file are overwritten by the checkpoint file */
       if (param->props->steerable == CCTK_STEERABLE_NEVER)
       {
-        CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
-                    "CCTK_ParameterSet: Non-steerable parameter '%s::%s' is "
-                    "not set from the parameter file but recovered from the "
-                    "checkpoint file",
-                    thorn, name);
-        retval = ParameterSet (param, value);
+        if (strcmp (old_value, value))
+        {
+          CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+                      "CCTK_ParameterSet: Non-steerable parameter '%s::%s' is "
+                      "not set from the parameter file but recovered from the "
+                      "checkpoint file",
+                      thorn, name);
+          retval = ParameterSet (param, value);
+        }
       }
       else
       {
@@ -589,13 +594,6 @@ int CCTK_ParameterSet (const char *name, const char *thorn, const char *value)
     }
     else
     {
-      if (cctk_parameter_set_mask == PARAMETER_RECOVERY_PRE &&
-          param->props->n_set > 0)
-      {
-        old_value = CCTK_ParameterValString (param->props->name,
-                                             param->props->thorn);
-      }
-
       retval = ParameterSet (param, value);
 
       /* check if a parameter is set more than once in a parfile */
@@ -608,13 +606,14 @@ int CCTK_ParameterSet (const char *name, const char *thorn, const char *value)
                                                param->props->thorn);
           retval = strcmp (old_value, new_value) ? -10 : -11;
         }
-        free (old_value);
         free (new_value);
       }
 
       /* register another set operation */
       param->props->n_set++;
     }
+
+    free (old_value);
   }
   else
   {
