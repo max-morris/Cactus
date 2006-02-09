@@ -1964,6 +1964,7 @@ this is generally the preferred form for general use.
 
 \begin{figure}[bp]
 \begin{verbatim}
+#include <stddef.h>                     /* defines size_t */
 #include "cctk.h"
 
 void MyThorn_MyFunction(CCTK_ARGUMENTS)
@@ -1976,7 +1977,7 @@ int i,j,k;
     {
     for (i = 0 ; i < cctk_lsh[0] ; ++i)
     {
-    const int posn = CCTK_GFINDEX3D(cctkGH, i,j,k);
+    const size_t posn = CCTK_GFINDEX3D(cctkGH, i,j,k);
 
     /* calculate the global xyz coordinates of the (i,j,k) grid point */
     /* (in a multipatch/multiblock context, this gives the per-patch coordinates) */
