@@ -121,7 +121,7 @@
 #ifdef CCODE
 
 /* get the definition of ptrdiff_t */
-#include <stdlib.h>
+#include <stddef.h>
 
 #include "cGH.h"
 
