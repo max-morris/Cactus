@@ -381,7 +381,7 @@ from Fortran.
   Macro to print a single string as an information message to screen
 
 \item[\code{CCTK\_InfoCallbackRegister}] [\pageref{CCTK-INFOCallbackRegister}]
-  Register one or more routines for dealing with information messages 
+  Register one or more routines for dealing with information messages
   in addition to printing them to screen
 
 \item[\code{CCTK\_InterpGridArrays}] [\pageref{CCTK-InterpGridArrays}]
@@ -495,7 +495,7 @@ from Fortran.
 
 \item[\code{CCTK\_NumReductionArraysGloballyOperators}] [\pageref{CCTK-NumReductionArraysGloballyOperators}]
   The number of global array reduction operators registered
-  
+
 \item[\code{CCTK\_NumTimeLevels}] [\pageref{CCTK-NumTimeLevels}]
   Returns the number of active timelevels from a group name
   \textbf{(deprecated)}
@@ -600,7 +600,7 @@ from Fortran.
 
 \item[\code{CCTK\_ReduceArraysGlobally}] [\pageref{CCTK-ReduceArraysGlobally}]
   Reduces a list of local arrays globally
-  
+
 \item[\code{CCTK\_ReduceGridArrays}] [\pageref{CCTK-ReduceGridArrays}]
   Reduces a list of local arrays (new grid array reduction API)
 
@@ -610,9 +610,9 @@ from Fortran.
   from a Fortran routine
 
 %\item[\code{CCTK\_Reduce}]
-%  [\pageref{CCTK-Reduce}]   
+%  [\pageref{CCTK-Reduce}]
 %  Perform a reduction operation using a registered operator
-  
+
 \item[\code{CCTK\_ReductionHandle}] [\pageref{CCTK-ReductionHandle}]
   Get the handle for a registered reduction operator
 
@@ -665,7 +665,7 @@ from Fortran.
 \item[\code{CCTK\_RegisterReduceArraysGloballyOperator}]
   [\pageref{CCTK-RegisterReduceArraysGloballyOperator}]
   Register a function as providing a global array reduction operation
-  
+
 \item[\code{CCTK\_RegisterReductionOperator}]
   [\pageref{CCTK-RegisterReductionOperator}]
   Register a function as providing a reduction operation
@@ -765,7 +765,7 @@ from Fortran.
   possibly stop the code
 
 \item[\code{CCTK\_WarnCallbackRegister}] [\pageref{CCTK-WARNCallbackRegister}]
-  Register one or more routines for dealing with warning messages in addition 
+  Register one or more routines for dealing with warning messages in addition
   to printing them to standard error
 
 \end{Lentry}
@@ -4859,7 +4859,7 @@ call CCTK_INFO(message)
 
 \begin{FunctionDescription}{CCTK\_InfoCallbackRegister}
 \label{CCTK-INFOCallbackRegister}
-Register one or more routines for dealing with information messages in 
+Register one or more routines for dealing with information messages in
 addition to printing them to screen
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -4900,7 +4900,7 @@ back routine.
 \end{ParameterSection}
 
 \begin{Discussion}
- 
+
 This function can be used by thorns to register their own routines to
 deal with information messages. The registered function pointers will be
 stored in a pointer chain. When \verb|CCTK_VInfo()| is called, the
@@ -4918,7 +4918,7 @@ screen
 \end{SeeAlso}
 
 \begin{SeeAlso}{CCTK\_WarnCallbackRegister}
-Register one or more routines for dealing with warning messages in addition 
+Register one or more routines for dealing with warning messages in addition
 to printing them to standard error
 \end{SeeAlso}
 
@@ -5697,6 +5697,36 @@ int status
                              int N_output_arrays,
                                const CCTK_INT output_array_type_codes[],
                                void *const output_arrays[]);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_InterpLocalUniform(status,
+.                            N_dims,
+.                            operator_handle,
+.                            param_table_handle,
+.                            coord_origin,
+.                            coord_delta,
+.                            N_interp_points,
+.                              interp_coords_type_code,
+.                              interp_coords,
+.                            N_input_arrays,
+.                              input_array_dims,
+.                              input_array_type_codes,
+.                              input_arrays,
+.                            N_output_arrays,
+.                              output_array_type_codes,
+.                              output_arrays)
+integer      status
+integer      operator_handle, param_table_handle
+integer      N_dims, N_interp_points, N_input_arrays, N_output_arrays
+CCTK_REAL    coord_origin(N_dims), coord_delta(N_dims)
+integer      interp_coords_type_code
+CCTK_POINTER interp_coords(N_dims)
+CCTK_INT     input_array_dims(N_dims), input_array_type_codes(N_input_arrays)
+CCTK_POINTER input_arrays(N_input_arrays)
+CCTK_INT     output_array_type_codes(N_output_arrays)
+CCTK_POINTER output_arrays(N_output_arrays)
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
@@ -6497,7 +6527,7 @@ status = CCTK_IsThornActive(thorn_name)
 
 \begin{ResultSection}
 \begin{Result}{status}
-This function returns a non-zero value if thorn 
+This function returns a non-zero value if thorn
 \code{thorn\_name} was activated in a parameter file,
 and zero otherwise.
 \end{Result}
@@ -8205,7 +8235,7 @@ end subroutine
 
 \begin{ResultSection}
 \begin{Result}{valstring}
-Pointer to parameter value as string.  \emph{The memory for this string 
+Pointer to parameter value as string.  \emph{The memory for this string
 must be released with a call to} \code{free()} \emph{after it has been used.}
 \end{Result}
 \end{ResultSection}
@@ -8224,8 +8254,8 @@ or $-1$ if the parameter doesn't exist
 \end{Parameter}
 \begin{Parameter}{value}
 On exit, contains as many characters of the stringified parameter value as
-fit into the Fortran string provided.  
-You should check for truncation by comparing \code{nchars} against the length 
+fit into the Fortran string provided.
+You should check for truncation by comparing \code{nchars} against the length
 of your Fortran string.
 \end{Parameter}
 \end{ParameterSection}
@@ -10642,16 +10672,16 @@ use one of the following macros, defined in \verb|"cctk_WarnLevel.h"|
 (which is \verb|#include|d by \verb|"cctk.h"|):
 \begin{verbatim}
 #define CCTK_WARN_ABORT    0    /* abort the Cactus run */
-#define CCTK_WARN_ALERT    1    /* the results of this run will probably */     
+#define CCTK_WARN_ALERT    1    /* the results of this run will probably */
                                 /* be wrong, but this isn't quite certain, */
                                 /* so we're not going to abort the run */
 #define CCTK_WARN_COMPLAIN 2    /* the user should know about this, but */
                                 /* the results of this run are probably ok */
 #define CCTK_WARN_PICKY    3    /* this is for small problems that can */
                                 /* probably be ignored, but that careful */
-                                /* people may want to know about */     
+                                /* people may want to know about */
 #define CCTK_WARN_DEBUG    4    /* these messages are probably useful */
-                                /* only for debugging purposes */     
+                                /* only for debugging purposes */
 \end{verbatim}
 
 For example, to provide a warning for a serious problem, which
@@ -10790,7 +10820,7 @@ call CCTK_WARN(CCTK_WARN_ALERT, message)
 
 \begin{FunctionDescription}{CCTK\_WarnCallbackRegister}
 \label{CCTK-WARNCallbackRegister}
-Register one or more routines for dealing with warning messages in 
+Register one or more routines for dealing with warning messages in
 addition to printing them to standard error
 
 \begin{SynopsisSection}
@@ -10812,7 +10842,7 @@ CCTK_WarnCallbackRegister(int minlevel,
 \begin{Parameter}{minlevel}
 The minimum warning level to use.
 
-You can find a detailed discussion of the Cactus macros for standard 
+You can find a detailed discussion of the Cactus macros for standard
 warning levels on page~\pageref{CCTK-VInfo}. Both minlevel and maxlevel follow
 that definition.
 
@@ -10829,7 +10859,7 @@ routine
 \end{Parameter}
 
 \begin{Parameter}{callback}
-The function pointer pointing to the call back function dealing with 
+The function pointer pointing to the call back function dealing with
 warning messages. The definition of the function pointer is:
 \begin{verbatim}
 
@@ -10843,19 +10873,19 @@ typedef void (*cctk_warnfunc)(int level,
 \end{verbatim}
 
 The argument list is the same as those in \verb|CCTK_Warn()|
-(see the footnote of \verb|CCTK_WARN()| page~\pageref{CCTK-WARN}) 
-except an extra void pointer to hold the information about the call 
+(see the footnote of \verb|CCTK_WARN()| page~\pageref{CCTK-WARN})
+except an extra void pointer to hold the information about the call
 back routine.
- 
+
 \end{Parameter}
 
 \end{ParameterSection}
 
 \begin{Discussion}
-This function can be used by thorns to register their own routines to 
-deal with warning messages. The registered function pointers will be 
-stored in a pointer chain. When \verb|CCTK_VWarn()| is called, the 
-registered routines will be called in the same order as they get 
+This function can be used by thorns to register their own routines to
+deal with warning messages. The registered function pointers will be
+stored in a pointer chain. When \verb|CCTK_VWarn()| is called, the
+registered routines will be called in the same order as they get
 registered in addition to dumping warning messages to \code{stderr}.
 
 The function can only be called in C.
@@ -10863,12 +10893,12 @@ The function can only be called in C.
 
 \begin{SeeAlsoSection}
 \begin{SeeAlso}{CCTK\_InfoCallbackRegister()}
-Register one or more routines for dealing with information messages in 
+Register one or more routines for dealing with information messages in
 addition to printing them to screen
 \end{SeeAlso}
 
 \begin{SeeAlso}{CCTK\_VWarn()}
-Prints a formatted string with a variable argument list as a warning message 
+Prints a formatted string with a variable argument list as a warning message
 to standard error and possibly stops the code
 \end{SeeAlso}
 
