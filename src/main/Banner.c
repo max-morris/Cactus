@@ -24,6 +24,10 @@
 #include "util_Network.h"
 #include "util_String.h"
 
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
 static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_Banner_c);
@@ -91,18 +95,22 @@ void CCTKi_CactusBanner (void)
   puts (banner);
   puts (delimiter);
 
-  printf ("Cactus version: %s\n", CCTK_FullVersion ());
-  printf ("Compile date:   %s (%s)\n", CCTK_CompileDate (), CCTK_CompileTime());
+  printf ("Cactus version:    %s\n", CCTK_FullVersion ());
+  printf ("Compile date:      %s (%s)\n", CCTK_CompileDate (), CCTK_CompileTime());
   Util_CurrentDate (DATALENGTH, buffer);
-  printf ("Run date:       %s", buffer);
+  printf ("Run date:          %s", buffer);
   Util_CurrentTime (DATALENGTH, buffer);
   printf (" (%s)\n", buffer);
   Util_GetHostName (buffer, DATALENGTH);
-  printf ("Run host:       %s\n", buffer);
+  printf ("Run host:          %s\n", buffer);
+  if (getcwd (buffer, DATALENGTH))
+  {
+    printf ("Working directory: %s\n", buffer);
+  }
   CCTK_CommandLine (&commandargs);
-  printf ("Executable:     %s\n", commandargs[0]);
+  printf ("Executable:        %s\n", commandargs[0]);
   CCTK_ParameterFilename (DATALENGTH, buffer);
-  printf ("Parameter file: %s\n", buffer);
+  printf ("Parameter file:    %s\n", buffer);
 
   puts (delimiter);
 }
