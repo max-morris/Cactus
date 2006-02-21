@@ -332,11 +332,13 @@ There are three ways to pass options to the configuration process.
     The options file has the same format as \texttt{\$\{HOME\}/.cactus/config}.
 
   \item[2]{}
-    Add the options to a configuration file and use,
+    Add options to a configuration file and use,
 
     \texttt{gmake <\var{config name}>-config  options=<\var{filename}>}
 
     The options file has the same format as \texttt{\$\{HOME\}/.cactus/config}.
+    (Note these options are \emph{added} to those from the 
+    \texttt{\$\{HOME\}/.cactus/config} file.)
 
   \item[3]{}
     Pass the options individually on the command line,
@@ -1171,7 +1173,8 @@ a parameter file is then
 \texttt{./cactus\_<\var{config}> <\var{parameter file}>
 [\var{command line options}]}
 
-or if the parameter file should be taken from standard input
+or if the parameter file should be taken from standard input by appending
+a dash (``-'') on the command line like this:
 
 \texttt{./cactus\_<\var{config}> [\var{command line options}] -}
 
@@ -1183,7 +1186,7 @@ creating thorn documentation.
 \section{Command Line Options}
 \label{sec:command_line_options}
 
-The Cactus executable accepts numerous command line arguments:
+The Cactus executable accepts these command line arguments:
 
 \texttt{
 \begin{tabular}{|l|l|}
@@ -1223,23 +1226,23 @@ Short Version & Long Version \\
 
 \begin{Lentry}
 \item [\texttt{-O} or \texttt{-describe-all-parameters}]
-Produces a full list of all parameters from all thorns which were compiled,
+Prints a full list of all parameters from all thorns which were compiled,
 along with descriptions and allowed values.  This can take an optional extra
 parameter \texttt{v}  (i.e. \texttt{-Ov} to give verbose information about
 all parameters).
 \item [\texttt{-o<\var{param}>} or \texttt{-describe-parameter=<\var{param}>}]
-Produces the description and allowed values for a given parameter --- takes one
+Prints the description and allowed values for a given parameter --- takes one
 argument.
 \item [\texttt{-S} or \texttt{-print-schedule}]
 Print only the schedule tree.
 \item [\texttt{-T} or \texttt{-list-thorns}]
-Produces a list of all the thorns which were compiled in.
+Prints a list of all the thorns which were compiled in.
 \item [\texttt{-t<\var{arrangement or thorn}>} or \texttt{-test-thorn-compiled=<\var{arrangement or thorn>}} ]
 Checks if a given thorn was compiled in --- takes one argument.
 \item [\texttt{-h}, \texttt{-?} or \texttt{-help}]
-Produces a help message.
+Prints a help message.
 \item [\texttt{-v} or \texttt{-version}]
-Produces version information of the code.
+Prints version information of the code.
 %\item [\texttt{-x <nprocs>} or \texttt{-test-parameters <nprocs>}]
 %Runs the code far enough to check the consistency of the parameters.  If
 %given a numeric argument it will attempt to simulate being on that number
@@ -1252,13 +1255,13 @@ warnings of level $\le$ \texttt{<\var{level}>} printed to standard output.  The
 default is a logging level of~0, meaning that only level~0 messages
 should be printed to standard output.
 \item [\texttt{-W<\var{level}>} or \texttt{-warning-level=<\var{level}>}]
-This is similar to \texttt{-W}, but for standard error instead of
+Similar to \texttt{-W}, but for standard error instead of
 standard output.  All warnings of level $\le$ \texttt{<\var{level}>} are
 printed to standard error.  The default is a warning level of~1,
 meaning that level~0 and level~1 messages should be printed to
 standard error.
 \item [\texttt{-E<\var{level}} or \texttt{-error-level=<\var{level}>}]
-This is similar to \texttt{-W}, but for fatal errors: Cactus treats all
+Similar to \texttt{-W}, but for fatal errors: Cactus treats all
 warnings with level $\le$ \texttt{<\var{level}>} as fatal errors, and aborts
 the Cactus run immediately (after printing the warning message%%%
 \footnote{%%%
@@ -1269,13 +1272,13 @@ the Cactus run immediately (after printing the warning message%%%
 ).  The default value is zero, \ie{} only level~0 warnings
 will abort the Cactus run.
 \item [\texttt{-r[o|e|oe|eo]} or \texttt{-redirect=[o|e|oe|eo]}]
-This redirects the standard output (`\texttt{o}') and/or standard error
+Redirects the standard output (`\texttt{o}') and/or standard error
 (`\texttt{e}') of each processor to a file.  By default
 the standard outputs from processors other than processor 0 are discarded.
 \item [\texttt{-i} or \texttt{-ignore-next}]
-Ignore the next argument on the command line.
+Causes the next argument on the command line to be ignored.
 \item [\texttt{-parameter-level=<\var{level}>}]
-Set the level of parameter checking to be used, one of \texttt{strict},
+Sets the level of parameter checking to be used, one of \texttt{strict},
 \texttt{normal} (the default), or \texttt{relaxed}.
 See Section~\ref{sec:Parameter_File}.
 \end{Lentry}
