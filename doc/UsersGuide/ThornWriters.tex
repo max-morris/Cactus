@@ -56,9 +56,10 @@ glue code which encapsulates the external appearance of a thorn.
 Thorn names must be (case independently) unique, must start with a letter,
 can only contain
 letters, numbers or underscores, and must contain 27 characters or less.
-In addition, a thorn cannot have the name {\t doc}, this is reserved
+In addition, a thorn cannot have the name \texttt{doc}, this is reserved
 for arrangement documentation. Arrangement names which start with a
-`{\t \#}', or finish with `{\t \~{}}' or `{\t .bak}' will be ignored.
+`\texttt{\#}', or finish with `\texttt{\~{}}' or `\texttt{.bak}' will be
+ignored.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -77,7 +78,8 @@ Cactus directory.  Arrangement names must be (case independently) unique,
 must start with a letter,
 and can only contain
 letters, numbers or underscores. Arrangement names which start with a
-`{\t \#}', or finish with `{\t \~{}}' or `{\t .bak}' will be ignored.
+`\texttt{\#}', or finish with `\texttt{\~{}}' or `\texttt{.bak}' will be
+ignored.
 
 Inside an arrangement directory there are directories for each thorn
 belonging to the arrangement.
@@ -348,10 +350,10 @@ A boolean type which can take values {\t 1}, {\t t}, {\t true}, {\t yes} or
 \item a description of the parameter
 
 \item an allowed value block -- This consists of a brace delimited
-block of lines\footnote{The beginning brace ({\t \{}) must sit on a line by
-itself; the ending brace ({\t \}}) must be preceded by a carriage return.}
+block of lines\footnote{The beginning brace (\texttt{\{}) must sit on a line by
+itself; the ending brace (\texttt{\}}) must be preceded by a carriage return.}
 describing the allowed values of the parameter.  Each range may have a
-description associated with it by placing a {\t ::} on the line and putting
+description associated with it by placing a \texttt{::} on the line and putting
 the description afterwards.
 
 \item the default value --
@@ -362,7 +364,7 @@ This must be one of the allowed values.
 For the numeric types \texttt{INT} and \texttt{REAL}, a range consists
 of a string of the
 form lower-bound:upper-bound:step, where a missing number or an asterisk
-`{\t *}' denotes anything (i.e.\ infinite bounds or an infinitesimal step).
+`\texttt{*}' denotes anything (i.e.\ infinite bounds or an infinitesimal step).
 
 For example
 \begin{verbatim}
@@ -777,9 +779,10 @@ The Cactus make system looks for a file called \texttt{make.code.defn} in that
 directory (if there is no file called \texttt{Makefile} in the \texttt{src} directory).  At its simplest, this file contains two lines
 
 \begin{itemize}
-\item {\t SRCS = <list of all source files in this directory>}
+\item \texttt{SRCS = <\var{list of all source files in this directory}>}
 
-\item {\t SUBDIRS = <list of all subdirectories, including subdirectories of subdirectories>}
+\item \texttt{SUBDIRS = <\var{list of all subdirectories, including
+subdirectories of subdirectories}>}
 
 \end{itemize}
 
@@ -818,7 +821,8 @@ files should end up if they need to be seen by other thorns.
 
 \end{Lentry}
 
-and has a working directory of \texttt{<config>/build/<thorn\_name>} .
+and has a working directory of
+\texttt{<\var{config}>/build/<\var{thorn\_name}>} .
 
 \subsection{Other makefile variables}
 
@@ -1264,7 +1268,7 @@ range, and \var{stride} allows numbers to be be missed out.  e.g.\
 means the value must be an odd number between one and twenty-one
 (inclusive).
 
-A missing end of range (or a `{\t *}') indicates negative or positive
+A missing end of range (or a `\texttt{*}') indicates negative or positive
 infinity, and the default stride is one.
 
 \subsection{Real}
@@ -1274,7 +1278,7 @@ The range specification is of the form
 \var{lower}:\var{upper}
 \end{alltt}
 where \var{lower} and \var{upper} specify the lower and upper allowed
-range.  A missing end of range (or a `{\t *}') implies negative or positive
+range.  A missing end of range (or a `\texttt{*}') implies negative or positive
 infinity.  The above is inclusive of the endpoints.  A `\texttt{(}'
 (or `\texttt{)}') before (or after) the lower (or upper) range specifies an open
 endpoint.
