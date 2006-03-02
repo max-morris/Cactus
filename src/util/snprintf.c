@@ -365,7 +365,8 @@ static int dopr (char *buffer, size_t maxlen, const char *format, va_list args)
 	total += fmtfp (buffer, &currlen, maxlen, fvalue, min, max, flags);
 	break;
       case 'c':
-	total += dopr_outch (buffer, &currlen, maxlen, va_arg (args, int));
+	total += dopr_outch (buffer, &currlen, maxlen,
+                                                  (char)va_arg (args, int));
 	break;
       case 's':
 	strvalue = va_arg (args, char *);
@@ -381,7 +382,7 @@ static int dopr (char *buffer, size_t maxlen, const char *format, va_list args)
 	{
 	  short int *num;
 	  num = va_arg (args, short int *);
-	  *num = currlen;
+	  *num = (short int)currlen;
         } 
 	else if (cflags == DP_C_LONG) 
 	{
@@ -538,7 +539,7 @@ static int fmtint (char *buffer, size_t *currlen, size_t maxlen,
 
   /* Sign */
   if (signvalue) 
-    total += dopr_outch (buffer, currlen, maxlen, signvalue);
+    total += dopr_outch (buffer, currlen, maxlen, (char)signvalue);
 
   /* Zeros */
   if (zpadlen > 0) 
@@ -590,7 +591,7 @@ static long myround (LDOUBLE value)
 {
   long intpart;
 
-  intpart = value;
+  intpart = (long)value;
   value = value - intpart;
   if (value >= 0.5)
     intpart++;
@@ -668,7 +669,7 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
     }
   }
 
-  intpart = ufvalue;
+  intpart = (long)ufvalue;
 
   /* 
    * Sorry, we only support 9 digits past the decimal because of our 
@@ -685,7 +686,7 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
   if (fracpart >= mypow10 (max))
   {
     intpart++;
-    fracpart -= mypow10 (max);
+    fracpart -= (long)mypow10 (max);
   }
 
 #ifdef DEBUG_SNPRINTF
@@ -752,7 +753,7 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
   {
     if (signvalue) 
     {
-      total += dopr_outch (buffer, currlen, maxlen, signvalue);
+      total += dopr_outch (buffer, currlen, maxlen, (char)signvalue);
       --padlen;
       signvalue = 0;
     }
@@ -768,7 +769,7 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
     --padlen;
   }
   if (signvalue) 
-    total += dopr_outch (buffer, currlen, maxlen, signvalue);
+    total += dopr_outch (buffer, currlen, maxlen, (char)signvalue);
 
   while (iplace > 0) 
     total += dopr_outch (buffer, currlen, maxlen, iconvert[--iplace]);

@@ -186,7 +186,7 @@ int ParseFile(FILE *ifp,
     /* Token character */
     if (intoken && c != '=')
     {
-      tokens[intoken++] = c;
+      tokens[intoken++] = (char)c;
       CheckBuf(intoken,lineno);
     }
 
@@ -195,7 +195,7 @@ int ParseFile(FILE *ifp,
     if (c != ' ' && c != '\t' && c != '\n' && c != '\r' && !inval && !intoken)
     {
       intoken = 0;
-      tokens[intoken++] = c;
+      tokens[intoken++] = (char)c;
     }
 
     /* End of a token signified by an = */
@@ -257,7 +257,7 @@ int ParseFile(FILE *ifp,
             /* Make an important decision NOT to include
              * line feeds in the string parameters
              */
-            if (c != '\n') value[p++] = c;
+            if (c != '\n') value[p++] = (char)c;
             if (c == '\n')
             {
               printf ("Warning: Quoted string contains newline for token %s\n",
@@ -314,7 +314,7 @@ int ParseFile(FILE *ifp,
         {
 
           int p = 0;
-          value[p++] = c;
+          value[p++] = (char)c;
           if (ntokens == 1)
           {
             /* Simple case. We have an int
@@ -326,7 +326,7 @@ int ParseFile(FILE *ifp,
 #endif
             while (!(c==' ' || c=='\t' || c == '\n' || c == '\r' || c == EOF))
             {
-              value[p++] = c;
+              value[p++] = (char)c;
               CheckBuf(p,lineno);
               c = fgetc(ifp);
 #ifdef DEBUG
@@ -354,7 +354,7 @@ int ParseFile(FILE *ifp,
             int pp=0, i;
             int pt, pv;
 
-            value[pp++] = c;
+            value[pp++] = (char)c;
             /* OK, since we only have numbers in the
                old input stream, we can go along getting
                ntokens-1 commas, stripping spaces, and
@@ -368,7 +368,7 @@ int ParseFile(FILE *ifp,
             {
               if (!(c == ' ' || c == '\t' || c == '\n' || c == '\r'))
               {
-                value[pp++] = c;
+                value[pp++] = (char)c;
                 CheckBuf(pp,lineno);
               }
               if (c == ',') ncommas ++;
@@ -396,7 +396,7 @@ int ParseFile(FILE *ifp,
             }
 
             /* And tack the rest on */
-            value[pp++] = c;
+            value[pp++] = (char)c;
             CheckBuf(p,lineno);
 
             c = fgetc(ifp);
@@ -405,7 +405,7 @@ int ParseFile(FILE *ifp,
 #endif
             while (c != ' ' && c != '\t' && c != '\n' && c != '\r' && c != EOF)
             {
-              value[pp++] = c;
+              value[pp++] = (char)c;
               CheckBuf(pp,lineno);
               c = fgetc(ifp);
 #ifdef DEBUG
