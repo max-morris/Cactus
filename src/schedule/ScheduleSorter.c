@@ -190,9 +190,9 @@ int CCTKi_ScheduleAddRow(int size,
   {
     if(thisorders[column])
     {
-      if(array[row][column] && array[row][column] != thisorders[column]) retval--;
-      array[row][column] =   thisorders[column];
-      array[column][row] = - thisorders[column];
+      if(array[row][column] && array[row][column] != (signed char)thisorders[column]) retval--;
+      array[row][column] = (signed char)(  thisorders[column]);
+      array[column][row] = (signed char)( -thisorders[column]);
     }
   }
     
