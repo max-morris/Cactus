@@ -369,8 +369,9 @@ static void CCTKi_TimerGetTimeOfDaySet(int timernum, void *idata, cTimerVal *val
   (void) (timernum + 0);
 
   data = (t_GetTimeOfDayTimer *) idata;
-  data->total.tv_sec  = vals[0].val.d;
-  data->total.tv_usec = 1000000*vals[0].val.d - data->total.tv_sec;
+  data->total.tv_sec  = (time_t)vals[0].val.d;
+  data->total.tv_usec = (suseconds_t)(1000000*vals[0].val.d)
+                                            - (suseconds_t)data->total.tv_sec;
 }
 
 
@@ -644,8 +645,9 @@ static void CCTKi_TimerGetrUsageSet(int timernum, void *idata, cTimerVal *vals)
   (void) (timernum + 0);
 
   data = (t_GetrUsageTimer *) idata;
-  data->total.tv_sec  = vals[0].val.d;
-  data->total.tv_usec = 1000000*vals[0].val.d - data->total.tv_sec;
+  data->total.tv_sec  = (time_t)vals[0].val.d;
+  data->total.tv_usec = (suseconds_t)(1000000*vals[0].val.d)
+                                            - (suseconds_t)data->total.tv_sec;
 }
 
 

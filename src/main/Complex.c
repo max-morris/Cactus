@@ -26,6 +26,7 @@ CCTK_FILEVERSION(main_Complex_c);
  ********************* Local Routine Prototypes *********************
  ********************************************************************/
 
+#define NORM(cx) sqrt((cx.Re) * (cx.Re) + (cx.Im) * (cx.Im))
 /********************************************************************
  ********************* Other Routine Prototypes *********************
  ********************************************************************/
@@ -180,7 +181,7 @@ cctk_complex CCTK_Cmplx##Conjg (cctk_complex complex_number)                  \
 #define DEFINE_CCTK_CMPLX_ABS(CCTK_Cmplx, cctk_real, cctk_complex)            \
 cctk_real CCTK_Cmplx##Abs (cctk_complex complex_number)                       \
 {                                                                             \
-  return (hypot (complex_number.Re, complex_number.Im));                      \
+  return ((cctk_real)hypot (complex_number.Re, complex_number.Im));           \
 }
 
 
@@ -327,10 +328,10 @@ cctk_complex CCTK_Cmplx##Div (cctk_complex a, cctk_complex b)                 \
   cctk_complex result;                                                        \
                                                                               \
                                                                               \
-  afact = fabs(a.Re) + fabs(a.Im);                                            \
+  afact = (cctk_real)(fabs(a.Re) + fabs(a.Im));                               \
   a.Re /= afact;                                                              \
   a.Im /= afact;                                                              \
-  bfact = fabs(b.Re) + fabs(b.Im);                                            \
+  bfact = (cctk_real)(fabs(b.Re) + fabs(b.Im));                               \
   b.Re /= bfact;                                                              \
   b.Im /= bfact;                                                              \
   factor = b.Re*b.Re + b.Im*b.Im;                                             \
@@ -366,15 +367,17 @@ cctk_complex CCTK_Cmplx##Sin (cctk_complex complex_number)                    \
   cctk_complex result;                                                        \
                                                                               \
                                                                               \
-  if (complex_number.Im == 0.0)                                               \
+  if (complex_number.Im == (cctk_real)0.0)                                    \
   {                                                                           \
-    result.Re = sin (complex_number.Re);                                      \
-    result.Im = 0.0;                                                          \
+    result.Re = (cctk_real)sin (complex_number.Re);                           \
+    result.Im = (cctk_real)0.0;                                               \
   }                                                                           \
   else                                                                        \
   {                                                                           \
-    result.Re = sin (complex_number.Re) * cosh (complex_number.Im);           \
-    result.Im = cos (complex_number.Re) * sinh (complex_number.Im);           \
+    result.Re = (cctk_real)(sin (complex_number.Re)                           \
+                                       * cosh (complex_number.Im));           \
+    result.Im = (cctk_real)(cos (complex_number.Re)                           \
+                                       * sinh (complex_number.Im));           \
   }                                                                           \
                                                                               \
   return (result);                                                            \
@@ -406,15 +409,17 @@ cctk_complex CCTK_Cmplx##Cos (cctk_complex complex_number)                    \
   cctk_complex result;                                                        \
                                                                               \
                                                                               \
-  if (complex_number.Im == 0.0)                                               \
+  if (complex_number.Im == (cctk_real)0.0)                                    \
   {                                                                           \
-    result.Re = cos (complex_number.Re);                                      \
-    result.Im = 0.0;                                                          \
+    result.Re = (cctk_real)cos (complex_number.Re);                           \
+    result.Im = (cctk_real)0.0;                                               \
   }                                                                           \
   else                                                                        \
   {                                                                           \
-    result.Re = cos (complex_number.Re) * cosh (complex_number.Im);           \
-    result.Im = sin (complex_number.Re) * sinh (complex_number.Im);           \
+    result.Re = (cctk_real)(cos (complex_number.Re)                           \
+                                       * cosh (complex_number.Im));           \
+    result.Im = (cctk_real)(sin (complex_number.Re)                           \
+                                       * sinh (complex_number.Im));           \
   }                                                                           \
                                                                               \
   return (result);                                                            \
@@ -447,10 +452,10 @@ cctk_complex CCTK_Cmplx##Exp (cctk_complex complex_number)                    \
   cctk_complex result;                                                        \
                                                                               \
                                                                               \
-  rho = exp (complex_number.Re);                                              \
+  rho = (cctk_real)exp (complex_number.Re);                                   \
   theta = complex_number.Im;                                                  \
-  result.Re = rho * cos (theta);                                              \
-  result.Im = rho * sin (theta);                                              \
+  result.Re = rho * (cctk_real)cos (theta);                                   \
+  result.Im = rho * (cctk_real)sin (theta);                                   \
                                                                               \
   return (result);                                                            \
 }
@@ -463,7 +468,11 @@ cctk_complex CCTK_Cmplx##Exp (cctk_complex complex_number)                    \
    @desc
                Returns the square root of a complex number.
    @enddesc
- 
+   @history
+               This code bears a resemblance to that in the GSL.  That
+	       code contains references.
+   @endhistory
+
    @var        complex_number
    @vdesc      The complex number
    @vtype      CCTK_COMPLEX
@@ -482,34 +491,35 @@ cctk_complex CCTK_Cmplx##Sqrt (cctk_complex complex_number)                   \
   cctk_complex result;                                                        \
                                                                               \
                                                                               \
-  if (complex_number.Re == 0.0 && complex_number.Im == 0.0)                   \
+  if (complex_number.Re == (cctk_real)0.0                                     \
+                    && complex_number.Im == (cctk_real)0.0)                   \
   {                                                                           \
-    result.Re = result.Im = 0.0;                                              \
+    result.Re = result.Im = (cctk_real)0.0;                                   \
   }                                                                           \
   else                                                                        \
   {                                                                           \
-    x = fabs (complex_number.Re);                                             \
-    y = fabs (complex_number.Im);                                             \
+    x = (cctk_real)fabs (complex_number.Re);                                  \
+    y = (cctk_real)fabs (complex_number.Im);                                  \
     if (x >= y)                                                               \
-        {                                                                         \
+    {                                                                         \
       t = y / x;                                                              \
-      w = sqrt (x) * sqrt (0.5 * (1.0 + sqrt (1.0 * t * t)));                 \
+      w = (cctk_real)(sqrt (x) * sqrt (0.5 * (1.0 + sqrt (1.0 * t * t))));    \
     }                                                                         \
     else                                                                      \
     {                                                                         \
       t = x / y;                                                              \
-      w = sqrt (y) * sqrt (0.5 * (t + sqrt (1.0 * t * t)));                   \
+      w = (cctk_real)(sqrt (y) * sqrt (0.5 * (t + sqrt (1.0 * t * t))));      \
     }                                                                         \
-                                                                                  \
-    if (complex_number.Re >= 0.0)                                             \
-        {                                                                         \
+                                                                              \
+    if (complex_number.Re >= (cctk_real)0.0)                                  \
+    {                                                                         \
       result.Re = w;                                                          \
-      result.Im = complex_number.Im / (2.0 * w);                              \
+      result.Im = complex_number.Im / ((cctk_real)2.0 * w);                   \
     }                                                                         \
     else                                                                      \
     {                                                                         \
-      x = complex_number.Im >= 0 ? w : -w;                                    \
-      result.Re = complex_number.Im / (2.0 * x);                              \
+      x = complex_number.Im >= (cctk_real)0.0 ? w : -w;                       \
+      result.Re = complex_number.Im / ((cctk_real)2.0 * x);                   \
       result.Im = x;                                                          \
     }                                                                         \
   }                                                                           \
@@ -525,71 +535,33 @@ cctk_complex CCTK_Cmplx##Sqrt (cctk_complex complex_number)                   \
                Raises a complex number to a given power
    @enddesc
  
-   @var        complex_number
+   @var        cx_number
    @vdesc      The complex number
    @vtype      CCTK_COMPLEX
+   @vio        in
+   @endvar
+ 
+   @var        w
+   @vdesc      The power
+   @vtype      CCTK_REAL
    @vio        in
    @endvar
 
    @returntype CCTK_COMPLEX
    @returndesc
-               The square root
+               The given power of the number
    @endreturndesc
 @@*/
 #define DEFINE_CCTK_CMPLX_POW(CCTK_Cmplx, cctk_real, cctk_complex)            \
-cctk_complex CCTK_Cmplx##Pow (cctk_complex complex_number, cctk_real w)       \
+cctk_complex CCTK_Cmplx##Pow (cctk_complex cx_number, cctk_real w)            \
 {                                                                             \
-  cctk_real R, theta, phi;                                                    \
   cctk_complex result;                                                        \
                                                                               \
-  if ( complex_number.Re > 0)                                                 \
-  {                                                                           \
-    theta = 0.0;                                                              \
-    phi   = atan(complex_number.Im/complex_number.Re) + theta;                \
-    R     = sqrt(complex_number.Re*complex_number.Re + complex_number.Im*complex_number.Im);\
-    R     = pow(R,w);                                                       \
-    result.Re = R * cos (w * phi);                                            \
-    result.Im = R * sin (w * phi);                                            \
-  }                                                                           \
-  else if ( complex_number.Re < 0 && complex_number.Im >= 0 )                 \
-  {                                                                           \
-    theta = 4.0 * atan (1.0);                                                 \
-    phi   = atan(complex_number.Im/complex_number.Re) + theta;                \
-    R     = sqrt(complex_number.Re*complex_number.Re + complex_number.Im*complex_number.Im);\
-    R     = pow(R,w);                                                       \
-    result.Re = R * cos (w * phi);                                            \
-    result.Im = R * sin (w * phi);                                            \
-  }                                                                           \
-  else if ( complex_number.Re < 0 && complex_number.Im < 0 )                  \
-  {                                                                           \
-    theta = 4.0 * atan (1.0);                                                 \
-    phi   = atan(complex_number.Im/complex_number.Re) + theta;                \
-    R     = sqrt(complex_number.Re*complex_number.Re + complex_number.Im*complex_number.Im);\
-    R     = pow(R,w);                                                       \
-    result.Re = R * cos (w * phi);                                            \
-    result.Im = R * sin (w * phi);                                            \
-  }                                                                           \
-  else if ( fabs(complex_number.Re) <= 1e-20 && fabs(complex_number.Im) < 1e-20 )\
-  {                                                                           \
-    result.Re = 0.0;                                                          \
-    result.Im = 0.0;                                                          \
-  }                                                                           \
-  else if ( fabs(complex_number.Re) <= 1e-20 && complex_number.Im < 0 )       \
-  {                                                                           \
-    phi = 2.0 * atan (1.0);                                                   \
-    R     = sqrt(complex_number.Re*complex_number.Re + complex_number.Im*complex_number.Im);\
-    R     = pow(R,w);                                                       \
-    result.Re = R * cos (w * phi);                                            \
-    result.Im = R * sin (w * phi);                                            \
-  }                                                                           \
-  if ( fabs(complex_number.Re) <= 1e-20 && complex_number.Im < 0 )            \
-  {                                                                           \
-    phi = -2.0 * atan (1.0);                                                  \
-    R     = sqrt(complex_number.Re*complex_number.Re + complex_number.Im*complex_number.Im);\
-    R     = pow(R,w);                                                       \
-    result.Re = R * cos (w * phi);                                            \
-    result.Im = R * sin (w * phi);                                            \
-  }                                                                           \
+  cctk_real phi = (cctk_real)atan2 (cx_number.Im, cx_number.Re) * w;          \
+  cctk_real r   = (cctk_real)pow (NORM (cx_number), w);                       \
+                                                                              \
+  result.Re = r * (cctk_real)cos (phi);                                       \
+  result.Im = r * (cctk_real)sin (phi);                                       \
                                                                               \
   return (result);                                                            \
 }
@@ -612,6 +584,9 @@ cctk_complex CCTK_Cmplx##Pow (cctk_complex complex_number, cctk_real w)       \
           DEFINE_CCTK_CMPLX_POW   (CCTK_Cmplx, cctk_real, cctk_complex)       \
 
 /* define complex functions for all available precisions */
+/* NOTE: The code in this file will function correctly with C float
+ * and double types, but not with long double.
+*/
 #ifdef CCTK_REAL4
   DEFINE_CMPLX_FUNCTIONS (CCTK_Cmplx8, CCTK_REAL4, CCTK_COMPLEX8)
 #endif
