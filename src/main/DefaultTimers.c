@@ -369,9 +369,12 @@ static void CCTKi_TimerGetTimeOfDaySet(int timernum, void *idata, cTimerVal *val
   (void) (timernum + 0);
 
   data = (t_GetTimeOfDayTimer *) idata;
-  data->total.tv_sec  = (time_t)vals[0].val.d;
-  data->total.tv_usec = (suseconds_t)(1000000*vals[0].val.d)
-                                            - (suseconds_t)data->total.tv_sec;
+  /* Note: the struct timeval fields tv_sec and tv_usec are defined in SYSV
+   * as time_t and suseconds_t.  But these types don't exist on all systems.
+   * They are signed integral types for which long should be enough. */
+  data->total.tv_sec  = (long)vals[0].val.d;
+  data->total.tv_usec = (long)(1000000*vals[0].val.d)
+                                            - (long)data->total.tv_sec;
 }
 
 
