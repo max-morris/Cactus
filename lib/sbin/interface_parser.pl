@@ -812,7 +812,18 @@ sub parse_interface_ccl
       if($provided_by =~ m/(.*)\s*LANGUAGE\s*(.+)/i)
       {
         $provided_by          = $1;
-        $provided_by_language = $2;
+        $provided_by_language = "\U$2";
+        if ($provided_by_language eq 'FORTRAN')
+        {
+          $provided_by_language = 'Fortran';
+        }
+        elsif ($provided_by_language ne 'C')
+        {
+          my $message = "The providing function $provided_by in thorn $thorn " .
+                        "has an invalid language specification.";
+          my $hint = "Language must be either C or Fortran.";
+          &CST_error(0, $message, $hint, __LINE__, __FILE__);
+        }
       }
       else
       {
