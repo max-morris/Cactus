@@ -648,9 +648,9 @@ static void CCTKi_TimerGetrUsageSet(int timernum, void *idata, cTimerVal *vals)
   (void) (timernum + 0);
 
   data = (t_GetrUsageTimer *) idata;
-  data->total.tv_sec  = (time_t)vals[0].val.d;
-  data->total.tv_usec = (suseconds_t)(1000000*vals[0].val.d)
-                                            - (suseconds_t)data->total.tv_sec;
+  data->total.tv_sec  = (long)vals[0].val.d;
+  data->total.tv_usec = (long)(1000000*vals[0].val.d)
+                                            - (long)data->total.tv_sec;
 }
 
 
