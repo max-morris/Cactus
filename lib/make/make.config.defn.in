@@ -14,6 +14,9 @@
 # Include stuff defined by optional extra arrangements
 include $(TOP)/config-data/make.extra.defn
 
+# Include all required external libraries from configuration
+-include $(TOP)/bindings/Configuration/make.link
+
 
 # Compiler/executable info
 SHELL       = @SHELL@

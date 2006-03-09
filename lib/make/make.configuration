@@ -117,9 +117,6 @@ ALLCACTUSLIBS_BASE = $(notdir $(CACTUSLIBS) $(THORN_LINKLIST) $(CACTUSLIBS))
 
 ALLCACTUSLIBS = $(ALLCACTUSLIBS_BASE:%=$(CCTK_LIBNAME_PREFIX)%)
 
-# Include all required external libraries from configuration
--include $(TOP)/bindings/Configuration/make.link
-
 # Build the executable
 $(EXEDIR)$(DIRSEP)$(EXE): $(CONFIG)/make.thornlist $(CONFIG)/cctki_version.h $(patsubst %,$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)$(CCTK_LIBNAME_PREFIX)%$(LIBNAME_SUFFIX),$(notdir $(THORNS) $(CACTUSLIBS)))
 	@echo Creating $(EXE) in $(EXEDIR) from $(THORNS)
