@@ -5,7 +5,7 @@
 #   @desc
 #            Timestamp file for forcing reconfiguring configurations
 #   @enddesc
-#   @version $Id: force-reconfigure,v 1.8 2005-09-28 17:09:31 schnetter Exp $
+#   @version $Id: force-reconfigure,v 1.9 2006-03-10 10:21:06 tradke Exp $
 # @@*/
 
 31 Mar 2004: created
@@ -15,3 +15,4 @@
 02 Aug 2004: introduce HAVE_LAPACK and HAVE_BLAS make variables
 07 Oct 2004: change HDF5 to CCTK_HDF5 in cctk_Config.h
 08 Nov 2004: add HAVE_HDF5_STREAM_VFD and HDF5_LFS_FLAGS makefile variables
+10 Mar 2006: fix order of external/system libs on the linker command line
