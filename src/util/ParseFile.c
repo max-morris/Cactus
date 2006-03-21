@@ -262,7 +262,7 @@ int ParseFile(FILE *ifp,
             {
               printf ("Warning: Quoted string contains newline for token %s\n",
                       tokens);
-              printf ("This could indicated a parameter file error or missing quote\n");
+              printf ("This could indicate a parameter file error or missing quote\n");
 #ifdef DEBUG
               printf ("LINE %d\n",lineno);
 #endif
