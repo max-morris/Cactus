@@ -189,7 +189,7 @@ sub ParseTestConfigs
         }
         elsif ($line =~ m/^\s*EXTENSIONS\s*(.*)/i)
         {
-          $testdata->{"EXTENSIONS"} .= $1;
+          $testdata->{"EXTENSIONS"} .= "$1 ";
         }
         elsif ($line =~ m/^\s*TEST\s*(.*)/i)
         {
