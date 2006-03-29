@@ -521,14 +521,17 @@ by thorns. The Flesh only provides specific time bins at which the scheduler
 will call thorns' routines in order to perform checkpointing and/or recovery.
 
 This chapter explains how to implement checkpointing and recovery methods
-in your thorn.
+in your thorn.  For further information, see the documentation for thorn
+\texttt{CactusBase/IOUtil}.
 
 \section{Checkpointing Invocation}
 
 Thorns register their checkpointing routines at {\t CCTK\_CPINITIAL} and/or
-{\t CCTK\_CHECKPOINT}. These time bins are scheduled right after all initial
-data has been set up and after every evolution timestep, respectively. (See
-\ref{subsec:schedule_ccl} for a description of all timebins). Depending on
+{\t CCTK\_CHECKPOINT} and/or {\t CCTK\_TERMINATE}. These time bins are
+scheduled right after all initial data has been set up, after every
+evolution timestep, and after the last time step of a simulation,
+respectively. (See \ref{subsec:schedule_ccl} for a description of all timebins).
+Depending on
 parameter settings, the checkpoint routines decide whether to write an initial
 data checkpoint, and when to write an evolution checkpoint.
 
