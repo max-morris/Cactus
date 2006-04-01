@@ -67,9 +67,18 @@ else
 fi
 
 
+# Set version-specific library directory
+# (version 2.3.0 and newer use different library directories)
+if [ -e "$PETSC_DIR/lib/$PETSC_ARCH" ]; then
+  PETSC_LIB_INFIX=''
+else
+  PETSC_LIB_INFIX='/libO'
+fi
+
+
 # Set version-specific libraries
 # (version 2.2.0 and newer do not have libpetscsles.a any more)
-if [ -e $PETSC_DIR/lib/libO/$PETSC_ARCH/libpetscksp.a ]; then
+if [ -e "$PETSC_DIR/lib$PETSC_LIB_INFIX/$PETSC_ARCH/libpetscksp.a" ]; then
   PETSC_SLES_LIBS="petscksp"
 else
   PETSC_SLES_LIBS="petscsles"
@@ -77,9 +86,9 @@ fi
 
 
 # Set the PETSc libs, libdirs and includedirs
-PETSC_LIB_DIRS='$(PETSC_DIR)/lib/libO/$(PETSC_ARCH)'
+PETSC_LIB_DIRS='$(PETSC_DIR)/lib'$PETSC_LIB_INFIX'/$(PETSC_ARCH)'
 PETSC_INC_DIRS='$(PETSC_DIR)/include $(PETSC_DIR)/bmake/$(PETSC_ARCH)'
-PETSC_LIBS="petscfortran petscts petscsnes $PETSC_SLES_LIBS petscdm petscmat petscvec petsc   $PETSC_ARCH_LIBS"
+PETSC_LIBS="petscts petscsnes $PETSC_SLES_LIBS petscdm petscmat petscvec petsc   $PETSC_ARCH_LIBS"
 
 # Get the main configure script to search for the X libraries
 CCTK_NEED_X=yes
