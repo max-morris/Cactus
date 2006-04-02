@@ -283,7 +283,10 @@ AC_DEFUN(CCTK_CHECK_C_RESTRICT,
 [AC_CACHE_CHECK([for C restrict], cctk_cv_c_restrict,
 [cctk_cv_c_restrict=no
 for ac_kw in restrict __restrict__ __restrict; do
-  AC_TRY_COMPILE(, [double * $ac_kw foo;], [cctk_cv_c_restrict=$ac_kw; break])
+  AC_TRY_COMPILE(, [
+double * $ac_kw foo;
+void bar (void * $ac_kw arr[]);
+], [cctk_cv_c_restrict=$ac_kw; break])
 done
 ])
 case "$cctk_cv_c_restrict" in
@@ -299,7 +302,10 @@ AC_DEFUN(CCTK_CHECK_CXX_RESTRICT,
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 for ac_kw in restrict __restrict__ __restrict; do
-  AC_TRY_COMPILE(, [double * $ac_kw foo;], [cctk_cv_cxx_restrict=$ac_kw; break])
+  AC_TRY_COMPILE(, [
+double * $ac_kw foo;
+void bar (void * $ac_kw arr[]);
+], [cctk_cv_cxx_restrict=$ac_kw; break])
 done
 AC_LANG_RESTORE
 ])
