@@ -153,6 +153,7 @@ AC_DEFUN(CCTK_PROG_CC_WORKS,
 [AC_MSG_CHECKING([whether the C compiler ($CC $CFLAGS $LDFLAGS) works])
 AC_LANG_SAVE
 AC_LANG_C
+rm -fr conftest*
 AC_TRY_COMPILER([main(){return(0);} PilotMain(){return(0);}], ac_cv_prog_cc_works, ac_cv_prog_cc_cross)
 AC_LANG_RESTORE
 AC_MSG_RESULT($ac_cv_prog_cc_works)
@@ -168,6 +169,7 @@ AC_DEFUN(CCTK_PROG_CXX_WORKS,
 [AC_MSG_CHECKING([whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) works])
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
+rm -fr conftest*
 AC_TRY_COMPILER([int main(){return(0);} extern "C" int PilotMain(){return(0);}], ac_cv_prog_cxx_works, ac_cv_prog_cxx_cross)
 AC_LANG_RESTORE
 AC_MSG_RESULT($ac_cv_prog_cxx_works)
