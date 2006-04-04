@@ -286,6 +286,7 @@ for ac_kw in restrict __restrict__ __restrict; do
   AC_TRY_COMPILE(, [
 double * $ac_kw foo;
 void bar (void * $ac_kw arr[]);
+struct tux { char * $ac_kw arr[3]; };
 ], [cctk_cv_c_restrict=$ac_kw; break])
 done
 ])
@@ -305,6 +306,7 @@ for ac_kw in restrict __restrict__ __restrict; do
   AC_TRY_COMPILE(, [
 double * $ac_kw foo;
 void bar (void * $ac_kw arr[]);
+struct tux { char * $ac_kw arr[3]; };
 ], [cctk_cv_cxx_restrict=$ac_kw; break])
 done
 AC_LANG_RESTORE
