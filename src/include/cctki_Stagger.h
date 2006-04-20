@@ -52,28 +52,28 @@ int CCTKi_ParseStaggerString(int dim,
 #define CCTK_STAG_PPM 8
 
 #define CCTK_STAG_MMC 9
-#define CCTK_STAG_CMC 11
-#define CCTK_STAG_PMC 12
+#define CCTK_STAG_CMC 10
+#define CCTK_STAG_PMC 11
 
-#define CCTK_STAG_MCC 13
-#define CCTK_STAG_CCC 14
-#define CCTK_STAG_PCC 15
+#define CCTK_STAG_MCC 12
+#define CCTK_STAG_CCC 13
+#define CCTK_STAG_PCC 14
 
-#define CCTK_STAG_MPC 16
-#define CCTK_STAG_CPC 17
-#define CCTK_STAG_PPC 18
+#define CCTK_STAG_MPC 15
+#define CCTK_STAG_CPC 16
+#define CCTK_STAG_PPC 17
 
-#define CCTK_STAG_MMP 19
-#define CCTK_STAG_CMP 20
-#define CCTK_STAG_PMP 21
+#define CCTK_STAG_MMP 18
+#define CCTK_STAG_CMP 19
+#define CCTK_STAG_PMP 20
 
-#define CCTK_STAG_MCP 22
-#define CCTK_STAG_CCP 23
-#define CCTK_STAG_PCP 24
+#define CCTK_STAG_MCP 21
+#define CCTK_STAG_CCP 22
+#define CCTK_STAG_PCP 23
 
-#define CCTK_STAG_MPP 25
-#define CCTK_STAG_CPP 26
-#define CCTK_STAG_PPP 27
+#define CCTK_STAG_MPP 24
+#define CCTK_STAG_CPP 25
+#define CCTK_STAG_PPP 26
 
 
 #endif /* _CCTKI_STAGGER_H_ */
