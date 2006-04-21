@@ -605,8 +605,8 @@ int CCTK_ParameterSet (const char *name, const char *thorn, const char *value)
           new_value = CCTK_ParameterValString (param->props->name,
                                                param->props->thorn);
           retval = strcmp (old_value, new_value) ? -10 : -11;
+          free (new_value);
         }
-        free (new_value);
       }
 
       /* register another set operation */
