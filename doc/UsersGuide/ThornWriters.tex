@@ -728,35 +728,50 @@ Appendix \ref{sec:Appendix.configuration.ccl.configscript}.
 \section{Naming Conventions for Source Files}
 \label{nacofosofi}
 
-The make system uses file extensions
-to designate coding language. The following extensions can be handled:
+The make system uses file extensions to designate coding language,
+as well as other properties of the code in the file.
+
+The following extensions are understood:
 
 \begin{center}
-\begin{tabular}{|c|c|}
+\begin{tabular}{|l|c|c|c|}
 \hline
-Extension & Coding Language \\
+Extension           & Language   & Format & Preprocess \\
 \hline
-{\t .F} & Fortran 90 fixed form \\
-{\t .f} & (no preprocessing) Fortran 90 fixed form\\
-{\t .F90} & Fortran 90 free form\\
-{\t .f90} & (no preprocessing) Fortran 90 free form\\
-{\t .F77} & Fortran 77 \\
-{\t .f77} & (no preprocessing) Fortran 77\\
-{\t .c} & C \\
-{\t .cc} or {\t .C} & C++ \\
+{\t .F}             & Fortran 90 & fixed  & yes \\
+{\t .f}             & Fortran 90 & fixed  & no  \\
+{\t .F90}           & Fortran 90 & free   & yes \\
+{\t .f90}           & Fortran 90 & free   & no  \\
+{\t .F77}           & Fortran 77 & fixed  & yes \\
+{\t .f77}           & Fortran 77 & fixed  & no  \\
+{\t .c}             & C          & -      & yes \\
+{\t .cc} or {\t .C} & C++        & -      & yes \\
 \hline
 \end{tabular}
 \end{center}
+
+In order to use Cactus \texttt{\#include} directives in a file, it must be
+preprocessed.
+
+A complete description of Fortran fixed and free format can be found in any
+textbook on Fortran 90.  The most obvious differences are that in fixed
+format, code must begin after the 5th column and line continuations are
+indicated by a character in column 5, while in free format lines can begin
+anywhere, and line continuations are indicated by an ampersand at the end of
+the line to be continued.  Also note that statement labels are handled
+very differently.
 
 The following restrictions apply to file names:
 \begin{itemize}
 \item For portability across all operating systems, the base names
         for any particular extension should not depend on the operating
         system being case sensitive (e.g.\ having \texttt{MyFile.c} and
-        \texttt{MYFILE.f77} is allright, but \texttt{MyFile.c} and \texttt{MYFILE.c} could cause problems).
-\item Currently all source files in different subroutines within a
-thorn must have distinct names.  We hope
-to relax this in future.  Different thorns can have files with the same names.
+        \texttt{MYFILE.f77} is allright, but \texttt{MyFile.c} and
+	\texttt{MYFILE.c} could cause problems).
+\item Currently all source files within a thorn must have distinct names,
+regardless of whether they are placed in different subdirectories.  We hope
+to relax this in future.  Different thorns may have files with the same names,
+however.
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
