@@ -136,6 +136,7 @@ int CCTK_CreateDirectory (int mode, const char *pathname)
       {
         if (stat (pathname, &statbuf))
         {
+          retval = 0;
           if (MKDIR_WRAPPER (pathname, mode) == -1)
           {
             retval = errno == EEXIST ? 1 : -2;
