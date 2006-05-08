@@ -6,7 +6,7 @@
 #   @desc
 #            Configure Cactus to compile with the OpenMPI version of MPI.
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/OpenMPI,v 1.1 2006-05-05 11:54:37 swhite Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/OpenMPI,v 1.2 2006-05-08 15:33:30 tradke Exp $
 # @@*/
 
 echo '  OpenMPI selected'
@@ -51,10 +51,13 @@ if test -z "$OPENMPI_LIB_DIR" -o -z "$OPENMPI_INC_DIR" ; then
 
   # set OPENMPI_LIB_DIR if not already set
   if test -z "$OPENMPI_LIB_DIR" ; then
-    openmpi_libs="$OPENMPI_DIR/lib"
+    openmpi_libs="$OPENMPI_DIR/lib64"
+    if test ! -d "$openmpi_libs" ; then
+      openmpi_libs="$OPENMPI_DIR/lib"
+    fi
 
     # don't add standard library search paths
-    if test "$openmpi_libs" != '/usr/lib' -a "$openmpi_libs" != '/usr/local/lib'; then
+    if test "$openmpi_libs" != '/usr/lib' -a "$openmpi_libs" != '/usr/lib64' -a "$openmpi_libs" != '/usr/local/lib'; then
       OPENMPI_LIB_DIR="$openmpi_libs"
     fi
   fi
