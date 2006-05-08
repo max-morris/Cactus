@@ -155,7 +155,7 @@ if test  "X$choose_hdf5" = 'Xyes' ; then
     else
       libz='libz.a'
     fi
-    if [ -z "$LIBZ_DIR" -a ! -r /usr/lib/$libz ]; then
+    if [ -z "$LIBZ_DIR" -a ! -r /usr/lib/$libz -a ! -r /usr/lib64/$libz ]; then
       echo "  HDF5 library was built with external deflate I/O filter, searching for library $libz ..."
       CCTK_Search LIBZ_DIR '/usr/local/lib c:/packages/libz/lib c:/packages/hdf5/lib' $libz
       if [ -z "$LIBZ_DIR" ]; then
