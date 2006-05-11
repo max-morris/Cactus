@@ -122,6 +122,7 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
         {"error-level",             required_argument, NULL, 'E'},
         {"parameter-level",         required_argument, NULL, 256},
         {"redirect",                optional_argument, NULL, 'r'},
+        {"print-schedule",          no_argument,       NULL, 'S'},
         {"list-thorns",             no_argument,       NULL, 'T'},
         {"test-thorn-compiled",     required_argument, NULL, 't'},
         {"version",                 no_argument,       NULL, 'v'},
@@ -129,7 +130,7 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
         {0, 0, 0, 0}
       };
       
-      c = getopt_long_only (argc, argv, "hO::o:x::L:W:E:r::Tt:vi",
+      c = getopt_long_only (argc, argv, "hO::o:x::L:W:E:r::STt:vi",
                             long_options, &option_index);
       if (c == -1)
         break;
@@ -147,6 +148,7 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
           case 'E': CCTKi_CommandLineErrorLevel(optarg); break;
           case 256: CCTKi_CommandLineParameterLevel(optarg); break;
           case 'r': CCTKi_CommandLineRedirect(optarg); break;
+          case 'S': CCTKi_CommandLinePrintSchedule(); break;
           case 'T': CCTKi_CommandLineListThorns(); break;
           case 'v': CCTKi_CommandLineVersion(); break;
           case 'i': ignore = 1; break;

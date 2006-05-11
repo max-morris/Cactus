@@ -56,13 +56,15 @@ static int paramchecking = 0;
 int cctki_paramchecking;
 int cctki_paramcheck_nprocs;
 
+int cctki_onlyprintschedule = 0;
 
 /********************************************************************
  *********************        Defines          **********************
  ********************************************************************/
-#define CACTUS_COMMANDLINE_OPTIONS                                     \
-        "[-h] [-O] [-o paramname] [-L n] [-W n] [-E n] [-r[o|e|oe|eo]] [-T] " \
-        "[-t name] [-parameter-level <level>] [-v] <parameter_file_name>"
+#define CACTUS_COMMANDLINE_OPTIONS                                      \
+        "[-h] [-O] [-o paramname] [-L n] [-W n] [-E n] [-r[o|e|oe|eo]] " \
+        "[-S] [-T] [-t name] [-parameter-level <level>] [-v] "          \
+        "<parameter_file_name>"
 
 
 /********************************************************************
@@ -456,6 +458,21 @@ void CCTKi_CommandLineRedirect (const char *argument)
 
 
  /*@@
+   @routine    CCTKi_CommandLinePrintSchedule
+   @date       2005-06-10
+   @author     Erik Schnetter
+   @desc
+               Set a flag that makes the run abort after printing the
+               schedule tree.
+   @enddesc
+@@*/
+void CCTKi_CommandLinePrintSchedule (void)
+{
+  cctki_onlyprintschedule = 1;
+}
+
+
+ /*@@
    @routine    CCTKi_CommandLineListThorns
    @date       Tue Apr 18 15:05:00 2000
    @author     Tom Goodale
@@ -535,6 +552,7 @@ void CCTKi_CommandLineHelp (void)
     "-E, -error-level <n>                : Sets the error level to n.\n"
     "-r, -redirect [o|e|oe|eo]           : Redirects standard output and/or standard\n"
     "                                      error to files.\n"
+    "-S, -print-schedule                 : Print the schedule tree, then exit.\n"
     "-T, -list-thorns                    : Lists the compiled-in thorns.\n"
     "-t, -test-thorn-compiled <name>     : Tests for the presence of thorn <name>.\n"
     "    -parameter-level <level>        : Sets the amount of parameter checking, \n"

@@ -16,6 +16,7 @@ static const char *rcsid = "$Header$";
 CCTK_FILEVERSION(main_flesh_cc);
 
 
+extern "C" int cctki_onlyprintschedule;
  /*@@
    @routine    main
    @date       Fri Sep 18 14:17:37 1998
@@ -56,25 +57,41 @@ int main(int argc, char **argv)
 {
   tFleshConfig ConfigData;
 
+
+
   /* Initialise any cactus specific stuff.
    */
   CCTKi_InitialiseCactus(&argc, &argv, &ConfigData);
 
-  /* This is a (c-linkage) routine which has been registered by a thorn.
+  /* Abort if only the schedule tree should be printed.
    */
-  CCTK_Initialise(&ConfigData);
+  if (cctki_onlyprintschedule)
+  {
+    printf ("--------------------------------------------------------------------------------\n");
+    printf ("Stopping now because the option '-S' was given.\n");
+    printf ("--------------------------------------------------------------------------------\n");
+    printf ("Done.\n");
+  }
+  else
+  {
 
-  /* This is a (c-linkage) routine which has been registered by a thorn.
-   */
-  CCTK_Evolve(&ConfigData);
+    /* This is a (c-linkage) routine which has been registered by a thorn.
+     */
+    CCTK_Initialise(&ConfigData);
 
-  /* This is a (c-linkage) routine which has been registered by a thorn.
-   */
-  CCTK_Shutdown(&ConfigData);
+    /* This is a (c-linkage) routine which has been registered by a thorn.
+     */
+    CCTK_Evolve(&ConfigData);
 
-  /* Shut down any cactus specific stuff.
-   */
-  CCTKi_ShutdownCactus(&ConfigData);
+    /* This is a (c-linkage) routine which has been registered by a thorn.
+     */
+    CCTK_Shutdown(&ConfigData);
+
+    /* Shut down any cactus specific stuff.
+     */
+    CCTKi_ShutdownCactus(&ConfigData);
+
+  }
 
   return 0;
 }
