@@ -6,7 +6,7 @@
 #   @desc
 #            Configure Cactus to compile with the OpenMPI version of MPI.
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/OpenMPI,v 1.2 2006-05-08 15:33:30 tradke Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/OpenMPI,v 1.3 2006-05-13 16:33:09 swhite Exp $
 # @@*/
 
 echo '  OpenMPI selected'
@@ -74,7 +74,7 @@ if test -z "$OPENMPI_LIB_DIR" -o -z "$OPENMPI_INC_DIR" ; then
   fi
 fi
 
-MPI_LIBS='mpi orte opal util nsl dl'
+MPI_LIBS='mpi orte opal mpi_cxx'
 
 # if ompi_info program is available, can at least get the "prefix"
 # directory from that.
