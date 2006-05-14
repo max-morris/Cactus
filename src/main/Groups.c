@@ -1264,7 +1264,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GroupName) (int *nchars, int *var, ONE_FORTSTRI
    @date       Wed May 22 00:47:58 2002
    @author     Tom Goodale
    @desc
-   Returns the TAGS table for a group.
+   Returns the table handle of the TAGS table for a group.
    @enddesc
    @var     groupname
    @vdesc   The group name
@@ -1304,7 +1304,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GroupTagsTable) (int *table, ONE_FORTSTRING_ARG
    @date       Wed May 22 00:47:58 2002
    @author     Tom Goodale
    @desc
-   Returns the TAGS table for a group.
+   Returns the table handle of the TAGS table for a group.
    @enddesc
    @var     group
    @vdesc   The group index
