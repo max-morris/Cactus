@@ -341,6 +341,12 @@ from Fortran.
 \item[\code{CCTK\_GroupStorageIncrease}] [\pageref{CCTK-GroupStorageIncrease}]
   Increase the active number of timelevels for a list of groups
 
+\item[\code{CCTK\_GroupTagsTable}] [\pageref{CCTK-GroupTagsTable}]
+  Given a group name, return the table handle of the group's tags table.
+
+\item[\code{CCTK\_GroupTagsTableI}] [\pageref{CCTK-GroupTagsTableI}]
+  Given a group index, return the table handle of the group's tags table.
+
 \item[\code{CCTK\_GroupTypeFromVarI}] [\pageref{CCTK-GroupTypeFromVarI}]
   Provides a group's group type index given a variable index
 
@@ -4268,6 +4274,132 @@ The increase group storage routine should increase the allocated memory to the s
   EnableGroupStorage function, and if that is not available it flags an error. If it is available it makes a call to it, and puts its return value in the status flag for the group.
 \end{Discussion}
 \end{FunctionDescription}
+
+
+
+\begin{FunctionDescription}{CCTK\_GroupTagsTable}
+\label{CCTK-GroupTagsTable}
+Given a group name, return the table handle of the group's tags table.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+int table_handle = CCTK_GroupTagsTable(const char* group_name);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+#include "cctk.h"
+integer table_handle
+character*(*) group_name
+call CCTK_VarIndex(table_handle, group_name)
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{table\_handle}
+The table handle of the group's tags table.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{group\_name}
+The character-string name of group.  This should be given in its fully 
+qualified form, that is \verb|implementation::group_name| or
+\verb|thorn_name::group_name|.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_GroupData}{CCTK-GroupData}
+This function returns a variety of ``static'' information about a group
+(``static'' in the sense that it doesn't change during a Cactus run).
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_GroupDynamicData}{CCTK-GroupDynamicData}
+This function returns a variety of ``dynamic'' information about a group
+(``dynamic'' in the sense that a driver can (and often does) change this
+information during a Cactus run).
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{-1}
+no group exists with the specified name
+\end{Error}
+\end{ErrorSection}
+
+\end{FunctionDescription}
+
+
+
+
+\begin{FunctionDescription}{CCTK\_GroupTagsTableI}
+\label{CCTK-GroupTagsTableI}
+Given a group name, return the table handle of the group's tags table.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+int table_handle = CCTK_GroupTagsTableI(int group_index);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+#include "cctk.h"
+integer table_handle
+integer group_index
+call CCTK_VarIndex(table_handle, group_index)
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{table\_handle}
+The table handle of the group's tags table.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{group\_index}
+The group index of the group.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_GroupData}{CCTK-GroupData}
+This function returns a variety of ``static'' information about a group
+(``static'' in the sense that it doesn't change during a Cactus run).
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_GroupDynamicData}{CCTK-GroupDynamicData}
+This function returns a variety of ``dynamic'' information about a group
+(``dynamic'' in the sense that a driver can (and often does) change this
+information during a Cactus run).
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_GroupIndex}{CCTK-GroupIndex}
+Get the group index for a specified group name.
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_GroupIndexFromVar}{CCTK-GroupIndexFromVar}
+Get the group index for the group containing the variable with
+a specified name.
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_GroupIndexFromVarI}{CCTK-GroupIndexFromVarI}
+Get the group index for the group containing the variable with
+a specified variable index.
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{-1}
+no group exists with the specified name
+\end{Error}
+\end{ErrorSection}
+
+\end{FunctionDescription}
+
+
 
 % Groups.c
 \begin{CCTKFunc}{CCTK\_GroupTypeFromVarI}{Provides a group's group type
