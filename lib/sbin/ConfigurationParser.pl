@@ -24,12 +24,12 @@ sub CreateConfigurationDatabase
 {
   my($config_dir, %thorns) = @_;
   my(%cfg) = ();
-  my($thorn, $required, @missing, @foundlist, $founderrlist, $filename, %thorncap, $foundcap, $temp,$cap,$message,$hint, %thorn_dependencies);
+  my(%thorn_dependencies);
 
   # Loop through each thorn's configuration file.
-  foreach $thorn (sort keys %thorns)
+  foreach my $thorn (sort keys %thorns)
   {
-    $filename = "$thorns{$thorn}/configuration.ccl";
+    my $filename = "$thorns{$thorn}/configuration.ccl";
     next if (! -r $filename);
 
     # Get the configuration data from it
@@ -49,95 +49,84 @@ sub CreateConfigurationDatabase
     # verify that all required thorns are there in the ThornList
     next if (! $cfg{"\U$thorn\E REQUIRES THORNS"});
 
-    @missing = ();
-    foreach $required (split (' ', $cfg{"\U$thorn\E REQUIRES THORNS"}))
+    my @missing = ();
+    foreach my $required (split (' ', $cfg{"\U$thorn\E REQUIRES THORNS"}))
     {
       push (@missing, $required)
         if ((! $thorns{"$required"}) && (! $thorns{"\U$required\E"}));
     }
     if (@missing == 1)
     {
-      &CST_error (0, "Thorn $thorn requires thorn @missing. " .
+      &CST_error (0, "Thorn '$thorn' requires thorn '@missing'. " .
                      'Please add this thorn to your ThornList or remove ' .
-                     "$thorn from it !");
+                     "'$thorn' from it !");
     }
     elsif (@missing > 1)
     {
-      &CST_error (0, "Thorn $thorn requires thorns '@missing'. " .
+      &CST_error (0, "Thorn '$thorn' requires thorns '@missing'. " .
                      'Please add these thorns to your ThornList or ' .
-                     "remove $thorn from it !");
+                     "remove '$thorn' from it !");
     }
 
-    $cfg{"\U$thorn\E USES THORNS"} .= $cfg{"\U$thorn\E REQUIRES THORNS"} . " ";
+    $cfg{"\U$thorn\E USES THORNS"} .= $cfg{"\U$thorn\E REQUIRES THORNS"} . ' ';
   }
 
-  foreach $thorn (sort keys %thorns)
+  foreach my $thorn (sort keys %thorns)
   {
     # verify that all required capabilities are there in the ThornList
     next if (! $cfg{"\U$thorn\E REQUIRES"});
 
-    foreach $requiredcap (split (' ', $cfg{"\U$thorn\E REQUIRES"}))
+    foreach my $requiredcap (split (' ', $cfg{"\U$thorn\E REQUIRES"}))
     {
-      $foundcap = 0;
-      @foundlist = ();
-
-      foreach $thorncap (sort keys %thorns)
+      my @found = ();
+      foreach my $thorncap (sort keys %thorns)
       {
-        foreach $cap (split (' ', $cfg{"\U$thorncap\E PROVIDES"}))
+        foreach my $cap (split (' ', $cfg{"\U$thorncap\E PROVIDES"}))
         {
-          if ( "\U$cap\E" eq "\U$requiredcap\E" )
-          {
-            $foundlist[$foundcap++] = $cap;
-            $foundthorn = $thorncap;
-          }
+          push (@found, $thorncap)
+            if ("\U$cap\E" eq "\U$requiredcap\E");
         }
       }
 
-      &CST_error (0, "Thorn $thorn requires the capability $requiredcap. " .
-                     "Please add a thorn that provides $requiredcap " .
-                     "to your ThornList or remove $thorn from it !")
-        if ($foundcap == 0);
-
-      if ($foundcap > 1)
+      # there must be exactly one thorn providing a required capability
+      if (@found == 0)
       {
-        foreach $thorncap (@foundlist)
-        {
-          $founderrlist .= "$thorncap ";
-        }
-        &CST_error (0, "More than one thorn provides the capability $requiredcap. " .
-                       "These thorns are: $founderrlist. \nPlease use only one.\n" );
+        &CST_error (0, "Thorn '$thorn' requires the capability " .
+                       "'$requiredcap'.\n" .
+                       "     Please add a thorn that provides '$requiredcap' " .
+                       "to your ThornList or remove '$thorn' from it !")
       }
-      $cfg{"\U$thorn\E USES THORNS"} .= $foundthorn . " ";
+      elsif (@found > 1)
+      {
+        &CST_error (0, "More than one thorn provides the capability " .
+                       "'$requiredcap'.\n" .
+                       "     These thorns are: '@found'.\n" .
+                       "     Please use only one !\n");
+      }
+      else
+      {
+        $cfg{"\U$thorn\E USES THORNS"} .= $found[0] . ' ';
+      }
     }
   }
 
 # Check for cyclic dependencies
 # create a hash with thorn-> used thorns (no prefix)
-  foreach $thorn (sort keys %thorns)
+  foreach my $thorn (sort keys %thorns)
   {
-    $thorn_dependencies{uc($thorn)}=$cfg{"\U$thorn\E USES THORNS"}; 
+    $thorn_dependencies{uc($thorn)}=$cfg{"\U$thorn\E USES THORNS"};
     $thorn_dependencies{uc($thorn)} =~ s/\b$thorn\b//i;
   }
 
-  $message = &find_dep_cycles(%thorn_dependencies);
-  
-  if ("" ne  $message)
+  my $message = &find_dep_cycles(%thorn_dependencies);
+  if ("" ne $message)
   {
-   $message  =~ s/^\s*//g;
-   $message  =~ s/\s*$//g;
-   $message =~ s/\s+/->/g;
-   $message = "Found a cyclic dependency in configuration requirements:".$message."\n";
-   &CST_error(0,$message,$hint,__LINE__,__FILE__);
+    $message  =~ s/^\s*//g;
+    $message  =~ s/\s*$//g;
+    $message =~ s/\s+/->/g;
+    $message = "Found a cyclic dependency in configuration requirements:".$message."\n";
+    &CST_error(0, $message);
   }
-
-
-#  # Print configuration database
-#     my($field);
-#     foreach $field ( sort keys %cfg)
-#     {
-#       print "$field has value ", $cfg{$field}, "\n";
-#     }
-
 
   return \%cfg;
 }
