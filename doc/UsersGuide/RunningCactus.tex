@@ -307,7 +307,14 @@ to override some parts of the procedure.
 There are three ways to pass options to the configuration process.
 % from the gmake command line.
 \begin{enumerate}
-  \item[1a]{}
+  \item[1]{}
+    Pass options individually in shell environment variables:
+
+    {\tt export <option name>=<chosen value>    \# for bash}\\
+    {\tt setenv <option name> <chosen value>    \# for (t)csh}\\
+    {\tt gmake <configuration name>-config}
+
+  \item[2a]{}
     Either: create a default configuration file \texttt{\$\{HOME\}/.cactus/config}.
 
     All available configuration options may be set in a default options file
@@ -319,7 +326,7 @@ There are three ways to pass options to the configuration process.
     The equals sign is optional. Spaces are allowed everywhere.
     Text starting wit a \texttt{'\#'} character will be ignored as a comment.
 
-  \item[1b]{}
+  \item[2b]{}
     Or: list your Cactus configuration files in an environment variable
     \texttt{CACTUS\_CONFIG\_FILES}:
 
@@ -331,8 +338,8 @@ There are three ways to pass options to the configuration process.
     Each file should be given by its full path.
     The options file has the same format as \texttt{\$\{HOME\}/.cactus/config}.
 
-  \item[2]{}
-    Add options to a configuration file and use,
+  \item[3]{}
+    Add the options to a configuration file and use,
 
     \texttt{gmake <\var{config name}>-config  options=<\var{filename}>}
 
@@ -340,7 +347,7 @@ There are three ways to pass options to the configuration process.
     (Note these options are \emph{added} to those from the 
     \texttt{\$\{HOME\}/.cactus/config} file.)
 
-  \item[3]{}
+  \item[4]{}
     Pass the options individually on the command line,
 
     \texttt{gmake <\var{config name}>-config 
