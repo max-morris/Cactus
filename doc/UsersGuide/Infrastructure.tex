@@ -556,9 +556,9 @@ provides distinct timebins for recovery routines to be scheduled at:
 %
 \begin{Lentry}
   \item[{\t CCTK\_RECOVER\_PARAMETERS}] This time bin is executed before
-    {\t CCTK\_STARTUP}, when the parameter file was parsed. From these parameter
+    {\t CCTK\_STARTUP}, in which the parameter file is parsed. From these parameter
     settings, the recovery routines should decide whether recovery was
-    requested, and if so, restore all parameters the checkpoint file and
+    requested, and if so, restore all parameters from the checkpoint file and
     overwrite those which aren't steerable.\\
     The Flesh loops over all registered recovery routines to find out
     whether recovery was requested. Each recovery routine should therefore
@@ -574,7 +574,7 @@ provides distinct timebins for recovery routines to be scheduled at:
     {\tt recovered} flag which --- in combination with the setting of the {\tt
     Cactus::recovery\_mode} parameter --- decides whether any thorn routine
     scheduled for {\t CCTK\_INITIAL} and {\t CCTK\_POSTINITIAL} will be called.
-    The default is not to execute these initial time bins during recovery
+    The default is to not execute these initial time bins during recovery
     because the initial data will be set up from the checkpoint file during the
     following {\t CCTK\_RECOVER\_VARIABLES} time bin.
   \item[{\t CCTK\_RECOVER\_VARIABLES}]
@@ -584,7 +584,7 @@ provides distinct timebins for recovery routines to be scheduled at:
     Depending on the setting of {\tt Cactus::recovery\_mode} they should also
     decide how to treat errors in recovering individual grid variables. Strict
     recovery (which is the default) requires all variables to be restored
-    successfully (and should stop the code if not) whereas a relaxed mode
+    successfully (and will stop the code if not) whereas a relaxed mode
     could e.g. allow for grid variables which are not found in the checkpoint
     file to be gracefully ignored during recovery.
 \end{Lentry}
