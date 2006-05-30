@@ -680,10 +680,10 @@ from Fortran.
   Sets up a CCTK grid hierarchy
 
 \item[\code{CCTK\_SyncGroup}] [\pageref{CCTK-SyncGroup}]
-  Synchronize the ghost zones for a group of variables
+  Synchronize the ghost zones for a group of variables (identified by the group name)
 
 \item[\code{CCTK\_SyncGroupI}] [\pageref{CCTK-SyncGroupI}]
-  Synchronize the ghost zones for a group of variables
+  Synchronize the ghost zones for a group of variables (identified by the group index)
 
 \item[\code{CCTK\_TerminateNext}] [\pageref{CCTK-TerminateNext}]
   Causes a Cactus simulation to terminate after the next iteration
@@ -9828,6 +9828,7 @@ Reduces a list of local arrays globally
 \begin{FunctionDescription}{CCTK\_SyncGroup}
 \label{CCTK-SyncGroup}
 Synchronise the ghostzones for a group of grid variables
+(identified by the group name)
 
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -9883,6 +9884,7 @@ multiprocessor case you {\em must\/} call this function in parallel on
 \begin{SeeAlsoSection}
 \begin{SeeAlso2}{CCTK\_SyncGroupI}{CCTK-SyncGroupI}
 Synchronise the ghostzones for a group of grid variables
+(identified by the group index)
 \end{SeeAlso2}
 \end{SeeAlsoSection}
 
@@ -9926,6 +9928,7 @@ if (status < 0)
 \begin{FunctionDescription}{CCTK\_SyncGroupI}
 \label{CCTK-SyncGroupI}
 Synchronise the ghostzones for a group of grid variables
+(identified by the group index)
 
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -9980,6 +9983,7 @@ multiprocessor case you {\em must\/} call this function in parallel on
 \begin{SeeAlsoSection}
 \begin{SeeAlso2}{CCTK\_SyncGroup}{CCTK-SyncGroup}
 Synchronise the ghostzones for a group of grid variables
+(identified by the group name)
 \end{SeeAlso2}
 \begin{SeeAlso2}{CCTK\_GroupIndex}{CCTK-GroupIndex}
 Gets the group index for a given group name.
