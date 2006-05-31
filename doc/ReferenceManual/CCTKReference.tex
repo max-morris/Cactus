@@ -6923,27 +6923,6 @@ and not the active thorn list.
 \end{errorcodes}
 \end{CCTKFunc}
 
-% CommOverloadables.c
-\begin{CCTKFunc}{CCTK\_MyProc}{Returns the number of the local processor for a parallel run}
-\label{CCTK-MyProc}
-\function{int}{integer}{myproc}
-\argument{const cGH *}{CCTK\_POINTER}{cctkGH}
-\showargs
-\begin{params}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\end{params}
-\begin{discussion}
-For a single processor run this call will return zero. For multiprocessor
-runs, this call will return 0 $\leq$ myproc $<$ \code{CCTK\_nProcs(cctkGH)}.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
-
 
 
 \begin{CCTKFunc}{CCTK\_MaxTimeLevels}{Gives the number of timelevels for a group}
@@ -7066,6 +7045,28 @@ This function and its relatives return the maximum number of timelevels that the
 \\
 \hfill {\bf Fortran} && {\t call CCTK\_MAXTIMELEVELSGI(numlevels,3)}\\
 \\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+% CommOverloadables.c
+\begin{CCTKFunc}{CCTK\_MyProc}{Returns the number of the local processor for a parallel run}
+\label{CCTK-MyProc}
+\function{int}{integer}{myproc}
+\argument{const cGH *}{CCTK\_POINTER}{cctkGH}
+\showargs
+\begin{params}
+\parameter{cctkGH}{pointer to CCTK grid hierarchy}
+\end{params}
+\begin{discussion}
+For a single processor run this call will return zero. For multiprocessor
+runs, this call will return 0 $\leq$ myproc $<$ \code{CCTK\_nProcs(cctkGH)}.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
 \end{tabular}
 \end{examples}
 \begin{errorcodes}
