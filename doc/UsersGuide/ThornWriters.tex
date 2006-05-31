@@ -2934,7 +2934,7 @@ the reduction operation will be on the specified processor or on all processors.
 
 {\t
 \begin{verbatim}
-int CCTK_ReduceLocScalar (cGH *GH, 
+int CCTK_ReduceLocScalar (const cGH *GH, 
                           int processor, 
                           int operation_handle,
                           void *in_scalar, 
@@ -2968,7 +2968,7 @@ out element by element. The arrays need to have the same size on all
 processors.
 {\t
 \begin{verbatim}
-int CCTK_ReduceLocArrayToArray1D( cGH *GH, 
+int CCTK_ReduceLocArrayToArray1D( const cGH *GH, 
                                   int processor,
                                   int operation_handle,
                                   void *in_array1d, 
@@ -2976,7 +2976,7 @@ int CCTK_ReduceLocArrayToArray1D( cGH *GH,
                                   int xsize)
                                   int data_type)
 
-call CCTK_ReduceLocArrayToArray1D( int returnvalue
+call CCTK_ReduceLocArrayToArray1D(int returnvalue
                                   cctkGH,
                                   int processor,
                                   int operation_handle,
@@ -3002,7 +3002,7 @@ out element by element. The arrays need to have the same size on all
 processors.
 {\t
 \begin{verbatim}
-int CCTK_ReduceLocArrayToArray2D( cGH *GH,
+int CCTK_ReduceLocArrayToArray2D( const cGH *GH,
                                   int processor,
                                   int opertaion_handle,
                                   in_array_2d,
@@ -3041,7 +3041,7 @@ out element by element. The arrays need to have the same size on all
 processors.
 {\t
 \begin{verbatim}
-int CCTK_ReduceLocArrayToArray3D(cGH *GH,
+int CCTK_ReduceLocArrayToArray3D(const cGH *GH,
                                  int processor,
                                  int opertaion_handle,
                                  in_array_3d,
