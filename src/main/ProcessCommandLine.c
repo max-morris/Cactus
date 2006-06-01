@@ -93,6 +93,19 @@ static char **argv = NULL;
 @@*/
 int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigData)
 {
+  /*
+   * If you add a new command-line option, you must update (at least)
+   * the following different places in the code:
+   * - the definition of  long_options[]  in this function
+   * - the 3rd argument in the call to  getopt_long_only()  in this function
+   * - the  switch (c)  statement in this function
+   * - the #define of CACTUS_COMMANDLINE_OPTIONS near the top of
+   *   src/main/CommandLine.c
+   * - the help message printed by CCTKi_CommandLineHelp()
+   *   (also in  src/main/CommandLine.c )
+   * You should also update the description of command-line options in the
+   * Cactus Users' Guide, in  doc/UsersGuide/RunningCactus.tex .
+   */
 
   int option_index = 0;
   int c;

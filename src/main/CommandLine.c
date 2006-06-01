@@ -61,6 +61,11 @@ int cctki_onlyprintschedule = 0;
 /********************************************************************
  *********************        Defines          **********************
  ********************************************************************/
+
+/*
+ * See comments in  CCTKi_ProcessCommandLine()  for a list of all the
+ * places you have to update if you add a new command-line option.
+ */
 #define CACTUS_COMMANDLINE_OPTIONS                                      \
         "[-h] [-O] [-o paramname] [-L n] [-W n] [-E n] [-r[o|e|oe|eo]] " \
         "[-S] [-T] [-t name] [-parameter-level <level>] [-v] "          \
@@ -538,6 +543,11 @@ void CCTKi_CommandLineVersion(void)
 void CCTKi_CommandLineHelp (void)
 {
   char **argv;
+
+  /*
+   * See comments in  CCTKi_ProcessCommandLine()  for a list of all the
+   * places you have to update if you add a new command-line option.
+   */
   const char *commandline_options_description =
     "-h, -help                           : gets this help.\n"
     "-O[v], -describe-all-parameters     : describes all the parameters.\n"
