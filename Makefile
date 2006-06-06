@@ -19,7 +19,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.173 2005-09-27 12:02:14 swhite Exp $
+#   @version $Id: Makefile,v 1.174 2006-06-06 15:25:39 rideout Exp $
 # @@*/
 
 ##################################################################################
@@ -391,7 +391,7 @@ endif
 	@echo "  cvsdiff          - show differences between installed Cactus and"
 	@echo "                     version in CVS repository."
 	@echo "  cvsstatus        - report on status of Cactus (when installed from CVS)."
-	@echo "  cvsupdate        - update flesh and arrangements from. CVS"
+	@echo "  cvsupdate        - update flesh and arrangements from CVS."
 	@echo "  default          - create a new configuration with a default name."
 	@echo "  distclean        - delete all existing configurations."
 	@echo "  downsize         - remove non-essential files."
