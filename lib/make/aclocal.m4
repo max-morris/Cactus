@@ -154,7 +154,7 @@ AC_DEFUN(CCTK_PROG_CC_WORKS,
 AC_LANG_SAVE
 AC_LANG_C
 rm -fr conftest*
-AC_TRY_COMPILER([main(){return(0);} PilotMain(){return(0);}], ac_cv_prog_cc_works, ac_cv_prog_cc_cross)
+AC_TRY_COMPILER([main(){return(0);} int PilotMain(){return(0);}], ac_cv_prog_cc_works, ac_cv_prog_cc_cross)
 AC_LANG_RESTORE
 AC_MSG_RESULT($ac_cv_prog_cc_works)
 if test $ac_cv_prog_cc_works = no; then
@@ -179,6 +179,24 @@ fi
 AC_MSG_CHECKING([whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) is a cross-compiler])
 AC_MSG_RESULT($ac_cv_prog_cxx_cross)
 cross_compiling=$ac_cv_prog_cxx_cross
+])
+
+dnl see Autoconf manual: Examining Syntax
+dnl AC_TRY_COMPILE (includes, function-body, [action-if-found [, action-if-not-found]])
+AC_DEFUN(CCTK_PROG_FORTRAN_REAL16_WORKS,
+[AC_MSG_CHECKING([for Fortran REAL*16 ($F77 $F77FLAGS)])
+AC_LANG_SAVE
+AC_LANG_FORTRAN77
+rm -fr conftest*
+AC_TRY_COMPILER([
+      PROGRAM main
+        REAL*16 a
+      END
+      ], ac_cv_real16_works, ac_cv_real16_works_not)
+AC_LANG_RESTORE
+dnl AC_MSG_ERROR([STEEVIE: $ac_cv_real16_works])
+AC_MSG_RESULT($ac_cv_real16_works)
+fortran_does_real16=$ac_cv_real16_works
 ])
 
 AC_DEFUN(CCTK_HEADER_REGEX,

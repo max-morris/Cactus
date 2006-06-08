@@ -528,6 +528,12 @@ CCTK_CHECK_CXX_RESTRICT
 CCTK_C_BOOL
 CCTK_CXX_BOOL
 
+CCTK_PROG_FORTRAN_REAL16_WORKS
+AC_PROG_CXX_GNU
+if test "$fortran_does_real16" = 'yes'; then
+  AC_DEFINE(HAVE_FORTRAN_REAL16)
+fi
+
 dnl Do we have crypt(3)
 CCTK_CHECK_FUNC(crypt, , CCTK_CHECK_LIB_FUNC(crypt, crypt))
 
@@ -646,7 +652,10 @@ if test -n "$CCTK_INT1" ; then
 fi
 
 # Float types
-
+echo "Float types"
+echo "x$ac_cv_sizeof_long_double"
+echo "x$ac_cv_sizeof_double"
+echo "x$ac_cv_sizeof_float"
 case "x$ac_cv_sizeof_long_double" in
     'x16')
       CCTK_REAL16='long double' ;;
@@ -678,7 +687,7 @@ if test "x$DISABLE_REAL16" != 'xyes' -a "x$DISABLE_REAL16" != 'xno' -a "x$DISABL
     AC_ERROR([Didn't recognise setting of DISABLE_REAL16=\"$DISABLE_REAL16\"; should be either \"yes\" or \"no\" or \"\" (empty)])
 fi
 
-if test -n "$CCTK_REAL16" -a "x$DISABLE_REAL16" != 'xyes' ; then
+if test -n "$CCTK_REAL16" -a "x$DISABLE_REAL16" != 'xyes' -a -n "$HAVE_FORTRAN_REAL16" ; then
   AC_DEFINE_UNQUOTED(CCTK_REAL16, $CCTK_REAL16)
   AC_DEFINE(HAVE_CCTK_REAL16)
 fi
