@@ -6,7 +6,7 @@
 #   @desc
 #            Configure Cactus to compile with the LAM version of MPI.
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/LAM,v 1.11 2005-02-15 15:06:45 tradke Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/LAM,v 1.12 2006-06-08 15:21:52 swhite Exp $
 # @@*/
 
 echo '  LAM selected'
@@ -14,14 +14,17 @@ echo '  LAM selected'
 if test -z "$LAM_LIB_DIR" -o -z "$LAM_INC_DIR" ; then
   if test -z "$LAM_DIR" ; then
     echo '  LAM selected but no LAM_DIR set. Checking some places...'
-    if test -d '/usr/include/lam' -a -d '/usr/lib/lam' ; then
+    if test -d '/usr/lib/lam/lib' -a -d '/usr/lib/lam/include' ; then
+      lam_libs='/usr/lib/lam/lib'
+      lam_includes='/usr/lib/lam/include'
+    elif test -d '/usr/include/lam' -a -d '/usr/lib/lam' ; then
       lam_libs='/usr/lib/lam'
       lam_includes='/usr/include/lam'
     elif test -d '/usr/local/include/lam' -a -d '/usr/local/lib/lam' ; then
       lam_libs='/usr/local/lib/lam'
       lam_includes='/usr/local/include/lam'
     else
-      CCTK_Search LAM_DIR "/usr /usr/local /usr/local/lam /usr/local/packages/lam /usr/local/apps/lam $HOME" include/lam_config.h
+      CCTK_Search LAM_DIR "/usr/local/lam /usr/local/packages/lam /usr/local/apps/lam $HOME /usr/local /usr" include/lam_config.h
       if test -z "$LAM_DIR" ; then
         echo '  Unable to locate LAM installation - please set LAM_DIR or {LAM_INC_DIR, LAM_LIB_DIR}'
         exit 2
@@ -55,7 +58,7 @@ if test -z "$LAM_LIB_DIR" -o -z "$LAM_INC_DIR" ; then
 
   # set LAM_LIB_DIR if not already set
   if test -z "$LAM_LIB_DIR" ; then
-    lam_libs="$LAM_DIR/lib"
+    : ${lam_libs="$LAM_DIR/lib"}
 
     # don't add standard library search paths
     if test "$lam_libs" != '/usr/lib' -a "$lam_libs" != '/usr/local/lib'; then
