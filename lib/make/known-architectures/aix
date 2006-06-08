@@ -50,10 +50,9 @@ else
   fi
 
   # Fortran compilers
-  : ${F90FLAGS="-q$AIX_BITS -qmaxmem=-1 -qspill=10000"}
-  : ${F77FLAGS="-q$AIX_BITS -qmaxmem=-1"}
-  : ${F90_OPTIMISE_FLAGS='-O5'}
-  : ${F77_OPTIMISE_FLAGS='-O5'}
+                  # suppress congratulatory message on successful compilation
+  : ${F90FLAGS="-q$AIX_BITS -qextname -qsuppress=1501-510:cmpmsg"}
+  : ${F77FLAGS="-q$AIX_BITS -qextname -qsuppress=1501-510:cmpmsg"}
   : ${F90_DEBUG_FLAGS='-g'}
   : ${F77_DEBUG_FLAGS='-g'}
 
@@ -74,6 +73,14 @@ else
   F77_VERSION=`$F77 2>&1 | head -n1`
   F90_VERSION=`$F90 2>&1 | head -n1`
 
+  # NOTE IBM XLC/XLF optimizations.
+  # Tested -02 through -O5.  On BSSNCarpet runs, "-O3 -qhot" performed
+  # best--but beware, it moves instructions. While turning on -qstrict
+  # fixes this, it also degrades performance. The -qarch=auto causes the
+  # code to be customized for the architecture on which it is compiled.
+  # The higher levels turn on -qipa which does global optimizations and
+  # work best if this option is also supplied at link time. --SW
+
   # C/C++ compilers
   case "$CC" in
     gcc)
@@ -83,7 +90,8 @@ else
     cc|xlc|xlc_r)
      : ${C_DEPEND='$(CC) -E -M $(CPPFLAGS)'}
      : ${C_DEPEND_OUT=' > /dev/null ; mv $(basename $(basename $@)).u $@'}
-     : ${CFLAGS="-q$AIX_BITS -qspill=17000 -qmaxmem=-1 -qlanglvl=stdc99"}
+     : ${CFLAGS="-q$AIX_BITS -qlanglvl=stdc99"}
+     : ${C_OPTIMISE_FLAGS="-O3 -qarch=auto -qtune=auto -qcache=auto -qhot"}
      CC_VERSION=`$CC 2>&1 | head -n1`
      ;;
     *)
@@ -98,10 +106,33 @@ else
     xlC|xlC_r)
      : ${CXX_DEPEND='$(CXX) -E -M $(CPPFLAGS)'}
      : ${CXX_DEPEND_OUT=' > /dev/null ; mv $(basename $(basename $@)).u $@'}
-     : ${CXXFLAGS="-q$AIX_BITS -qspill=10000 -qmaxmem=-1"}
+     : ${CXXFLAGS="-q$AIX_BITS"}
+     : ${CXX_OPTIMISE_FLAGS="-O3 -qarch=auto -qtune=auto -qcache=auto -qhot"}
      CXX_VERSION=`$CXX 2>&1 | head -n1`
      ;;
     *)
+     ;;
+  esac
+
+  case "$F90" in
+    xlf|xlf_r|xlf90|xlf90_r)
+     : ${F90_DEPEND='$(F90) -E -M $(F90FLAGS)'}
+     : ${F90FLAGS="-q$AIX_BITS"}
+     : ${F90_OPTIMISE_FLAGS="-O3 -qarch=auto -qtune=auto -qcache=auto -qhot"}
+     ;;
+    *)
+     : ${F90_OPTIMISE_FLAGS="-O3"}
+     ;;
+  esac
+
+  case "$F77" in
+    xlf|xlf_r|xlf77|xlf77_r|xlf90|xlf90_r)
+     : ${F77_DEPEND='$(F77) -E -M $(F77FLAGS)'}
+     : ${FF77LAGS="-q$AIX_BITS"}
+     : ${F77_OPTIMISE_FLAGS="-O3 -qarch=auto -qtune=auto -qcache=auto -qhot"}
+     ;;
+    *)
+     : ${F77_OPTIMISE_FLAGS="-O3"}
      ;;
   esac
 
