@@ -8,7 +8,7 @@
 #  @enddesc
 #  @version $Id$
 #@@*/
-
+use strict;
 
 #/*@@
 #  @routine    CreateVariableBindings
@@ -21,14 +21,13 @@
 sub CreateVariableBindings
 {
   my($bindings_dir, $rhinterface_db, $rhparameter_db) = @_;
-  my(@data);
-  my($thorn, $line, $block, $filelist);
+  my @data = ();
 
   if(! -d $bindings_dir)
   {
     mkdir("$bindings_dir", 0755) || die "Unable to create $bindings_dir";
   }
-  $start_dir = `pwd`;
+  my $start_dir = `pwd`;
   chdir $bindings_dir;
 
   # Create the header files
@@ -37,11 +36,11 @@ sub CreateVariableBindings
     mkdir("include", 0755) || die "Unable to create include directory";
   }
 
-  foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
+  foreach my $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
-    @data = &CreateThornArgumentHeaderFile($thorn, $rhinterface_db);
-    $dataout = join ("\n", @data);
-    &WriteFile("include/$thorn\_arguments.h",\$dataout);
+    @data = CreateThornArgumentHeaderFile($thorn, $rhinterface_db);
+    my $dataout = join ("\n", @data);
+    WriteFile("include/$thorn\_arguments.h",\$dataout);
   }
 
   @data = ();
@@ -130,7 +129,7 @@ sub CreateVariableBindings
   push(@data, '#define DECLARE_CCTK_ARGUMENTS DECLARE_CCTK_FARGUMENTS');
   push(@data, '#endif');
 
-  foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
+  foreach my $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
     push(@data, '');
     push(@data, "#ifdef THORN_IS_$thorn");
@@ -143,15 +142,15 @@ sub CreateVariableBindings
   }
   push(@data, "\n");  # workaround for perl 5.004_04 to add a trailing newline
 
-  $dataout = join ("\n", @data);
-  &WriteFile("include/cctk_Arguments.h",\$dataout);
+  my $dataout = join ("\n", @data);
+  WriteFile("include/cctk_Arguments.h",\$dataout);
 
   if(! -d "Variables")
   {
     mkdir("Variables", 0755) || die "Unable to create Variables directory";
   }
 
-  $filelist = "BindingsVariables.c";
+  my $filelist = "BindingsVariables.c";
 
   @data = ();
   push(@data, '/*@@');
@@ -168,7 +167,7 @@ sub CreateVariableBindings
   push(@data, '#include "cctk_ActiveThorns.h"');
   push(@data, '');
 
-  foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
+  foreach my $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
     push(@data, "int CactusBindingsVariables_${thorn}_Initialise(void);");
   }
@@ -179,7 +178,7 @@ sub CreateVariableBindings
 
   push(@data, 'int CCTKi_BindingsVariablesInitialise(void)');
   push(@data, '{');
-  foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
+  foreach my $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
     push(@data, "  if (CCTK_IsThornActive(\"$thorn\"))");
     push(@data, '  {');
@@ -191,10 +190,10 @@ sub CreateVariableBindings
   push(@data, '}');
   push(@data, "\n");  # workaround for perl 5.004_04 to add a trailing newline
 
-  $dataout = join ("\n", @data);
-  &WriteFile("Variables/BindingsVariables.c",\$dataout);
+  my $dataout = join ("\n", @data);
+  WriteFile("Variables/BindingsVariables.c",\$dataout);
 
-  foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
+  foreach my $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
     @data = ();
     push(@data, '/*@@');
@@ -246,32 +245,37 @@ sub CreateVariableBindings
 
     push(@data, "int CactusBindingsVariables_${thorn}_Initialise(void)");
     push(@data, '{');
-    push(@data, '  int warn_mixeddim_gfs;');
+    push(@data, '  const char * warn_mixeddim_gfs = "";');
+    push(@data, '  int warn_mixeddim = 0;');
     push(@data, '  const CCTK_INT *allow_mixeddim_gfs;');
     push(@data, '');
     push(@data, '');
-    push(@data, '  warn_mixeddim_gfs = 0;');
     push(@data, '  allow_mixeddim_gfs = CCTK_ParameterGet ("allow_mixeddim_gfs", "Cactus", 0);');
     push(@data, '');
 
-    foreach $block ("PUBLIC", "PROTECTED", "PRIVATE")
+    foreach my $block ("PUBLIC", "PROTECTED", "PRIVATE")
     {
-      push(@data, &CreateThornGroupInitialisers($thorn, $block, $rhinterface_db, $rhparameter_db));
+      push(@data, CreateThornGroupInitialisers($thorn, $block, $rhinterface_db, $rhparameter_db));
     }
     push(@data, '');
-    push(@data, '  if (warn_mixeddim_gfs)');
+    push(@data, '  if (strlen (warn_mixeddim_gfs) > 0)');
     push(@data, '  {');
     push(@data, '    if (allow_mixeddim_gfs && *allow_mixeddim_gfs)');
     push(@data, '    {');
     push(@data, '      CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",');
     push(@data, '                  "CCTKi_CreateGroup: Working dimension already set, "');
-    push(@data, "                  \"creating GF group '$group' with different dimension $rhinterface_db->{\"\U$thorn GROUP $group\E DIM\"}\");");
+    push(@data, '                  "'
+          . "creating GF group \%s with different dimension \%d\",");
+    push(@data, '                  warn_mixeddim_gfs, warn_mixeddim);');
+
     push(@data, '    }');
     push(@data, '    else');
     push(@data, '    {');
     push(@data, '      CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",');
     push(@data, '                  "CCTKi_CreateGroup: Working dimension already set,"');
-    push(@data, "                  \" cannot create GF group $group with dimension $rhinterface_db->{\"\U$thorn GROUP $group\E DIM\"}\");");
+    push(@data, '                  "'
+              . "cannot create GF group \%s with dimension \%d\",");
+    push(@data, '                  warn_mixeddim_gfs, warn_mixeddim);');
     push(@data, '    }');
     push(@data, ' }');
     push(@data, '');
@@ -282,28 +286,14 @@ sub CreateVariableBindings
     push(@data, '}');
     push(@data, "\n");  # workaround for perl 5.004_04 to add a trailing newline
 
-    $dataout = join ("\n", @data);
-    &WriteFile("Variables/$thorn.c",\$dataout);
+    my $dataout = join ("\n", @data);
+    WriteFile("Variables/$thorn.c",\$dataout);
 
     $filelist .= " $thorn.c";
   }
 
-# TR 24 Jan 2003
-# Fortran wrappers are now defined and registered in "Variables/$thorn.c"
-#
-# foreach $thorn (split(" ",$rhinterface_db->{"THORNS"}))
-# {
-#   @data = &CreateThornFortranWrapper($thorn);
-#   push(@data, "\n");  # workaround for perl 5.004_04 to add a trailing newline
-#
-#   $dataout = join ("\n", @data);
-#   &WriteFile("Variables/$thorn\_FortranWrapper.c",\$dataout);
-#
-#   $filelist .= " $thorn\_FortranWrapper.c";
-# }
-
   $dataout = "SRCS = $filelist\n";
-  &WriteFile("Variables/make.code.defn",\$dataout);
+  WriteFile("Variables/make.code.defn",\$dataout);
 
   chdir $start_dir;
 }
@@ -321,11 +311,10 @@ sub CreateVariableBindings
 sub GetThornArguments
 {
   my($this_thorn, $block, $rhinterface_db) = @_;
-  my(%arguments);
-  my(@other_imps);
-  my($my_imp, $imp, $thorn, $group, $variable, $vtype, $gtype, $type);
+  my %arguments = ();
+  my @other_imps = ();
 
-  $my_imp = $rhinterface_db->{"\U$this_thorn IMPLEMENTS"};
+  my $my_imp = $rhinterface_db->{"\U$this_thorn IMPLEMENTS"};
 
   if($block eq "PUBLIC")
   {
@@ -344,13 +333,13 @@ sub GetThornArguments
     die "Unknown block type $block!!!\n";
   }
 
-#  print "Thorn is $this_thorn, implementation $my_imp, block is $block\n";
-#  print "Other imps are @other_imps\n";
-
-  foreach $imp (@other_imps,$my_imp)
+  my $sep = '';
+  foreach my $imp (@other_imps,$my_imp)
   {
 
     next if (! defined $imp);
+
+    my $thorn;
 
     if ($block eq "PRIVATE")
     {
@@ -363,13 +352,13 @@ sub GetThornArguments
       $thorn = $1;
     }
 
-    foreach $group (split(" ",$rhinterface_db->{"\U$thorn $block GROUPS\E"}))
+    foreach my $group (split(" ",$rhinterface_db->{"\U$thorn $block GROUPS\E"}))
     {
-      $vtype = $rhinterface_db->{"\U$thorn GROUP $group VTYPE\E"};
-      $gtype = $rhinterface_db->{"\U$thorn GROUP $group GTYPE\E"};
-      $ntimelevels = $rhinterface_db->{"\U$thorn GROUP $group TIMELEVELS\E"};
+      my $vtype = $rhinterface_db->{"\U$thorn GROUP $group VTYPE\E"};
+      my $gtype = $rhinterface_db->{"\U$thorn GROUP $group GTYPE\E"};
+      my $ntimelevels = $rhinterface_db->{"\U$thorn GROUP $group TIMELEVELS\E"};
 
-      $type = "$vtype";
+      my $type = "$vtype";
 
       my $vararraysize = $rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"};
       my $compactgroup = $rhinterface_db->{"\U$thorn GROUP $group\E COMPACT"};
@@ -388,7 +377,7 @@ sub GetThornArguments
           $sep = '';
         }
 
-        for($dim =0; $dim < $rhinterface_db->{"\U$thorn GROUP $group DIM\E"}; $dim++)
+        for(my $dim =0; $dim < $rhinterface_db->{"\U$thorn GROUP $group DIM\E"}; $dim++)
         {
 # FIXME: quick hack to shorten argument names
 #          $type .= "${sep}cctkv$dim$group";
@@ -446,9 +435,7 @@ sub GetThornArguments
         $type .= '!';
       }
 
-#      print "Group is $group, resulting type is $type\n";
-
-      foreach $variable (split(" ", $rhinterface_db->{"\U$thorn GROUP $group\E"}))
+      foreach my $variable (split(" ", $rhinterface_db->{"\U$thorn GROUP $group\E"}))
       {
         $arguments{$variable} = $type;
       }
@@ -470,11 +457,10 @@ sub GetThornArguments
 sub CreateFortranArgumentDeclarations
 {
   my(%arguments) = @_;
-  my($argument);
   my(@declarations) = ();
 
   # Put all storage arguments first.
-  foreach $argument (sort keys %arguments)
+  foreach my $argument (sort keys %arguments)
   {
     if($arguments{$argument} =~ m:STORAGESIZE|GROUPLENGTH:)
     {
@@ -483,19 +469,17 @@ sub CreateFortranArgumentDeclarations
   }
 
   # Now deal with the rest of the arguments
-  foreach $argument (sort keys %arguments)
+  foreach my $argument (sort keys %arguments)
   {
     next if ($arguments{$argument} =~ m:STORAGESIZE|GROUPLENGTH:);
 
     $arguments{$argument} =~ m:^([^! ]+) ?([^!]*)?!([^!]*)!([^!]*):;
 
-    $type        = $1;
-    $dimensions  = $2;
-    $ntimelevels = $4;
+    my $type        = $1;
+    my $dimensions  = $2;
+    my $ntimelevels = $4;
 
-#     print "var $argument - type \"$arguments{$argument}\" - tl $ntimelevels \n";
-
-    for($level = 0; $level < $ntimelevels; $level++)
+    for(my $level = 0; $level < $ntimelevels; $level++)
     {
       push(@declarations, "CCTK_$type $argument$dimensions");
 
@@ -505,7 +489,7 @@ sub CreateFortranArgumentDeclarations
 
     if(! $type =~ /^(BYTE|INT|INT1|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
     {
-      &CST_error(0,"Unknown argument type \"$type\"","",__LINE__,__FILE__);
+      CST_error(0,"Unknown argument type \"$type\"","",__LINE__,__FILE__);
     }
   }
   push(@declarations, '');
@@ -526,23 +510,22 @@ sub CreateFortranArgumentDeclarations
 sub CreateCArgumentDeclarations
 {
   my(%arguments) = @_;
-  my($varname, $imp, $type, $fullname, $ntimelevels);
   my(@declarations) = ();
 
 
   # Now deal with the rest of the arguments
-  foreach $varname (sort keys %arguments)
+  foreach my $varname (sort keys %arguments)
   {
     next if ($arguments{$varname} =~ m:STORAGESIZE|GROUPLENGTH:);
 
     $arguments{$varname} =~ m\^([^! ]+) ?([^!]*)?!([^!]*)::([^!]*)!([^!]*)!([^!]*)\;
 
-    $type           = $1;
-    $implementation = "\U\"$3\"";
-    $ntimelevels    = $5;
-    $var            = "\"$varname$6\"";
+    my $type           = $1;
+    my $implementation = "\U\"$3\"";
+    my $ntimelevels    = $5;
+    my $var            = "\"$varname$6\"";
 
-    for($level = 0; $level < $ntimelevels; $level++)
+    for(my $level = 0; $level < $ntimelevels; $level++)
     {
       push(@declarations, "CCTK_$type * CCTK_RESTRICT $varname = (cctki_dummy_int = \&$varname - \&$varname, (CCTK_$type *) CCTKi_VarDataPtr(cctkGH, $level, $implementation, $var));");
 
@@ -552,7 +535,7 @@ sub CreateCArgumentDeclarations
 
     if(! $type =~ /^(BYTE|INT|INT1|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
     {
-      &CST_error(0,"Unknown argument type $type","",__LINE__,__FILE__);
+      CST_error(0,"Unknown argument type $type","",__LINE__,__FILE__);
     }
   }
 
@@ -572,11 +555,10 @@ sub CreateCArgumentDeclarations
 sub CreateFortranArgumentList
 {
   my(%arguments) = @_;
-  my($argument, $varname);
   my(@argumentlist) = ();
 
   # Put all storage arguments first.
-  foreach $argument (sort keys %arguments)
+  foreach my $argument (sort keys %arguments)
   {
     if($arguments{$argument} =~ m:STORAGESIZE|GROUPLENGTH:)
     {
@@ -585,15 +567,15 @@ sub CreateFortranArgumentList
   }
 
   # Now deal with the rest of the arguments
-  foreach $varname (sort keys %arguments)
+  foreach my $varname (sort keys %arguments)
   {
     next if ($arguments{$varname} =~ m:STORAGESIZE|GROUPLENGTH:);
 
     $arguments{$varname} =~ m:^([^! ]+) ?([^!]*)?!([^!]*)!([^!]*):;
 
-    $ntimelevels = $4;
+    my $ntimelevels = $4;
 
-    for($level = 0; $level < $ntimelevels; $level++)
+    for(my $level = 0; $level < $ntimelevels; $level++)
     {
       push(@argumentlist, $varname);
 
@@ -617,19 +599,16 @@ sub CreateFortranArgumentList
 sub CreateCArgumentStatics
 {
   my(%arguments) = @_;
-  my($argument, $group, $allgroups);
   my(@declarations) = ();
 
-  $allgroups = '';
-  foreach $argument (sort keys %arguments)
+  my $allgroups = '';
+  foreach my $argument (sort keys %arguments)
   {
     next if ($arguments{$argument} =~ m:STORAGESIZE|GROUPLENGTH:);
 
     push(@declarations, "static int CCTKARGNUM_$argument = -1;");
     $arguments{$argument} =~ /::([^!]+)![0-9]+/;
-    $group = $1;
-
-#    print "ARG is $arguments{$argument}, group is $group\n";
+    my $group = $1;
 
     if ($allgroups !~ / $group /)
     {
@@ -653,22 +632,21 @@ sub CreateCArgumentStatics
 sub CreateCArgumentInitialisers
 {
   my(%arguments) = @_;
-  my($argument, $allgroups, $group, $qualifier);
   my(@initialisers) = ();
 
-  $allgroups = '';
-  foreach $argument (sort keys %arguments)
+  my $allgroups = '';
+  foreach my $argument (sort keys %arguments)
   {
     next if ($arguments{$argument} =~ m:STORAGESIZE|GROUPLENGTH:);
 
     $arguments{$argument} =~ m,^([^! ]+) ?([^!]*)?!([^!]*)\::([^!]*)!([^!]*)!([^!]*),;
-    $qualifier = $3;
-    $varsuffix = $6;
+    my $qualifier = $3;
+    my $varsuffix = $6;
 
     push(@initialisers, "if(CCTKARGNUM_$argument == -1) CCTKARGNUM_$argument = CCTK_VarIndex(\"$qualifier\::$argument$varsuffix\");");
 
     $arguments{$argument} =~ /\::([^!]+)/;
-    $group = $1;
+    my $group = $1;
     if ($allgroups !~ / $group /)
     {
       $allgroups .= " $group ";
@@ -691,10 +669,9 @@ sub CreateCArgumentPrototype
 {
   my(%arguments) = @_;
   my(@prototype) = ();
-  my($argument, $type, $ntimelevels);
 
   # Put all storage arguments first.
-  foreach $argument (sort keys %arguments)
+  foreach my $argument (sort keys %arguments)
   {
     if($arguments{$argument} =~ m:STORAGESIZE|GROUPLENGTH:)
     {
@@ -703,7 +680,7 @@ sub CreateCArgumentPrototype
   }
 
   # Now deal with the rest of the arguments
-  foreach $argument (sort keys %arguments)
+  foreach my $argument (sort keys %arguments)
   {
     next if ($arguments{$argument} =~ m:STORAGESIZE|GROUPLENGTH:);
 
@@ -713,17 +690,17 @@ sub CreateCArgumentPrototype
     {
       $arguments{$argument} =~ m:^([^! ]+) ?([^!]*)?!([^!]*)!([^!]*):;
 
-      $type        = $1;
-      $ntimelevels = $4;
+      my $type        = $1;
+      my $ntimelevels = $4;
 
-      for($level = 0; $level < $ntimelevels; $level++)
+      for(my $level = 0; $level < $ntimelevels; $level++)
       {
         push(@prototype, "CCTK_$type *");
       }
 
       if($type !~ /^(CHAR|BYTE|INT|INT1|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
       {
-        &CST_error(0,"Unknown argument type $type","",__LINE__,__FILE__);
+        CST_error(0,"Unknown argument type $type","",__LINE__,__FILE__);
       }
     }
   }
@@ -745,11 +722,10 @@ sub CreateCArgumentList
 {
   my(%arguments) = @_;
   my(@arglist) = ();
-  my(@argument, $type, $ntimelevels);
 
 
   # Put all storage arguments first.
-  foreach $argument (sort keys %arguments)
+  foreach my $argument (sort keys %arguments)
   {
     if($arguments{$argument} =~ m/STORAGESIZE\([^,]*::([^,]*),\s*(\d+)/)
     {
@@ -762,18 +738,18 @@ sub CreateCArgumentList
   }
 
   # Now deal with the rest of the arguments
-  foreach $argument (sort keys %arguments)
+  foreach my $argument (sort keys %arguments)
   {
     next if ($arguments{$argument} =~ m:STORAGESIZE|GROUPLENGTH:);
 
     $arguments{$argument} =~ m:^([^! ]+) ?([^!]*)?!([^!]*)!([^!]*):;
 
-    $type        = $1;
-    $ntimelevels = $4;
+    my $type        = $1;
+    my $ntimelevels = $4;
     $arguments{$argument} =~ /\::([^!]+)/;
-    $group = $1;
+    my $group = $1;
 
-    for($level = 0; $level < $ntimelevels; $level++)
+    for(my $level = 0; $level < $ntimelevels; $level++)
     {
       push(@arglist, "(CCTK_$type *)(PASS_REFERENCE($argument, $level))");
     }
@@ -783,12 +759,12 @@ sub CreateCArgumentList
       # DEPRECATED IN BETA 10
       if($type eq 'CHAR')
       {
-        &CST_error(1,"CCTK_CHAR is replaced by CCTK_BYTE, please change your code","",__LINE__,__FILE__);
+        CST_error(1,"CCTK_CHAR is replaced by CCTK_BYTE, please change your code","",__LINE__,__FILE__);
       }
     }
     else
     {
-      &CST_error(0,"Unknown argument type $type","",__LINE__,__FILE__);
+      CST_error(0,"Unknown argument type $type","",__LINE__,__FILE__);
     }
   }
 
@@ -806,9 +782,8 @@ sub CreateCArgumentList
 sub CreateThornArgumentHeaderFile
 {
   my($this_thorn, $rhinterface_db) = @_;
-  my($line, $thorn);
-  my(@returndata) = ();
-  my(%hasvars);
+  my @returndata = ();
+  my %hasvars = ();
 
   # Header Data
   push(@returndata, '/*@@');
@@ -822,22 +797,14 @@ sub CreateThornArgumentHeaderFile
   push(@returndata, '');
   push(@returndata, '');
 
-  $thorn = "\U$this_thorn";
+  my $thorn = "\U$this_thorn";
 
   # Create the basic thorn block definitions
-  foreach $block ("PRIVATE", "PROTECTED", "PUBLIC")
+  foreach my $block ("PRIVATE", "PROTECTED", "PUBLIC")
   {
 
-    %data = &GetThornArguments($this_thorn, $block, $rhinterface_db);
+    my %data = GetThornArguments($this_thorn, $block, $rhinterface_db);
 
-#    $print_data = 1;
-#    if ($print_data)
-#    {
-#      foreach $arg (sort keys %data)
-#      {
-#        print "$this_thorn data: $arg : $data{\"$arg\"}\n";
-#      }
-#    }
     # Remember if there actually are any arguments here.
     $hasvars{$block} = 1 if(keys %data > 0) ;
 
@@ -846,13 +813,13 @@ sub CreateThornArgumentHeaderFile
 
     # Create the fortran argument declarations
     push(@returndata, "#define DECLARE_${thorn}_${block}_FARGUMENTS \\");
-    @data = &CreateFortranArgumentDeclarations(%data);
+    my @data = CreateFortranArgumentDeclarations(%data);
     push(@returndata, join ("&&\\\n", @data));
     push(@returndata, '');
 
     # Create the fortran argument list
     push(@returndata, "#define ${thorn}_${block}_FARGUMENTS \\");
-    push(@returndata, &CreateFortranArgumentList(%data));
+    push(@returndata, CreateFortranArgumentList(%data));
     push(@returndata, '');
 
     push(@returndata, '#endif /* FCODE */');
@@ -866,30 +833,30 @@ sub CreateThornArgumentHeaderFile
 
     # Create the C argument declarations
     push(@returndata, "#define DECLARE_${thorn}_${block}_CARGUMENTS \\");
-    @data = &CreateCArgumentDeclarations(%data);
+    @data = CreateCArgumentDeclarations(%data);
     push(@returndata, join (" \\\n", @data));
     push(@returndata, '');
 
     # Create the C argument variable number statics
     push(@returndata, "#define DECLARE_${thorn}_${block}_C2F \\");
-    @data = &CreateCArgumentStatics(%data);
+    @data = CreateCArgumentStatics(%data);
     push(@returndata, join (" \\\n", @data));
     push(@returndata, '');
 
     # Create the C argument variable number statics initialisers
     push(@returndata, "#define INITIALISE_${thorn}_${block}_C2F \\");
-    @data = &CreateCArgumentInitialisers(%data);
+    @data = CreateCArgumentInitialisers(%data);
     push(@returndata, join (" \\\n", @data));
     push(@returndata, '');
 
     # Create the C argument prototypes
     push(@returndata, "#define ${thorn}_${block}_C2F_PROTO \\");
-    push(@returndata, &CreateCArgumentPrototype(%data));
+    push(@returndata, CreateCArgumentPrototype(%data));
     push(@returndata, '');
 
     # Create the C argument list
     push(@returndata, "#define PASS_${thorn}_${block}_C2F(GH) \\");
-    push(@returndata, &CreateCArgumentList(%data));
+    push(@returndata, CreateCArgumentList(%data));
 
     push(@returndata, '');
     push(@returndata, '#endif /* CCODE */');
@@ -900,14 +867,14 @@ sub CreateThornArgumentHeaderFile
 
   # Create the final thorn argument macros
 
-  $fortran_arguments = "#define ${thorn}_FARGUMENTS _CCTK_FARGUMENTS";
-  $fortran_declarations = "#define DECLARE_${thorn}_FARGUMENTS _DECLARE_CCTK_FARGUMENTS";
-  $c_declarations = "#define \UDECLARE_${thorn}_CARGUMENTS _DECLARE_CCTK_CARGUMENTS";
-  $c_argument_prototypes = "#define \U${thorn}_C2F_PROTO _CCTK_C2F_PROTO";
-  $c_argument_lists = "#define PASS_\U${thorn}_C2F(GH) _PASS_CCTK_C2F(GH)";
-  $c_declare_statics = "#define DECLARE_\U${thorn}_C2F _DECLARE_CCTK_C2F";
-  $c_initialize_statics = "#define INITIALISE_\U${thorn}_C2F _INITIALISE_CCTK_C2F";
-  foreach $block ("PRIVATE", "PROTECTED", "PUBLIC")
+  my $fortran_arguments = "#define ${thorn}_FARGUMENTS _CCTK_FARGUMENTS";
+  my $fortran_declarations = "#define DECLARE_${thorn}_FARGUMENTS _DECLARE_CCTK_FARGUMENTS";
+  my $c_declarations = "#define \UDECLARE_${thorn}_CARGUMENTS _DECLARE_CCTK_CARGUMENTS";
+  my $c_argument_prototypes = "#define \U${thorn}_C2F_PROTO _CCTK_C2F_PROTO";
+  my $c_argument_lists = "#define PASS_\U${thorn}_C2F(GH) _PASS_CCTK_C2F(GH)";
+  my $c_declare_statics = "#define DECLARE_\U${thorn}_C2F _DECLARE_CCTK_C2F";
+  my $c_initialize_statics = "#define INITIALISE_\U${thorn}_C2F _INITIALISE_CCTK_C2F";
+  foreach my $block ("PRIVATE", "PROTECTED", "PUBLIC")
   {
     if($hasvars{$block})
     {
@@ -964,22 +931,22 @@ sub CreateThornArgumentHeaderFile
 sub CreateThornGroupInitialisers
 {
   my($thorn, $block, $rhinterface_db, $rhparameter_db) = @_;
-  my(@variables, @data);
-  my($imp, $line, $group, $dim, $string, $numsize, $message, $type);
+  my @data = ();
 
-  $imp = $rhinterface_db->{"\U$thorn\E IMPLEMENTS"};
+  my $imp = $rhinterface_db->{"\U$thorn\E IMPLEMENTS"};
 
-  foreach $group (split(" ", $rhinterface_db->{"\U$thorn $block GROUPS"}))
+  foreach my $group (split(" ", $rhinterface_db->{"\U$thorn $block GROUPS"}))
   {
-    $type = $rhinterface_db->{"\U$thorn GROUP $group\E GTYPE"};
+    my $type = $rhinterface_db->{"\U$thorn GROUP $group\E GTYPE"};
 
     # Check consistency of SIZE and (optional) GHOSTSIZE options for arrays
     if ($type eq 'ARRAY')
     {
-      $size = $rhinterface_db->{"\U$thorn GROUP $group\E SIZE"};
-      &CheckArraySizes($size,$thorn,$rhparameter_db,$rhinterface_db,$group);
-      $dim = $rhinterface_db->{"\U$thorn GROUP $group\E DIM"};
-      $numsize = split (',', $size);
+      my $message = '';
+      my $size = $rhinterface_db->{"\U$thorn GROUP $group\E SIZE"};
+      CheckArraySizes($size,$thorn,$rhparameter_db,$rhinterface_db,$group);
+      my $dim = $rhinterface_db->{"\U$thorn GROUP $group\E DIM"};
+      my $numsize = split (',', $size);
       if ($dim != $numsize)
       {
         if ($numsize == 0)
@@ -991,15 +958,15 @@ sub CreateThornGroupInitialisers
           $message = "Array dimension $dim doesn't match the $numsize ".
                      "array sizes\n     ($size) for '$group' in '$thorn'";
         }
-        $hint = "Array sizes must be comma separated list of $dim " .
+        my $hint = "Array sizes must be comma separated list of $dim " .
                 "constants or parameters";
-        &CST_error(0,$message,$hint,__LINE__,__FILE__);
+        CST_error(0,$message,$hint,__LINE__,__FILE__);
       }
-      $ghostsize = $rhinterface_db->{"\U$thorn GROUP $group\E GHOSTSIZE"};
+      my $ghostsize = $rhinterface_db->{"\U$thorn GROUP $group\E GHOSTSIZE"};
       if ($ghostsize)
       {
-        &CheckArraySizes($ghostsize,$thorn,$rhparameter_db,$rhinterface_db,$group);
-        $numghostsize = split (',', $ghostsize);
+        CheckArraySizes($ghostsize,$thorn,$rhparameter_db,$rhinterface_db,$group);
+        my $numghostsize = split (',', $ghostsize);
         if ($dim != $numghostsize)
         {
           if ($numghostsize == 0)
@@ -1011,14 +978,14 @@ sub CreateThornGroupInitialisers
             $message = "Array dimension $dim doesn't match the $numghostsize ".
                        "array ghossizes\n     ($size) for '$group' in '$thorn'";
           }
-          $hint = "Array ghostsizes must be comma separated list of $dim " .
+          my $hint = "Array ghostsizes must be comma separated list of $dim " .
                   "constants or parameters";
-          &CST_error(0,$message,$hint,__LINE__,__FILE__);
+          CST_error(0,$message,$hint,__LINE__,__FILE__);
         }
       }
     }
 
-    $line = "  if (CCTKi_CreateGroup (\"\U$group\", \"$thorn\", \"$imp\",";
+    my $line = "  if (CCTKi_CreateGroup (\"\U$group\", \"$thorn\", \"$imp\",";
     push(@data, $line);
     $line = '                         "'
           . $rhinterface_db->{"\U$thorn GROUP ${group}\E GTYPE"}
@@ -1052,11 +1019,11 @@ sub CreateThornGroupInitialisers
     push(@data, $line);
 
     # Is it a vector group ?
-    @variables = split(" ", $rhinterface_db->{"\U$thorn GROUP $group\E"});
+    my @variables = split(" ", $rhinterface_db->{"\U$thorn GROUP $group\E"});
     if(defined($rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"}))
     {
       # Check that the size is allowed.
-      &CheckArraySizes($rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"},$thorn,$rhparameter_db,$rhinterface_db,$group);
+      CheckArraySizes($rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"},$thorn,$rhparameter_db,$rhinterface_db,$group);
       # Pass in the size of the GV array, which may be a valid parameter expression
       $line = '                         "'
             . $rhinterface_db->{"\U$thorn GROUP $group\E VARARRAY_SIZE"}
@@ -1071,70 +1038,23 @@ sub CreateThornGroupInitialisers
 
     $line = '                         ' . scalar(@variables);
 
-    foreach $variable (@variables)
+    foreach my $variable (@variables)
     {
       $line .= ",\n                         \"$variable\"";
-     }
+    }
 
     $line .= ') == 1)';
     push(@data, $line);
 
     push(@data, '  {');
-    push(@data, '    warn_mixeddim_gfs = 1;');
+    push(@data, "    warn_mixeddim_gfs = \"$group\";");
+    push(@data, "    warn_mixeddim = " 
+                . $rhinterface_db->{"\U$thorn GROUP $group\E DIM"} . ';');
     push(@data, '  }');
   }
 
   return @data;
 }
-
-# TR 24 Jan 2003
-# Fortran wrappers are now defined and registered in "Variables/$thorn.c"
-#
-#sub CreateThornFortranWrapper
-#{
-#  my($thorn) = @_;
-#  my(@data);
-#
-#  @data = ();
-#  push(@data, '/*@@');
-#  push(@data, "   \@file    ${thorn}_FortranWrapper.c");
-#  push(@data, '   @author  Automatically generated by GridFuncStuff.pl');
-#  push(@data, '   @desc');
-#  push(@data, "            Defines the fortran wrappers for scheduled fortran routines of thorn $thorn");
-#  push(@data, '   @enddesc');
-#  push(@data, ' @@*/');
-#  push(@data, '');
-#  push(@data, '');
-#
-#  push(@data, "#define THORN_IS_$thorn 1");
-#  push(@data, '');
-#  push(@data, '#include "cctk.h"');
-#  push(@data, '#include "cctk_Flesh.h"');
-#  push(@data, '#include "cctk_Groups.h"');
-#  push(@data, '#include "cctk_Comm.h"');
-#  push(@data, '#include "cctk_Arguments.h"');
-#  push(@data, '');
-#
-#  push(@data, "int CCTKi_BindingsFortranWrapper$thorn(cGH *GH, CCTK_FPOINTER fpointer);");
-#  push(@data, '');
-#  push(@data, "int CCTKi_BindingsFortranWrapper$thorn(cGH *GH, CCTK_FPOINTER fpointer)");
-#  push(@data, '{');
-#  push(@data, '  const int _cctk_zero = 0;');
-#  push(@data, "  void (*function)(\U$thorn\E_C2F_PROTO);");
-#  push(@data, "  DECLARE_\U$thorn\E_C2F");
-#  push(@data, "  INITIALISE_\U$thorn\E_C2F");
-#  push(@data, '  (void) (_cctk_zero + 0);');
-#  push(@data, '');
-#
-#  push(@data, "  function = (void (*) (\U$thorn\E_C2F_PROTO)) fpointer;");
-#  push(@data, "  function (PASS_\U$thorn\E_C2F (GH));");
-#  push(@data, '');
-#  push(@data, '  return 0;');
-#  push(@data, '}');
-#
-#  return (@data);
-#}
-
 
 #/*@@
 #  @routine    CheckArraySizes
@@ -1150,46 +1070,12 @@ sub CreateThornGroupInitialisers
 sub CheckArraySizes
 {
   my($size,$thornname,$rhparameter_db,$rhinterface_db,$group) = @_;
-  my($par,$thorn,$base);
 
   # append a dummy space character to catch expressions with trailing commas
   $size .= ' ';
-  foreach $par (split(",",$size))
+  foreach my $par (split(",",$size))
   {
-
-#     # check for size to be a constant
-#     next if $par =~ /^\d+$/;
-
-#     # check for size to be a parameter
-#     if ($par =~ /^([A-Za-z]\w*)(::([A-Za-z]\w*))?([+-]\d+)?$/)
-#     {
-#       if (defined $2)
-#       {
-#         $thorn = $1;
-#         $base = $3;
-#       }
-#       else
-#       {
-#         $thorn = $thornname;
-#         $base = $1;
-#       }
-
-#       # check if the parameter really exists
-#       if ($rhparameter_db->{"\U$thorn Private\E variables"} !~ m:$base:i &&
-#           $rhparameter_db->{"\U$thorn Global\E variables"} !~ m:$base:i &&
-#           $rhparameter_db->{"\U$thorn Restricted\E variables"} !~ m:$base:i)
-#       {
-#         &CST_error(0,"Array size \'$par\' in $thornname is not a parameter",
-#                    "",__LINE__,__FILE__);
-#       }
-#     }
-#     else
-#     {
-#       &CST_error(0,"Array size \'$par\' in $thornname has invalid syntax",
-#                  "",__LINE__,__FILE__);
-#     }
-
-    &VerifyParameterExpression($par,$thornname,$rhparameter_db,$rhinterface_db,$group);
+    VerifyParameterExpression($par,$thornname,$rhparameter_db,$rhinterface_db,$group);
   }
 
 }
@@ -1209,10 +1095,8 @@ sub CheckArraySizes
 sub VerifyParameterExpression
 {
   my($expression,$thornname,$rhparameter_db,$rh_interface_db,$group) = @_;
-  my($i,$count,@fields);
   my $msg = "Array size in '$thornname' is an invalid arithmetic expression\n"
             . '          ';
-
 
   # Eliminate white space in expression
   $expression =~ s/\s+//g;
@@ -1220,42 +1104,42 @@ sub VerifyParameterExpression
   # First do some global checks
   if($expression !~ m%^[-+*/a-zA-Z0-9_():\[\]]+$%)
   {
-    &CST_error(0, $msg . "'$expression' contains invalid characters",
+    CST_error(0, $msg . "'$expression' contains invalid characters",
                '',__LINE__,__FILE__);
   }
 
-  $count = 0;
+  my $count = 0;
 
-  for $i (split(//,$expression))
+  for my $i (split(//,$expression))
   {
     $count++ if($i eq "(");
     $count-- if($i eq ")");
 
     if($count < 0)
     {
-      &CST_error(0, $msg . "'$expression' has too many closing parentheses",
+      CST_error(0, $msg . "'$expression' has too many closing parentheses",
                  '',__LINE__,__FILE__);
     }
   }
 
   if($count > 0)
   {
-    &CST_error(0, $msg . "'$expression' has unmatched parentheses",
+    CST_error(0, $msg . "'$expression' has unmatched parentheses",
                '',__LINE__,__FILE__);
   }
 
 
   if($expression =~ m:[-+*/]$:)
   {
-    &CST_error(0, $msg . "'$expression' ends with an operator",
+    CST_error(0, $msg . "'$expression' ends with an operator",
                '',__LINE__,__FILE__);
 
   }
 
   # Now split the string on operators and parentheses
-  @fields = split(/([-+*\/()])/, $expression);
+  my @fields = split(/([-+*\/()])/, $expression);
 
-  for $i (@fields)
+  for my $i (@fields)
   {
     # Get rid of any empty tokens
     next if($i =~ m:^\s*$:);
@@ -1271,6 +1155,8 @@ sub VerifyParameterExpression
     # Now check if it is a valid parameter name
     if($i =~ m:^([a-zA-Z][a-zA-Z0-9_]*)(\:\:([a-zA-Z][a-zA-Z0-9_]*))?:)
     {
+      my $thorn;
+      my $base;
       if (defined $2)
       {
         $thorn = $1;
@@ -1290,7 +1176,7 @@ sub VerifyParameterExpression
             $rhparameter_db->{"\U$thorn Global\E variables"} !~ m:$base:i &&
             $rhparameter_db->{"\U$thorn Restricted\E variables"} !~ m:$base:i)
         {
-          &CST_error(0,"Expression '$expression' in group: $group, type: " . $rh_interface_db->{"\U$thorn GROUP ${group}\E GTYPE"} . " and thorn: '$thornname' contains a constant which isn\'t a parameter",
+          CST_error(0,"Expression '$expression' in group: $group, type: " . $rh_interface_db->{"\U$thorn GROUP ${group}\E GTYPE"} . " and thorn: '$thornname' contains a constant which isn\'t a parameter",
                      '',__LINE__,__FILE__);
         }
       }
@@ -1310,14 +1196,14 @@ sub VerifyParameterExpression
           # Ok, so it does share from this implementation
           if($rhparameter_db->{"\U$thornname SHARES $implementation\E variables"} !~ m/\b$base\b/i)
           {
-            &CST_error(0,"Array size '$expression' in '$thornname' contains a reference to a parameter from $implementation" .
+            CST_error(0,"Array size '$expression' in '$thornname' contains a reference to a parameter from $implementation" .
                        " which is neither USED nor EXTENDED",
                        '',__LINE__,__FILE__);
           }
         }
         else
         {
-          &CST_error(0,"Array size '$expression' in '$thornname' contains a reference to a parameter from $implementation" .
+          CST_error(0,"Array size '$expression' in '$thornname' contains a reference to a parameter from $implementation" .
                      " which is not global nor shared",
                      '',__LINE__,__FILE__);
         }
@@ -1326,31 +1212,31 @@ sub VerifyParameterExpression
     elsif($i =~ m:^\(\)$:)
     {
       # Empty parenthesis - bad
-      &CST_error(0, $msg . "'$expression' contains empty parentheses",
+      CST_error(0, $msg . "'$expression' contains empty parentheses",
                  '',__LINE__,__FILE__);
     }
     elsif($i =~ m:[-+/*]{2,}:)
     {
       # Two operators in a row - bad
-      &CST_error(0, $msg . "'$expression' contains two operators in a row",
+      CST_error(0, $msg . "'$expression' contains two operators in a row",
                  '',__LINE__,__FILE__);
     }
     elsif($i =~ m:[-+/*]\):)
     {
       # Operator followed by closing parenthesis - bad
-      &CST_error(0, $msg . "'$expression' has a missing operand",
+      CST_error(0, $msg . "'$expression' has a missing operand",
                  '',__LINE__,__FILE__);
     }
     elsif($i =~ m:\([-+/*]:)
     {
       # Opening parenthesis followed by operator - bad
-      &CST_error(0, $msg . "'$expression' has a missing operand",
+      CST_error(0, $msg . "'$expression' has a missing operand",
                  '',__LINE__,__FILE__);
     }
     else
     {
       # I've run out of imagination
-      &CST_error(0, $msg . "'$expression' contains unrecognised token '$i'",
+      CST_error(0, $msg . "'$expression' contains unrecognised token '$i'",
                  '',__LINE__,__FILE__);
     }
   }
