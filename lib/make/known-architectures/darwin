@@ -6,7 +6,7 @@
 #   @desc
 #            Known architecture stuff for MacOS X (Darwin)
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.14 2006-02-02 16:50:18 schnetter Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.15 2006-06-08 12:22:06 swhite Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
@@ -70,8 +70,12 @@ else
     CXX_DEPEND='$(CXX) -M $(CPPFLAGS)'
   elif test -e '/usr/lib/gcc/darwin/3.3' ; then
     # This is dangerous -- it could pick up the wrong gcc
-    C_DEPEND='gcc -M -no-cpp-precomp $(CPPFLAGS)'
-    CXX_DEPEND='g++ -E -M $(CPPFLAGS)'
+    if MAC_C_VERSION_MAJOR < 4 && MAC_C_VERSION_MINOR < 3 ; then
+      C_DEPEND='gcc -M -no-cpp-precomp $(CPPFLAGS)'
+    else
+      C_DEPEND='gcc -M $(CPPFLAGS)'
+    fi
+    CXX_DEPEND='g++ -E -M $(CPPFLAGS)'a
   else
     C_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'
     CXX_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'
@@ -125,7 +129,11 @@ else
   case "$MAC_C_COMP" in
       gcc)
       CC_VERSION="`$CC --version 2>&1 | head -n 1`"
-      : ${CFLAGS="-no-cpp-precomp -mlongcall"}
+      if MAC_C_VERSION_MAJOR < 4 && MAC_C_VERSION_MINOR < 3 ; then
+        : ${CFLAGS="-no-cpp-precomp -mlongcall"}
+      else
+        : ${CFLAGS="-mlongcall"}
+      fi
       ;;
       *)
       :
@@ -135,7 +143,11 @@ else
   case "$MAC_CXX_COMP" in
       gcc)
       CXX_VERSION="`$CXX --version 2>&1 | head -n 1`"
-      : ${CXXFLAGS="-no-cpp-precomp -mlongcall"}
+      if MAC_C_VERSION_MAJOR < 4 && MAC_C_VERSION_MINOR < 3 ; then
+        : ${CXXFLAGS="-no-cpp-precomp -mlongcall"}
+      else
+        : ${CXXFLAGS="-mlongcall"}
+      fi
       ;;
       *)
       :
@@ -161,7 +173,8 @@ else
     absoft77)
       : ${LIBS='fio f77math m'}
       F90FLAGS='-f'
-      # Test if it is a version of the absoft compiler which has the library in a custom place.
+      # Test if it is a version of the absoft compiler which has the library 
+      # in a custom place.
       if test -n "$ABSOFT" ; then
         : ${LIBDIRS='$(ABSOFT)/lib'}
       fi
@@ -186,10 +199,14 @@ else
       fi
 #      : ${LIBDIRS='/opt/ibmcmp/lib'}
 #      : ${ARFLAGS='-rucs'}
-      : ${F90FLAGS='-qspill=10000 -qmaxmem=-1 -qnullterm -qsuffix=f=f'}
-      : ${F77FLAGS='-qmaxmem=-1 -qnullterm -qsuffix=f=f'}
-      : ${F90_OPTIMISE_FLAGS='-O5'}
-      : ${F77_OPTIMISE_FLAGS='-O5'}
+                    # suppress congratulatory message on successful compilation
+      : ${F90FLAGS='-qnullterm -qsuffix=f=f -qsuppress=1501-510:cmpmsg'}
+      : ${F77FLAGS='-qnullterm -qsuffix=f=f -qsuppress=1501-510:cmpmsg'}
+                    # -O3 -qhot moves some instructions...but improves speed
+                    # -qarch etc optimises for the architecture on which code
+                    #        is compiled
+      : ${F90_OPTIMISE_FLAGS='-O3 -qhot -qarch=auto -qtune=auto -qcache=auto'}
+      : ${F77_OPTIMISE_FLAGS='-O3 -qhot -qarch=auto -qtune=auto -qcache=auto'}
       : ${F90_SUFFIX='f'}
 
       CCTK_WriteLine make.arch.defn 'F90FLAGS += $(DARWIN_$(subst .,,$(suffix $<))_FLAGS)'
