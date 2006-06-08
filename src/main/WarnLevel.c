@@ -15,6 +15,10 @@
 #include <stdarg.h>
 #include <string.h>
 
+#if HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
 # include <time.h>
@@ -46,6 +50,7 @@ CCTK_FILEVERSION(main_WarnLevel_c);
  ********************************************************************/
 /* Escape sequences to highlight warning messages.
  */
+
 #ifndef WIN32
 #define BOLD_ON  "\033[1m"
 #define BOLD_OFF "\033[0m"
@@ -53,6 +58,43 @@ CCTK_FILEVERSION(main_WarnLevel_c);
 #define BOLD_ON  ""
 #define BOLD_OFF ""
 #endif
+
+typedef enum { ON = 0, OFF = 1 } BOLDING;
+
+static void bold_stdout (BOLDING on)
+{
+  const char *val = (on == ON) ? BOLD_ON : BOLD_OFF;
+
+  if (!isatty (STDOUT_FILENO))
+    val = "";
+
+  fprintf (stdout, "%s", val);
+}
+
+static void bold_stderr (BOLDING on)
+{
+  const char *val = (on == ON) ? BOLD_ON : BOLD_OFF;
+
+  if (!isatty (STDERR_FILENO))
+    val = "";
+
+  fprintf (stderr, "%s", val);
+}
+
+static void print_bold_stderr (int do_bold, const char *fmt, ...)
+{
+  va_list args;
+
+  if (do_bold)
+    bold_stderr (ON);
+
+  va_start (args, fmt);
+  vfprintf (stderr, fmt, args);
+  va_end (args);
+
+  if (do_bold)
+    bold_stderr (OFF);
+}
 
 /* maximum buffer length to hold the hostname */
 #define MAXNAMELEN 255
@@ -534,7 +576,7 @@ int CCTK_VWarn (int level,
 
       if (highlight_warning_messages)
       {
-        fprintf (stderr, BOLD_ON);
+        bold_stderr(ON);
       }
 
       if (level <= error_level || cctk_full_warnings)
@@ -552,7 +594,7 @@ int CCTK_VWarn (int level,
 
       if (highlight_warning_messages)
       {
-        fprintf (stderr, BOLD_OFF);
+        bold_stderr (OFF);
       }
 
       fprintf (stderr, " ");
@@ -567,7 +609,7 @@ int CCTK_VWarn (int level,
 
       if (highlight_warning_messages)
       {
-        fprintf (stdout, BOLD_ON);
+        bold_stdout(ON);
       }
 
       if (level <= error_level || cctk_full_warnings)
@@ -585,7 +627,7 @@ int CCTK_VWarn (int level,
 
       if (highlight_warning_messages)
       {
-        fprintf (stdout, BOLD_OFF);
+        bold_stdout(OFF);
       }
 
       fprintf (stdout, " ");
@@ -670,16 +712,10 @@ int CCTK_ParamWarn (const char *thorn, const char *message)
   highlight_warning_messages =
     ! highlight_warning_messages_ptr || *highlight_warning_messages_ptr;
 
-  if (highlight_warning_messages)
-  {
-    fprintf (stderr, BOLD_ON "PARAM %s (%s):" BOLD_OFF " %s\n",
+  print_bold_stderr ( highlight_warning_messages, "PARAM %s (%s): %s",
              cctk_strong_param_check ? "ERROR" : "WARNING", thorn, message);
-  }
-  else
-  {
-    fprintf (stderr, "PARAM %s (%s): %s\n",
-             cctk_strong_param_check ? "ERROR" : "WARNING", thorn, message);
-  }
+  fprintf (stderr, "\n");
+
   param_errors++;
 
   return (0);
@@ -747,16 +783,8 @@ int CCTK_VParamWarn (const char *thorn,
   highlight_warning_messages =
     ! highlight_warning_messages_ptr || *highlight_warning_messages_ptr;
 
-  if (highlight_warning_messages)
-  {
-    fprintf (stderr, BOLD_ON "PARAM %s (%s)" BOLD_OFF ": ",
+  print_bold_stderr ( highlight_warning_messages, "PARAM %s (%s): ",
              cctk_strong_param_check ? "ERROR" : "WARNING", thorn);
-  }
-  else
-  {
-    fprintf (stderr, "PARAM %s (%s): ",
-             cctk_strong_param_check ? "ERROR" : "WARNING", thorn);
-  }
 
   va_start (ap, format);
   vfprintf (stderr, format, ap);
