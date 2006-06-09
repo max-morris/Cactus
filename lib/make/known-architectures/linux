@@ -198,10 +198,10 @@ else
       # workaround for calling C varargs functions from Fortran
       : ${F77FLAGS='-Mx,125,0x200'}
       : ${F90FLAGS='-Mx,125,0x200'}
-      : ${F77_OPTIMISE_FLAGS='-fast'}
-      : ${F77_WARN_FLAGS='-Mneginfo -Mvect=assoc'}
-      : ${F90_OPTIMISE_FLAGS='-fast'}
-      : ${F90_OPTIMISE_FLAGS='-Minfo -Mneginfo -Mvect=assoc'}
+      : ${F77_OPTIMISE_FLAGS='-fast -Mvect=assoc'}
+      : ${F77_WARN_FLAGS='-Minfo -Mneginfo'}
+      : ${F90_OPTIMISE_FLAGS='-fast -Mvect=assoc'}
+      : ${F90_OPTIMISE_FLAGS='-Minfo -Mneginfo'}
       : ${F77_DEBUG_FLAGS='-g'}
       : ${F90_DEBUG_FLAGS='-g'}
       F90_VERSION="`$F90 -V 2>&1 | grep -i pgf90 | head -n1`"
@@ -384,8 +384,8 @@ else
       CC_VERSION="`$CC -v 2>&1 | grep -i version | head -n1`"
       ;;
     pgcc)
-      : ${C_OPTIMISE_FLAGS='-fast -O3'}
-      : ${C_WARN_FLAGS='-Minfo -Mneginfo -Mvect=assoc'}
+      : ${C_OPTIMISE_FLAGS='-fast -O3 -Mvect=assoc'}
+      : ${C_WARN_FLAGS='-Minfo -Mneginfo'}
       CC_VERSION="`$CC -V 2>&1 | grep -i pgcc | head -n1`"
       ;;
     pathcc)
@@ -438,8 +438,8 @@ else
       ;;
     pgCC)
       : ${CXXFLAGS='--no_using_std'}
-      : ${CXX_OPTIMISE_FLAGS='-fast -O3'}
-      : ${CXX_WARN_FLAGS='-Minfo -Mneginfo -Mvect=assoc'}
+      : ${CXX_OPTIMISE_FLAGS='-fast -O3 -Mvect=assoc'}
+      : ${CXX_WARN_FLAGS='-Minfo -Mneginfo'}
       if test `basename $LD` = 'pgCC'; then
         : ${LDFLAGS='-Wl,--allow-multiple-definition'}
       fi
