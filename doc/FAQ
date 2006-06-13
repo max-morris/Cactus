@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.79 2004-05-01 22:06:14 tradke Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.80 2006-06-13 15:06:00 schnetter Exp $
 
 Also available at http://www.cactuscode.org/Documentation/FAQ
 
@@ -520,18 +520,28 @@ C5  I can't compile because the compiler complains that a routine name has
     routines with Fortran wrappers.
 
 
-C6  How can I make sure that one thorn is compiled before another? For example
-    to make sure that F90 module files from  ArrangementA/ThornA are available
-    for ArrangementB/ThornB.
+C6  How can I make sure that one thorn is compiled before another?
+    For example to make sure that F90 module files from ThornA are
+    available for ThornB.
 
-    Add a dependency to a ThornB's make.configuration.deps file, for example
+    Make thornA provide a capability, and make thornB require that
+    capability.
 
-    ifneq (,$(findstring ArrangementA/ThornA,$(THORNS)))
-    $(CCTK_LIBDIR)$(DIRSEP)libThornB.a : $(CCTK_LIBDIR)$(DIRSEP)libThornA.a
-    endif
+    Create "configuration.ccl" files in both thornA and thornB.  To
+    provide a capability, add the lines
 
-    we will try to modify the make system to make this more automatic in the
-    future.
+    PROVIDES <capability>
+    {
+      SCRIPT
+      LANG
+    }
+
+    and to require a capability, add the line
+
+    REQUIRES <capability>
+
+    We often choose capability names that are the same as the name of
+    the providing thorn.
 
 
 C7  (Solaris) I start a configuration process with gmake, but on the second
@@ -1370,21 +1380,10 @@ E8  Is there anyway to only compile certain lines of source code if a
     others of what you have done.
 
 E9  How can I find out in make.configuration.defn, whether MPI is being
-    used or not?  The thorn EllPETSc checks whether the makefile variable
-    MPI_LIBS is empty.  This doesn't work on systems where using MPI does
-    not require any explicitely specified libraries, such as when using the
-    mpicc script to compile.  Is there a better way?
+    used or not?
 
-    You can grep for MPI in the file
-
-        configs/<your_config>/config-data/cctk_Extradefs.h
-
-    see for example CactusPUGHIO/IOPanda/src/make.configuration.deps
-
-       if test -z "`grep CCTK_MPI $(CONFIG)/cctk_Extradefs.h`" ; then
-          echo "IOPanda requires MPI";   \
-          exit 2;                        \
-       fi
+    If MPI is present, the makefile variable HAVE_MPI is defined and
+    nonzero.
 
 E10 How can I see in source code whether MPI is being used?
 
@@ -1400,13 +1399,13 @@ E11 The functions CCTK_Exit and CCTK_Abort require cctkGH as an argument.
     How can I call these functions deep inside my thorns where this pointer
     is not available?
 
-    These routines are overloaded by a driver, and the reason for passing
-    in a cctkGH is to allow the driver to tidy up before exiting. If the 
-    particular driver you are using allows a NULL pointer to be passed you 
-    can pass this instead of the cctkGH pointer. (The worst that will happen 
-    should be a segfault if the driver cannot handle NULL). Alternatively, 
-    you need to include a mechanism to obtain the cctkGH deep inside your
-    thorns code.
+    These routines are overloaded by a driver, and the reason for
+    passing in a cctkGH is to allow the driver to tidy up before
+    exiting.  If the particular driver you are using allows a NULL
+    pointer to be passed you can pass this instead of the cctkGH
+    pointer.  (The worst that will happen should be a segfault if the
+    driver cannot handle NULL).  Alternatively, you need to include a
+    mechanism to obtain the cctkGH deep inside your thorns code.
     
 E12 I'm getting wierd syntax errors in Fortran code, with an extra
     garbage character (often $ or &) stuck in the middle of a CCTK_INFO()
