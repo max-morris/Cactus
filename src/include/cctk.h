@@ -33,13 +33,11 @@
 #define CCTK_PRINTSEPARATOR\
   print '("--------------------------------------------------------------------------------")'
 
-#define _CCTK_FARGUMENTS  cctk_dim, cctk_gsh, cctk_lsh, cctk_lbnd,\
-                          cctk_ubnd, cctk_lssh, cctk_from, cctk_to, cctk_bbox,\
-                          cctk_delta_time, cctk_time, cctk_delta_space,\
-                          cctk_origin_space, cctk_levfac, \
-                          cctk_levoff, cctk_levoffdenom, cctk_timefac, \
-                          cctk_convlevel, cctk_convfac, \
-                          cctk_nghostzones, cctk_iteration, cctkGH
+#define _CCTK_FARGUMENTS \
+cctk_dim,cctk_gsh,cctk_lsh,cctk_lbnd,cctk_ubnd,cctk_lssh,cctk_from,cctk_to,\
+cctk_bbox,cctk_delta_time,cctk_time,cctk_delta_space,cctk_origin_space,\
+cctk_levfac,cctk_levoff,cctk_levoffdenom,cctk_timefac,cctk_convlevel,\
+cctk_convfac,cctk_nghostzones,cctk_iteration,cctkGH
 
 #define _DECLARE_CCTK_ARGUMENTS _DECLARE_CCTK_FARGUMENTS
 #define _DECLARE_CCTK_FARGUMENTS INTEGER cctk_dim&&\
