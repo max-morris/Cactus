@@ -466,10 +466,10 @@ must contain at least one uppercase and one lowercase letter and
 follow the C standard for function names.  The type of each argument,
 \texttt{<\var{arg*\_type}>} must be a \verb|CCTK| type in
 \verb|INT,REAL,STRING,POINTER|. The intent of each argument,
-\texttt{<\var{intent*}>} must be either \verb|IN| or \verb|OUT|. An argument
-should only be modified if it is declared to have intent
-\verb|OUT|. If the argument is an array then the prefix \verb|ARRAY|
-should also be given.
+\texttt{<\var{intent*}>} must be either \verb|IN|, \verb|OUT|, or
+\verb|INOUT|. An argument should only be modified if it is declared
+to have intent \verb|OUT| or \verb|INOUT|. If the argument is an array
+then the prefix \verb|ARRAY| should also be given.
 
 If the argument \texttt{<\var{arg*}>} is a function pointer then the argument
 itself (which will preceded by the return type) should be

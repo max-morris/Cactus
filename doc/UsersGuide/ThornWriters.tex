@@ -4190,12 +4190,12 @@ includes the \texttt{cctk.h} header file.
 In a Fortran file, the declaration of the function will be included
 in the \texttt{DECLARE\_CCTK\_FUNCTIONS} macro, which is available after
 the statement \texttt{\#include "cctk\_Functions.h"}.
-The keywords \texttt{IN} and \texttt{OUT}
+The keywords \texttt{IN}, \texttt{OUT}, and \texttt{INOUT}
 work in the same fashion as \texttt{INTENT} statements in Fortran 90.
 That is, the C prototype will expect an argument with intent \texttt{IN}
-to be a value and one with intent \texttt{OUT} to be a pointer. There
-also exists the \texttt{ARRAY} keyword for passing arrays of any
-dimension.
+to be a value and one with intent \texttt{OUT} or \texttt{INOUT} to be a
+pointer. There also exists the \texttt{ARRAY} keyword for passing arrays
+of any dimension.
 Functions which are required by some thorn (which doesn't provide it itself)
 are checked at startup to be provided by some other thorn.
 
