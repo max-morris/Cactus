@@ -4276,7 +4276,7 @@ CCTK_REAL Integrate(CCTK_REAL CCTK_FPOINTER  func(CCTK_REAL IN x), \
 \item A Fortran function is provided that inverts a real number. The {\tt
     interface.ccl} should read
 \begin{verbatim}
-    SUBROUTINE Invert(CCTK_REAL OUT x)
+    SUBROUTINE Invert(CCTK_REAL INOUT x)
     PROVIDES FUNCTION Invert WITH FindInverse LANGUAGE Fortran
     USES FUNCTION Invert
 \end{verbatim}
