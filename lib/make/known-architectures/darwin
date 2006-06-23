@@ -6,7 +6,7 @@
 #   @desc
 #            Known architecture stuff for MacOS X (Darwin)
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.15 2006-06-08 12:22:06 swhite Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.16 2006-06-23 04:47:58 schnetter Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
@@ -75,7 +75,7 @@ else
     else
       C_DEPEND='gcc -M $(CPPFLAGS)'
     fi
-    CXX_DEPEND='g++ -E -M $(CPPFLAGS)'a
+    CXX_DEPEND='g++ -E -M $(CPPFLAGS)'
   else
     C_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'
     CXX_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'
