@@ -38,7 +38,61 @@ while (<STDIN>)
   {
     # include statement
     my $name = $1;
-    print " \\\n  $srcdir/$name";
+    my $found = 0;
+    if (! $found)
+    {
+      # reference to an include file in this thorn?
+      my $dirhdl;
+      if( opendir( DIRHDL, "$srcdir" ) )
+      {
+        while( defined( my $filename = readdir( DIRHDL ) ) )
+        {
+          if( $filename eq "$name" )
+          {
+            $found = 1;
+            print " \\\n  $filename";
+            last loop;
+          }
+        }
+        closedir DIRHDL;
+      }
+    }
+    if (! $found)
+    {
+      # reference to an include file in another thorn?
+      loop: foreach my $dir (@otherdirs)
+      {
+        # note: we could also use the SUBDIRS from the make.code.defn here
+        foreach my $subdir (".", "include")
+        {
+          if( opendir( DIRHDL, "$dir/$subdir" ) )
+          {
+            while( defined( my $filename = readdir( DIRHDL ) ) )
+            {
+              if( $filename eq "$name" )
+              {
+                $found = 1;
+                print " \\\n  $dir/$subdir/$filename";
+                last loop;
+              }
+            }
+            closedir DIRHDL;
+          }
+        }
+      }
+    }
+    if (! $found)
+    {
+      print STDERR "$srcfile:$line: Warning: While tracing include depencencies: Include file \"$name\" not found\n";
+      if (@otherdirs)
+      {
+        print STDERR "   Searched in thorn directory and in [" . join(', ', @otherdirs) . "]\n";
+      }
+      else
+      {
+        print STDERR "   Searched in thorn directory only.\n";
+      }
+    }
   }
   elsif (/^\s*module\s+(\w+)/i)
   {
@@ -83,7 +137,7 @@ while (<STDIN>)
     if (! $found)
     {
       # reference to a module in another thorn?
-    loop: foreach my $dir (@otherdirs)
+      loop: foreach my $dir (@otherdirs)
       {
         # note: we could also use the SUBDIRS from the make.code.defn here
         foreach my $subdir (".", "include")
