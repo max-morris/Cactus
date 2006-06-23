@@ -598,7 +598,7 @@ void CCTKi_CommandLineHelp (void)
     "-E, --error-level <n>                : Sets the error level to n.\n"
     "-r, --redirect [o|e|oe|eo]           : Redirects standard output and/or\n"
     "                                       standard error to files.\n"
-    "-b, --buffering [no|line|full]       : Set stdout buffering mode.\n"
+    "-b, --buffering <no|line|full>       : Set stdout buffering mode.\n"
     "-S, --print-schedule                 : Print the schedule tree, then exit.\n"
     "-T, --list-thorns                    : Lists the compiled-in thorns.\n"
     "-t, --test-thorn-compiled <name>     : Tests for the presence of thorn <name>.\n"
