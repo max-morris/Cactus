@@ -69,7 +69,7 @@ int cctki_onlyprintschedule = 0;
 #define CACTUS_COMMANDLINE_OPTIONS                                      \
         "[-h] [-O] [-o paramname] [-L n] [-W n] [-E n] [-r[o|e|oe|eo]] " \
         "[-b [no|line|full]] " \
-        "[-S] [-T] [-t name] [-parameter-level <level>] [-v] "          \
+        "[-S] [-T] [-t name] [--parameter-level <level>] [-v] "          \
         "<parameter_file_name>"
 
 
@@ -588,30 +588,29 @@ void CCTKi_CommandLineHelp (void)
    * places you have to update if you add a new command-line option.
    */
   const char *commandline_options_description =
-    "-h, -help                           : gets this help.\n"
-    "-O[v], -describe-all-parameters     : describes all the parameters.\n"
-    "                                      v makes this verbose, i.e. it\n"
-    "                                      gives a verbose description of\n"
-    "                                      all parameters\n"
-    "-o, -describe-parameter <paramname> : describe the given parameter.\n"
-    "                                      pretending to be on nprocs processors, \n"
-    "                                      or 1 if not given.\n"
-    "-L, -logging-level <n>              : Sets the logging level to n.\n"
-    "-W, -warning-level <n>              : Sets the warning level to n.\n"
-    "-E, -error-level <n>                : Sets the error level to n.\n"
-    "-r, -redirect [o|e|oe|eo]           : Redirects standard output and/or standard\n"
-    "                                      error to files.\n"
-    "-b, -buffering [no|line|full]       : Set stdout buffering mode.\n"
-    "-S, -print-schedule                 : Print the schedule tree, then exit.\n"
-    "-T, -list-thorns                    : Lists the compiled-in thorns.\n"
-    "-t, -test-thorn-compiled <name>     : Tests for the presence of thorn <name>.\n"
-    "    -parameter-level <level>        : Sets the amount of parameter checking, \n"
-    "                                      level can be strict, normal, relaxed.\n"
-    "-v, -version                        : Prints the version.\n"
-    "-i, -ignore-next                    : Ignores the next argument.\n";
+    "-h, --help                           : gets this help.\n"
+    "-O[v], --describe-all-parameters     : describes all the parameters.\n"
+    "                                       v makes this verbose, i.e., it gives\n"
+    "                                       a verbose description of all parameters.\n"
+    "-o, --describe-parameter <paramname> : describe the given parameter.\n"
+    "-L, --logging-level <n>              : Sets the logging level to n.\n"
+    "-W, --warning-level <n>              : Sets the warning level to n.\n"
+    "-E, --error-level <n>                : Sets the error level to n.\n"
+    "-r, --redirect [o|e|oe|eo]           : Redirects standard output and/or\n"
+    "                                       standard error to files.\n"
+    "-b, --buffering [no|line|full]       : Set stdout buffering mode.\n"
+    "-S, --print-schedule                 : Print the schedule tree, then exit.\n"
+    "-T, --list-thorns                    : Lists the compiled-in thorns.\n"
+    "-t, --test-thorn-compiled <name>     : Tests for the presence of thorn <name>.\n"
+    "    --parameter-level <level>        : Sets the amount of parameter checking, \n"
+    "                                       level can be strict, normal, relaxed.\n"
+    "-v, --version                        : Prints the version.\n"
+    "-i, --ignore-next                    : Ignores the next argument.\n";
 
   /* test-parameter option to be added back when implemented 
-    "-x, -test-parameters [nprocs]       : does a quick test of the parameter file\n"
+    "-x, --test-parameters [nprocs]       : does a quick test of the parameter file\n"
+    "                                       pretending to be on nprocs processors,\n"
+    "                                       or 1 if not given.\n"
    */
 
   if (CCTK_MyProc (NULL) == 0)
