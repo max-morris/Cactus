@@ -1266,6 +1266,8 @@ Short Version & Long Version \\
 \hline
  -r[o|e|oe|eo] & -redirect=[o|e|oe|eo]\\
 \hline
+ -b <\var{mode}> & -buffering=<\var{mode}>\\
+\hline
  -i & -ignore-next \\
 \hline
     & -parameter-level=<\var{level}> \\
@@ -1324,6 +1326,22 @@ will abort the Cactus run.
 Redirects the standard output (`\texttt{o}') and/or standard error
 (`\texttt{e}') of each processor to a file.  By default
 the standard outputs from processors other than processor 0 are discarded.
+
+\item [\texttt{-b <\var{mode}>} or \texttt{-buffering=<\var{mode}>}]
+  Set the \texttt{stdout} buffering mode.  \var{mode} can be one of
+  \texttt{no}, \texttt{line}, and \texttt{full}.  Buffered I/O is a
+  standard feature of C programmes.  This delays writing the actual
+  output; instead, the output is collected into an internal buffer,
+  and is then written in large chunks.  This improves performance
+  considerably.  Line buffering means that output is written whenever
+  a newline character is encountered; full buffering means that output
+  is written once e.g.\ 1000 characters have accmulated.  The default
+  setting is line buffering for I/O that goes to a terminal, and full
+  buffering for I/O that goes to a file.  For debugging purposes, it
+  is sometimes useful to reduce the amount of buffering.  Error
+  messages, i.e.\ the \texttt{stderr} stream, is always unbuffered
+  (and hence usually slower than \texttt{stdout}).
+
 \item [\texttt{-i} or \texttt{-ignore-next}]
 Causes the next argument on the command line to be ignored.
 \item [\texttt{-parameter-level=<\var{level}>}]

@@ -68,6 +68,7 @@ int cctki_onlyprintschedule = 0;
  */
 #define CACTUS_COMMANDLINE_OPTIONS                                      \
         "[-h] [-O] [-o paramname] [-L n] [-W n] [-E n] [-r[o|e|oe|eo]] " \
+        "[-b [no|line|full]] " \
         "[-S] [-T] [-t name] [-parameter-level <level>] [-v] "          \
         "<parameter_file_name>"
 
@@ -415,8 +416,8 @@ void CCTKi_CommandLineParameterLevel (const char *argument)
   else
   {
     CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                "CCTKi_CommandLineParameterLevel: Parameter checking level "
-                "'%s' not recognized, defaulting to normal", argument);
+                "Parameter checking level '%s' not recognised, "
+                "defaulting to normal", argument);
     parameterlevel = CCTK_PARAMETER_NORMAL;
   }
 
@@ -425,7 +426,7 @@ void CCTKi_CommandLineParameterLevel (const char *argument)
 
 
  /*@@
-   @routine    CCTKi_CommandLineRedirectStdout
+   @routine    CCTKi_CommandLineRedirect
    @date       Fri Jul 23 11:32:46 1999
    @author     Tom Goodale
    @desc
@@ -458,6 +459,44 @@ void CCTKi_CommandLineRedirect (const char *argument)
       sprintf (fname, "CCTK_Proc%u.err", myproc);
       freopen (fname, "w", stderr);
     }
+  }
+}
+ /*@@
+   @routine    CCTKi_CommandLineSetBuffering
+   @date       2006-05-27
+   @author     Erik Schnetter
+   @desc
+               Set stdout buffering.  (stderr is always unbuffered.)
+   @enddesc
+
+   @var        argument
+   @vdesc      option argument
+   @vtype      const char *
+   @vio        in
+   @endvar
+@@*/
+void CCTKi_CommandLineSetBuffering (const char *argument)
+{
+  if (! strcmp (argument, "no"))
+  {
+    /* Switch to unbuffered mode (best for debugging) */
+    setvbuf (stdout, NULL, _IONBF, 0);
+  }
+  else if (! strcmp (argument, "line"))
+  {
+    /* Switch to line buffered mode (good for screen output) */
+    setvbuf (stdout, NULL, _IOLBF, 0);
+  }
+  else if (! strcmp (argument, "full"))
+  {
+    /* Switch to fully buffered mode (fastest) */
+    setvbuf (stdout, NULL, _IOFBF, 0);
+  }
+  else
+  {
+    CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                "Stdout buffering mode '%s' not recognised, "
+                "not changing the default setting", argument);
   }
 }
 
@@ -562,6 +601,7 @@ void CCTKi_CommandLineHelp (void)
     "-E, -error-level <n>                : Sets the error level to n.\n"
     "-r, -redirect [o|e|oe|eo]           : Redirects standard output and/or standard\n"
     "                                      error to files.\n"
+    "-b, -buffering [no|line|full]       : Set stdout buffering mode.\n"
     "-S, -print-schedule                 : Print the schedule tree, then exit.\n"
     "-T, -list-thorns                    : Lists the compiled-in thorns.\n"
     "-t, -test-thorn-compiled <name>     : Tests for the presence of thorn <name>.\n"
