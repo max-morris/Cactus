@@ -1288,7 +1288,7 @@ Short Version & Long Version \\
 \hline
  -r[o|e|oe|eo] & --redirect=[o|e|oe|eo]\\
 \hline
- -b <\var{mode}> & --buffering=<\var{mode}>\\
+ -b[no|line|full] & --buffering=[no|line|full]\\
 \hline
  -i & --ignore-next \\
 \hline
@@ -1355,9 +1355,8 @@ Redirects the standard output (`\texttt{o}') and/or standard error
 (`\texttt{e}') of each processor to a file.  By default
 the standard outputs from processors other than processor 0 are discarded.
 
-\item [\texttt{-b <\var{mode}>} or \texttt{--buffering=<\var{mode}>}]
-  Set the \texttt{stdout} buffering mode.  \var{mode} can be one of
-  \texttt{no}, \texttt{line}, and \texttt{full}.  Buffered I/O is a
+\item [\texttt{-b[no|line|full]} or \texttt{--buffering=[no|line|full]}]
+  Set the \texttt{stdout} buffering mode.  Buffered I/O is a
   standard feature of C programmes.  This delays writing the actual
   output; instead, the output is collected into an internal buffer,
   and is then written in large chunks.  This improves performance
