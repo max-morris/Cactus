@@ -495,6 +495,22 @@ Current options are \texttt{yes}, \texttt{no}, or \texttt{memory}. The option
 \texttt{yes} switches on all debugging features, whereas \texttt{memory} just
 employs memory tracing (\ref{sec:metr}).
 
+\item [\texttt{C\_DEBUG\_FLAGS}]
+Debug flags for the C compiler, their use depends on the type of
+debugging being used.
+
+\item [\texttt{CXX\_DEBUG\_FLAGS}]
+Debug flags for the C++ compiler, their use depends on the type of
+debugging being used.
+
+\item [\texttt{F90\_DEBUG\_FLAGS}]
+Debug flags for the Fortran 90 compiler, their use depends on the
+type of debuggin being used.
+
+\item [\texttt{F77\_DEBUG\_FLAGS}]
+Debug flags for the Fortran 77 compiler, their use depends on the
+type of debugging being used.
+
 \item [\texttt{OPTIMISE, OPTIMIZE}]
 * Specifies what type of optimisation should be used. The only options currently
 available are \texttt{yes} and \texttt{no}.  The default is to use optimisation.\\
@@ -516,6 +532,32 @@ type of optimisation being used.
 \item [\texttt{F77\_OPTIMISE\_FLAGS}]
 Optimisation flags for the Fortran 77 compiler, their use depends on the
 type of optimisation being used.
+
+\item [\texttt{PROFILE}]
+  * Specifies what type of profiling should be used.  The only options
+  currently available are \texttt{yes} and \texttt{no}.  The default
+  is to use no profiling.
+
+\item [\texttt{C\_PROFILE\_FLAGS}]
+  Profile flags for the C compiler, their use depends on the type of
+  profiling being used.
+
+\item [\texttt{CXX\_PROFILE\_FLAGS}]
+  Profile flags for the C++ compiler, their use depends on the type of
+  profiling being used.
+
+\item [\texttt{F90\_PROFILE\_FLAGS}]
+  Profile flags for the Fortran 90 compiler, their use depends on the
+  type of profilin being used.
+
+\item [\texttt{F77\_PROFILE\_FLAGS}]
+  Profile flags for the Fortran 77 compiler, their use depends on the
+  type of profiling being used.
+
+\item [\texttt{WARN}]
+  * Specifies what type of build warnings should be used.  The only
+  options currently available are \texttt{yes} and \texttt{no}.  The
+  default is to produce no warnings.
 
 \item [\texttt{C\_WARN\_FLAGS}]
 Warning flags for the C compiler, their use depends on the type of

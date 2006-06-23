@@ -33,6 +33,9 @@ endif
 ifneq ($(strip $(OPTIMIZE)), )
   $(warning "You specified 'OPTIMIZE=$(OPTIMIZE)'. This option is evaluated only at configuration time and will be ignored at compile time.")
 endif
+ifneq ($(strip $(PROFILE)), )
+  $(warning "You specified 'PROFILE=$(PROFILE)'. This option is evaluated only at configuration time and will be ignored at compile time.")
+endif
 
 export MAKE_DIR  = $(CCTK_HOME)/lib/make
 
@@ -120,9 +123,9 @@ ALLCACTUSLIBS = $(ALLCACTUSLIBS_BASE:%=$(CCTK_LIBNAME_PREFIX)%)
 # Build the executable
 $(EXEDIR)$(DIRSEP)$(EXE): $(CONFIG)/make.thornlist $(CONFIG)/cctki_version.h $(patsubst %,$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)$(CCTK_LIBNAME_PREFIX)%$(LIBNAME_SUFFIX),$(notdir $(THORNS) $(CACTUSLIBS)))
 	@echo Creating $(EXE) in $(EXEDIR) from $(THORNS)
-	$(CC) $(OPTIMISE_C) $(DEBUG_C) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)"$(call TRANSFORM_DIRS,$(TOP)/datestamp.o)" -I"$(call TRANSFORM_DIRS,$(CCTK_HOME)/src/include)" -I"$(call TRANSFORM_DIRS,$(CONFIG))" "$(call TRANSFORM_DIRS,$(DATESTAMP))"
+	$(CC) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)"$(call TRANSFORM_DIRS,$(TOP)/datestamp.o)" -I"$(call TRANSFORM_DIRS,$(CCTK_HOME)/src/include)" -I"$(call TRANSFORM_DIRS,$(CONFIG))" "$(call TRANSFORM_DIRS,$(DATESTAMP))"
 	if [ ! -d $(EXEDIR) ]; then $(MKDIR) $(MKDIRFLAGS) $(EXEDIR) ; fi
-	$(LD) $(CREATEEXE)$(OPTIONSEP)"$(call TRANSFORM_DIRS,$@)" $(DEBUG_LD) $(LDFLAGS) $(EXTRAFLAGS) "$(call TRANSFORM_DIRS,$(TOP)/datestamp.o)" $(CACTUSLIBLINKLINE) $(GENERAL_LIBRARIES)
+	$(LD) $(CREATEEXE)$(OPTIONSEP)"$(call TRANSFORM_DIRS,$@)" $(CXXFLAGS) $(LDFLAGS) $(EXTRAFLAGS) "$(call TRANSFORM_DIRS,$(TOP)/datestamp.o)" $(CACTUSLIBLINKLINE) $(GENERAL_LIBRARIES)
 	@echo $(DIVIDER)
 
 # Version file
