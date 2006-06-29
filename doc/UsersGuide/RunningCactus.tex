@@ -178,7 +178,7 @@ The same script can be used to checkout additional thorns.
 
 Another script, \texttt{MakeThornList}, can be used to produce a minimal
 ThornList from a given Cactus par file.  It needs a \emph{master} ThornList
-to be copied into your \texttt{~\.cactus} directory. 
+to be copied into your \texttt{~\.cactus} directory.
 
 See \url{http://www.cactuscode.org/toolkit/makeThornList/}.
 
@@ -330,7 +330,7 @@ There are three ways to pass options to the configuration process.
     Or: list your Cactus configuration files in an environment variable
     \texttt{CACTUS\_CONFIG\_FILES}:
 
-    \texttt{gmake <\var{config name}>-config 
+    \texttt{gmake <\var{config name}>-config
                   CACTUS\_CONFIG\_FILES=$<$\var{list of config files}$>$}
 
     Multiple configuration files, with their file names separated by a
@@ -344,13 +344,13 @@ There are three ways to pass options to the configuration process.
     \texttt{gmake <\var{config name}>-config  options=<\var{filename}>}
 
     The options file has the same format as \texttt{\$\{HOME\}/.cactus/config}.
-    (Note these options are \emph{added} to those from the 
+    (Note these options are \emph{added} to those from the
     \texttt{\$\{HOME\}/.cactus/config} file.)
 
   \item[4]{}
     Pass the options individually on the command line,
 
-    \texttt{gmake <\var{config name}>-config 
+    \texttt{gmake <\var{config name}>-config
                            <\var{option name}>=<\var{chosen value}>, ...}
 
     Not all configuration options can be set on the command line.
@@ -391,7 +391,7 @@ you are compiling for, such as \texttt{sx6-nec-superux};  the format is
 \item {Compiled Thorns}
 
 These specify the chosen set of thorns for compilation. If the thorn choice is not provided
-during configuration, a list containing all thorns in the 
+during configuration, a list containing all thorns in the
 \texttt{arrangements} directory
 is automatically created, and the users prompted for any changes.
 
@@ -992,7 +992,7 @@ reconfigures an existing one overwriting any previous configuration options.\\
 The configuration options are stored in a file
 \texttt{configs/<\var{config}>/config-info}.
 
-\item [\texttt{gmake <\var{config}>-configinfo}] displays the options 
+\item [\texttt{gmake <\var{config}>-configinfo}] displays the options
 of the configuration (\texttt{cat configs/<\var{config}>/config-info}).
 
 \item[\texttt{gmake <\var{config}>-cvsupdate}] updates the Flesh and this
@@ -1288,7 +1288,11 @@ Short Version & Long Version \\
 \hline
  -r[o|e|oe|eo] & --redirect=[o|e|oe|eo]\\
 \hline
+ & --logdir=<\var{directory}> \\
+\hline
  -b[no|line|full] & --buffering=[no|line|full]\\
+\hline
+ -b <\var{mode}> & --buffering=<\var{mode}>\\
 \hline
  -i & --ignore-next \\
 \hline
@@ -1304,28 +1308,37 @@ Short Version & Long Version \\
 
 
 \begin{Lentry}
+
 \item [\texttt{-O} or \texttt{--describe-all-parameters}]
 Prints a full list of all parameters from all thorns which were compiled,
 along with descriptions and allowed values.  This can take an optional extra
 parameter \texttt{v}  (i.e. \texttt{-Ov} to give verbose information about
 all parameters).
+
 \item [\texttt{-o<\var{param}>} or \texttt{--describe-parameter=<\var{param}>}]
 Prints the description and allowed values for a given parameter --- takes one
 argument.
+
 \item [\texttt{-S} or \texttt{--print-schedule}]
 Print only the schedule tree.
+
 \item [\texttt{-T} or \texttt{--list-thorns}]
 Prints a list of all the thorns which were compiled in.
+
 \item [\texttt{-t<\var{arrangement or thorn}>} or \texttt{--test-thorn-compiled=<\var{arrangement or thorn>}} ]
 Checks if a given thorn was compiled in --- takes one argument.
+
 \item [\texttt{-h}, \texttt{-?} or \texttt{--help}]
 Prints a help message.
+
 \item [\texttt{-v} or \texttt{--version}]
 Prints version information of the code.
+
 %\item [\texttt{-x <nprocs>} or \texttt{--test-parameters <nprocs>}]
 %Runs the code far enough to check the consistency of the parameters.  If
 %given a numeric argument it will attempt to simulate being on that number
 %of processors. [To be implemented.]
+
 \item [\texttt{-L<\var{level}>} or \texttt{--logging-level=<\var{level}>}]
 Sets the logging level of the code.  All warning messages are given a
 level --- the lower the level the greater the severity.  This
@@ -1333,12 +1346,14 @@ parameter \texttt{-L} controls the level of messages to be seen, with all
 warnings of level $\le$ \texttt{<\var{level}>} printed to standard output.  The
 default is a logging level of~0, meaning that only level~0 messages
 should be printed to standard output.
+
 \item [\texttt{-W<\var{level}>} or \texttt{--warning-level=<\var{level}>}]
 Similar to \texttt{-W}, but for standard error instead of
 standard output.  All warnings of level $\le$ \texttt{<\var{level}>} are
 printed to standard error.  The default is a warning level of~1,
 meaning that level~0 and level~1 messages should be printed to
 standard error.
+
 \item [\texttt{-E<\var{level}>} or \texttt{--error-level=<\var{level}>}]
 Similar to \texttt{-W}, but for fatal errors: Cactus treats all
 warnings with level $\le$ \texttt{<\var{level}>} as fatal errors, and aborts
@@ -1350,10 +1365,15 @@ the Cactus run immediately (after printing the warning message%%%
          }%%%
 ).  The default value is zero, \ie{} only level~0 warnings
 will abort the Cactus run.
+
 \item [\texttt{-r[o|e|oe|eo]} or \texttt{--redirect=[o|e|oe|eo]}]
 Redirects the standard output (`\texttt{o}') and/or standard error
 (`\texttt{e}') of each processor to a file.  By default
 the standard outputs from processors other than processor 0 are discarded.
+
+\item [\texttt{--logdir=<\var{directory}>}]
+Sets the output directory for logfiles created by the \texttt{-r} option.
+If the directory doesn't exist yet, it will be created by Cactus.
 
 \item [\texttt{-b[no|line|full]} or \texttt{--buffering=[no|line|full]}]
   Set the \texttt{stdout} buffering mode.  Buffered I/O is a
@@ -1369,12 +1389,14 @@ the standard outputs from processors other than processor 0 are discarded.
   messages, i.e.\ the \texttt{stderr} stream, is always unbuffered
   (and hence usually slower than \texttt{stdout}).
 
-\item [\texttt{-i} or \texttt{--ignore-next}]
-Causes the next argument on the command line to be ignored.
 \item [\texttt{--parameter-level=<\var{level}>}]
 Sets the level of parameter checking to be used, one of \texttt{strict},
 \texttt{normal} (the default), or \texttt{relaxed}.
 See Section~\ref{sec:Parameter_File}.
+
+\item [\texttt{-i} or \texttt{--ignore-next}]
+Causes the next argument on the command line to be ignored.
+
 \end{Lentry}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -110,40 +110,60 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
   int option_index = 0;
   int c;
   int ignore;
+  /* constants for identifying each options by the return value
+     from getopt_long_only() */
+  enum
+  {
+    help_option                   = 'h',
+    describe_all_paramters_option = 'O',
+    describe_parameter_option     = 'o',
+    test_parameters_option        = 'x',
+    logging_level_option          = 'L',
+    warning_level_option          = 'W',
+    error_level_option            = 'E',
+    parameter_level_option        = 256,  /* no short option */
+    redirect_option               = 'r',
+    logdir_option                 = 257,  /* no short option */
+    buffering_option              = 'b',
+    print_schedule_option         = 'S',
+    list_thorns_option            = 'T',
+    test_thorns_compiled_option   = 't',
+    version_option                = 'v',
+    ignore_next_option            = 'i'
+  };
+  /* the longopts argument passed into getopt_long_only() */
+  const struct option long_options[] =
+  {
+    {"help",                    no_argument,       NULL, help_option},
+    {"describe-all-parameters", optional_argument, NULL, describe_all_paramters_option},
+    {"describe-parameter",      required_argument, NULL, describe_parameter_option},
+    /*{"test-parameters",         optional_argument, NULL, test_parameters_option},*/
+    {"logging-level",           required_argument, NULL, logging_level_option},
+    {"warning-level",           required_argument, NULL, warning_level_option},
+    {"error-level",             required_argument, NULL, error_level_option},
+    {"parameter-level",         required_argument, NULL, parameter_level_option},
+    {"redirect",                optional_argument, NULL, redirect_option},
+    {"logdir",                  required_argument, NULL, logdir_option},
+    {"buffering",               required_argument, NULL, buffering_option},
+    {"print-schedule",          no_argument,       NULL, print_schedule_option},
+    {"list-thorns",             no_argument,       NULL, list_thorns_option},
+    {"test-thorn-compiled",     required_argument, NULL, test_thorns_compiled_option},
+    {"version",                 no_argument,       NULL, version_option},
+    {"ignore-next",             no_argument,       NULL, ignore_next_option},
+    {0, 0, 0, 0}
+  };
+
 
   /* Store the command line */
   argc = *inargc;
-
   argv = *inargv;
 
   ignore = 0;
-
-  /* Process the command line - needs some work !*/
 
   if(argc>1)
   {
     while (1)
     {
-      struct option long_options[] =
-      {
-        {"help",                    no_argument,       NULL, 'h'},
-        {"describe-all-parameters", optional_argument, NULL, 'O'},
-        {"describe-parameter",      required_argument, NULL, 'o'},
-        /*{"test-parameters",         optional_argument, NULL, 'x'},*/
-        {"logging-level",           required_argument, NULL, 'L'},
-        {"warning-level",           required_argument, NULL, 'W'},
-        {"error-level",             required_argument, NULL, 'E'},
-        {"parameter-level",         required_argument, NULL, 256},
-        {"redirect",                optional_argument, NULL, 'r'},
-        {"buffering",               required_argument, NULL, 'b'},
-        {"print-schedule",          no_argument,       NULL, 'S'},
-        {"list-thorns",             no_argument,       NULL, 'T'},
-        {"test-thorn-compiled",     required_argument, NULL, 't'},
-        {"version",                 no_argument,       NULL, 'v'},
-        {"ignore-next",             no_argument,       NULL, 'i'},
-        {0, 0, 0, 0}
-      };
-      
       c = getopt_long_only (argc, argv, "hO::o:x::L:W:E:r::b:STt:vi",
                             long_options, &option_index);
       if (c == -1)
@@ -153,21 +173,37 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
       {
         switch (c)
         {
-          case 't': CCTKi_CommandLineTestThornCompiled(optarg); break;
-          case 'O': CCTKi_CommandLineDescribeAllParameters(optarg); break;
-          case 'o': CCTKi_CommandLineDescribeParameter(optarg); break;
-          case 'x': CCTKi_CommandLineTestParameters(optarg); break;
-          case 'L': CCTKi_CommandLineLoggingLevel(optarg); break;
-          case 'W': CCTKi_CommandLineWarningLevel(optarg); break;
-          case 'E': CCTKi_CommandLineErrorLevel(optarg); break;
-          case 256: CCTKi_CommandLineParameterLevel(optarg); break;
-          case 'r': CCTKi_CommandLineRedirect(optarg); break;
-          case 'b': CCTKi_CommandLineSetBuffering(optarg); break;
-          case 'S': CCTKi_CommandLinePrintSchedule(); break;
-          case 'T': CCTKi_CommandLineListThorns(); break;
-          case 'v': CCTKi_CommandLineVersion(); break;
-          case 'i': ignore = 1; break;
-          case 'h': 
+          case describe_all_paramters_option:
+            CCTKi_CommandLineDescribeAllParameters(optarg); break;
+          case describe_parameter_option:
+            CCTKi_CommandLineDescribeParameter(optarg); break;
+          case test_parameters_option:
+            CCTKi_CommandLineTestParameters(optarg); break;
+          case logging_level_option:
+            CCTKi_CommandLineLoggingLevel(optarg); break;
+          case warning_level_option:
+            CCTKi_CommandLineWarningLevel(optarg); break;
+          case error_level_option:
+            CCTKi_CommandLineErrorLevel(optarg); break;
+          case parameter_level_option:
+            CCTKi_CommandLineParameterLevel(optarg); break;
+          case redirect_option:
+            CCTKi_CommandLineRedirect(optarg); break;
+          case logdir_option:
+            CCTKi_CommandLineLogDir(optarg); break;
+          case buffering_option:
+            CCTKi_CommandLineSetBuffering(optarg); break;
+          case print_schedule_option:
+            CCTKi_CommandLinePrintSchedule(); break;
+          case list_thorns_option:
+            CCTKi_CommandLineListThorns(); break;
+          case test_thorns_compiled_option:
+            CCTKi_CommandLineTestThornCompiled(optarg); break;
+          case version_option:
+            CCTKi_CommandLineVersion(); break;
+          case ignore_next_option:
+            ignore = 1; break;
+          case help_option: 
           case '?':
             CCTKi_CommandLineHelp(); break;
           default:

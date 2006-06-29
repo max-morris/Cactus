@@ -16,10 +16,12 @@
 #include "cctk_Flesh.h"
 #include "cGH.h"
 
+#include "util_String.h"
 #include "cctk_Version.h"
 #include "cctk_ActiveThorns.h"
 #include "cctk_CommandLine.h"
 #include "cctk_Comm.h"
+#include "cctk_File.h"
 #include "cctk_Misc.h"
 #include "cctk_ParamCheck.h"
 #include "cctk_WarnLevel.h"
@@ -46,7 +48,9 @@ static void CommandLinePrintParameter (const cParamData *properties);
 /********************************************************************
  *********************     Local Data   *****************************
  ********************************************************************/
-static int already_redirected_stdout = 0;
+static char* logdir = NULL;
+static int requested_stdout_redirection = 0;
+static int requested_stderr_redirection = 0;
 static int paramchecking = 0;
 
 
@@ -67,9 +71,10 @@ int cctki_onlyprintschedule = 0;
  * places you have to update if you add a new command-line option.
  */
 #define CACTUS_COMMANDLINE_OPTIONS                                      \
-        "[-h] [-O] [-o paramname] [-L n] [-W n] [-E n] [-r[o|e|oe|eo]] " \
-        "[-b [no|line|full]] " \
-        "[-S] [-T] [-t name] [--parameter-level <level>] [-v] "          \
+        "[-h] [-O] [-o paramname] [-L n] [-W n] [-E n] "                \
+        "[-r[o|e|oe|eo]] [--logdir <dir>] "                             \
+        "[-b <no|line|full>] "                                          \
+        "[-S] [-T] [-t name] [--parameter-level <level>] [-v] "         \
         "<parameter_file_name>"
 
 
@@ -213,13 +218,13 @@ void CCTKi_CommandLineDescribeParameter (const char *argument)
       cthorn = CCTK_ImplementationThorn (thorn);
       properties = CCTK_ParameterData (param, cthorn);
     }
-    
+
     free (thorn);
     free (param);
   }
-  
+
   if(properties)
-  {    
+  {
     if (CCTK_MyProc (NULL) == 0)
     {
       CommandLinePrintParameter (properties);
@@ -234,7 +239,7 @@ void CCTKi_CommandLineDescribeParameter (const char *argument)
     }
     retcode = 1;
   }
-  
+
   CCTK_Exit (NULL, retcode);
 }
 
@@ -430,7 +435,10 @@ void CCTKi_CommandLineParameterLevel (const char *argument)
    @date       Fri Jul 23 11:32:46 1999
    @author     Tom Goodale
    @desc
-               Redirect standard output on non-root processors into a file
+               Redirect stdout/stderr on non-root processors into a file
+
+               Redirection is defered until all command line options
+               (including a possible '-logdir <dir>') have been processed.
    @enddesc
 
    @var        argument
@@ -441,25 +449,34 @@ void CCTKi_CommandLineParameterLevel (const char *argument)
 @@*/
 void CCTKi_CommandLineRedirect (const char *argument)
 {
-  int myproc;
-  char fname[24];
-
-
-  myproc = CCTK_MyProc (NULL);
-  if (myproc)
+  if (!argument || strchr(argument,'o')) /* redirect stdout */
   {
-    if (!argument || strchr(argument,'o')) /* redirect stdout */
-    {
-      sprintf (fname, "CCTK_Proc%u.out", myproc);
-      freopen (fname, "w", stdout);
-      already_redirected_stdout = 1;
-    }
-    if (argument && strchr(argument,'e')) /* redirect stderr */
-    {
-      sprintf (fname, "CCTK_Proc%u.err", myproc);
-      freopen (fname, "w", stderr);
-    }
+    requested_stdout_redirection = 1;
   }
+  if (argument && strchr(argument,'e')) /* redirect stderr */
+  {
+    requested_stderr_redirection = 1;
+  }
+}
+
+
+ /*@@
+   @routine    CCTKi_CommandLineLogDir
+   @date       Thu 22 July 2006
+   @author     Thomas Radke
+   @desc
+               Set the output directory for redirected stdout/stderr logfiles.
+   @enddesc
+
+   @var        argument
+   @vdesc      option argument
+   @vtype      const char *
+   @vio        in
+   @endvar
+@@*/
+void CCTKi_CommandLineLogDir (const char *argument)
+{
+  logdir = Util_Strdup (argument);
 }
  /*@@
    @routine    CCTKi_CommandLineSetBuffering
@@ -596,8 +613,10 @@ void CCTKi_CommandLineHelp (void)
     "-L, --logging-level <n>              : Sets the logging level to n.\n"
     "-W, --warning-level <n>              : Sets the warning level to n.\n"
     "-E, --error-level <n>                : Sets the error level to n.\n"
-    "-r, --redirect [o|e|oe|eo]           : Redirects standard output and/or\n"
+    "-r, --redirect[o|e|oe|eo]            : Redirects standard output and/or\n"
     "                                       standard error to files.\n"
+    "    --logdir <dir>                   : Sets the output directory for logfiles\n"
+    "                                       created by the '-r' option\n"
     "-b, --buffering <no|line|full>       : Set stdout buffering mode.\n"
     "-S, --print-schedule                 : Print the schedule tree, then exit.\n"
     "-T, --list-thorns                    : Lists the compiled-in thorns.\n"
@@ -663,18 +682,71 @@ void CCTKi_CommandLineUsage (void)
 @@*/
 void CCTKi_CommandLineFinished (void)
 {
+  int myproc;
+  char *logfilename;
+
+
   /* Are we in a paramcheck run ? */
   if (! paramchecking)
   {
     cctki_paramchecking = 0;
   }
 
-  /* if no redirect was requested on the command line
-     send stdout messages on non-root processors to /dev/null */
-  if (! already_redirected_stdout && CCTK_MyProc (NULL) != 0)
+  /* redirect stdout/stderr on non-root processors */
+  if (logdir && !(requested_stdout_redirection || requested_stderr_redirection))
   {
-    freopen (NULL_DEVICE, "w", stdout);
+    CCTK_VWarn (CCTK_WARN_PICKY, __LINE__, __FILE__, "Cactus",
+                "Specifying the '-logdir' option without the '-r' option "
+                "is a no-op and will be ignored.");
   }
+  myproc = CCTK_MyProc (NULL);
+  if (myproc)
+  {
+    /* if specified on the command line, create the output directory
+       for redirected stdout/stderr logfiles */
+    if (logdir)
+    {
+      if (requested_stdout_redirection || requested_stderr_redirection)
+      {
+        if (CCTK_CreateDirectory (0755, logdir) < 0)
+        {
+          CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                      "Could not create output directory '%s' for "
+                      "stdout/stderr logfiles ! Falling back to using the "
+                      "current working directory...", logdir);
+          free (logdir);
+          logdir = Util_Strdup (".");
+        }
+      }
+    }
+    else
+    {
+      /* make cwd the default logdir */
+      logdir = Util_Strdup (".");
+    }
+
+    /* if redirection was requested on the command line
+       send stdout/stderr messages to <logdir>/CCTK_Proc<id>.{out,err}
+       otherwise redirect stdout to the NULL device */
+    logfilename = malloc (strlen (logdir) + 32);
+    if (requested_stdout_redirection)
+    {
+      sprintf (logfilename, "%s/CCTK_Proc%u.out", logdir, myproc);
+      freopen (logfilename, "w", stdout);
+    }
+    else
+    {
+      freopen (NULL_DEVICE, "w", stdout);
+    }
+
+    if (requested_stderr_redirection)
+    {
+      sprintf (logfilename, "%s/CCTK_Proc%u.err", logdir, myproc);
+      freopen (logfilename, "w", stderr);
+    }
+    free (logfilename);
+  }
+  free (logdir);
 }
 
 
