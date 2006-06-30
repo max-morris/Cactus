@@ -533,8 +533,8 @@ The keyword \texttt{SYNC} specifies groups of variables which should be
 synchronised (that is, their ghostzones should be exchanged between
 processors) on exit from the routine. Specifying synchronisation of
 grid variables in \texttt{schedule.ccl} is an alternative to calling the
-function \texttt{CCTK\_SyncGroup()} (see the Reference Manual) from inside a
-routine. Using the \texttt{SYNC}
+functions \texttt{CCTK\_SyncGroup()} or \texttt{CCTK\_SyncGroupsI()}
+(see the Reference Manual) from inside a routine. Using the \texttt{SYNC}
 keyword in the \texttt{schedule.ccl} is the preferred method, since it
 provides the Flesh with more information about the behaviour of your code.
 
@@ -2235,7 +2235,8 @@ is a parallel unigrid driver.
 \item[\texttt{CCTK\_nProcs}] Returns the number of processors being used
 \item[\texttt{CCTK\_MyProc}] Returns the processor number (this starts at
   processor number zero)
-\item[\texttt{CCTK\_SyncGroup}] Synchronises a group of variables by
+\item[\texttt{CCTK\_SyncGroup, CCTK\_SyncGroupsI}] Synchronises either a single
+  group or a set of groups of grid arrays by
   exchanging the values held in each processor ghostzones with the
   physical values of their neighbours (see the Reference Manual)
 \item[\texttt{CCTK\_Barrier}] Waits for all processors to reach this point

@@ -685,6 +685,9 @@ from Fortran.
 \item[\code{CCTK\_SyncGroupI}] [\pageref{CCTK-SyncGroupI}]
   Synchronize the ghost zones for a group of variables (identified by the group index)
 
+\item[\code{CCTK\_SyncGroupsI}] [\pageref{CCTK-SyncGroupsI}]
+  Synchronize the ghost zones for a list of groups of variables (identified by their group indices)
+
 \item[\code{CCTK\_TerminateNext}] [\pageref{CCTK-TerminateNext}]
   Causes a Cactus simulation to terminate after the next iteration
 
@@ -9888,6 +9891,10 @@ multiprocessor case you {\em must\/} call this function in parallel on
 Synchronise the ghostzones for a group of grid variables
 (identified by the group index)
 \end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_SyncGroupsI}{CCTK-SyncGroupsI}
+Synchronise the ghostzones for a list of groups of grid variables
+(identified by their group indices)
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
@@ -9987,6 +9994,10 @@ multiprocessor case you {\em must\/} call this function in parallel on
 Synchronise the ghostzones for a group of grid variables
 (identified by the group name)
 \end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_SyncGroupsI}{CCTK-SyncGroupsI}
+Synchronise the ghostzones for a list of groups of grid variables
+(identified by their group indices)
+\end{SeeAlso2}
 \begin{SeeAlso2}{CCTK\_GroupIndex}{CCTK-GroupIndex}
 Gets the group index for a given group name.
 \end{SeeAlso2}
@@ -10032,6 +10043,138 @@ if (status < 0)
 "***** synchronize_ADM_metric():\n"
 "        failed to synchronize ADM metric!\n"
 "        (CCTK_SyncGroupI() returned error code %d)\n"
+                  ,
+                  status);                                 /*NOTREACHED*/
+}
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
+
+
+
+% CactusSync.c
+\begin{FunctionDescription}{CCTK\_SyncGroupsI}
+\label{CCTK-SyncGroupsI}
+Synchronise the ghostzones for a list of groups of grid variables
+(identified by their group indices)
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+int status = CCTK_SyncGroupsI(const cGH* GH, int num_groups, const int *groups)
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+#include "cctk.h"
+integer status
+CCTK_POINTER GH
+integer num_groups
+integer groups(num_groups)
+call CCTK_SyncGroupsI(status, GH, num_groups, groups)
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{0}
+Returns the number of groups that have been synchronised.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{GH}
+A pointer to a Cactus grid hierarchy.
+\end{Parameter}
+\begin{Parameter}{num\_groups}
+The number of groups to be synchronised.
+\end{Parameter}
+\begin{Parameter}{groups}
+The group indices of the groups to be synchronized.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Only those grid variables which have communication enabled
+will be synchronised. This is usually equivalent to the variables
+which have storage assigned, unless communication has been explicitly
+turned off with a call to \code{CCTK\_DisableGroupComm}.
+
+Note that an alternative to calling \code{CCTK\_SyncGroupsI} explicitly
+from within a thorn, is to use the \code{SYNC} keyword in a thorns
+\code{schedule.ccl} file to indicate which groups of variables need
+to be synchronised on exit from the routine. This latter method is
+the preferred method from synchronising variables.
+
+Note that \code{CCTK\_SyncGroupsI} is a collective operation, so in the
+multiprocessor case you {\em must\/} call this function in parallel on
+{\em each\/} processor, passing the same number of groups in the same order.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_SyncGroup}{CCTK-SyncGroup}
+Synchronise the ghostzones for a single group of grid variables
+(identified by the group name)
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_SyncGroupI}{CCTK-SyncGroupI}
+Synchronise the ghostzones for a single group of grid variables
+(identified by the group index)
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_GroupIndex}{CCTK-GroupIndex}
+Gets the group index for a given group name.
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_GroupIndexFromVar}{CCTK-GroupIndexFromVar}
+Gets the group index for a given variable name.
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+%\begin{ErrorSection}
+%\begin{Error}{-1}
+%\code{group\_name} was invalid.
+%\end{Error}
+%\begin{Error}{-2}
+%The driver returned an error on syncing the group.
+%\end{Error}
+%\end{ErrorSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+#include "cctk.h"
+#include "cctk_Arguments.h"
+
+/* this function synchronizes the ADM metric and lapse */
+void synchronize_ADM_metric_and_lapse(CCTK_ARGUMENTS)
+{
+DECLARE_CCTK_ARGUMENTS      /* defines "magic variable" cctkGH */
+
+int group_indices[2], status;
+
+group_indices[0] = CCTK_GroupIndex("ADMBase::metric");
+group_indices[1] = CCTK_GroupIndex("ADMBase::lapse");
+if (group_indices[0] < 0)
+        CCTK_VWarn(CCTK_WARN_ABORT, __LINE__, __FILE__, CCTK_THORNSTRING,
+"***** synchronize_ADM_metric():\n"
+"        couldn't get group index for ADM metric!\n"
+"        (CCTK_GroupIndex() returned error code %d)\n"
+                  ,
+                  group_indices[0]);                            /*NOTREACHED*/
+if (group_indices[1] < 0)
+        CCTK_VWarn(CCTK_WARN_ABORT, __LINE__, __FILE__, CCTK_THORNSTRING,
+"***** synchronize_ADM_metric_and_lapse():\n"
+"        couldn't get group index for ADM lapse!\n"
+"        (CCTK_GroupIndex() returned error code %d)\n"
+                  ,
+                  group_indices[1]);                            /*NOTREACHED*/
+
+status = CCTK_SyncGroupsI(cctkGH, 2, group_indices);
+if (status != 2)
+        CCTK_VWarn(CCTK_WARN_ABORT, __LINE__, __FILE__, CCTK_THORNSTRING,
+"***** synchronize_ADM_metric_and_lapse():\n"
+"        failed to synchronize ADM metric and lapse!\n"
+"        (CCTK_SyncGroupsI() returned error code %d)\n"
                   ,
                   status);                                 /*NOTREACHED*/
 }
