@@ -1255,7 +1255,7 @@ each thorn using the Cactus command line options \texttt{-o} and \texttt{-O}
 Parameters can be of these types:
 
 \begin{Lentry}
-\item[Integer]  Can take any integral value
+\item[Int]  Can take any integral value
 \item[Real] Can take any floating point value
 \item[Keyword] Can have a value consisting of one of a choice of strings
 \item[Boolean] Can be true or false ({\t 1}, {\t t}, {\t true}, or
@@ -1268,7 +1268,7 @@ Each parameter can be validated against a set of allowed
 The nature
 of the range is determined by the type of parameter, as follows:
 
-\subsection{Integer}
+\subsection{Int}
 
 The range specification is of the form
 
@@ -4371,7 +4371,7 @@ Data Type & Size (bytes) & Variable Type & Fortran Equivalent\\
 The availability of these types, and the corresponding
 C data types are platform-dependent. For each fixed-size data type there exists
 a corresponding preprocessor macro {\t HAVE\_<data type>} which should be used
-to check whether the given CCTK data type is supported, e.g.
+to check whether the given CCTK data type is supported, e.g.\
 
 \begin{verbatim}
   /* declare variable with extended-precision complex data type if available
@@ -4440,24 +4440,113 @@ files):
 \begin{center}
 \begin{tabular}{|l|l|l|}
 \hline
-Data Type               & Variable Type & C equivalent                  \\
-\hline
-{\t CCTK\_POINTER}      & {\t CCTK\_VARIABLE\_POINTER}
-                                        & {\t void *data\_ptr}          \\
-{\t CCTK\_POINTER\_TO\_CONST}      & {\t CCTK\_VARIABLE\_POINTER}
-                                        & {\t const void *data\_ptr}          \\
-{\t CCTK\_FPOINTER}     & {\t CCTK\_VARIABLE\_FPOINTER}
-                                        & {\t void (*fn\_ptr)(void)}    \\
-\hline
+   Data Type &
+   Variable Type &
+   C equivalent
+\\\hline
+   {\t CCTK\_POINTER} &
+   {\t CCTK\_VARIABLE\_POINTER} &
+   {\t void *data\_ptr}
+\\
+   {\t CCTK\_POINTER\_TO\_CONST} &
+   {\t CCTK\_VARIABLE\_POINTER\_TO\_CONST} &
+   {\t const void *data\_ptr}
+\\
+   {\t CCTK\_FPOINTER} &
+   {\t CCTK\_VARIABLE\_FPOINTER} &
+   {\t void (*fn\_ptr)(void)}
+\\\hline
 \end{tabular}
 \end{center}
 
 
 \subsection{Fortran Thorn Writers}
 
-Cactus provides a further data type \texttt{CCTK\_POINTER}
-for use in Fortran code to declare a pointer passed from C.
-for example, the variable \texttt{cctkGH} is of this type.
+Cactus provides the data types \texttt{CCTK\_POINTER} and
+\texttt{CCTK\_POINTER\_TO\_CONST} for use in Fortran code to declare a
+pointer passed from C.  For example, the variable \texttt{cctkGH} is
+of the type \texttt{CCTK\_POINTER}.  The data type
+\texttt{CCTK\_STRING} is in Fortran also an opaque type, corresponding
+to a C pointer, and one has to use the function
+\texttt{CCTK\_FortranString} to convert it to a Fortran string, or the
+\texttt{CCTK\_Equals} to compare it to a Fortran String.
+
+Since the data types \texttt{integer} in Fortran and \texttt{int} in C
+may be different,%
+\footnote{This is only a theoretical possibility, in practice they
+  have to be the same type for Cactus to work at all.}%
+many routines that can be called from both C and Fortran take
+arguments of the type \texttt{CCTK\_INT}.  This type can be different
+from the type \texttt{integer}.  Fortran does not convert routine
+arguments automatically, and it is therefore necessary to pay
+attention to the exact argument types that a routine expects, and to
+converte between \texttt{integer} and \texttt{CCTK\_INT} accordingly.
+Currently, most flesh functions take \texttt{integer} arguments, while
+all aliased functions take \texttt{CCTK\_INT} arguments.
+
+\begin{quote}
+  NOTE: If you make errors in passing Fortran arguments, and if there
+  are no interfaces (``prototypes'') available for the routines that
+  are called, then the compiler cannot detect these errors.  Be
+  careful.  When you write Fortran code yourself, consider placing
+  routines in modules, which implicitly define interfaces for all
+  contained routines.
+\end{quote}
+
+There are two convenient ways to convert between these types.  An easy
+way is to define parameters or to declare variables of the desired
+type, assign a value to these parameters or variables, and then pass
+the parameter or value.  This makes for very readable code, since the
+name of the paramter or variable serves as additional documentation:
+
+\begin{verbatim}
+CCTK_INT, parameter : jtwo = 2
+integer  :: vindex_gxx, vindex_kxx
+CCTK_INT :: syncvars(jtwo)
+
+call CCTK_VarIndex (vindex_gxx, "ADMBase::gxx")
+call CCTK_VarIndex (vindex_kxx, "ADMBase::kxx")
+
+syncvars(1) = vindex_gxx
+syncvars(2) = vindex_kxx
+call CCTK_SyncGroupsI (cctkGH, jtwo, syncvars)
+\end{verbatim}
+
+(You have probably seen the strange Fortran convention where people
+introduce constants named \texttt{zero} or \texttt{two}.  This is the
+reason for this --- it is a convenient way to make sure that the
+constant has the correct type.)
+
+Another possibility are explicit type conversions.  They can rather
+easily be added to existing code:
+
+\begin{verbatim}
+! Boilerplate code to determine type kinds
+integer,  parameter :: izero = 0   ! A dummy variable of type integer
+CCTK_INT, parameter :: jzero = 0   ! A dummy variable of type CCTK_ITN
+integer,  parameter :: ik = kind (izero)   ! The kind of "integer"
+integer,  parameter :: jk = kind (jzero)   ! The kind of "CCTK_INT"
+
+integer :: syncvars(2)
+
+call CCTK_VarIndex (syncvars(1), "ADMBase::gxx")
+call CCTK_VarIndex (syncvars(2), "ADMBase::kxx")
+
+call CCTK_SyncGroupsI (cctkGH, int(2,jk), int(syncvars,jk))
+\end{verbatim}
+
+Fortran distinguishen between different integer \emph{kinds}.  These
+kinds are what is different between \texttt{integer} and
+\texttt{CCTK\_INT}.  The expression \texttt{int(EXPR,KIND)} converts
+\texttt{EXPR} to an integer of kind \texttt{KIND}.  Above, we use the
+convention that the prefix \texttt{i} denotes things having to do with
+\texttt{integer}, and the prefix \texttt{j} denotes
+\texttt{CCTK\_INT}.
+
+Note that we declare the array \texttt{syncvars} with the type that is
+necessary to set its values.  Type conversions are only possible if
+variables are read, not when they are written to.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
