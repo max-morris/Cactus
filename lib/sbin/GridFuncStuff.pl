@@ -258,23 +258,23 @@ sub CreateVariableBindings
       push(@data, CreateThornGroupInitialisers($thorn, $block, $rhinterface_db, $rhparameter_db));
     }
     push(@data, '');
-    push(@data, '  if (strlen (warn_mixeddim_gfs) > 0)');
+    push(@data, '  if (*warn_mixeddim_gfs)');
     push(@data, '  {');
     push(@data, '    if (allow_mixeddim_gfs && *allow_mixeddim_gfs)');
     push(@data, '    {');
     push(@data, '      CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",');
     push(@data, '                  "CCTKi_CreateGroup: Working dimension already set, "');
     push(@data, '                  "'
-          . "creating GF group \%s with different dimension \%d\",");
+          . "creating GF group '\%s' with different dimension \%d\",");
     push(@data, '                  warn_mixeddim_gfs, warn_mixeddim);');
 
     push(@data, '    }');
     push(@data, '    else');
     push(@data, '    {');
     push(@data, '      CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",');
-    push(@data, '                  "CCTKi_CreateGroup: Working dimension already set,"');
+    push(@data, '                  "CCTKi_CreateGroup: Working dimension already set, "');
     push(@data, '                  "'
-              . "cannot create GF group \%s with dimension \%d\",");
+              . "cannot create GF group '\%s' with dimension \%d\",");
     push(@data, '                  warn_mixeddim_gfs, warn_mixeddim);');
     push(@data, '    }');
     push(@data, ' }');
@@ -1048,7 +1048,7 @@ sub CreateThornGroupInitialisers
 
     push(@data, '  {');
     push(@data, "    warn_mixeddim_gfs = \"$group\";");
-    push(@data, "    warn_mixeddim = " 
+    push(@data, '    warn_mixeddim = '
                 . $rhinterface_db->{"\U$thorn GROUP $group\E DIM"} . ';');
     push(@data, '  }');
   }
