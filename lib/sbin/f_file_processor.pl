@@ -10,18 +10,22 @@
 #
 #  removes all comments
 #  replaces && with newline and tab to col 7
-#  replaces &! with newline at col 0
-#  replaces \ at end of line with proper Fortran continuation lines
-#      (depending on -free_format)
-#  Breaks lines greater than 72 cols
+#  Breaks lines greater than 72 or 132 cols
+#     (depending on fixed or free format)
 #  Does this using multi-line matching!
 #
-#  If run with -free_format, chooses free-format
-#  line splitting.
+#  If run with -free_format, chooses free-format line splitting.
 #
 #  @enddesc
 #  @version $Header$
 #@@*/
+
+# Possible command line options:
+#    -free-format
+#    -line_directives=[yes|no]
+#    -source_file_name=[filename]
+# Reads input from stdin.
+# The result will be printed to stdout.
 
 $MULTILINE_MATCHING = 1;                         # Multi-line is on!
 
@@ -298,8 +302,10 @@ sub printline
             ++$autoline;
           }
         } else {
+          # print "# $line \"$file\"\n";
           print "# $line\n";
           $autoline = $line;
+          $autofile = $file;
         }
       }
     }
