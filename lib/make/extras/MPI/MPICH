@@ -6,7 +6,7 @@
 #   @desc
 #            Configuration options for MPI=MPICH
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.25 2005-10-24 09:12:21 tradke Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.26 2006-07-05 16:00:50 swhite Exp $
 # @@*/
 
 
@@ -166,7 +166,7 @@ esac
 # Work out what the MPICH library is called
 if test "$MPICH_DEVICE" = 'globus'; then
   MPICH_LIB='mpichg2'
-elif test -r "$MPICH_LIB_DIRS/libmpi.a" ; then
+elif test -r "$MPICH_LIB_DIR/libmpi.a" ; then
   MPICH_LIB='mpi'
 else
   MPICH_LIB='mpich'
