@@ -45,13 +45,13 @@ while (<STDIN>)
       my $dirhdl;
       if( opendir( DIRHDL, "$srcdir" ) )
       {
-        while( defined( my $filename = readdir( DIRHDL ) ) )
+        file: while( defined( my $filename = readdir( DIRHDL ) ) )
         {
           if( $filename eq "$name" )
           {
             $found = 1;
             print " \\\n  $filename";
-            last loop;
+            last file;
           }
         }
         closedir DIRHDL;
@@ -60,7 +60,7 @@ while (<STDIN>)
     if (! $found)
     {
       # reference to an include file in another thorn?
-      loop: foreach my $dir (@otherdirs)
+      dir: foreach my $dir (@otherdirs)
       {
         # note: we could also use the SUBDIRS from the make.code.defn here
         foreach my $subdir (".", "include")
@@ -73,7 +73,7 @@ while (<STDIN>)
               {
                 $found = 1;
                 print " \\\n  $dir/$subdir/$filename";
-                last loop;
+                last dir;
               }
             }
             closedir DIRHDL;
@@ -119,15 +119,15 @@ while (<STDIN>)
       my $dirhdl;
       if( opendir( DIRHDL, "$srcdir" ) )
       {
-        while( defined( my $filename = readdir( DIRHDL ) ) )
+        file: while( defined( my $filename = readdir( DIRHDL ) ) )
         {
-          loop: foreach my $suffix (@suffixes)
+          foreach my $suffix (@suffixes)
           {
             if( $filename eq "$name$suffix" )
             {
               $found = 1;
               print " \\\n  $filename.o";
-              last loop;
+              last file;
             }
           }
         }
@@ -137,7 +137,7 @@ while (<STDIN>)
     if (! $found)
     {
       # reference to a module in another thorn?
-      loop: foreach my $dir (@otherdirs)
+      dir: foreach my $dir (@otherdirs)
       {
         # note: we could also use the SUBDIRS from the make.code.defn here
         foreach my $subdir (".", "include")
@@ -152,7 +152,7 @@ while (<STDIN>)
                 {
                   $found = 1;
                   print " \\\n  $dir/$subdir/$filename";
-                  last loop;
+                  last dir;
                 }
               }
             }
