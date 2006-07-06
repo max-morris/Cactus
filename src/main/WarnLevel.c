@@ -158,7 +158,7 @@ static void CCTKi_InfoCallbacksCall(const char *thorn, const char *message);
  ********************************************************************/
 
 /* Store the parameter checking level */
-static int parameter_level = CCTK_PARAMETER_NORMAL;
+static int parameter_level = CCTK_PARAMETER_STRICT;
 
 /* Store the number of parameter errors */
 static int param_errors = 0;

@@ -1292,11 +1292,9 @@ Short Version & Long Version \\
 \hline
  -b[no|line|full] & --buffering=[no|line|full]\\
 \hline
- -b <\var{mode}> & --buffering=<\var{mode}>\\
+    & --parameter-level=<strict|normal|relaxed> \\
 \hline
  -i & --ignore-next \\
-\hline
-    & --parameter-level=<\var{level}> \\
 \hline
 \end{tabular}
 }
@@ -1389,10 +1387,10 @@ If the directory doesn't exist yet, it will be created by Cactus.
   messages, i.e.\ the \texttt{stderr} stream, is always unbuffered
   (and hence usually slower than \texttt{stdout}).
 
-\item [\texttt{--parameter-level=<\var{level}>}]
-Sets the level of parameter checking to be used, one of \texttt{strict},
-\texttt{normal} (the default), or \texttt{relaxed}.
-See Section~\ref{sec:Parameter_File}.
+\item [\texttt{--parameter-level=<strict|normal|relaxed>}]
+Sets the level of parameter checking to be used, one of \texttt{strict}
+(the default), \texttt{normal}, or \texttt{relaxed}.
+See Section~\ref{sec:Parameter_File} for details.
 
 \item [\texttt{-i} or \texttt{--ignore-next}]
 Causes the next argument on the command line to be ignored.
