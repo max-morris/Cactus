@@ -52,6 +52,12 @@ OVERLOADABLE(EnableGroupComm)
 OVERLOADABLE(DisableGroupComm)
 
 #undef ARGUMENTS
+#define ARGUMENTS const cGH *GH, int num_groups, const int *groups, const int *directions
+#undef USE_ARGUMENTS
+#define USE_ARGUMENTS GH = GH; num_groups = num_groups; groups = groups; directions = directions;
+OVERLOADABLE(SyncGroupsByDirI)
+
+#undef ARGUMENTS
 #define ARGUMENTS const cGH *GH
 #undef USE_ARGUMENTS
 #define USE_ARGUMENTS GH = GH;

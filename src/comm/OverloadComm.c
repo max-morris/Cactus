@@ -35,6 +35,8 @@ CCTK_FILEVERSION(comm_OverloadComm_c);
 #define CCTKi_DummySetupGH  CactusDefaultSetupGH
 
   /* Need to do some stuff to make sure old routines still work. */
+#define CCTKi_DummySyncGroup             CactusDefaultSyncGroup
+#define CCTKi_DummySyncGroupsByDirI      CactusDefaultSyncGroupsByDirI
 #define CCTKi_DummyEnableGroupStorage    CactusDefaultEnableGroupStorage
 #define CCTKi_DummyDisableGroupStorage   CactusDefaultDisableGroupStorage
 #define CCTKi_DummyGroupStorageIncrease  CactusDefaultGroupStorageIncrease
@@ -52,6 +54,8 @@ CCTK_FILEVERSION(comm_OverloadComm_c);
 #undef CCTKi_DummyExit
 #undef CCTKi_DummyAbort
 
+#undef CCTKi_DummySyncGroup
+#undef CCTKi_DummySyncGroupsByDirI
 #undef CCTKi_DummyEnableGroupStorage
 #undef CCTKi_DummyDisableGroupStorage
 #undef CCTKi_DummyGroupStorageIncrease
@@ -98,6 +102,8 @@ int CCTKi_SetupCommFunctions(void)
 #define CCTKi_DummynProcs  CactusDefaultnProcs
 #define CCTKi_DummySetupGH CactusDefaultSetupGH
 
+#define CCTKi_DummySyncGroup             CactusDefaultSyncGroup
+#define CCTKi_DummySyncGroupsByDirI      CactusDefaultSyncGroupsByDirI
 #define CCTKi_DummyEnableGroupStorage    CactusDefaultEnableGroupStorage
 #define CCTKi_DummyDisableGroupStorage   CactusDefaultDisableGroupStorage
 #define CCTKi_DummyGroupStorageIncrease  CactusDefaultGroupStorageIncrease
@@ -115,6 +121,8 @@ int CCTKi_SetupCommFunctions(void)
 #undef CCTKi_DummynProcs
 #undef CCTKi_DummySetupGH  
 
+#undef CCTKi_DummySyncGroup
+#undef CCTKi_DummySyncGroupsByDirI
 #undef CCTKi_DummyEnableGroupStorage
 #undef CCTKi_DummyDisableGroupStorage
 #undef CCTKi_DummyGroupStorageIncrease
@@ -151,6 +159,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_Barrier) (int *ierror, const cGH **GH);
 void CCTK_FCALL CCTK_FNAME (CCTK_Exit) (int *ierror, cGH **GH, const int *retval);
 void CCTK_FCALL CCTK_FNAME (CCTK_Abort) (int *ierror, cGH **GH, const int *retval);
 void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroup) (int *ierror, cGH **GH, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupsByDirI) (int *ierror, cGH **GH, const int *num_groups, const int *groups, const int *directions);
 void CCTK_FCALL CCTK_FNAME (CCTK_EnableGroupComm) (int *ierror, const cGH **GH, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_DisableGroupComm) (int *ierror, const cGH **GH, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_EnableGroupStorage) (int *ierror, const cGH **GH, ONE_FORTSTRING_ARG);
@@ -189,6 +198,14 @@ void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroup) (int *ierror, cGH **GH, ONE_FORTSTRI
   ONE_FORTSTRING_CREATE (group_name)
   *ierror = CCTK_SyncGroup (*GH, group_name);
   free (group_name); 
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupsByDirI) (int *ierror, cGH **GH,
+                                                    const int *num_groups,
+                                                    const int *groups,
+                                                    const int *directions)
+{
+  *ierror = CCTK_SyncGroupsByDirI (*GH, *num_groups, groups, directions);
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_EnableGroupComm) (int *ierror, const cGH **GH, ONE_FORTSTRING_ARG)

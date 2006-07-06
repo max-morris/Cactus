@@ -13,6 +13,7 @@
 #include "cctk_Groups.h"
 #include "cctk_Constants.h"
 #include "cctk_Comm.h"
+#include "cctk_Sync.h"
 #include "cctk_WarnLevel.h"
 
 #include "cctki_GHExtensions.h"
@@ -79,6 +80,10 @@ int CactusDefaultExit(cGH *GH, int retval);
 int CactusDefaultAbort(cGH *GH, int retval);
 int CactusDefaultBarrier(const cGH *GH);
 
+int CactusDefaultSyncGroup (const cGH *GH, const char *groupname);
+int CactusDefaultSyncGroupsByDirI(const cGH *GH, int num_groups,
+                                  const int *groups,
+                                  const int *directions);
 int CactusDefaultEnableGroupStorage(const cGH *GH, const char *group);
 int CactusDefaultDisableGroupStorage(const cGH *GH, const char *group);
 int CactusDefaultGroupStorageIncrease(const cGH *GH, int n_groups,
@@ -460,6 +465,133 @@ int CactusDefaultBarrier (const cGH *GH)
 
   return (0);
 }
+
+
+ /*@@
+   @routine    CactusDefaultSyncGroup
+   @date       Mon 3 July 2006
+   @author     Thomas Radke
+   @desc
+               Default routine for synchronising a single group.
+
+               If this function has not been overloaded by a driver,
+               it will simply call CCTK_SyncGroupsByDirI() (which then must be
+               overloaded by a driver).
+   @enddesc
+
+   @var        GH
+   @vdesc      Pointer to CCTK grid hierarchy
+   @vtype      const cGH *
+   @vio        in
+   @endvar
+   @var        groupname
+   @vdesc      full name of the group to be synchronised
+   @vtype      const char *
+   @vio        in
+   @endvar
+
+   @returntype int
+   @returndesc
+               0 for success,
+               or (negative) return code of @seeroutine CCTK_SyncGroupsByDirI
+   @endreturndesc
+ @@*/
+int CactusDefaultSyncGroup (const cGH *GH, const char *groupname)
+{
+  int group, retval;
+
+
+  group = CCTK_GroupIndex (groupname);
+  retval = CCTK_SyncGroupsByDirI (GH, 1, &group, NULL);
+
+  return (retval == 1 ? 0 : retval);
+}
+
+
+ /*@@
+   @routine    CactusDefaultSyncGroupsByDirI
+   @date       Mon 3 July 2006
+   @author     Thomas Radke
+   @desc
+               Default groups synchronisation routine.
+
+               If this function has not been overloaded by a driver,
+               it will loop over all groups to be synchronised and
+               for each of them call CCTK_SyncGroupI() which itself calls
+               the routine CCTK_SyncGroup() (which then must be overloaded
+               by a driver).
+   @enddesc
+
+   @var        GH
+   @vdesc      Pointer to CCTK grid hierarchy
+   @vtype      const cGH *
+   @vio        in
+   @endvar
+   @var        num_groups
+   @vdesc      number of groups to be synchronised
+   @vtype      int
+   @vio        in
+   @endvar
+   @var        groups
+   @vdesc      list of indices of groups to be synchronised
+   @vtype      int *
+   @vio        in
+   @endvar
+   @var        directions
+   @vdesc      (optional) array of dimensions which should be synchronised
+   @vtype      int *
+   @vio        in
+   @endvar
+
+   @returntype int
+   @returndesc
+               the number of groups which were synchronised
+   @endreturndesc
+ @@*/
+int CactusDefaultSyncGroupsByDirI (const cGH *GH, int num_groups,
+                                   const int *groups,
+                                   const int *directions)
+{
+  int group, retval = 0;
+  static int user_has_been_notified = 0;
+
+ 
+  /* individual directions aren't supported in the CCTK_SyncGroup* interface */
+  if (directions != NULL)
+  {
+    CCTK_VWarn (CCTK_WARN_ABORT, __LINE__, __FILE__, "Cactus",
+                "Synchronisation of individual directions isn't supported "
+                "with no driver overloading CCTK_SyncGroupsByDirI().");
+  }
+
+  /* if CCTK_SyncGroup() hasn't been overloaded then this is a no-op */
+  if (CCTK_SyncGroup != CactusDefaultSyncGroup)
+  {
+    /* on the first time through, warn the user if a driver overloaded
+       the (deprecated) routine CCTK_SyncGroup() but not the newer one
+       CCTK_SyncGroupsByDirI() */
+    if (! user_has_been_notified)
+    {
+      CCTK_VWarn (CCTK_WARN_COMPLAIN, __LINE__, __FILE__, "Cactus",
+                  "Overloading CCTK_SyncGroup() is deprecated. "
+                  "Please have your driver thorn updated to overload "
+                  "CCTK_SyncGroupsByDirI() instead !");
+    }
+    user_has_been_notified = 1;
+
+    /* synchronise all groups one by one */
+    for (group = 0; group < num_groups; group++)
+    {
+      if (CCTK_SyncGroupI (GH, groups[group]) == 0)
+      {
+        retval++;
+      }
+    }
+  }
+
+  return (retval);
+}
+
 
  /*@@
    @routine    CactusDefaultEnableGroupStorage

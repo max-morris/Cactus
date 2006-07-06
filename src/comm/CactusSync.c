@@ -36,6 +36,9 @@ void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVar)
                            (int *ierror, const cGH **GH, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVarI)
                            (int *ierror, const cGH **GH, const int *var);
+void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupsI)
+                           (int *ierror, const cGH **GH, const int *num_groups,
+                            const int *groups);
 
 
  /*@@
@@ -45,8 +48,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVarI)
    @desc
                Synchronizes a group given by its index.
    @enddesc
-   @calls      CCTK_GroupName
-               CCTK_SyncGroup
+   @calls      CCTK_SyncGroupsI
 
    @var        GH
    @vdesc      Pointer to Grid Hierachy
@@ -62,29 +64,17 @@ void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVarI)
    @returntype int
    @returndesc
                 0 for success, or<BR>
-               -1 if an invalid group was given,<BR>
-               -2 if driver returned an error on syncing the group
+               -negative return code of @seeroutine CCTK_SyncGroupsI
    @endreturndesc
 @@*/
 int CCTK_SyncGroupI (const cGH *GH, int group)
 {
   int retval;
-  char *groupname;
 
 
-  retval = -1;
-  groupname = CCTK_GroupName (group);
-  if (groupname)
-  {
-    retval = CCTK_SyncGroup (GH, groupname);
-    if (retval)
-    {
-      retval = -2;
-    }
-    free (groupname);
-  }
+  retval = CCTK_SyncGroupsI (GH, 1, &group);
 
-  return (retval);
+  return (retval == 1 ? 0 : retval);
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupI)
@@ -192,7 +182,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVarI)
    @desc
                Synchronises a list of groups given by their group indices.
    @enddesc
-   @calls      CCTK_SyncGroupI
+   @calls      CCTK_SyncGroupsByDirI
 
    @var        GH
    @vdesc      Pointer to Grid Hierachy
@@ -212,24 +202,19 @@ void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupWithVarI)
 
    @returntype int
    @returndesc
-               the total number of groups synchronized
+               the total number of groups synchronized, or
+               -negative return code of @seeroutine CCTK_SyncGroupsByDirI
    @endreturndesc
 @@*/
 int CCTK_SyncGroupsI (const cGH *GH,
                       int n_groups,
                       const int *groups)
 {
-  int i, retval;
+  int retval;
 
 
-  retval = 0;
-  for (i = 0; i < n_groups; i++)
-  {
-    if (CCTK_SyncGroupI (GH, groups[i]) == 0)
-    {
-      retval++;
-    }
-  }
+  /* passing NULL as the last argument means: synchronise all directions */
+  retval = CCTK_SyncGroupsByDirI (GH, n_groups, groups, NULL);
 
   return (retval);
 }
