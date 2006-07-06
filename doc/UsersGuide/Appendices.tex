@@ -1294,13 +1294,19 @@ this bin is unspecified.
         restriction operation.  It is, e.g., necessary to re-apply the
         boundary conditions after every restriction operation.
 
+\item[{\tt CCTK\_PREREGRID}]
+        This timebin is used in mesh refinement settings.  It is
+        ignored for unigrid runs.  This bin is executed whenever the
+        grid hierarchy is about to change.  Routines that decide the
+        new grid structure should be scheduled in this bin.
+
 \item[{\tt CCTK\_POSTREGRID}]
-        This timebin is used in mesh refinement settings, or when there are
-        multiple grid patches.  It is ignored for unigrid runs.  This bin is
-        executed whenever the grid hierarchy or patch setup has changed.  It
-        is, e.g., necessary to re-apply the boundary conditions or
-        recalculate the grid points' coordinates after every changing the
-        grid hierarchy.
+        This timebin is used in mesh refinement settings.  It is
+        ignored for unigrid runs.  This bin is executed whenever the
+        grid hierarchy or patch setup has changed.  It is, e.g.,
+        necessary to re-apply the boundary conditions or recalculate
+        the grid points' coordinates after every changing the grid
+        hierarchy.
 
 \item[{\tt CCTK\_ANALYSIS}]
         The {\tt ANALYSIS} timebin is special, in that it is closely coupled 
