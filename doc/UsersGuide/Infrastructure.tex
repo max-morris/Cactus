@@ -102,6 +102,7 @@ the schedule tree.
   \begin{tabular}{|l|l|}
    \hline {\bf Function} & {\bf Default}  \\
    \hline {\t CCTK\_SyncGroup}           &\\
+   \hline {\t CCTK\_SyncGroupsByDirI}    &\\
    \hline {\t CCTK\_EnableGroupStorage}  &\\
    \hline {\t CCTK\_DisableGroupStorage} &\\
    \hline {\t CCTK\_EnableGroupComm}     &\\
@@ -150,6 +151,7 @@ functions.
 \item{} {\tt CCTK\_ArrayGroupSizeB}
 \item{} {\tt CCTK\_QueryGroupStorageB}
 \item{} {\tt CCTK\_SyncGroup}
+\item{} {\tt CCTK\_SyncGroupsByDirI}
 \item{} {\tt CCTK\_EnableGroupComm}
 \item{} {\tt CCTK\_DisableGroupComm}
 \item{} {\tt CCTK\_Barrier}
@@ -159,6 +161,10 @@ functions.
 \item{} {\tt CCTK\_OverloadMyProc}
 \item{} {\tt CCTK\_OverloadnProcs}
 \end{enumerate}
+
+The overloadable function {\tt CCTK\_SyncGroup} is deprecated, a driver should
+instead provide a routine to overload the more general function
+{\tt CCTK\_SyncGroupsByDirI}.
 
 \section{The GH Extension}
 
