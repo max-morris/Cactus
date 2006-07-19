@@ -6,7 +6,7 @@
 #   @desc
 #            Known architecture stuff for MacOS X (Darwin)
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.16 2006-06-23 04:47:58 schnetter Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.17 2006-07-19 11:02:05 schnetter Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
@@ -70,11 +70,8 @@ else
     CXX_DEPEND='$(CXX) -M $(CPPFLAGS)'
   elif test -e '/usr/lib/gcc/darwin/3.3' ; then
     # This is dangerous -- it could pick up the wrong gcc
-    if MAC_C_VERSION_MAJOR < 4 && MAC_C_VERSION_MINOR < 3 ; then
-      C_DEPEND='gcc -M -no-cpp-precomp $(CPPFLAGS)'
-    else
-      C_DEPEND='gcc -M $(CPPFLAGS)'
-    fi
+    # C_DEPEND='gcc -M -no-cpp-precomp $(CPPFLAGS)'
+    C_DEPEND='gcc -M $(CPPFLAGS)'
     CXX_DEPEND='g++ -E -M $(CPPFLAGS)'
   else
     C_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'
@@ -129,11 +126,8 @@ else
   case "$MAC_C_COMP" in
       gcc)
       CC_VERSION="`$CC --version 2>&1 | head -n 1`"
-      if MAC_C_VERSION_MAJOR < 4 && MAC_C_VERSION_MINOR < 3 ; then
-        : ${CFLAGS="-no-cpp-precomp -mlongcall"}
-      else
-        : ${CFLAGS="-mlongcall"}
-      fi
+      # : ${CFLAGS="-no-cpp-precomp -mlongcall"}
+      # : ${CFLAGS="-mlongcall"}
       ;;
       *)
       :
@@ -143,11 +137,8 @@ else
   case "$MAC_CXX_COMP" in
       gcc)
       CXX_VERSION="`$CXX --version 2>&1 | head -n 1`"
-      if MAC_C_VERSION_MAJOR < 4 && MAC_C_VERSION_MINOR < 3 ; then
-        : ${CXXFLAGS="-no-cpp-precomp -mlongcall"}
-      else
-        : ${CXXFLAGS="-mlongcall"}
-      fi
+      # : ${CXXFLAGS="-no-cpp-precomp -mlongcall"}
+      # : ${CXXFLAGS="-mlongcall"}
       ;;
       *)
       :
@@ -186,8 +177,8 @@ else
     gcc)
       F77_VERSION="`$F77 --version 2>&1 | head -n 1`"
       F90_VERSION="`$F90 --version 2>&1 | head -n 1`"
-      : ${F77FLAGS='-mlongcall'}
-      : ${F90FLAGS='-mlongcall'}
+      # : ${F77FLAGS='-mlongcall'}
+      # : ${F90FLAGS='-mlongcall'}
       : ${LIBS='gfortran'}
       ;;
     ibm)
