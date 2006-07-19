@@ -19,6 +19,7 @@ dnl Starts here
 AC_INIT()
 AC_CONFIG_HEADER(cctk_Config.h)
 
+
 #######################################################################
 # determine WARN_MODE from the WARN option
 # if this option isn't set WARN_MODE will default to 'no'
@@ -32,6 +33,38 @@ if test -n "$WARN" ; then
     AC_ERROR(Didn't recognize setting of WARN=\"$WARN\" (should be either \"yes\" or \"no\"))
   fi
   WARN_MODE=$WARN
+fi
+
+
+#######################################################################
+# determine DEBUG_MODE from the DEBUG option
+# if this option isn't set DEBUG_MODE will default to 'no'
+if test -n "$DEBUG" ; then
+  changequote({, })
+  DEBUG=`echo $DEBUG | tr '[:upper:]' '[:lower:]'`
+  changequote([, ])
+fi
+
+if test -n "$DEBUG" -a "$DEBUG" != 'no' ; then
+  AC_DEFINE(CCTK_DEBUG)
+  case "$DEBUG" in
+     memory)
+       AC_DEFINE(CCTK_TRACEMEMORY)
+       ;;
+     flags|yes)
+       DEBUG_FLAGS='yes'
+       ;;
+     defines)
+       AC_DEFINE(DEBUG)
+       ;;
+     all)
+      AC_DEFINE(CCTK_TRACEMEMORY)
+      DEBUG_FLAGS='yes'
+      ;;
+    *)
+      AC_ERROR(Didn't recognize setting of DEBUG=\"$DEBUG\")
+      ;;
+   esac
 fi
 
 
@@ -212,13 +245,104 @@ fi
 # Finish the architecture stuff
 CCTK_WriteLine cctk_Archdefs.h '#endif /* _CCTK_ARCHDEFS_H_ */'
 
+
+
+# Set the warn flags
+AC_SUBST(WARN_MODE)
+
+# Set the warning flags if they've not been set by now
+# (using GNU compiler warning flags as a reasonable default)
+AC_SUBST(C_WARN_FLAGS)
+if test -z "$C_WARN_FLAGS" -a "$CC" = 'gcc' ; then
+  C_WARN_FLAGS='-Wall -W -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Winline'
+else
+  : ${C_WARN_FLAGS=''}
+fi
+
+AC_SUBST(CXX_WARN_FLAGS)
+if test -z "$CXX_WARN_FLAGS" -a \( "$CXX" = 'c++' -o "$CXX" = 'g++' \) ; then
+  CXX_WARN_FLAGS='-Wall -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Winline -Woverloaded-virtual'
+else
+  : ${CXX_WARN_FLAGS=''}
+fi
+
+AC_SUBST(F77_WARN_FLAGS)
+if test -z "$F77_WARN_FLAGS" -a "$F77" = 'g77' ; then
+  F77_WARN_FLAGS='-Wall'
+else
+  : ${F77_WARN_FLAGS=''}
+fi
+
+AC_SUBST(F90_WARN_FLAGS)
+: ${F90_WARN_FLAGS=''}
+
+
+AC_SUBST(DEBUG_MODE)
+DEBUG_MODE='no'
+if test -n "$DEBUG_FLAGS"; then
+  DEBUG_MODE=$DEBUG_FLAGS
+fi
+
+# Set the debug flags if they've not been set by now
+# (using '-g' as a reasonable default)
+AC_SUBST(C_DEBUG_FLAGS)
+: ${C_DEBUG_FLAGS='-g'}
+
+AC_SUBST(CXX_DEBUG_FLAGS)
+: ${CXX_DEBUG_FLAGS='-g'}
+
+AC_SUBST(F77_DEBUG_FLAGS)
+: ${F77_DEBUG_FLAGS='-g'}
+
+AC_SUBST(F90_DEBUG_FLAGS)
+: ${F90_DEBUG_FLAGS='-g'}
+
+
+# Set the optimization flags if they've not been set by now
+# (using '-O2' as a reasonable default)
+AC_SUBST(OPTIMISE_MODE)
+
+AC_SUBST(C_OPTIMISE_FLAGS)
+: ${C_OPTIMISE_FLAGS='-O2'}
+
+AC_SUBST(CXX_OPTIMISE_FLAGS)
+: ${CXX_OPTIMISE_FLAGS='-O2'}
+
+AC_SUBST(F77_OPTIMISE_FLAGS)
+if test -z "$F77_OPTIMISE_FLAGS" -a "$F77" = 'g77' ; then
+  F77_OPTIMISE_FLAGS='-O2'
+else
+  : ${F77_OPTIMISE_FLAGS=''}
+fi
+
+AC_SUBST(F90_OPTIMISE_FLAGS)
+: ${F90_OPTIMISE_FLAGS=''}
+
+
+# Set the profiling flags if they've not been set by now
+# (using '-pg' as a reasonable default)
+AC_SUBST(PROFILE_MODE)
+
+AC_SUBST(C_PROFILE_FLAGS)
+: ${C_PROFILE_FLAGS='-pg'}
+
+AC_SUBST(CXX_PROFILE_FLAGS)
+: ${CXX_PROFILE_FLAGS='-pg'}
+
+AC_SUBST(F77_PROFILE_FLAGS)
+: ${F77_PROFILE_FLAGS='-pg'}
+
+AC_SUBST(F90_PROFILE_FLAGS)
+: ${F90_PROFILE_FLAGS='-pg'}
+
 ##########################################################################
-#########################################################################
 
 
 # The known architecture stuff has probably set the LIBS variable
 # So remember what it is and set it to blank to prevent any problems with the
 # rest of the configure stuff.
+
+#########################################################################
 
 KNOWN_LIBS="$LIBS"
 unset LIBS
@@ -535,11 +659,13 @@ CCTK_CHECK_CXX_RESTRICT
 CCTK_C_BOOL
 CCTK_CXX_BOOL
 
-CCTK_PROG_FORTRAN_REAL16_WORKS
-AC_PROG_CXX_GNU
-if test "$fortran_does_real16" = 'yes'; then
-  AC_DEFINE(HAVE_FORTRAN_REAL16)
-fi
+CCTK_FORTRAN_REAL4
+CCTK_FORTRAN_REAL8
+CCTK_FORTRAN_REAL16
+
+CCTK_FORTRAN_COMPLEX8
+CCTK_FORTRAN_COMPLEX16
+CCTK_FORTRAN_COMPLEX32
 
 dnl Do we have crypt(3)
 CCTK_CHECK_FUNC(crypt, , CCTK_CHECK_LIB_FUNC(crypt, crypt))
@@ -659,10 +785,6 @@ if test -n "$CCTK_INT1" ; then
 fi
 
 # Float types
-echo "Float types"
-echo "x$ac_cv_sizeof_long_double"
-echo "x$ac_cv_sizeof_double"
-echo "x$ac_cv_sizeof_float"
 case "x$ac_cv_sizeof_long_double" in
     'x16')
       CCTK_REAL16='long double' ;;
@@ -694,17 +816,17 @@ if test "x$DISABLE_REAL16" != 'xyes' -a "x$DISABLE_REAL16" != 'xno' -a "x$DISABL
     AC_ERROR([Didn't recognise setting of DISABLE_REAL16=\"$DISABLE_REAL16\"; should be either \"yes\" or \"no\" or \"\" (empty)])
 fi
 
-if test -n "$CCTK_REAL16" -a "x$DISABLE_REAL16" != 'xyes' -a -n "$HAVE_FORTRAN_REAL16" ; then
+if test -n "$CCTK_REAL16" -a "x$cctk_cv_have_fortran_real16" = 'xyes' -a "x$cctk_cv_have_fortran_complex32" = 'xyes' -a "x$DISABLE_REAL16" != 'xyes' ; then
   AC_DEFINE_UNQUOTED(CCTK_REAL16, $CCTK_REAL16)
   AC_DEFINE(HAVE_CCTK_REAL16)
 fi
 
-if test -n "$CCTK_REAL8" ; then
+if test -n "$CCTK_REAL8" -a "x$cctk_cv_have_fortran_real8" -a "x$cctk_cv_have_fortran_complex16" = 'xyes' ; then
   AC_DEFINE_UNQUOTED(CCTK_REAL8, $CCTK_REAL8)
   AC_DEFINE(HAVE_CCTK_REAL8)
 fi
 
-if test -n "$CCTK_REAL4" ; then
+if test -n "$CCTK_REAL4" -a "x$cctk_cv_have_fortran_real4" = 'xyes' -a "x$cctk_cv_have_fortran_complex8" = 'xyes' ; then
   AC_DEFINE_UNQUOTED(CCTK_REAL4, $CCTK_REAL4)
   AC_DEFINE(HAVE_CCTK_REAL4)
 fi
@@ -805,123 +927,6 @@ AC_SUBST(CCOMPILEONLY)
 AC_SUBST(FCOMPILEONLY)
 : ${CCOMPILEONLY='-c -o'}
 : ${FCOMPILEONLY='-c -o'}
-
-
-#######################################################################
-# determine DEBUG_MODE from the DEBUG option
-# if this option isn't set DEBUG_MODE will default to 'no'
-if test -n "$DEBUG" ; then
-  changequote({, })
-  DEBUG=`echo $DEBUG | tr '[:upper:]' '[:lower:]'`
-  changequote([, ])
-fi
-
-if test -n "$DEBUG" -a "$DEBUG" != 'no' ; then
-  AC_DEFINE(CCTK_DEBUG)
-  case "$DEBUG" in
-     memory)
-       AC_DEFINE(CCTK_TRACEMEMORY)
-       ;;
-     flags|yes)
-       DEBUG_FLAGS='yes'
-       ;;
-     defines)
-       AC_DEFINE(DEBUG)
-       ;;
-     all)
-      AC_DEFINE(CCTK_TRACEMEMORY)
-      DEBUG_FLAGS='yes'
-      ;;
-    *)
-      AC_ERROR(Didn't recognize setting of DEBUG=\"$DEBUG\")
-      ;;
-   esac
-fi
-
-AC_SUBST(DEBUG_MODE)
-DEBUG_MODE='no'
-if test -n "$DEBUG_FLAGS"; then
-  DEBUG_MODE=$DEBUG_FLAGS
-fi
-
-# Set the debug flags if they've not been set by now
-# (using '-g' as a reasonable default)
-AC_SUBST(C_DEBUG_FLAGS)
-: ${C_DEBUG_FLAGS='-g'}
-
-AC_SUBST(CXX_DEBUG_FLAGS)
-: ${CXX_DEBUG_FLAGS='-g'}
-
-AC_SUBST(F77_DEBUG_FLAGS)
-: ${F77_DEBUG_FLAGS='-g'}
-
-AC_SUBST(F90_DEBUG_FLAGS)
-: ${F90_DEBUG_FLAGS='-g'}
-
-# Set the warn flags
-AC_SUBST(WARN_MODE)
-
-# Set the warning flags if they've not been set by now
-# (using GNU compiler warning flags as a reasonable default)
-AC_SUBST(C_WARN_FLAGS)
-if test -z "$C_WARN_FLAGS" -a "$CC" = 'gcc' ; then
-  C_WARN_FLAGS='-Wall -W -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Winline'
-else
-  : ${C_WARN_FLAGS=''}
-fi
-
-AC_SUBST(CXX_WARN_FLAGS)
-if test -z "$CXX_WARN_FLAGS" -a \( "$CXX" = 'c++' -o "$CXX" = 'g++' \) ; then
-  CXX_WARN_FLAGS='-Wall -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Winline -Woverloaded-virtual'
-else
-  : ${CXX_WARN_FLAGS=''}
-fi
-
-AC_SUBST(F77_WARN_FLAGS)
-if test -z "$F77_WARN_FLAGS" -a "$F77" = 'g77' ; then
-  F77_WARN_FLAGS='-Wall'
-else
-  : ${F77_WARN_FLAGS=''}
-fi
-
-AC_SUBST(F90_WARN_FLAGS)
-: ${F90_WARN_FLAGS=''}
-
-# Set the optimization flags if they've not been set by now
-# (using '-O2' as a reasonable default)
-AC_SUBST(OPTIMISE_MODE)
-
-AC_SUBST(C_OPTIMISE_FLAGS)
-: ${C_OPTIMISE_FLAGS='-O2'}
-
-AC_SUBST(CXX_OPTIMISE_FLAGS)
-: ${CXX_OPTIMISE_FLAGS='-O2'}
-
-AC_SUBST(F77_OPTIMISE_FLAGS)
-if test -z "$F77_OPTIMISE_FLAGS" -a "$F77" = 'g77' ; then
-  F77_OPTIMISE_FLAGS='-O2'
-else
-  : ${F77_OPTIMISE_FLAGS=''}
-fi
-
-AC_SUBST(F90_OPTIMISE_FLAGS)
-: ${F90_OPTIMISE_FLAGS=''}
-
-# Set the profiling flags if they've not been set by now
-# (using '-pg' as a reasonable default)
-AC_SUBST(PROFILE_MODE)
-
-AC_SUBST(C_PROFILE_FLAGS)
-: ${C_PROFILE_FLAGS='-pg'}
-
-AC_SUBST(CXX_PROFILE_FLAGS)
-: ${CXX_PROFILE_FLAGS='-pg'}
-
-AC_SUBST(F77_PROFILE_FLAGS)
-: ${F77_PROFILE_FLAGS='-pg'}
-
-AC_SUBST(F90_PROFILE_FLAGS)
-: ${F90_PROFILE_FLAGS='-pg'}
 
 
 # Set the createexe flag if it's not been set by now

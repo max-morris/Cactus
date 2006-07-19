@@ -216,6 +216,14 @@ typedef enum {false, true} bool;
 
 #ifdef FCODE
 
+#undef HAVE_CCTK_FORTRAN_REAL4
+#undef HAVE_CCTK_FORTRAN_REAL8
+#undef HAVE_CCTK_FORTRAN_REAL16
+
+#undef HAVE_CCTK_FORTRAN_COMPLEX8
+#undef HAVE_CCTK_FORTRAN_COMPLEX16
+#undef HAVE_CCTK_FORTRAN_COMPLEX32
+
 #endif /* FCODE */
 
 /* Now include the code to pick an appropriate precison for reals and ints */

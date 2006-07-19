@@ -181,24 +181,6 @@ AC_MSG_RESULT($ac_cv_prog_cxx_cross)
 cross_compiling=$ac_cv_prog_cxx_cross
 ])
 
-dnl see Autoconf manual: Examining Syntax
-dnl AC_TRY_COMPILE (includes, function-body, [action-if-found [, action-if-not-found]])
-AC_DEFUN(CCTK_PROG_FORTRAN_REAL16_WORKS,
-[AC_MSG_CHECKING([for Fortran REAL*16 ($F77 $F77FLAGS)])
-AC_LANG_SAVE
-AC_LANG_FORTRAN77
-rm -fr conftest*
-AC_TRY_COMPILER([
-      PROGRAM main
-        REAL*16 a
-      END
-      ], ac_cv_real16_works, ac_cv_real16_works_not)
-AC_LANG_RESTORE
-dnl AC_MSG_ERROR([STEEVIE: $ac_cv_real16_works])
-AC_MSG_RESULT($ac_cv_real16_works)
-fortran_does_real16=$ac_cv_real16_works
-])
-
 AC_DEFUN(CCTK_HEADER_REGEX,
 [AC_MSG_CHECKING([for regex.h])
 AC_CACHE_VAL(cctk_cv_header_regex_h,
@@ -356,5 +338,115 @@ AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_bool" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_CXX_BOOL)
+fi
+])
+
+dnl The autoconf 2.13 function AC_TRY_COMPILE does not work for Fortran.
+dnl This version is corrected and should work for both C and Fortran.
+dnl CCTK_TRY_COMPILE(INCLUDES, FUNCTION-BODY,
+dnl             [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
+AC_DEFUN(CCTK_TRY_COMPILE,
+[cat > conftest.$ac_ext <<EOF
+ifelse(AC_LANG, [FORTRAN77],
+[      program main
+[$2]
+      end
+],
+[dnl This sometimes fails to find confdefs.h, for some reason.
+dnl [#]line __oline__ "[$]0"
+[#]line __oline__ "configure"
+#include "confdefs.h"
+[$1]
+int main() {
+[$2]
+; return 0; }
+])EOF
+if AC_TRY_EVAL(ac_compile); then
+  ifelse([$3], , :, [rm -rf conftest*
+  $3])
+else
+  echo "configure: failed program was:" >&AC_FD_CC
+  cat conftest.$ac_ext >&AC_FD_CC
+ifelse([$4], , , [  rm -rf conftest*
+  $4
+])dnl
+fi
+rm -f conftest*])
+
+AC_DEFUN(CCTK_FORTRAN_REAL4,
+[AC_CACHE_CHECK([for Fortran REAL*4], cctk_cv_have_fortran_real4,
+[cctk_cv_have_fortran_real4=no
+AC_LANG_SAVE
+AC_LANG_FORTRAN77
+CCTK_TRY_COMPILE(,[      REAL*4 a], cctk_cv_have_fortran_real4=yes, cctk_cv_have_fortran_real4=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_fortran_real4" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_FORTRAN_REAL4)
+fi
+])
+
+AC_DEFUN(CCTK_FORTRAN_REAL8,
+[AC_CACHE_CHECK([for Fortran REAL*8], cctk_cv_have_fortran_real8,
+[cctk_cv_have_fortran_real8=no
+AC_LANG_SAVE
+AC_LANG_FORTRAN77
+CCTK_TRY_COMPILE(,[      REAL*8 a], cctk_cv_have_fortran_real8=yes, cctk_cv_have_fortran_real8=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_fortran_real8" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_FORTRAN_REAL8)
+fi
+])
+
+AC_DEFUN(CCTK_FORTRAN_REAL16,
+[AC_CACHE_CHECK([for Fortran REAL*16], cctk_cv_have_fortran_real16,
+[cctk_cv_have_fortran_real16=no
+AC_LANG_SAVE
+AC_LANG_FORTRAN77
+CCTK_TRY_COMPILE(,[      REAL*16 a], cctk_cv_have_fortran_real16=yes, cctk_cv_have_fortran_real16=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_fortran_real16" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_FORTRAN_REAL16)
+fi
+])
+
+AC_DEFUN(CCTK_FORTRAN_COMPLEX8,
+[AC_CACHE_CHECK([for Fortran COMPLEX*8], cctk_cv_have_fortran_complex8,
+[cctk_cv_have_fortran_complex8=no
+AC_LANG_SAVE
+AC_LANG_FORTRAN77
+CCTK_TRY_COMPILE(,[      COMPLEX*8 a], cctk_cv_have_fortran_complex8=yes, cctk_cv_have_fortran_complex8=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_fortran_complex8" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_FORTRAN_COMPLEX8)
+fi
+])
+
+AC_DEFUN(CCTK_FORTRAN_COMPLEX16,
+[AC_CACHE_CHECK([for Fortran COMPLEX*16], cctk_cv_have_fortran_complex16,
+[cctk_cv_have_fortran_complex16=no
+AC_LANG_SAVE
+AC_LANG_FORTRAN77
+CCTK_TRY_COMPILE(,[      COMPLEX*16 a], cctk_cv_have_fortran_complex16=yes, cctk_cv_have_fortran_complex16=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_fortran_complex16" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_FORTRAN_COMPLEX16)
+fi
+])
+
+AC_DEFUN(CCTK_FORTRAN_COMPLEX32,
+[AC_CACHE_CHECK([for Fortran COMPLEX*32], cctk_cv_have_fortran_complex32,
+[cctk_cv_have_fortran_complex32=no
+AC_LANG_SAVE
+AC_LANG_FORTRAN77
+CCTK_TRY_COMPILE(,[      COMPLEX*32 a], cctk_cv_have_fortran_complex32=yes, cctk_cv_have_fortran_complex32=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_fortran_complex32" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_FORTRAN_COMPLEX32)
 fi
 ])
