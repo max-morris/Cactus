@@ -553,9 +553,10 @@ int CactusDefaultSyncGroupsByDirI (const cGH *GH, int num_groups,
                                    const int *directions)
 {
   int group, retval = 0;
+  char *groupname;
   static int user_has_been_notified = 0;
 
- 
+
   /* individual directions aren't supported in the CCTK_SyncGroup* interface */
   if (directions != NULL)
   {
@@ -582,10 +583,12 @@ int CactusDefaultSyncGroupsByDirI (const cGH *GH, int num_groups,
     /* synchronise all groups one by one */
     for (group = 0; group < num_groups; group++)
     {
-      if (CCTK_SyncGroupI (GH, groups[group]) == 0)
+      groupname = CCTK_GroupName (groups[group]);
+      if (CCTK_SyncGroup (GH, groupname) == 0)
       {
         retval++;
       }
+      free (groupname);
     }
   }
 
