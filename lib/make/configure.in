@@ -339,12 +339,13 @@ AC_SUBST(F90_PROFILE_FLAGS)
 
 # Deal with the Fortran compiler issues.
 # If there's a Fortran 90 compiler use that for all the Fortran.
-if test "x$F90" != "x" -a "x$F90" != "xnone" -a "x$KNOWN_F77" = "x" ; then
+if test "x$F90" != "x" -a "x$F90" != "xnone" -a "x$F77" = "x" ; then
   F77=$F90
   F77FLAGS=$F90FLAGS
+  F77_WARN_FLAGS=$F90_WARN_FLAGS
   F77_DEBUG_FLAGS=$F90_DEBUG_FLAGS
   F77_OPTIMISE_FLAGS=$F90_OPTIMISE_FLAGS
-  F77_WARN_FLAGS=$F90_WARN_FLAGS
+  F77_PROFILE_FLAGS=$F90_PROFILE_FLAGS
 fi
 
 # The known architecture stuff has probably set the LIBS variable
