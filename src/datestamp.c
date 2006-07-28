@@ -8,6 +8,7 @@
    #version   $Id$
  @@*/
 
+#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -90,6 +91,52 @@ const char *CCTK_CompileDate (void)
 #define STRINGIFY(a) REALSTRINGIFY(a)
 
 #define REALSTRINGIFY(a) #a
+
+
+ /*@@
+   @routine    CCTK_CompileDateTime
+   @date       21 July 2006
+   @author     Thomas Radke
+   @desc
+               Returns a pointer to a formatted string with the datetime stamp
+               when Cactus was compiled.
+               The format of the string returned tries to be compatible
+               to the machine-processable format defined in ISO 8601 chapt. 5.4
+               however this depends on the actual date command which returns
+               the raw datetime string CCTK_COMPILE_DATETIME
+               in lib/make/make.configuration.
+   @enddesc
+
+   @returntype const char *
+   @returndesc
+               pointer to the static datetime stamp string buffer
+   @endreturndesc
+@@*/
+const char *CCTK_CompileDateTime (void)
+{
+#define DATETIME_BUFLEN sizeof("YYYY-MM-DDThh:mm:ss+hh:mm")
+  const int len = DATETIME_BUFLEN;
+  static char buffer[DATETIME_BUFLEN] = "";
+
+  if (buffer[0] == 0 && sizeof (STRINGIFY (CCTK_COMPILE_DATETIME)) == len-1)
+  {
+    strcpy (buffer, STRINGIFY (CCTK_COMPILE_DATETIME));
+
+    /* if the timezone part is returned as "(+|-)hhmm"
+       then turn it into "(+|-)hh:mm" */
+    if ((buffer[len-7] == '+' || buffer[len-7] == '-') &&
+        isdigit (buffer[len-6]) && isdigit (buffer[len-5]) &&
+        isdigit (buffer[len-4]) && isdigit (buffer[len-3]) &&
+        buffer[len-2] == 0)
+    {
+      buffer[len-2] = buffer[len-3];
+      buffer[len-3] = buffer[len-4];
+      buffer[len-4] = ':';
+    }
+  }
+
+  return (buffer[0] ? buffer : STRINGIFY (CCTK_COMPILE_DATETIME));
+}
 
 
  /*@@

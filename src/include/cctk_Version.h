@@ -33,6 +33,8 @@ const char *CCTK_CompileTime(void);
 
 const char *CCTK_CompileDate(void);
 
+const char *CCTK_CompileDateTime(void);
+
 #ifdef __cplusplus
 }
 #endif

@@ -10,7 +10,9 @@
 
 /* #define DEBUG_TIME */
 
+#include <ctype.h>
 #include <time.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "cctk_Flesh.h"
@@ -45,7 +47,7 @@ int Util_CurrentTime(int len, char *now)
 {
   int retval;
   time_t timep;
-  const char *fmt = "%X";
+  const char *fmt = "%X%z";
 
   timep = time(NULL);
   strftime(now, len, fmt, localtime(&timep));
@@ -96,3 +98,48 @@ int Util_CurrentDate(int len, char *now)
   return retval;
 }
 
+
+
+ /*@@
+   @routine    Util_CurrentDateTime
+   @date       Wed 19 July 2006
+   @author     Thomas Radke
+   @desc
+               Returns the current datetime in a machine-processable format
+               as defined in ISO 8601 chapter 5.4.
+   @enddesc
+
+   @returntype char *
+   @returndesc
+               pointer to an allocated string buffer containing the datetime,
+               must be freed by the user
+   @endreturndesc
+@@*/
+char *Util_CurrentDateTime(void)
+{
+  char *buffer;
+  time_t timep;
+  const int len = sizeof ("YYYY-MM-DDThh:mm:ss+hh:mm");
+  const char *fmt = "%Y-%m-%dT%H:%M:%S%z";
+
+  buffer = calloc (1, len);
+  if (buffer)
+  {
+    timep = time (NULL);
+    strftime (buffer, len, fmt, localtime (&timep));
+
+    /* if the timezone part is returned as "(+|-)hhmm"
+       then turn it into "(+|-)hh:mm" */
+    if ((buffer[len-7] == '+' || buffer[len-7] == '-') &&
+        isdigit (buffer[len-6]) && isdigit (buffer[len-5]) &&
+        isdigit (buffer[len-4]) && isdigit (buffer[len-3]) &&
+        buffer[len-2] == 0)
+    {
+      buffer[len-2] = buffer[len-3];
+      buffer[len-3] = buffer[len-4];
+      buffer[len-4] = ':';
+    }
+  }
+
+  return (buffer);
+}
