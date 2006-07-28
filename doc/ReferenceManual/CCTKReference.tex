@@ -114,6 +114,15 @@ from Fortran.
 \item[\code{CCTK\_CmplxSub}] [\pageref{CCTK-CmplxSub}]
   Returns the subtraction of two complex numbers (only C)
 
+\item[\code{CCTK\_CompileDate}] [\pageref{CCTK-CompileDate}]
+  Returns a formatted string containing the date stamp when Cactus was compiled
+
+\item[\code{CCTK\_CompileDateTime}] [\pageref{CCTK-CompileDateTime}]
+  Returns a formatted string containing the datetime stamp when Cactus was compiled
+
+\item[\code{CCTK\_CompileTime}] [\pageref{CCTK-CompileTime}]
+  Returns a formatted string containing the time stamp when Cactus was compiled
+
 \item[\code{CCTK\_CompiledImplementation}]
   [\pageref{CCTK-CompiledImplementation}]
   Return the name of the compiled implementation with given index
@@ -1570,6 +1579,106 @@ $$
 \end{errorcodes}
 \end{CCTKFunc}
 
+
+% datestamp.c
+\begin{FunctionDescription}{CCTK\_CompileDate}
+\label{CCTK-CompileDate}
+Returns a formatted string containing the date stamp when Cactus was compiled
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+const char *compile_date = CCTK_CompileDate ();
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{compile\_date}
+formatted string containing the date stamp
+\end{Result}
+\end{ResultSection}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_CompileTime}{CCTK-CompileTime}
+  Returns a formatted string containing the time stamp when Cactus was compiled
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_CompileDateTime}{CCTK-CompileDateTime}
+  Returns a formatted string containing the datetime stamp when Cactus was compiled
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\end{FunctionDescription}
+
+
+\begin{FunctionDescription}{CCTK\_CompileDateTime}
+\label{CCTK-CompileDateTime}
+Returns a formatted string containing the datetime stamp when Cactus was compiled
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+const char *compile_datetime = CCTK_CompileDateTime ();
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{compile\_datetime}
+formatted string containing the datetime stamp
+\end{Result}
+\end{ResultSection}
+
+\begin{Discussion}
+If possible, the formatted string returned contains the datetime in a
+machine-processable format as defined in ISO 8601 chapter 5.4.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_CompileDate}{CCTK-CompileDate}
+  Returns a formatted string containing the date stamp when Cactus was compiled
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_CompileTime}{CCTK-CompileTime}
+  Returns a formatted string containing the time stamp when Cactus was compiled
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\end{FunctionDescription}
+
+\begin{FunctionDescription}{CCTK\_CompileTime}
+\label{CCTK-CompileTime}
+Returns a formatted string containing the time stamp when Cactus was compiled
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+const char *compile_time = CCTK_CompileTime ();
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{compile\_time}
+formatted string containing the time stamp
+\end{Result}
+\end{ResultSection}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_CompileDate}{CCTK-CompileDate}
+  Returns a formatted string containing the date stamp when Cactus was compiled
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_CompileDateTime}{CCTK-CompileDateTime}
+  Returns a formatted string containing the datetime stamp when Cactus was compiled
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\end{FunctionDescription}
 
 
 % cctk_ActiveThorns.c

@@ -37,6 +37,16 @@ Here the functions are listed alphabetically within each section.
 
 \begin{Lentry}
 
+\item[\code{Util\_CurrentDate}] [\pageref{Util-CurrentDate}]
+  Fills string with current local date
+
+\item[\code{Util\_CurrentDateTime}] [\pageref{Util-CurrentDateTime}]
+  Returns the current datetime in a machine-processable format
+  as defined in ISO 8601 chapter 5.4.
+
+\item[\code{Util\_CurrentTime}] [\pageref{Util-CurrentTime}]
+  Fills string with current local time
+
 \item[\code{Util\_snprintf}]
      [\pageref{Util-snprintf}]
 Safely format data into a caller-supplied buffer.
@@ -68,12 +78,6 @@ Safely format data into a caller-supplied buffer.
 
 %%\item[\code{Util\_CacheMalloc}]
 %%     [\pageref{Util-CacheMalloc}]
-
-%%\item[\code{Util\_CurrentDate}]
-%%     [\pageref{Util-CurrentDate}]
-
-%%\item[\code{Util\_CurrentTime}]
-%%     [\pageref{Util-CurrentTime}]
 
 %%\item[\code{Util\_DeleteHandle}]
 %%     [\pageref{Util-DeleteHandle}]
@@ -341,6 +345,132 @@ a copy of a specified C-style null-terminated character string
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Full Descriptions of Miscellaneous Functions}
+
+\begin{FunctionDescription}{Util\_CurrentDate}
+\label{Util-CurrentDate}
+Fills string with current local date
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+#include "cctk_Misc.h.h"
+
+int retval = Util_CurrentDate (int len, char *now);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{len}
+length of the user-supplied string buffer 
+\end{Parameter}
+\begin{Parameter}{now}
+user-supplied string buffer to write the date stamp to
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ResultSection}
+\begin{Result}{retval}
+length of the string returned in {\code now}, or 0 if the string was truncated
+\end{Result}
+\end{ResultSection}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{Util\_CurrentTime}{Util-CurrentTime}
+  Fills string with current local time
+\end{SeeAlso2}
+\begin{SeeAlso2}{Util\_CurrentDateTime}{Util-CurrentDateTime}
+  Returns the current datetime in a machine-processable format
+  as defined in ISO 8601 chapter 5.4.
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\end{FunctionDescription}
+
+
+\begin{FunctionDescription}{Util\_CurrentDateTime}
+\label{Util-CurrentDateTime}
+Returns the current datetime in a machine-processable format
+as defined in ISO 8601 chapter 5.4.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+#include "cctk_Misc.h.h"
+
+char *current_datetime = Util_CurrentDateTime ();
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{current\_datetime}
+Pointer to an allocated formatted string containing the current datetime stamp.
+The pointer should be freed by the caller.
+\end{Result}
+\end{ResultSection}
+
+\begin{Discussion}
+The formatted string returned contains the current datetime in a
+machine-processable format as defined in ISO 8601 chapter 5.4:
+{\code "YYYY-MM-DDThh:mm:ss+hh:mm"}
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{Util\_CurrentDate}{Util-CurrentDate}
+  Fills string with current local date
+\end{SeeAlso2}
+\begin{SeeAlso2}{Util\_CurrentTime}{Util-CurrentTime}
+  Fills string with current local time
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\end{FunctionDescription}
+
+\begin{FunctionDescription}{Util\_CurrentTime}
+\label{Util-CurrentTime}
+Fills string with current local time
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+#include "cctk_Misc.h.h"
+
+int retval = Util_CurrentTime (int len, char *now);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{len}
+length of the user-supplied string buffer
+\end{Parameter}
+\begin{Parameter}{now}
+user-supplied string buffer to write the time stamp to
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ResultSection}
+\begin{Result}{retval}
+length of the string returned in {\code now}, or 0 if the string was truncated
+\end{Result}
+\end{ResultSection}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{Util\_CurrentDate}{Util-CurrentDate}
+  Fills string with current local date
+\end{SeeAlso2}
+\begin{SeeAlso2}{Util\_CurrentDateTime}{Util-CurrentDateTime}
+  Returns the current datetime in a machine-processable format
+as defined in ISO 8601 chapter 5.4.
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\end{FunctionDescription}
+
 
 %Entering a function descrpition for Util\_snprintf
 \begin{FunctionDescription}{Util\_snprintf}
