@@ -121,4 +121,8 @@ int CCTK_InterpLocalUniform (int N_dims,
 /* an interpolation point is in (or too close to) an excised region */
 #define CCTK_ERROR_INTERP_POINT_EXCISED (-1003)
 
+/* an interpolation coordinate (or some other intermediate value in the */
+/* interpolation process) was an IEEE NaN or other non-finite number */
+#define CCTK_ERROR_INTERP_COORD_NAN	(-1004)
+
 #endif  /* _INTERP_H_ */
