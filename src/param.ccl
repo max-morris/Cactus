@@ -4,7 +4,7 @@
 
 private:
 
-STRING cctk_run_title "Description of this simulation"
+STRING cctk_run_title "Description of this simulation" STEERABLE=ALWAYS
 {
   ".*" :: "Any string"
 } ""
