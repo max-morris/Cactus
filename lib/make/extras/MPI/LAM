@@ -6,7 +6,7 @@
 #   @desc
 #            Configure Cactus to compile with the LAM version of MPI.
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/LAM,v 1.13 2006-07-29 11:43:24 swhite Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/LAM,v 1.14 2006-08-28 15:23:48 tradke Exp $
 # @@*/
 
 echo '  LAM selected'
@@ -89,7 +89,11 @@ else
   fi
 
   # if a LAM config header file exists, extract possible device libs and libdirs
-  lam_config_file="$LAM_DIR/include/lam_config.h"
+  if test -n "$LAM_INC_DIR"; then
+    lam_config_file="$LAM_INC_DIR/lam_config.h"
+  else
+    lam_config_file="$LAM_DIR/include/lam_config.h"
+  fi
   if test -r "$lam_config_file" ; then
     base_lib_list=`grep WRAPPER_EXTRA_LIBS $lam_config_file | perl -ne 's/WRAPPER_EXTRA_LIBS\s+"(.+)"/\1/; print'`
     base_libdir_list=`grep WRAPPER_EXTRA_LDFLAGS $lam_config_file | perl -ne 's/WRAPPER_EXTRA_LDFLAGS\s+"(.+)"/\1/; print'`
