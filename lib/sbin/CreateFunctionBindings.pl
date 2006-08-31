@@ -2416,24 +2416,14 @@ sub printCallArg
 
   my ($providetype,$calltype,%Arg) = ($_[0],$_[1],%{$_[2]});
 
-  my $data;
-
+  my $prefix = '';
+  if ($providetype ne $calltype and
+      not ($Arg{'Is Array'} or $Arg{'String'} or $Arg{'Intent'} =~ /OUT/))
+  {
+    $prefix = $calltype eq 'Fortran' ? '*' : '&';
+  }
   my $varname = $Arg{"Name"};
-  my $prefix = "";
-
-  if ($providetype eq $calltype)
-  {
-    $prefix = "";
-  }
-  elsif ( ($calltype eq "Fortran")&&( !(($Arg{"Is Array"})||($Arg{"String"})||($Arg{"Intent"}=~/OUT/)) ) )
-  {
-    $prefix = "*";
-  }
-  elsif ( ($calltype eq "C")&&((!$Arg{"Is Array"})&&($Arg{"Intent"}!~/OUT/)) )
-  {
-    $prefix = "&";
-  }
-  $data=$prefix.$varname;
+  my $data=$prefix.$varname;
 
 #  print "$varname $providetype $calltype $Arg{\"Is Array\"} $data\n";
 
