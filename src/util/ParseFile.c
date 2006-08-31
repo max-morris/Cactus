@@ -236,6 +236,8 @@ int ParseFile(FILE *ifp,
 
         if (c == '"')
         {
+          int startline = lineno;
+
           /* Just handle the thing. */
           int p = 0;
           if (ntokens > 1)
@@ -254,21 +256,61 @@ int ParseFile(FILE *ifp,
 #ifdef DEBUG
             printf("%c",c);
 #endif
-            /* Make an important decision NOT to include
-             * line feeds in the string parameters
-             */
-            if (c != '\n') value[p++] = (char)c;
+            value[p++] = (char)c;
+            CheckBuf(p,lineno);
             if (c == '\n')
             {
-              printf ("Warning: Quoted string contains newline for token %s\n",
-                      tokens);
-              printf ("This could indicate a parameter file error or missing quote\n");
 #ifdef DEBUG
               printf ("LINE %d\n",lineno);
 #endif
               lineno++;
             }
-            CheckBuf(p,lineno);
+            else if (c == EOF)
+            {
+              break;
+            }
+          }
+          /* ignore all extra spaces or a trailing comment in this line */
+          if (c == '"')
+          {
+            int is_comment = 0;
+            while ((c = fgetc(ifp)) != '\n')
+            {
+              if (c == EOF)
+              {
+                break;
+              }
+              if (c == '#')
+              {
+                is_comment = 1;
+              }
+              else if (! (is_comment || c == ' ' || c == '\t' || c == '\r'))
+              {
+                fprintf (stderr, "ERROR: extra characters found after closing "
+                                 "quote for value of parameter '%s' starting "
+                                 "in line %d\n",
+                         tokens, startline);
+                fprintf(stderr, "This is a fatal error.\n");
+                free (tokens);
+                return 1;
+              }
+            }
+            if (c == '\n' || c == EOF)
+            {
+              if (c == '\n') lineno++;
+              /* mark it as properly quoted string value */
+              c = '"';
+            }
+          }
+          /* fail if the quoted string did not terminate with a quote */
+          if (c != '"')
+          {
+            fprintf (stderr, "ERROR: no closing quote found for quoted value "
+                             "of parameter '%s' starting in line %d\n",
+                     tokens, startline);
+            fprintf(stderr, "This is a fatal error.\n");
+            free (tokens);
+            return 1;
           }
           value[p] = '\0';
 #ifdef DEBUG
