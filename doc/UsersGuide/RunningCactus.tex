@@ -1494,6 +1494,11 @@ each thorn using the command line options \texttt{-o} and \texttt{-O}
         the parameter file, the second value will be used. (This is
         why the \texttt{ActiveThorns} parameter is always first in the file).
 
+\item{} String parameter values can be specified either as unquoted tokens (not
+        containing any whitespace) or as quoted values. If a quoted string
+        parameter value spans multiple lines all whitespaces, including newline
+        characters, are preserved.
+
 \item{} Some parameters are \textit{steerable} and can be changed during
         the execution of a Cactus program using parameter steering interfaces
         For example, thorn \texttt{CactusConnect/HTTPD}, or using a
