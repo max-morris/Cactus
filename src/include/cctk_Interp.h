@@ -125,4 +125,7 @@ int CCTK_InterpLocalUniform (int N_dims,
 /* interpolation process) was an IEEE NaN or other non-finite number */
 #define CCTK_ERROR_INTERP_COORD_NAN	(-1004)
 
+/* the grid spacing was specified as zero along at least one axis */
+#define CCTK_ERROR_INTERP_DELTA_X_ZERO	(-1005)
+
 #endif  /* _INTERP_H_ */
