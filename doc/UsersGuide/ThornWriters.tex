@@ -4212,7 +4212,9 @@ CCTK_REAL FUNCTION SumStuff(CCTK_REAL IN x, CCTK_REAL IN y)
 PROVIDES FUNCTION SumStuff WITH AddItUp LANGUAGE C
 \end{verbatim}
 The appropriate function must then be provided somewhere in this
-thorn.
+thorn. Multiple thorns providing the same function can be compiled into the
+same configuration; however only one providing thorn may be activated at
+runtime otherwise an error message is printed and the run is aborted.
 
 It is necessary to specify the language of the providing function; no
 default will be assumed.
@@ -4365,6 +4367,7 @@ Data Type & Size (bytes) & Variable Type & Fortran Equivalent\\
 {\t CCTK\_COMPLEX8}  & 8  & {\t CCTK\_VARIABLE\_COMPLEX8}  & {\t complex*8}\\
 {\t CCTK\_COMPLEX16} & 16 & {\t CCTK\_VARIABLE\_COMPLEX16} & {\t complex*16}\\
 {\t CCTK\_COMPLEX32} & 32 & {\t CCTK\_VARIABLE\_COMPLEX32} & {\t complex*32}\\
+\hline
 \end{tabular}
 \end{center}
 
