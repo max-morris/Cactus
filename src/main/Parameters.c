@@ -583,6 +583,12 @@ int CCTK_ParameterSet (const char *name, const char *thorn, const char *value)
                       thorn, name);
           retval = ParameterSet (param, value);
         }
+        else
+        {
+          /* unregister the previous set operation
+             if the restored value is the same as the one previously set */
+          param->props->n_set--;
+        }
       }
       else
       {
@@ -596,21 +602,28 @@ int CCTK_ParameterSet (const char *name, const char *thorn, const char *value)
     {
       retval = ParameterSet (param, value);
 
+      new_value = CCTK_ParameterValString (param->props->name,
+                                           param->props->thorn);
+
       /* check if a parameter is set more than once in a parfile */
       if (cctk_parameter_set_mask == PARAMETER_RECOVERY_PRE &&
           param->props->n_set > 0)
       {
         if (retval == 0)
         {
-          new_value = CCTK_ParameterValString (param->props->name,
-                                               param->props->thorn);
           retval = strcmp (old_value, new_value) ? -10 : -11;
-          free (new_value);
         }
       }
 
-      /* register another set operation */
-      param->props->n_set++;
+      /* register another set operation
+         if the parameter has not simply been restored to the same value */
+      if (! (cctk_parameter_set_mask == PARAMETER_RECOVERY_IN &&
+             strcmp (old_value, new_value) == 0))
+      {
+        param->props->n_set++;
+      }
+
+      free (new_value);
     }
 
     free (old_value);
