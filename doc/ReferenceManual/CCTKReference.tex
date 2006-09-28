@@ -581,6 +581,14 @@ from Fortran.
   [\pageref{CCTK-ParameterSet}]
   Sets the value of a parameter
 
+\item[\code{CCTK\_ParameterSetNotifyRegister}]
+  [\pageref{CCTK-ParameterSetNotifyRegister}]
+  Registers a parameter set operation notify callback
+
+\item[\code{CCTK\_ParameterSetNotifyUnregister}]
+  [\pageref{CCTK-ParameterSetNotifyUnregister}]
+  Unregisters a parameter set operation notify callback
+
 \item[\code{CCTK\_ParameterValString}]
   [\pageref{CCTK-ParameterValString}]
   Get the string representation of a parameter's value
@@ -8430,6 +8438,12 @@ parameter as used.
 \begin{SeeAlso2}{CCTK\_ParameterQueryTimesSet}{CCTK-ParameterQueryTimesSet}
   Return number of times a parameter has been set
 \end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterSetNotifyRegister}{CCTK-ParameterSetNotifyRegister}
+  Registers a parameter set operation notify callback
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterSetNotifyUnregister}{CCTK-ParameterSetNotifyUnregister}
+  Unregisters a parameter set operation notify callback
+\end{SeeAlso2}
 \begin{SeeAlso2}{CCTK\_ParameterValString}{CCTK-ParameterValString}
   Get the string representation of a parameter's value
 \end{SeeAlso2}
@@ -8452,6 +8466,207 @@ parameter as used.
 \end{description}
 \end{Error}
 \end{ErrorSection}
+\end{FunctionDescription}
+
+
+% Parameters.c
+%Entering a function descrpition for CCTK\_ParameterSetNotifyRegister
+\begin{FunctionDescription}{CCTK\_ParameterSetNotifyRegister}
+\label{CCTK-ParameterSetNotifyRegister}
+Registers a parameter set operation notify callback
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int handle =
+    CCTK_ParameterSetNotifyRegister (cParameterSetNotifyCallbackFn callback,
+                                     void *data,
+                                     const char *name,
+                                     const char *thorn_regex,
+                                     const char *param_regex
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_ParameterSetNotifyRegister (handle, callback, data,
+.                                     name, thorn_regex, param_regex)
+integer       handle
+external      callback
+integer       callback
+CCTK_POINTER  data
+character*(*) name
+character*(*) thorn_regex
+character*(*) param_regex
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{0}
+success
+\end{Result}
+\begin{Result}{-1}
+another callback has already been registered under the given name
+\end{Result}
+\begin{Result}{-2}
+memory allocation error
+\end{Result}
+\begin{Result}{-3}
+invalid regular expression given for thorn\_regex / param\_regex
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{callback}
+Function pointer of the notify callback to be registered
+\end{Parameter}
+\begin{Parameter}{data}
+optional user-defined data pointer to associate with the notify callback
+\end{Parameter}
+\begin{Parameter}{name}
+Unique name under which the notify callback is to be registered
+\end{Parameter}
+\begin{Parameter}{thorn\_regex}
+Optional regular expression string to match a thorn name in a full parameter name
+\end{Parameter}
+\begin{Parameter}{param\_regex}
+Optional regular expression string to match a parameter name in a full parameter name
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Declaring a parameter steerable at runtime in its {\tt param.ccl} definition
+requires a thorn writer to add extra logic to the code which checks
+if a parameter value has changed, either periodically in a scheduled function,
+or by direct notification from the flesh's parameter set routine
+{\tt CCTK\_ParameterSet()}.
+
+With {\tt CCTK\_ParameterSetNotifyRegister()} thorns can register a callback
+function which in turn is automatically invoked by {\tt CCTK\_ParameterSet()}
+whenever a parameter is being steered. 
+Each callback function gets passed the triple of thorn name, parameter 
+name, and (stringified) new parameter value (as passed to 
+{\tt CCTK\_ParameterSet()}), plus an optional callback data pointer defined by 
+the user at registration time. When a callback function is registered 
+with {\tt CCTK\_ParameterSetNotify()}, the calling routine may also pass an 
+optional regular expression string for both a thorn name and a parameter 
+name to match against in a parameter set notification; leave them empty 
+or pass a NULL pointer to get notified about changes of {\em any} parameter.
+
+Registered notification callbacks would be invoked by 
+{\tt CCTK\_ParameterSet()} only {\em after} initial parameter setup from the 
+parfile, and -- in case of recovery -- only {\em after} all parameters have 
+been restored from the checkpoint file. The callbacks are then invoked 
+just {\em before} the parameter is set to its new value so that they can 
+still query its old value if necessary.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_ParameterSet}{CCTK-ParameterSet}
+  Sets the value of a parameter
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterSetNotifyUnregister}{CCTK-ParameterSetNotifyUnregister}
+  Unregisters a parameter set operation notify callback
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+#include <stdio.h>
+
+#include "cctk.h"
+
+static void ParameterSetNotify (void *unused,
+                                const char *thorn,
+                                const char *parameter,
+                                const char *new_value)
+{
+  printf ("parameter set notification: %s::%s is set to '%s'\n",
+          thorn, parameter, new_value);
+}
+
+void RegisterNotifyCallback (void)
+{
+  /* we are interested only in this thorn's parameters
+     so pass the thorn name in the 'thorn_regex' argument */
+  if (CCTK_ParameterSetNotifyRegister (ParameterSetNotify, NULL, CCTK_THORNSTRING,
+                                       CCTK_THORNSTRING, NULL))
+  {
+    CCTK_VWarn (0, __LINE__, __FILE__, CCTK_THORNSTRING,
+                "Couldn't register parameter set notify callback");
+  }
+}
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+
+\end{FunctionDescription}
+
+
+% Parameters.c
+%Entering a function descrpition for CCTK\_ParameterSetNotifyUnregister
+\begin{FunctionDescription}{CCTK\_ParameterSetNotifyUnregister}
+\label{CCTK-ParameterSetNotifyUnregister}
+Unregisters a parameter set operation notify callback
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int ierr = CCTK_ParameterSetNotifyUnregister (const char *name);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_ParameterSetNotifyUnregister (ierr, name)
+integer       ierr
+character*(*) name
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{0}
+success
+\end{Result}
+\begin{Result}{-1}
+no callback was registered under the given name
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{name}
+Unique name under which the notify callback was registered
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Notify callbacks should be unregistered when not needed anymore.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_ParameterSet}{CCTK-ParameterSet}
+  Sets the value of a parameter
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ParameterSetNotifyRegister}{CCTK-ParameterSetNotifyRegister}
+  Registers a parameter set operation notify callback
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ExampleSection}
+\begin{Example}{Fortran}
+\begin{verbatim}
+#include "cctk.h"
+
+call CCTK_ParameterSetNotifyUnregister (CCTK_THORNSTRING)
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+
 \end{FunctionDescription}
 
 
