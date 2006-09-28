@@ -8,6 +8,8 @@
    @version   $Id$
  @@*/
 
+#include <sys/types.h>
+#include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,6 +23,7 @@
 #include "cctk_GNU.h"
 #include "cctk_FortranString.h"
 
+#include "StoreHandledData.h"
 #include "util_String.h"
 #include "util_Expression.h"
 
@@ -75,6 +78,17 @@ typedef struct PARAMTREENODE
   t_paramlist *paramlist;
 } t_paramtreenode;
 
+/* structure to describe a registered parameter set notify callback */
+typedef struct NOTIFYCALLBACK
+{
+  cParameterSetNotifyCallbackFn fn;
+  void *data;
+  regex_t thorn_preg,
+          param_preg;
+  int has_thorn_regex,
+      has_param_regex;
+} t_notifyCallback;
+
 /********************************************************************
  ************************* Static Variables *************************
  ********************************************************************/
@@ -82,10 +96,21 @@ typedef struct PARAMTREENODE
 /* mask for CCTK_ParameterSet() */
 static int cctk_parameter_set_mask;
 
+/* list of registered parameter set notify callbacks */
+static cHandledData *notifyCallbackList = NULL;
+
+/* number of registered callbacks */
+static int num_notify_callbacks = 0;
+
 /********************************************************************
  ********************* Fortran Wrapper Prototypes *******************
  ********************************************************************/
 
+void CCTK_FCALL CCTK_FNAME (CCTK_ParameterSetNotifyRegister)
+                           (int *status, cParameterSetNotifyCallbackFn callback,
+                            void *data, THREE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_ParameterSetNotifyUnregister)
+                           (CCTK_INT *status, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_ParameterValString)
                            (CCTK_INT *nchars, THREE_FORTSTRING_ARG);
 
@@ -531,9 +556,11 @@ void CCTKi_ParameterAccumulatorBase(const char *thorn,
 @@*/
 int CCTK_ParameterSet (const char *name, const char *thorn, const char *value)
 {
-  int retval;
+  int handle, retval = 0;
   char *old_value, *new_value;
   t_param *param;
+  const t_notifyCallback *cb;
+
 
   param = ParameterFind (name, thorn, SCOPE_ANY);
 
@@ -559,7 +586,7 @@ int CCTK_ParameterSet (const char *name, const char *thorn, const char *value)
     /* before parameter recovery (which is while parsing the parameter file)
        all parameters can be set */
     else if (cctk_parameter_set_mask == PARAMETER_RECOVERY_POST &&
-        param->props->steerable != CCTK_STEERABLE_ALWAYS)
+             param->props->steerable != CCTK_STEERABLE_ALWAYS)
     {
       /* after parameter recovery only steerable parameters can be set */
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
@@ -600,6 +627,30 @@ int CCTK_ParameterSet (const char *name, const char *thorn, const char *value)
     }
     else
     {
+      /* call parameter set notify listeners */
+      if (cctk_parameter_set_mask == PARAMETER_RECOVERY_POST)
+      {
+        for (handle = 0; handle < num_notify_callbacks; handle++)
+        {
+          cb = (const t_notifyCallback *)
+               Util_GetHandledData (notifyCallbackList, handle);
+          if (cb)
+          {
+            if (cb->has_thorn_regex && regexec (&cb->thorn_preg, thorn, 0,
+                                                NULL, 0))
+            {
+              continue;
+            }
+            if (cb->has_param_regex && regexec (&cb->param_preg, name, 0,
+                                                NULL, 0))
+            {
+              continue;
+            }
+            cb->fn (cb->data, thorn, name, value);
+          }
+        }
+      }
+
       retval = ParameterSet (param, value);
 
       new_value = CCTK_ParameterValString (param->props->name,
@@ -2608,6 +2659,155 @@ static void ParameterActivate(t_param *param)
     ParameterSet(param, param->props->defval);
   }
 }
+
+
+ /*@@
+   @routine CCTK_ParameterSetNotifyRegister
+   @date    19 September 2006
+   @author  Thomas Radke
+   @desc
+            Registers a parameter set notify callback
+   @enddesc 
+   
+   @var     callback
+   @vdesc   user-supplied callback function
+   @vtype   cParameterSetNotifyCallbackFn
+   @vio     in
+   @endvar
+   @var     data
+   @vdesc   pointer to an optional user-supplied data structure
+   @vtype   void *
+   @vio     in
+   @endvar
+   @var     name
+   @vdesc   unique name of the notify callback to register
+   @vtype   const char *
+   @vio     in
+   @endvar
+   @var     thorn_regex
+   @vdesc   optional regular expression for the thorn name to match
+   @vtype   const char *
+   @vio     in
+   @endvar
+   @var     param_regex
+   @vdesc   optional regular expression for the parameter name to match
+   @vtype   const char *
+   @vio     in
+   @endvar
+
+   @returntype int
+   @returndesc
+                0 - success
+               -1 - another callback has already been registered under this name
+               -2 - out of memory
+               -3 - invalid regular expression given for thorn_regex/param_regex
+   @endreturndesc
+ @@*/
+int CCTK_ParameterSetNotifyRegister (cParameterSetNotifyCallbackFn callback,
+                                     void *data,
+                                     const char *name,
+                                     const char *thorn_regex,
+                                     const char *param_regex)
+{
+  int handle;
+  t_notifyCallback *cb;
+
+
+  handle = Util_GetHandle (notifyCallbackList, name, NULL);
+  if (handle >= 0)
+  {
+    return (-1);
+  }
+
+  cb = (t_notifyCallback *) malloc (sizeof (t_notifyCallback));
+  if (cb == NULL)
+  {
+    return (-2);
+  }
+
+  cb->fn = callback;
+  cb->data = data;
+  cb->has_thorn_regex = thorn_regex && *thorn_regex;
+  cb->has_param_regex = param_regex && *param_regex;
+  if ((cb->has_thorn_regex && regcomp (&cb->thorn_preg, thorn_regex,
+                                       REG_EXTENDED | REG_ICASE | REG_NOSUB)) ||
+      (cb->has_param_regex && regcomp (&cb->param_preg, param_regex, 
+                                       REG_EXTENDED | REG_ICASE | REG_NOSUB)))
+  {
+    return (-3);
+  }
+
+  handle = Util_NewHandle (&notifyCallbackList, name, cb);
+  num_notify_callbacks++;
+
+  return (0);
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_ParameterSetNotifyRegister)
+                           (int *status, cParameterSetNotifyCallbackFn callback,
+                            void *data, THREE_FORTSTRING_ARG)
+{
+  THREE_FORTSTRING_CREATE (name, thorn_regex, param_regex)
+  *status = CCTK_ParameterSetNotifyRegister (callback, data, name,
+                                             thorn_regex, param_regex);
+  free (param_regex);
+  free (thorn_regex);
+  free (name);
+}
+
+
+ /*@@
+   @routine CCTK_ParameterSetNotifyUnregister
+   @date    19 September 2006
+   @author  Thomas Radke
+   @desc
+            Unregisters a parameter set notify callback
+   @enddesc
+
+   @var     name
+   @vdesc   unique name of the notify callback to unregister
+   @vtype   const char *
+   @vio     in
+   @endvar
+
+   @returntype int
+   @returndesc
+                0 - success
+               -1 - no callback was registered under this name
+   @endreturndesc
+ @@*/
+int CCTK_ParameterSetNotifyUnregister (const char *name)
+{
+  int handle;
+  t_notifyCallback *cb;
+
+
+  handle = Util_GetHandle (notifyCallbackList, name, (void **) &cb);
+  if (handle >= 0)
+  {
+    Util_DeleteHandle (notifyCallbackList, handle);
+    if (cb->has_thorn_regex)
+    {
+      regfree (&cb->thorn_preg);
+    }
+    if (cb->has_param_regex)
+    {
+      regfree (&cb->param_preg);
+    }
+    free (cb);
+  }
+
+  return (handle >= 0 ? 0 : -1);
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_ParameterSetNotifyUnregister)
+                           (int *status, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (name)
+  *status = CCTK_ParameterSetNotifyUnregister (name);
+  free (name);
+}
+
 
 /*****************************************************************************/
 

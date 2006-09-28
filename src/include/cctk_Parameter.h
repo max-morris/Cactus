@@ -119,6 +119,13 @@ typedef struct PARAM_PROPS
   
 } cParamData;
 
+
+/* typedef for the prototype of a parameter set notify callback */
+typedef void (*cParameterSetNotifyCallbackFn) (void *data,
+                                               const char *thorn,
+                                               const char *parameter,
+                                               const char *new_value);
+
 #ifdef __cplusplus
 extern "C" 
 {
@@ -155,6 +162,16 @@ const cParamData *CCTK_ParameterData (const char *name,
   /* Return number of times a parameter has been set */
 int CCTK_ParameterQueryTimesSet(const char *name,
                                 const char *thorn);
+
+/* register a parameter set notify callback */
+int CCTK_ParameterSetNotifyRegister (cParameterSetNotifyCallbackFn callback,
+                                     void *data,
+                                     const char *name,
+                                     const char *thorn_regex,
+                                     const char *parameter_regex);
+
+/* unregister a parameter set notify callback */
+int CCTK_ParameterSetNotifyUnregister (const char *name);
 
 
 #ifdef __cplusplus
