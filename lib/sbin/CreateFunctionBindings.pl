@@ -714,9 +714,9 @@ sub ParseArgument
   {
     $Argument->{"Function Pointer"} = 0;
   }
-  if ($type !~ /(\bCCTK_INT$)|(\bCCTK_REAL$)|(\bCCTK_POINTER$)|(\bCCTK_POINTER_TO_CONST$)|(\bCCTK_STRING$)/)
+  if ($type !~ /(\bCCTK_INT$)|(\bCCTK_REAL$)|(\bCCTK_COMPLEX$)|(\bCCTK_POINTER$)|(\bCCTK_POINTER_TO_CONST$)|(\bCCTK_STRING$)/)
   {
-    my $message = "Thorn $Thorn, Function $Function:\nAn argument in an aliased function must be one of the allowed CCTK types.\nThese are CCTK_INT, CCTK_REAL, CCTK_POINTER, CCTK_POINTER_TO_CONST, or CCTK_STRING.\nThe argument ".$Argument->{"Name"}." has type \"$type\".";
+    my $message = "Thorn $Thorn, Function $Function:\nAn argument in an aliased function must be one of the allowed CCTK types.\nThese are CCTK_INT, CCTK_REAL, CCTK_COMPLEX, CCTK_POINTER, CCTK_POINTER_TO_CONST, or CCTK_STRING.\nThe argument ".$Argument->{"Name"}." has type \"$type\".";
     if ($type =~ /:/)
     {
       $message .= "\n(The older \"${type}ARRAY\" should be replaced with \"$type ARRAY\".)";
