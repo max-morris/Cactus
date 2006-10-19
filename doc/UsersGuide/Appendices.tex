@@ -1215,9 +1215,8 @@ value.  All later routines are ignored.  Schedule clauses \texttt{BEFORE},
 \item[{\tt CCTK\_RECOVER\_PARAMETERS}]
         Used by thorns with relevant IO methods as the point 
         to read parameters when recovering from checkpoint files.
-        Grid variables are not available in this timebin.  This bin is
-        special (see above); do not schedule any routines here except
-        if they recover parameters.
+        Grid variables are not available in this timebin.  Scheduling
+	in this timebin is special (see above).
 
 \item[{\tt CCTK\_STARTUP}] 
         Run before any grids are constructed, this is 
