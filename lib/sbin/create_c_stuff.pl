@@ -186,8 +186,8 @@ sub CreateCStructureParameterHeader
   push(@data, '');
   push(@data, 'extern struct');
   push(@data, '{');
+  my $delim = ' ';
 
-  push(@use, "  const void *${structure}_use = ( \\");
   foreach $parameter (&order_params($rhparameters, $rhparameter_db))
   {
     my $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
@@ -208,10 +208,9 @@ sub CreateCStructureParameterHeader
 
     push(@data, "  $type_string $realname$suffix;");
     push(@definition, "  $type_string$varprefix const $parameter = $structure.$realname; \\");
-    push(@use, "    ${structure}_use = \&$parameter, \\");
+    push(@use, "    $delim dummy\_$structure\_$parameter = sizeof( $parameter ) \\");
+    $delim = ',';
   }
-  push(@use, "    &${structure}_use \\");
-  push(@use, '  );');
 
   # Some compilers don't like an empty structure.
   if((keys %$rhparameters) == 0)
@@ -229,7 +228,12 @@ sub CreateCStructureParameterHeader
 
   push(@data, "#define DECLARE_${structure}_PARAMS \\");
   push(@data, @definition);
-  push(@data, @use);
+  if( @use )
+  {
+    push(@data, "  enum { \\");
+    push(@data, @use);
+    push(@data, "  }; \\");
+  }
 
   push(@data, "\n");   # workaround for perl 5.004_04 to add a trailing newline
 

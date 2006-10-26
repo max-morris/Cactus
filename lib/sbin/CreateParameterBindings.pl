@@ -201,6 +201,7 @@ sub CreateParameterBindings
       if($header_files{"\U$thorn\E PRIVATE"});
 
     @use = ();
+    my $delim = ' ';
     foreach $friend (split(' ',$rhparameter_db->{"\U$thorn\E SHARES implementations"}))
     {
       $rhinterface_db->{"IMPLEMENTATION \U$friend\E THORNS"} =~ m:([^ ]*):;
@@ -222,16 +223,16 @@ sub CreateParameterBindings
         }
 
         push(@data, "  $type_string$varprefix const $parameter = RESTRICTED_\U$friend\E_STRUCT.$realname; \\");
-        push(@use, "    RESTRICTED_FRIENDS_STRUCT_use = \&$parameter, \\");
+        push(@use, "    $delim dummy_$friend\_$realname = sizeof( $parameter ) \\");
+	$delim = ',';
       }
     }
 
     if(@use)
     {
-      push(@data, '  const void *RESTRICTED_FRIENDS_STRUCT_use = ( \\');
+      push(@data, "  enum { \\");
       push(@data, @use);
-      push(@data,  '    RESTRICTED_FRIENDS_STRUCT_use = &RESTRICTED_FRIENDS_STRUCT_use \\');
-      push(@data,  '  );');
+      push(@data, "  };");
     }
     push(@data, '');
     push(@data, "#endif  /* _\U$thorn\E_PARAMETERS_H_ */");
