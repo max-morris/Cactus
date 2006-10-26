@@ -252,29 +252,30 @@ static inline int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l)
             int         cctk_convfac = cctkGH->cctk_convfac;\
             int        *cctk_nghostzones = cctkGH->cctk_nghostzones;\
             int         cctk_iteration = cctkGH->cctk_iteration;\
-            const void *cctki_use = (cctki_use = &cctki_dummy_int,\
-                                     cctki_use = &cctk_dim,\
-                                     cctki_use = &cctk_gsh,\
-                                     cctki_use = &cctk_lsh,\
-                                     cctki_use = &cctk_lbnd,\
-                                     cctki_use = &cctk_ubnd,\
-                                     cctki_use = &cctk_lssh,\
-                                     cctki_use = &cctk_from,\
-                                     cctki_use = &cctk_to,\
-                                     cctki_use = &cctk_bbox,\
-                                     cctki_use = &cctk_delta_time,\
-                                     cctki_use = &cctk_time,\
-                                     cctki_use = &cctk_delta_space,\
-                                     cctki_use = &cctk_origin_space,\
-                                     cctki_use = &cctk_levfac,\
-                                     cctki_use = &cctk_levoff,\
-                                     cctki_use = &cctk_levoffdenom,\
-                                     cctki_use = &cctk_timefac,\
-                                     cctki_use = &cctk_convlevel,\
-                                     cctki_use = &cctk_convfac,\
-                                     cctki_use = &cctk_nghostzones,\
-                                     cctki_use = &cctk_iteration,\
-                                     cctki_use = &cctki_use);
+            enum { \
+		    cctk_dummyi_dummy_int = sizeof( cctki_dummy_int ), \
+		    cctk_dummy_dim = sizeof( cctk_dim ), \
+		    cctk_dummy_gsh = sizeof( cctk_gsh ), \
+		    cctk_dummy_lsh = sizeof( cctk_lsh ), \
+		    cctk_dummy_lbnd = sizeof( cctk_lbnd ), \
+		    cctk_dummy_ubnd = sizeof( cctk_ubnd ), \
+		    cctk_dummy_lssh = sizeof( cctk_lssh ), \
+		    cctk_dummy_from = sizeof( cctk_from ), \
+		    cctk_dummy_to = sizeof( cctk_to ), \
+		    cctk_dummy_bbox = sizeof( cctk_bbox ), \
+		    cctk_dummy_delta_time = sizeof( cctk_delta_time ), \
+		    cctk_dummy_time = sizeof( cctk_time ), \
+		    cctk_dummy_delta_space = sizeof( cctk_delta_space ), \
+		    cctk_dummy_origin_space = sizeof( cctk_origin_space ), \
+		    cctk_dummy_levoff = sizeof( cctk_levoff ), \
+		    cctk_dummy_levfac = sizeof( cctk_levfac ), \
+		    cctk_dummy_levoffdenom = sizeof( cctk_levoffdenom ), \
+		    cctk_dummy_timefac = sizeof( cctk_timefac ), \
+		    cctk_dummy_convlevel = sizeof( cctk_convlevel ), \
+		    cctk_dummy_convfac = sizeof( cctk_convfac ), \
+		    cctk_dummy_nghostzones = sizeof( cctk_nghostzones ), \
+		    cctk_dummy_iteration = sizeof( cctk_iteration ) \
+	    };
 
 
 #define _INITIALISE_CCTK_C2F
