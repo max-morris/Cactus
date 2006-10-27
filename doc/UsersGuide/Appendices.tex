@@ -641,11 +641,11 @@ on this line.)
 \label{subsec:Appendix.param.specification_items}
 
 \begin{alltt}
-[EXTENDS|USES] <\var{parameter type}> <\var{parameter name}>[[<\var{integer}>]] "<\var{parameter description}>" 
+[EXTENDS|USES] <\var{parameter type}> <\var{parameter name}>[[<\var{len}>]] "<\var{parameter description}>" 
 [AS <\var{alias}>] [STEERABLE=<NEVER|ALWAYS|RECOVER>] 
 [ACCUMULATOR=<\var{expression}>] [ACCUMULATOR-BASE=<\var{parameter name}>]
 \{
-  <\var{PARAMETER VALUES}>
+  <\var{parameter values}>
 \} <\var{default value}>
 \end{alltt}
 where the options {\t AS}, {\t STEERABLE}, etc. following {\t <\var{parameter description}>}
@@ -653,12 +653,14 @@ must all appear on one line.
   Note that the beginning brace ({\t\{}) must
 sit on a line by itself; the ending brace ({\t\}}) must be at the
 beginning of a line followed by \var{<default value>} on that same line.
+
 \begin{itemize}
 \item
-  Allowed {\t \var{parameter type}}s are
+  The \var{parameter values} depend on the \var{parameter type}, which may
+  be one of the following:
   \begin{Lentry}
   \item[{\t INT}]
-    The specification of \var{parameter value}s takes the form of one
+    The specification of \texttt{\var{parameter value}}s takes the form of one
     or more lines, each of the form
     \begin{alltt}
       \var{<range description>} [::"\var{<comment describing this range>}"]
@@ -716,7 +718,7 @@ beginning of a line followed by \var{<default value>} on that same line.
     or the string value is empty or contains spaces.
 
   \item[{\t BOOLEAN}]
-    No \var{PARAMETER VALUES} should be specified for a boolean
+  No \texttt{\var{parameter values}} should be specified for a boolean
     parameter. The default value for a boolean can be
     \begin{itemize}
     \item True: {\t 1}, {\t yes}, {\t y}, {\t t}, {\t true}
@@ -731,6 +733,10 @@ beginning of a line followed by \var{<default value>} on that same line.
   thorn.
 
 \item
+  The \var{default value} must match one of the ranges given in the
+  \var{parameter type}
+
+\item
   A thorn can declare that it {\t EXTENDS} a parameter of another
   thorn. This allows it to declare additional acceptable values.  By
   default it is acceptable for two thorns to declare the same value as
@@ -741,11 +747,11 @@ beginning of a line followed by \var{<default value>} on that same line.
   without declaring additional values, use {\t USES} instead.
 
 \item
-  {\tt [\var{integer}]}, if present, specifies that this is an {\tt
-  array} parameter. (Note that the notation used above for the
-  parameter specification breaks down here, there must be square
-  brackets around the given integer).  The parameter is then a
-  one-dimensional array of values of the specified type.
+{\tt [\var{len}]} (where {\tt \var{len}} is an integer), if present,
+  indicates that this is an \textit{array} parameter of {\tt \var{len}}
+  values of the specified type. (Note that the notation used above for the
+  parameter specification breaks down here, as there must be square brackets
+  around the length).
 
 \item
   \var{alias} allows a parameter to appear as a different name in this
