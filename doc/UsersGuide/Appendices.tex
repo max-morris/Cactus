@@ -760,6 +760,10 @@ beginning of a line followed by \var{<default value>} on that same line.
   recovery time from a parameter file or at any time using the Flesh
   routine {\tt CCTK\_ParameterSet} --- see the Reference Guide.
 
+  The value {\tt RECOVERY} is used in checkpoint/recovery situations,
+  and indicates that the parameter may be altered until the value is
+  read in from a recovery par file, but not after.
+
 \item
   {\t ACCUMULATOR} specifies that this is an \textit{accumulator}
   parameter.  Such parameters cannot be set directly, but are set by
