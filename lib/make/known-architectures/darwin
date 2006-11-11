@@ -6,7 +6,7 @@
 #   @desc
 #            Known architecture stuff for MacOS X (Darwin)
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.17 2006-07-19 11:02:05 schnetter Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.18 2006-11-11 18:48:41 schnetter Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
@@ -39,6 +39,8 @@ else
       MAC_C_COMP=gcc
   elif test "`$CC -version 2>&1 | grep xlc`" ; then
       MAC_C_COMP=ibm
+  elif test "`$CC -V 2>&1 | grep -i intel`" ; then
+      MAC_C_COMP=intel
   else
       MAC_C_COMP=unknown
   fi
@@ -47,6 +49,8 @@ else
       MAC_CXX_COMP=gcc
   elif test "`$CXX -version 2>&1 | grep xlc`" ; then
       MAC_CXX_COMP=ibm
+  elif test "`$CXX -V 2>&1 | grep -i intel`" ; then
+      MAC_CXX_COMP=intel
   else
       MAC_CXX_COMP=unknown
   fi
@@ -68,11 +72,14 @@ else
   if test "$MAC_C_COMP" = "gcc" ; then
     C_DEPEND='$(CC) -M $(CPPFLAGS)'
     CXX_DEPEND='$(CXX) -M $(CPPFLAGS)'
-  elif test -e '/usr/lib/gcc/darwin/3.3' ; then
-    # This is dangerous -- it could pick up the wrong gcc
-    # C_DEPEND='gcc -M -no-cpp-precomp $(CPPFLAGS)'
-    C_DEPEND='gcc -M $(CPPFLAGS)'
-    CXX_DEPEND='g++ -E -M $(CPPFLAGS)'
+  # The following does pick up the wrong gcc.
+  #elif test -e '/usr/lib/gcc/darwin/3.3' ; then
+  #  # This is dangerous -- it could pick up the wrong gcc
+  #  C_DEPEND='gcc -M -no-cpp-precomp $(CPPFLAGS)'
+  #  CXX_DEPEND='g++ -E -M $(CPPFLAGS)'
+  elif test "$MAC_C_COMP" = "intel" ; then
+    C_DEPEND='$(CC) -M $(CPPFLAGS)'
+    CXX_DEPEND='$(CXX) -M $(CPPFLAGS)'
   else
     C_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'
     CXX_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'
@@ -87,23 +94,37 @@ else
       MAC_F90_COMP=absoft
     elif test "`$F90 --version 2>&1 | head -n 1 | grep -i gcc`" ; then
       MAC_F90_COMP=gcc
+    elif test "`$F90 -V 2>&1 | grep -i intel`" ; then
+      MAC_F90_COMP=intel
     else
       # Ok, those were the easy ones, now try more
       # obscure things
 
-      echo "      subroutine foo" > foo.f
-      echo "      end subroutine foo" >> foo.f
+      # The test below always returns "absoft" since, if there is no Absoft
+      # compiler installed, the error message is
+      # "/opt/absoft/bin/f95: No such file or directory".
+      # We disable the test.
 
-      if test "`/opt/absoft/bin/f95 -V foo.f 2>&1 | grep -i absoft`" ; then
-        MAC_F90_COMP=absoft
-      else
-	echo Unknown MacOS X f90 compiler.
-	echo Please add appropriate information to
-	echo $srcdir/known-architectures/darwin
-	echo and send the updated file to CactusMaint
-	echo We will try anyway ...
+      #echo "      subroutine foo" > foo.f
+      #echo "      end subroutine foo" >> foo.f
+      #
+      #if test "`/opt/absoft/bin/f95 -V foo.f 2>&1 | grep -i absoft`" ; then
+      #  MAC_F90_COMP=absoft
+      #else
+      #  echo Unknown MacOS X f90 compiler.
+      #  echo Please add appropriate information to
+      #  echo $srcdir/known-architectures/darwin
+      #  echo and send the updated file to CactusMaint
+      #  echo We will try anyway ...
+      #fi
+      #rm foo.f
+      if test "x$90" != 'xnone'; then
+        echo Unknown MacOS X f90 compiler.
+        echo Please add appropriate information to
+        echo $srcdir/known-architectures/darwin
+        echo and send the updated file to CactusMaint
+        echo We will try anyway ...
       fi
-      rm foo.f
     fi
   elif test -n "$F77" ; then
     if test "`$F77 -version 2>&1 | grep xlf`" ; then
@@ -112,35 +133,63 @@ else
       MAC_F77_COMP=absoft77
     elif test "`$F77 --version 2>&1 | head -n 1 | grep -i gcc`" ; then
       MAC_F77_COMP=gcc
+    elif test "`$F77 -V 2>&1 | grep -i intel`" ; then
+      MAC_F77_COMP=intel
     else
-      echo Unknown MacOS X f77 compiler.
-      echo Please add appropriate information to
-      echo $srcdir/known-architectures/darwin
-      echo and send the updated file to CactusMaint
-      echo We will try anyway ...
+      if test "x$F77" != 'xnone'; then
+        echo Unknown MacOS X f77 compiler.
+        echo Please add appropriate information to
+        echo $srcdir/known-architectures/darwin
+        echo and send the updated file to CactusMaint
+        echo We will try anyway ...
+      fi
     fi
   fi
 
   # Set the appropriate flags for C
  
   case "$MAC_C_COMP" in
-      gcc)
+    gcc)
       CC_VERSION="`$CC --version 2>&1 | head -n 1`"
       # : ${CFLAGS="-no-cpp-precomp -mlongcall"}
       # : ${CFLAGS="-mlongcall"}
       ;;
-      *)
+    intel)
+      CC_VERSION="`$CC --version 2>&1 | head -n 1`"
+      : ${CFLAGS="-align"}
+      : ${C_DEBUG_FLAGS='-g -fp'}
+      : ${C_OPTIMISE_FLAGS="-O3 -xP"}
+      if test "$DEBUG" = 'no'; then
+        : ${C_OPTIMISE_FLAGS="$C_OPTIMISE_FLAGS -ip"}
+      fi
+      if test "$OPTIMISE" = 'no'; then
+        : ${C_DEBUG_FLAGS="$C_DEBUG_FLAGS -O0"}
+      fi
+      ;;
+    *)
       :
       ;;
   esac
 
   case "$MAC_CXX_COMP" in
-      gcc)
+    gcc)
       CXX_VERSION="`$CXX --version 2>&1 | head -n 1`"
       # : ${CXXFLAGS="-no-cpp-precomp -mlongcall"}
       # : ${CXXFLAGS="-mlongcall"}
       ;;
-      *)
+    intel)
+      CXX_VERSION="`$CXX --version 2>&1 | head -n 1`"
+      : ${CXXFLAGS="-align"}
+      : ${CXX_DEBUG_FLAGS='-g -fp'}
+      : ${CXX_OPTIMISE_FLAGS="-O3 -xP"}
+      if test "$DEBUG" = 'no'; then
+        : ${CXX_OPTIMISE_FLAGS="$CXX_OPTIMISE_FLAGS -ip"}
+      fi
+      if test "$OPTIMISE" = 'no'; then
+        : ${CXX_DEBUG_FLAGS="$CXX_DEBUG_FLAGS -O0"}
+      fi
+      ;;
+    *)
       :
       ;;
   esac  
@@ -209,6 +258,35 @@ else
       CCTK_WriteLine make.arch.defn 'DARWIN_F_FLAGS = -qfixed'
       CCTK_WriteLine make.arch.defn 'DARWIN_f_FLAGS = -qfixed'
       ;;
+    intel)
+      : ${F77FLAGS='-align -w95'}
+      : ${F90FLAGS='-align -w95'}
+      : ${F77_DEBUG_FLAGS='-g -fp'}
+      : ${F90_DEBUG_FLAGS='-g -fp'}
+      : ${F77_OPTIMISE_FLAGS="-O3 -xP"}
+      : ${F90_OPTIMISE_FLAGS="-O3 -xP"}
+      if test "$DEBUG" = 'no'; then
+        : ${F77_OPTIMISE_FLAGS="$F77_OPTIMISE_FLAGS -ip"}
+        : ${F90_OPTIMISE_FLAGS="$F90_OPTIMISE_FLAGS -ip"}
+      fi
+      if test "$OPTIMISE" = 'no'; then
+        : ${F77_DEBUG_FLAGS="$F77_DEBUG_FLAGS -O0"}
+        : ${F90_DEBUG_FLAGS="$F90_DEBUG_FLAGS -O0"}
+      fi
+
+      intel_dir="$(dirname $(dirname $(which $F90)))"
+
+      # add the libpath
+      : ${LIBDIRS="$intel_dir/lib"}
+      # add the linker script if the linker is not Intel
+      if test `basename $LD` != 'icc' -a `basename $LD` != 'icpc' ; then
+        : ${LDFLAGS="-Qy $intel_dir/lib/icrt.link"}
+      fi
+      : ${LIBS='ifcore imf svml m'}
+
+      F77_VERSION="`$F77 -V 2>&1 | grep -i version | head -n1`"
+      F90_VERSION="`$F90 -V 2>&1 | grep -i version | head -n1`"
+      ;;
     *)
       : ${LIBS='m'}
       ;;
@@ -225,4 +303,3 @@ else
   # This is caught later on by lib/make/extras/MPI/NATIVE.
 
 fi
-
