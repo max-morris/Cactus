@@ -1622,7 +1622,7 @@ parameters appear as local variables of the corresponding \texttt{CCTK} data typ
 in Fortran source code, i.e.. Booleans and Integers appear as \texttt{CCTK\_INT}
 types (with nonzero/zero values for boolean {\t yes/no}),
 Reals as \texttt{CCTK\_REAL}, and Keywords and String parameters as
-\texttt{CCTK\_POINTER} (see
+\texttt{CCTK\_STRING} (see
 also note below). These variables are \emph{read only} and \emph{changes should
 not be made to them}. The effect of changing a parameter is undefined (at best).
 
@@ -2041,6 +2041,7 @@ declarations.
 
 \item[\texttt{CCTK\_INT}] default size 4 bytes
 \item[\texttt{CCTK\_REAL}] default size 8 bytes
+\item[\texttt{CCTK\_COMPLEX}] consists of two \texttt{CCTK\_REAL} elements
 
 \end{Lentry}
 
@@ -3567,11 +3568,49 @@ ABSTOL  \var{1e-8}
 RELTOL  \var{1e-12}
 \end{alltt}
 
-would use an absolute tolerance of 1e-5 and a relative tolerance of
-1e-12 when running \verb|test_rad| and an absolute tolerance of 1e-8
-and a relative tolerance of 1e-12 when running all other tests.
+would use an absolute tolerance of $10^{-5}$ and a relative tolerance of
+$10^{-12}$ when running \verb|test_rad| and an absolute tolerance of $10^{-8}$
+and a relative tolerance of $10^{-12}$ when running all other tests.
 
 For details on running the test suites, see Section~\ref{sec:testing}.
+
+\subsection{Best practices for test suites}
+
+When writing a test suite, there are a few things you should keep in
+mind:
+
+\begin{itemize}
+\item The test suite will be run together with many other test
+  suites.  It should therefore finish quickly (say, in under two
+  minutes) and not use too much memory (so that it can run on a
+  ``normal'' workstation).
+\item The test suite will be run automatically, often in situations
+  where no one checks the screen output.  All important output should
+  be via grid variables that are written to files.  Alternatively, if
+  the test suite tests some low-level infrastructure, it may just
+  abort the simulation if it fails; that will also be detected.
+\item Downloading many files is slow on many systems.  A test suite
+  should normally not have more than, say, hundred output files, and
+  normally the output files should be small, so that there are not
+  more than a few Megabytes of output files per test suite.
+\item The test suite output files should always be the same.  That
+  means that they should not contain no time stamps etc.  It is
+  therfore best to use the option \verb|IO::out_fileinfo="none"|.
+\item Norms are unfortunately quite insensitive to changes to a few
+  grid points only, even if the changes are significant.  It is
+  necessary to output grid point values directly, not only norms.
+\item Try to use as few thorns as possible in a test case.  E.g., do
+  not active 3D output thorns (unless you use it).  The fewer thorns
+  you use, the easier it is to run the test suite.
+\item It is not necessary that a test suite result is ``physically
+  correct'', or that it uses parameters that ensure a stable time
+  evolution.  A test suite will usually take only a few time steps, so
+  that a grid size of e.g.\ $20^3$ grid points \emph{without}
+  dissipation can be sufficient.  Test suites cannot test whether the
+  result of a simulation is physically feasible; they only test
+  whether anything changed at all.  Ensuring that the physics is still
+  correct has to be handled by different mechanisms.
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -4229,9 +4268,9 @@ work. These are
   of the Cactus data types \texttt{CCTK\_INT} or {\tt
     CCTK\_REAL}. Standard types such as \texttt{int} are not allowed.
 \item The type of an argument must be one of scalar types {\tt
-    CCTK\_INT, CCTK\_REAL, CCTK\_STRING, CCTK\_POINTER,
+    CCTK\_INT, CCTK\_REAL, CCTK\_COMPLEX, CCTK\_STRING, CCTK\_POINTER,
     CCTK\_FPOINTER}, or an array or pointer type \texttt{CCTK\_INT ARRAY,
-    CCTK\_REAL ARRAY, \texttt{CCTK\_POINTER ARRAY}}.%%%
+    CCTK\_REAL ARRAY, CCTK\_COMPLEX ARRAY, \texttt{CCTK\_POINTER ARRAY}}.%%%
 \footnote{%%%
          Unfortunately, neither \texttt{CCTK\_FPOINTER ARRAY}
          nor \texttt{CCTK\_STRING ARRAY} will work.
@@ -4241,7 +4280,8 @@ work. These are
   function may be silently lost, or may not; it is dependent on the
   language of the providing and calling function. If you wish to
   modify an argument then it must have intent \texttt{OUT} or \texttt{INOUT}
-  (and hence must be either a \texttt{CCTK\_INT} or \texttt{CCTK\_REAL},
+  (and hence must be either a \texttt{CCTK\_INT}, a
+  \texttt{CCTK\_REAL}, or a \texttt{CCTK\_COMPLEX},
   or an array of one of these types).
 \item The name of both the aliased and providing function are
   restricted. They must follow the standard C semantics (start with a
@@ -4483,7 +4523,7 @@ arguments of the type \texttt{CCTK\_INT}.  This type can be different
 from the type \texttt{integer}.  Fortran does not convert routine
 arguments automatically, and it is therefore necessary to pay
 attention to the exact argument types that a routine expects, and to
-converte between \texttt{integer} and \texttt{CCTK\_INT} accordingly.
+convert between \texttt{integer} and \texttt{CCTK\_INT} accordingly.
 Currently, most flesh functions take \texttt{integer} arguments, while
 all aliased functions take \texttt{CCTK\_INT} arguments.
 
