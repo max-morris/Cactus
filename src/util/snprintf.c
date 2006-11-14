@@ -66,6 +66,9 @@
  *    Added support for 'e' format.
  *    Added support for 'g' format.
  *
+ *  Tom Goodale <goodale@cct.lsu.edu> 2006-11-14
+ *    Fixed support for 'g' format for small numbers.
+ *
  **************************************************************/
 
 
@@ -648,7 +651,7 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
     
     exponent = (long)logvalue;
 
-    if(flags & DP_F_G && exponent >= -4 && exponent < max)
+    if(fvalue==0 || (flags & DP_F_G && exponent >= -4 && exponent < max))
     {
       /* With 'G' format use 'f' if exponent is small enough. */
       exponent = 0;
@@ -703,18 +706,36 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
   iconvert[iplace] = 0;
 
   /* Convert fractional part */
-  do {
-    fconvert[fplace++] =
-      (caps? "0123456789ABCDEF":"0123456789abcdef")[fracpart % 10];
-    fracpart = (fracpart / 10);
-  } while(fracpart && (fplace < 20));
-  /* Make sure we replace any leading zeros. */
-  while(fplace < max)
+
+  /* Check for special case of a 'g' conversion with no fractional part */
+  if(flags & DP_F_G && fracpart == 0)
   {
-    fconvert[fplace++] = '0';
+    fplace = 0;
   }
-  if (fplace == 20) fplace--;
+  else
+  {
+    do {
+      if((flags & DP_F_G) && fracpart % 10 == 0)
+      {
+        max--;
+      }
+      else
+      {
+        fconvert[fplace++] =
+            (caps? "0123456789ABCDEF":"0123456789abcdef")[fracpart % 10];
+      }
+      fracpart = (fracpart / 10);
+    } while(fracpart && (fplace < 20));
+    /* Make sure we replace any leading zeros. */
+    while(fplace < max)
+    {
+      fconvert[fplace++] = '0';
+    }
+    if (fplace == 20) fplace--;
+  }
+
   fconvert[fplace] = 0;
+
 
   if(flags & DP_F_EXP)
   {
@@ -739,10 +760,10 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
     eplace = 0;
   }
 
-  /* -1 for decimal point, another -1 if we are printing a sign */
-  padlen = min - iplace - max - 1 - ((signvalue) ? 1 : 0) - eplace;
+  /* -1 for decimal point if there, another -1 if we are printing a sign */
+  padlen = min - iplace - max - (((flags & DP_F_G) && fplace  == 0) ? 0 : 1) - ((signvalue) ? 1 : 0) - eplace;
   zpadlen = max - fplace;
-  if (zpadlen < 0)
+  if (zpadlen < 0 || (flags & DP_F_G))
     zpadlen = 0;
   if (padlen < 0) 
     padlen = 0;
@@ -778,7 +799,7 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
    * Decimal point.  This should probably use locale to find the correct
    * char to print out.
    */
-  if (max > 0)
+  if (max > 0 && ! ((flags & DP_F_G) && fplace == 0))
   {
     total += dopr_outch (buffer, currlen, maxlen, '.');
 
