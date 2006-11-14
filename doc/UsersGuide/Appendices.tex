@@ -459,13 +459,14 @@ the prototype must be declared with the form:
 \begin{alltt}
 <\var{return_type}> FUNCTION <\var{alias}>(<\var{arg1_type}> <\var{intent1}> [ARRAY] <\var{arg1}>, ...)
 \end{alltt}
-The \texttt{<\var{return\_type}>} must be either \verb|void|, \verb|CCTK_INT|
-or \verb|CCTK_REAL|. The keyword \verb|SUBROUTINE| is equivalent to
+The \texttt{<\var{return\_type}>} must be either \verb|void|, \verb|CCTK_INT|,
+\verb|CCTK_REAL|, or \verb|CCTK_COMPLEX|.
+The keyword \verb|SUBROUTINE| is equivalent to
 \verb|void FUNCTION|. The name of the aliased function \texttt{<\var{alias}>}
 must contain at least one uppercase and one lowercase letter and
 follow the C standard for function names.  The type of each argument,
 \texttt{<\var{arg*\_type}>} must be a \verb|CCTK| type in
-\verb|INT,REAL,STRING,POINTER|. The intent of each argument,
+\verb|INT,REAL,COMPLEX,STRING,POINTER|. The intent of each argument,
 \texttt{<\var{intent*}>} must be either \verb|IN|, \verb|OUT|, or
 \verb|INOUT|. An argument should only be modified if it is declared
 to have intent \verb|OUT| or \verb|INOUT|. If the argument is an array
@@ -533,7 +534,7 @@ carriage return.
         groups of variables. {\t \var{access}} can be either
         {\t public}, {\t protected} or {\t private}.
 \item{} {\t \var{data\_type}} defines the data type of the variables in the
-group.  Supported data types are {\t CHAR}, {\t BYTE}, {\t INT}, {\t REAL} and
+group.  Supported data types are {\t CHAR}, {\t BYTE}, {\t INT}, {\t REAL}, and
 {\t COMPLEX}. 
 \item{} {\t \var{group\_name}} must be an alphanumeric name (which may also
 contain underscores) which is unique across group and variable names
