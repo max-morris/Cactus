@@ -9,6 +9,39 @@
 #  @version   $Header$
 #@@*/
 
+# The known schedule bins
+our @schedule_bins = (
+    # Cactus startup
+    'STARTUP',
+    'WRAGH',
+    'PARAMCHECK',
+    # Initialisation
+    'BASEGRID',
+    'INITIAL',
+    'POSTINITIAL',
+    # Recovery                  
+    'RECOVER_VARIABLES',
+    'POST_RECOVER_VARIABLES',
+    'RECOVER_PARAMETERS',
+    'CPINITIAL',
+    # Evolution
+    'PREREGRID',
+    'POSTREGRID',
+    'PRESTEP',
+    'EVOL',
+    'POSTRESTRICT',
+    'POSTSTEP',
+    'CHECKPOINT',
+    'ANALYSIS',
+    # Shutdown
+    'TERMINATE',
+    'SHUTDOWN');
+# A regular expression matching all possible schedule bins, including
+# a CCTK prefix and in upper case
+our $schedule_bin_regexp = 'CCTK_(' . join ('|', @schedule_bins) . ')';
+
+
+
 #/*@@
 #  @routine    create_schedule_database
 #  @date       Thu Sep 16 23:31:00 1999
@@ -229,7 +262,7 @@ sub ParseScheduleBlock
       }
 
       # check that the given schedule bin is recognized
-      if ($where !~ m:CCTK_(STARTUP|WRAGH|PARAMCHECK|BASEGRID|INITIAL|POSTINITIAL|RECOVER_VARIABLES|POST_RECOVER_VARIABLES|RECOVER_PARAMETERS|CHECKPOINT|CPINITIAL|PREREGRID|POSTREGRID|PRESTEP|EVOL|POSTSTEP|POSTRESTRICT|ANALYSIS|TERMINATE|SHUTDOWN):)
+      if ($where !~ $schedule_bin_regexp)
       {
         &CST_error(0,"Schedule bin \'$where\' not recognised in schedule.ccl " .
                    "file of thorn $thorn","",__LINE__,__FILE__);
@@ -588,8 +621,7 @@ sub check_schedule_database
     {
       if ($allgroups !~ /$rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"}/)
       {
- 
-	if ($rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"} !~ m:CCTK_(STARTUP|WRAGH|PARAMCHECK|BASEGRID|INITIAL|POSTINITIAL|RECOVER_VARIABLES|POST_RECOVER_VARIABLES|RECOVER_PARAMETERS|CHECKPOINT|CPINITIAL|PREREGRID|POSTREGRID|PRESTEP|EVOL|POSTSTEP|POSTRESTRICT|ANALYSIS|TERMINATE|SHUTDOWN):)
+	if ($rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"} !~ $schedule_bin_regexp)
 	{
 	  $message = "Scheduling routine $rhschedule_db->{\"\U$thorn\E BLOCK_$block NAME\"} from thorn $thorn in non-existent group or timebin $rhschedule_db->{\"\U$thorn\E BLOCK_$block WHERE\"}";
 	  $hint = "If this routine should be scheduled check the spelling of the group or timebin name. Note that scheduling IN must be used to schedule a routine to run in a thorn-defined schedule group, whereas scheduling AT is used for a usual timebin. (Schedule IN may also be used with the usual timebins, but in this case the full name of the bin must be used, e.g. CCTK_EVOL and not EVOL)";
