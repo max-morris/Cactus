@@ -392,9 +392,8 @@ sub CleanForLatex
 
    # escape special characters
    my $outval = "";
-   foreach my $i (0 .. length($inval)-1)
+   foreach my $char (split(//,$inval))
    {
-     my $char = $inval[i];
      if ($char eq '{' or
          $char eq '}' or
          $char eq '$' or
