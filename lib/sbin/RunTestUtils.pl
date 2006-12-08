@@ -374,7 +374,7 @@ sub FindExecutionDetails
     close(DEFNS);
   }
 
-  $executable = &defprompt("  Enter executable name (relative to Cactus home dir)","exe$sep$defexename");
+  $executable = &defprompt('  Enter executable name ($exe, relative to Cactus home dir)',"exe$sep$defexename");
 
   if (! (-e "$config_data->{\"CCTK_DIR\"}$sep$executable"))
   {
@@ -398,22 +398,28 @@ sub FindExecutionDetails
 sub FindRunCommand
 {
   my($config_data) = @_;
-  my($command,$numprocs);
 
   # Look to see if MPI is dfined
-  if (ParseExtras($config_data))
+  my $have_mpi = ParseExtras($config_data);
+  if ($have_mpi)
   {
-    $numprocs = &defprompt("  Enter number of processors","2");
-    $command = &defprompt("  Enter command to run executable","mpirun -np $numprocs ");
-    $config_data->{"MULTIPROCESSOR"} = $numprocs;
+    my $nprocs = (defined ($ENV{'CCTK_TESTSUITE_RUN_PROCESSORS'}) ?
+                 $ENV{'CCTK_TESTSUITE_RUN_PROCESSORS'} : 2);
+    $config_data->{'NPROCS'} =
+      &defprompt('  Enter number of processors ($nprocs)', $nprocs);
+  }
+
+  my $command;
+  if (defined ($ENV{'CCTK_TESTSUITE_RUN_COMMAND'}))
+  {
+    $command = $ENV{'CCTK_TESTSUITE_RUN_COMMAND'};
   }
   else
   {
-    $command = &defprompt("  Enter command to run executable"," ");
-    $config_data->{"MULTIPROCESSOR"} = 0;
+   $command = $have_mpi ? 'mpirun -np $nprocs $exe $parfile' : '$exe $parfile';
   }
-
-  $config_data->{"COMMAND"} = $command;
+  $config_data->{'COMMAND'} =
+    &defprompt("  Enter command to run testsuite", $command);
 
   return $config_data;
 }
@@ -733,57 +739,71 @@ sub WriteFullResults
 
   print $separator2;
 
-  print "  Run details for configuration $config_data->{\"CONFIG\"}\n\n";
+  my @summary = ();
+  push (@summary, "  Run details for configuration $config_data->{'CONFIG'}");
+  push (@summary, '');
 
   foreach $thorn (split(" ",$testdata->{"RUNNABLETHORNS"}))
   {
     if ($testdata->{"$thorn RUNNABLE"} !~ m:^\s*$:)
     {
-      foreach $test (split(" ",$testdata->{"$thorn RUNNABLE"}))
+      foreach $test (split(' ',$testdata->{"$thorn RUNNABLE"}))
       {
-        print "      $thorn: $test\n         $rundata->{\"$thorn $test SUMMARY\"}\n";
+        push (@summary, "      $thorn: $test");
+        push (@summary, "         $rundata->{\"$thorn $test SUMMARY\"}");
       }
     }
     else
     {
-      print "      No tests available\n";
+      push (@summary, '      No tests available');
     }
   }
-  print "\n";
+  push (@summary, '');
 
-  print $separator1;
+  push (@summary, $separator1);
 
-  print "  Summary for configuration $config_data->{\"CONFIG\"}\n\n";
+  push (@summary, "  Summary for configuration $config_data->{'CONFIG'}");
+  push (@summary, '');
 
   $total = $testdata->{"NUNRUNNABLE"}+$testdata->{"NRUNNABLE"};
-  print "    Total available tests    -> $total\n";
-  print "    Unrunnable tests         -> $testdata->{\"NUNRUNNABLE\"}\n";
-  print "    Runnable tests           -> $testdata->{\"NRUNNABLE\"}\n";
-  print "    Total number of thorns   -> ".scalar(split(" ",$testdata->{"THORNS"}))."\n";
-  print "    Number of tested thorns  -> $tested\n";
+  push (@summary, "    Total available tests    -> $total");
+  push (@summary, "    Unrunnable tests         -> $testdata->{'NUNRUNNABLE'}");
+  push (@summary, "    Runnable tests           -> $testdata->{'NRUNNABLE'}");
+  push (@summary, '    Total number of thorns   -> '.scalar(split(' ',$testdata->{'THORNS'})));
+  push (@summary, "    Number of tested thorns  -> $tested");
 
-  print "    Number of tests passed   -> $rundata->{\"NPASSED\"}\n";
-  print "    Number passed only to\n";
-  print "               set tolerance -> $rundata->{\"NPASSEDTOTOL\"}\n";
-  print "    Number failed            -> $rundata->{\"NFAILED\"}\n";
+  push (@summary, "    Number of tests passed   -> $rundata->{'NPASSED'}");
+  push (@summary, '    Number passed only to');
+  push (@summary, "               set tolerance -> $rundata->{'NPASSEDTOTOL'}");
+  push (@summary, "    Number failed            -> $rundata->{'NFAILED'}");
 
-
-  if ($rundata->{"NFAILED"})
+  if ($rundata->{'NFAILED'})
   {
-    print "\n  Tests failed:\n\n";
-    foreach $thorn (split(" ",$testdata->{"THORNS"}))
+    push (@summary, '');
+    push (@summary, '  Tests failed:');
+    push (@summary, '');
+    foreach $thorn (split(' ',$testdata->{'THORNS'}))
     {
-      foreach $file (split(" ",$rundata->{"$thorn FAILED"}))
+      foreach $file (split(' ',$rundata->{"$thorn FAILED"}))
       {
-        print "    $file (from $thorn)\n";
+        push (@summary, "    $file (from $thorn)");
       }
     }
   }
 
-  print "\n";
+  push (@summary, '');
+  push (@summary, $separator1);
 
-  print $separator1;
-
+  # write summary to both stdout and a summary logfile
+  my $logdir = $config_data->{'TESTS_DIR'};
+  mkdir ($logdir, 0755) if (not -e $logdir);
+  $logdir .= "/$config_data->{'CONFIG'}";
+  mkdir ($logdir, 0755) if (not -e $logdir);
+  open (LOG, "> $logdir/summary.log")
+    or die "Cannot open logfile '$logdir/summary.log'";
+  print join ("\n", @summary);
+  print LOG join ("\n", @summary);
+  close (LOG);
 }
 
 sub ChooseTests
@@ -932,8 +952,12 @@ sub RunTest
   # Run the test from the test thorn directory
   chdir ($testdata->{"$thorn $test TESTRUNDIR"}) ;
 
+  # substitute the ($nprocs, $exe, $parfile) templates in the command
+  my $cmd = $config_data->{'COMMAND'};
+  $cmd =~ s/\$exe/$config_data->{'EXE'}/g;
+  $cmd =~ s/\$nprocs/$config_data->{'NPROCS'}/g;
+  $cmd =~ s/\$parfile/$parfile/g;
 
-  $cmd = "$config_data->{\"COMMAND\"} $config_data->{\"EXE\"} $parfile";
   $retcode = &RunCactus($output,$test,$cmd);
   chdir $config_data->{"CCTK_DIR"};
 
@@ -1186,59 +1210,56 @@ sub max
 sub ReportOnTest
 {
   my($test,$thorn,$rundata,$testdata) = @_;
-  my($file,$tmp,$summary,$buffer);
-
-  $buffer = "";
+  my($file,$tmp,$summary);
+  my @log = ();
 
   # Different lines in files
-  foreach $file (split(" ",$testdata->{"$thorn $test DATAFILES"}))
+  foreach $file (split(' ',$testdata->{"$thorn $test DATAFILES"}))
   {
     if ($rundata->{"$thorn $test $file NFAILWEAK"} != 0)
     {
       $rundata->{"$thorn $test NFAILWEAK"}++;
+      push (@log, '');
       if ($rundata->{"$thorn $test $file NFAILSTRONG"} == 0)
       {
-        $buffer .= "\n  - $file: differences below tolerance on $rundata->{\"$thorn $test $file NFAILWEAK\"} lines";
+        push (@log, "  - $file: differences below tolerance on $rundata->{\"$thorn $test $file NFAILWEAK\"} lines");
       }
       else
       {
         $rundata->{"$thorn $test NFAILSTRONG"}++;
-        $buffer .= "\n  - $file: substantial differences!\n";
-        $buffer .= "      caught  $rundata->{\"$thorn $test $file NNAN\"} NaNs in new $file\n" if $rundata->{"$thorn $test $file NNAN"};
-        $buffer .= "      did not reproduce  $rundata->{\"$thorn $test $file NNANNOTFOUND\"} NaNs from old $file\n" if $rundata->{"$thorn $test $file NNANNOTFOUND"};
-        $buffer .= "      caught  $rundata->{\"$thorn $test $file NINF\"} Infs in new $file\n" if $rundata->{"$thorn $test $file NINF"};
-        $buffer .= "      did not reproduce  $rundata->{\"$thorn $test $file NINFNOTFOUND\"} Infs from old $file\n" if $rundata->{"$thorn $test $file NINFNOTFOUND"};
-        $buffer .= "      significant differences on $rundata->{\"$thorn $test $file NFAILSTRONG\"} (out of $rundata->{\"$thorn $test $file NUMLINES\"}) lines!\n";
+        push (@log, "  - $file: substantial differences!");
+        push (@log, "      caught  $rundata->{\"$thorn $test $file NNAN\"} NaNs in new $file")
+          if $rundata->{"$thorn $test $file NNAN"};
+        push (@log, "      did not reproduce  $rundata->{\"$thorn $test $file NNANNOTFOUND\"} NaNs from old $file")
+          if $rundata->{"$thorn $test $file NNANNOTFOUND"};
+        push (@log, "      caught  $rundata->{\"$thorn $test $file NINF\"} Infs in new $file")
+          if $rundata->{"$thorn $test $file NINF"};
+        push (@log, "      did not reproduce  $rundata->{\"$thorn $test $file NINFNOTFOUND\"} Infs from old $file")
+          if $rundata->{"$thorn $test $file NINFNOTFOUND"};
+        push (@log, "      significant differences on $rundata->{\"$thorn $test $file NFAILSTRONG\"} (out of $rundata->{\"$thorn $test $file NUMLINES\"}) lines!");
         foreach $val (sort keys (%$rundata))
         {
           if ($val =~ /$thorn $test $file MAXABSDIFF (.*)$/)
           {
-            $column = $1;
-            if ($rundata->{"$thorn $test $file MAXABSDIFF $column"})
-            {
-              $buffer .= "      maximum absolute difference in column $column is $rundata->{\"$val\"}\n";
-            }
+            push (@log, "      maximum absolute difference in column $1 is $rundata->{$val}")
+              if ($rundata->{"$thorn $test $file MAXABSDIFF $1"});
           }
           elsif ($val =~ /$thorn $test $file MAXRELDIFF (.*)$/)
           {
-            $column = $1;
-            if ($rundata->{"$thorn $test $file MAXRELDIFF $column"})
-            {
-              $buffer .= "      maximum relative difference in column $column is $rundata->{\"$val\"}\n";
-            }
+            push (@log, "      maximum relative difference in column $1 is $rundata->{$val}")
+              if ($rundata->{"$thorn $test $file MAXRELDIFF $1"});
           }
         }
 
-        $tmp = $rundata->{"$thorn $test $file NFAILWEAK"} - $rundata->{"$thorn $test $file NFAILSTRONG"};
+        $tmp = $rundata->{"$thorn $test $file NFAILWEAK"} -
+               $rundata->{"$thorn $test $file NFAILSTRONG"};
         if ($tmp)
         {
-          $buffer .= "      (insignificant differences on $tmp lines)\n";
+          push (@log, "      (insignificant differences on $tmp lines)");
         }
       }
     }
   }
-  $buffer .= "\n" if ($buffer);
-  print $buffer;
 
   # Give a warning if there were different files created
 
@@ -1249,7 +1270,7 @@ sub ReportOnTest
     $myfile = quotemeta($file);
     if ($testdata->{"$thorn $test DATAFILES"} !~ m:\b$myfile\b:)
     {
-      print "            $file not in thorn archive\n";
+      push (@log, "            $file not in thorn archive");
       $rundata->{"$thorn $test NFILEEXTRA"}++;
       $rundata->{"$thorn $test FILEEXTRA"} .= " $file";
     }
@@ -1264,7 +1285,7 @@ sub ReportOnTest
       $myfile = quotemeta($file);
       if ($rundata->{"$thorn $test TESTFILES"} !~ m:\b$myfile\b:)
       {
-        print "            $file not created in test\n";
+        push (@log, "            $file not created in test");
         $rundata->{"$thorn $test NFILEMISSING"}++;
         $rundata->{"$thorn $test FILEMISSING"} .= " $file";
       }
@@ -1274,6 +1295,18 @@ sub ReportOnTest
   {
     $rundata->{"$thorn $test NFILEMISSING"}++;
     $rundata->{"$thorn $test FILEMISSING"} = $rundata->{"$thorn $test DATAFILES"};
+  }
+
+  # write diffs to STDOUT and logfile
+  if (@log)
+  {
+    print join ("\n", @log);
+
+    print LOG join ("\n", @log);
+    my $logfile = $testdata->{"$thorn $test TESTRUNDIR"} . "/$test.diffs";
+    open (LOG, "> $logfile") or die "Couldn't open logfile '$logfile'";
+    print LOG join ("\n", @log);
+    close (LOG);
   }
 
   if (! $rundata->{"$thorn $test NFAILWEAK"})
