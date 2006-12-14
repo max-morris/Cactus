@@ -1250,6 +1250,22 @@ value.  All later routines are ignored.  Schedule clauses \texttt{BEFORE},
         grid hierarchy is made, so that routines scheduled here only
         have access to the global grid size and the parameters.
 
+\item[{\tt CCTK\_PREREGRIDINITIAL}]
+        This timebin is used in mesh refinement settings.  It is
+        ignored for unigrid runs.  This bin is executed whenever the
+        grid hierarchy is about to change during evolution; compare
+        {\tt CCTK\_PREREGRID}.  Routines that decide the
+        new grid structure should be scheduled in this bin.
+
+\item[{\tt CCTK\_POSTREGRIDINITIAL}]
+        This timebin is used in mesh refinement settings.  It is
+        ignored for unigrid runs.  This bin is executed whenever the
+        grid hierarchy or patch setup has changed during evolution;
+        see {\tt CCTK\_POSTREGRID}.  It is, e.g.,
+        necessary to re-apply the boundary conditions or recalculate
+        the grid points' coordinates after every changing the grid
+        hierarchy.
+
 \item[{\tt CCTK\_BASEGRID}]
         This timebin is executed very early after a driver thorn
         constructs grid; this bin should only be used to set up
@@ -1258,6 +1274,14 @@ value.  All later routines are ignored.  Schedule clauses \texttt{BEFORE},
 \item[{\tt CCTK\_INITIAL}] 
         This is the place to set up any required initial data. This timebin
         is not run when recovering from a checkpoint file.
+        
+\item[{\tt CCTK\_POSTRESTRICTINITIAL}]
+        This timebin is used only in mesh refinement settings.  It is
+        ignored for unigrid runs.  This bin is executed after each
+        restriction operation while initial data are set up; compare
+        {\tt CCTK\_POSTRESTRICT}.  It is,
+        e.g., necessary to re-apply the
+        boundary conditions after every restriction operation.
 
 \item[{\tt CCTK\_POSTINITIAL}]
         This is the place to modify initial data, or to calculate data
@@ -1280,6 +1304,22 @@ value.  All later routines are ignored.  Schedule clauses \texttt{BEFORE},
 \item[{\tt CCTK\_CHECKPOINT}]
         Used by thorns with relevant IO methods as the point to checkpoint
         data during the iterative loop when required.
+
+\item[{\tt CCTK\_PREREGRID}]
+        This timebin is used in mesh refinement settings.  It is
+        ignored for unigrid runs.  This bin is executed whenever the
+        grid hierarchy is about to change during evolution; compare
+        {\tt CCTK\_PREREGRIDINITIAL}.  Routines that decide the
+        new grid structure should be scheduled in this bin.
+
+\item[{\tt CCTK\_POSTREGRID}]
+        This timebin is used in mesh refinement settings.  It is
+        ignored for unigrid runs.  This bin is executed whenever the
+        grid hierarchy or patch setup has changed during evolution;
+        see {\tt CCTK\_POSTREGRIDINITIAL}.  It is, e.g.,
+        necessary to re-apply the boundary conditions or recalculate
+        the grid points' coordinates after every changing the grid
+        hierarchy.
                 
 \item[{\tt CCTK\_PRESTEP}]
         The timebin for scheduling any routines which need to be 
@@ -1291,6 +1331,14 @@ value.  All later routines are ignored.  Schedule clauses \texttt{BEFORE},
         
 \item[{\tt CCTK\_EVOL}]
         The timebin for the main evolution step.
+        
+\item[{\tt CCTK\_POSTRESTRICT}]
+        This timebin is used only in mesh refinement settings.  It is
+        ignored for unigrid runs.  This bin is executed after each
+        restriction operation during evolution; compare {\tt
+          CCTK\_POSTRESTRICTINITIAL}.  It is, e.g., necessary to
+        re-apply the
+        boundary conditions after every restriction operation.
 
 \item[{\tt CCTK\_POSTSTEP}]
         The timebin for scheduling any routines which need to be 
@@ -1299,26 +1347,6 @@ value.  All later routines are ignored.  Schedule clauses \texttt{BEFORE},
         {\tt AFTER} etc. functionality of the {\tt schedule.ccl} file
         should allow all functions to be scheduled in the main {\tt CCTK\_EVOL}
         timebin.
-        
-\item[{\tt CCTK\_POSTRESTRICT}]
-        This timebin is used only in mesh refinement settings.  It is
-        ignored for unigrid runs.  This bin is executed after each
-        restriction operation.  It is, e.g., necessary to re-apply the
-        boundary conditions after every restriction operation.
-
-\item[{\tt CCTK\_PREREGRID}]
-        This timebin is used in mesh refinement settings.  It is
-        ignored for unigrid runs.  This bin is executed whenever the
-        grid hierarchy is about to change.  Routines that decide the
-        new grid structure should be scheduled in this bin.
-
-\item[{\tt CCTK\_POSTREGRID}]
-        This timebin is used in mesh refinement settings.  It is
-        ignored for unigrid runs.  This bin is executed whenever the
-        grid hierarchy or patch setup has changed.  It is, e.g.,
-        necessary to re-apply the boundary conditions or recalculate
-        the grid points' coordinates after every changing the grid
-        hierarchy.
 
 \item[{\tt CCTK\_ANALYSIS}]
         The {\tt ANALYSIS} timebin is special, in that it is closely coupled 

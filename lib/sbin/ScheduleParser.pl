@@ -16,8 +16,11 @@ our @schedule_bins = (
     'WRAGH',
     'PARAMCHECK',
     # Initialisation
+    'PREREGRIDINITIAL',
+    'POSTREGRIDINITIAL',
     'BASEGRID',
     'INITIAL',
+    'POSTRESTRICTINITIAL',
     'POSTINITIAL',
     # Recovery                  
     'RECOVER_VARIABLES',
