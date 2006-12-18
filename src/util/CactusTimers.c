@@ -1228,7 +1228,7 @@ int CCTK_TimerPrintDataI (int this_timer, int this_clock)
   {
     firsttimer = this_timer;
     lasttimer = firsttimer + 1;
-    if (firsttimer < 0 || firsttimer > CCTK_NumTimers ())
+    if (firsttimer < 0 || firsttimer >= CCTK_NumTimers ())
     {
       CCTK_VWarn (8, __LINE__, __FILE__, "Cactus",
                   "CCTK_TimerPrintDataI: Timer %d not found", this_timer);
