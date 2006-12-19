@@ -1099,7 +1099,7 @@ static void CCTKi_Timer (int this_timer, t_Timer *timer, cTimerData *info)
   total_vars = 0;
   if (timer && timer->data)
   {
-    /* Start the timer info for this timer */
+    /* Get the timer info for this timer */
     for (handle = 0; handle < n_clocks; handle++)
     {
       funcs = (const cClockFuncs *) Util_GetHandledData (clocks, handle);
@@ -1198,7 +1198,7 @@ int CCTK_TimerDestroyData (cTimerData *info)
    @vio        in
    @endvar
    @var        this_clock
-   @vdesc      handle for the clock
+   @vdesc      handle for the clock, or -1 for all clocks
    @vtype      int
    @vio        in
    @endvar
@@ -1212,37 +1212,22 @@ int CCTK_TimerDestroyData (cTimerData *info)
 int CCTK_TimerPrintDataI (int this_timer, int this_clock)
 {
   cTimerData *info;
-  int i, timer, retval;
+  int i, retval;
   int firstclock, lastclock;
-  int firsttimer, lasttimer;
 
 
-  retval = 0;
-
-  if (this_timer == -1)
+  info = CCTK_TimerCreateData ();
+  retval = CCTK_TimerI (this_timer, info);
+  if (retval < 0)
   {
-    firsttimer = 0;
-    lasttimer = CCTK_NumTimers ();
+    CCTK_VWarn (8, __LINE__, __FILE__, "Cactus",
+                "CCTK_TimerPrintDataI: Timer %d not found", this_timer);
+    retval = -1;
   }
   else
   {
-    firsttimer = this_timer;
-    lasttimer = firsttimer + 1;
-    if (firsttimer < 0 || firsttimer >= CCTK_NumTimers ())
-    {
-      CCTK_VWarn (8, __LINE__, __FILE__, "Cactus",
-                  "CCTK_TimerPrintDataI: Timer %d not found", this_timer);
-      retval = -1;
-      lasttimer = firsttimer;
-    }
-  }
 
-  for (timer = firsttimer; timer < lasttimer; timer++)
-  {
-    info = CCTK_TimerCreateData ();
-    CCTK_TimerI (timer, info); /* return values are always 0 */
-
-    printf ("Results from timer \"%s\":\n", CCTK_TimerName (timer));
+    printf ("Results from timer \"%s\":\n", CCTK_TimerName (this_timer));
 
     if (this_clock == -1)
     {
@@ -1259,28 +1244,29 @@ int CCTK_TimerPrintDataI (int this_timer, int this_clock)
     {
       switch (info->vals[i].type)
       {
-        case val_int:
-          printf ("\t%s: %d %s\n", info->vals[i].heading,
-                  info->vals[i].val.i, info->vals[i].units);
-          break;
+      case val_int:
+        printf ("\t%s: %d %s\n", info->vals[i].heading,
+                info->vals[i].val.i, info->vals[i].units);
+        break;
 
-        case val_long:
-          printf ("\t%s: %ld %s\n", info->vals[i].heading,
-                  info->vals[i].val.l, info->vals[i].units);
-          break;
+      case val_long:
+        printf ("\t%s: %ld %s\n", info->vals[i].heading,
+                info->vals[i].val.l, info->vals[i].units);
+        break;
 
-        case val_double:
-          printf ("\t%s: %.3f %s\n", info->vals[i].heading,
-                  info->vals[i].val.d, info->vals[i].units);
-          break;
+      case val_double:
+        printf ("\t%s: %.3f %s\n", info->vals[i].heading,
+                info->vals[i].val.d, info->vals[i].units);
+        break;
 
-        default:
-          CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                      "CCTK_TimerPrintDataI: Unknown data type for timer info");
-          break;
+      default:
+        CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                    "CCTK_TimerPrintDataI: Unknown data type for timer info");
+        break;
       }
     }
     CCTK_TimerDestroyData (info);
+
   }
 
   return (retval);
