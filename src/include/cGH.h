@@ -11,9 +11,7 @@
 #ifndef _CGH_H_
 #define _CGH_H_ 1
 
-#ifndef _CCTK_TYPES_H
 #include "cctk_Types.h"
-#endif
 
 typedef struct
 {
