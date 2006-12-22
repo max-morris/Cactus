@@ -991,6 +991,32 @@ sub CompareTestFiles
 
   if ($rundata->{"$thorn $test NTESTFILES"})
   {
+    if ($runconfig->{"$thorn $test ABSTOL"})
+    {
+      $abstol = $runconfig->{"$thorn $test ABSTOL"};
+    }
+    elsif ($runconfig->{"$thorn ABSTOL"})
+    {
+      $abstol = $runconfig->{"$thorn ABSTOL"};
+    }
+    else 
+    {
+      $abstol = $runconfig->{"ABSTOL"};
+    }
+
+    if ($runconfig->{"$thorn $test RELTOL"})
+    {
+      $reltol = $runconfig->{"$thorn $test RELTOL"};
+    }
+    elsif ($runconfig->{"$thorn RELTOL"})
+    {
+      $reltol = $runconfig->{"$thorn RELTOL"};
+    }
+    else 
+    {
+      $reltol = $runconfig->{"RELTOL"};
+    }
+
     # Compare each file in the archived test directory
     foreach $file (split(" ",$testdata->{"$thorn $test DATAFILES"}))
     {
@@ -1021,114 +1047,96 @@ sub CompareTestFiles
         {
           $nline = <INNEW>;
 
+          # ignore comment lines
           next if (($oline =~ /^\s*["\#]/) && ($nline =~ /^\s*["\#]/));
-          $numlines++;
+
           # Now lets see if they differ.
-          if (!("\U$nline" eq "\U$oline"))
+          $numlines++;
+          $nline = "\L$nline";
+          $oline = "\L$oline";
+          next if ($nline eq $oline);
+
+          # Yes, they do. Check differences
+          if (($nline !~ /(nan|inf)/) && ($oline !~ /(nan|inf)/))
           {
-            # Check differences
-            if (($nline !~ /(nan|inf)/i) && ($oline !~ /(nan|inf)/i))
+            # This is the new comparison (subtract last two numbers)
+            my $mynline = $nline;
+            my $myoline = $oline;
+
+            # Make sure that floating point numbers have 'e' if exponential.
+            $mynline =~ tr/d/e/;
+            $myoline =~ tr/d/e/;
+
+            my @newvals = split(' ',$mynline);
+            my @oldvals = split(' ',$myoline);
+
+            my $nnew = scalar(@newvals);
+            $nold = scalar(@oldvals);
+
+            my $allzero = 1;
+            for ($count = 0; $count < $nold; $count++)
             {
-              # This is the new comparison (subtract last two numbers)
-              @newvals = split(' ',$nline);
-              @oldvals = split(' ',$oline);
+              $diffvals[$count] = abs($newvals[$count] - $oldvals[$count]);
+              $allzero = 0 if ($diffvals[$count] > 0);
+            }
 
-              $nnew = scalar(@newvals);
-              $nold = scalar(@oldvals);
+            if ($allzero == 0)
+            {
+              # They diff. But do they differ strongly?
+              $rundata->{"$thorn $test $file NFAILWEAK"}++;
 
-              # Make sure that floating point numbers have 'e' if exponential.
-              $allzero = 1;
+              # store difference for strong failures
               for ($count = 0; $count < $nold; $count++)
               {
-                $newvals[$count] =~ s/[dD]/e/;
-                $oldvals[$count] =~ s/[dD]/e/;
-                $diffvals[$count] = abs($newvals[$count] - $oldvals[$count]);
-                if ($allzero == 1)
-                {
-                  $allzero = 0 if ($diffvals[$count] > 0);
-                }
+                $maxdiff[$count] = $diffvals[$count]
+                  if ($maxdiff[$count] < $diffvals[$count]);
+                my $absoldval = abs ($oldvals[$count]);
+                my $absnewval = abs ($newvals[$count]);
+                $valmax[$count] = $absoldval > $absnewval ?
+                                  $absoldval : $absnewval;
               }
 
-              if ($allzero == 0)
+              for ($count = 0; $count < $nold; $count++)
               {
-                # They diff. But do they differ strongly?
-                $rundata->{"$thorn $test $file NFAILWEAK"}++;
-                if ($runconfig->{"$thorn $test ABSTOL"})
-                {
-                  $abstol = $runconfig->{"$thorn $test ABSTOL"};
-                }
-                elsif ($runconfig->{"$thorn ABSTOL"})
-                {
-                  $abstol = $runconfig->{"$thorn ABSTOL"};
-                }
-                else 
-                {
-                  $abstol = $runconfig->{"ABSTOL"};
-                }
-
-
-                if ($runconfig->{"$thorn $test RELTOL"})
-                {
-                  $reltol = $runconfig->{"$thorn $test RELTOL"};
-                }
-                elsif ($runconfig->{"$thorn RELTOL"})
-                {
-                  $reltol = $runconfig->{"$thorn RELTOL"};
-                }
-                else 
-                {
-                  $reltol = $runconfig->{"RELTOL"};
-                }
-
-                $allunder = 1;
-                for ($count = 0; $allunder and $count < $nold; $count++)
-                {
-                  $vreltol[$count] = $reltol*&max(abs($oldvals[$count]),abs($newvals[$count]));
-                  $vtol[$count] = &max($abstol,$vreltol[$count]);
-                  $allunder = 0 if ($diffvals[$count] >= $vtol[$count]);
-                }
-
-                $rundata->{"$thorn $test $file NFAILSTRONG"}++ if (! $allunder);
-
-                # store difference for strong failures
-                for ($count = 0; $count < $nold; $count++)
-                {
-                  $maxdiff[$count] = &max($maxdiff[$count],$diffvals[$count]);
-                  $valmax[$count] = &max(abs($oldvals[$count]),abs($newvals[$count]));
+                my $vreltol = $reltol * $valmax[$count];
+                my $vtol = $abstol > $vreltol ? $abstol : $vreltol;
+                if ($diffvals[$count] >= $vtol) {
+                  $rundata->{"$thorn $test $file NFAILSTRONG"}++;
+                  last;
                 }
               }
             }
-            # Check against nans
-            elsif ($nline =~ /nan/i && $oline !~ /nan/i)
-            {
-              $rundata->{"$thorn $test $file NNAN"}++;
-              $rundata->{"$thorn $test $file NFAILWEAK"}++;
-              $rundata->{"$thorn $test $file NFAILSTRONG"}++;
-            }
-            # Check against inf
-            elsif ($nline =~ /inf/i && $oline !~ /inf/i)
-            {
-              $rundata->{"$thorn $test $file NINF"}++;
-              $rundata->{"$thorn $test $file NFAILWEAK"}++;
-              $rundata->{"$thorn $test $file NFAILSTRONG"}++;
-            }
-            elsif ($oline =~ /nan/i)
-            {
-              $rundata->{"$thorn $test $file NNANNOTFOUND"}++;
-              $rundata->{"$thorn $test $file NFAILWEAK"}++;
-              $rundata->{"$thorn $test $file NFAILSTRONG"}++;
-            }
-            elsif ($oline =~ /inf/i)
-            {
-              $rundata->{"$thorn $test $file NINFNOTFOUND"}++;
-              $rundata->{"$thorn $test $file NFAILWEAK"}++;
-              $rundata->{"$thorn $test $file NFAILSTRONG"}++;
-            }
-            else
-            {
-              print "TESTSUITE ERROR: Didn't catch case in CompareFiles\n";
-            }
-          } # if
+          }
+          # Check against nans
+          elsif ($nline =~ /nan/ && $oline !~ /nan/)
+          {
+            $rundata->{"$thorn $test $file NNAN"}++;
+            $rundata->{"$thorn $test $file NFAILWEAK"}++;
+            $rundata->{"$thorn $test $file NFAILSTRONG"}++;
+          }
+          # Check against inf
+          elsif ($nline =~ /inf/ && $oline !~ /inf/)
+          {
+            $rundata->{"$thorn $test $file NINF"}++;
+            $rundata->{"$thorn $test $file NFAILWEAK"}++;
+            $rundata->{"$thorn $test $file NFAILSTRONG"}++;
+          }
+          elsif ($oline =~ /nan/)
+          {
+            $rundata->{"$thorn $test $file NNANNOTFOUND"}++;
+            $rundata->{"$thorn $test $file NFAILWEAK"}++;
+            $rundata->{"$thorn $test $file NFAILSTRONG"}++;
+          }
+          elsif ($oline =~ /inf/)
+          {
+            $rundata->{"$thorn $test $file NINFNOTFOUND"}++;
+            $rundata->{"$thorn $test $file NFAILWEAK"}++;
+            $rundata->{"$thorn $test $file NFAILSTRONG"}++;
+          }
+          else
+          {
+            print "TESTSUITE ERROR: Didn't catch case in CompareFiles\n";
+          }
         } #while
 
       }
@@ -1181,7 +1189,7 @@ sub CompareTestFiles
           }
           else
           {
-            print "ERROR: How did I get here, maximum difference is $maxdiff[$count] and maximum value if $valmax[$count] for $file\n";
+            print "ERROR: How did I get here, maximum difference is $maxdiff[$count] and maximum value is $valmax[$count] for $file\n";
           }
         }
       }
@@ -1200,12 +1208,6 @@ sub CompareTestFiles
   return $rundata;
 }
 
-sub max
-{
-  my($f1,$f2) = @_;
-
-  return $f1 > $f2 ? $f1 : $f2;
-}
 
 sub ReportOnTest
 {
