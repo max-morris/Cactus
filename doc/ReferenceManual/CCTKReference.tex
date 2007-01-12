@@ -7185,6 +7185,11 @@ The variable name should be in the form \code{<implementation>::<variable>}
 \begin{discussion}
 For a single processor run this call will return zero. For multiprocessor
 runs, this call will return 0 $\leq$ myproc $<$ \code{CCTK\_nProcs(cctkGH)}.
+
+Calling \code{CCTK\_MyProc(NULL)} is safe (it will not crash).
+Current drivers handle this case correctly (i.e.\ \code{CCTK\_MyProc(NULL)}
+returns a correct result), but only a ``best effort'' is guaranteed for
+future drivers (or future revisions of current drivers).
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -7213,6 +7218,11 @@ runs, this call will return 0 $\leq$ myproc $<$ \code{CCTK\_nProcs(cctkGH)}.
 \end{params}
 \begin{discussion}
 For a single processor run this call will return one.
+
+Calling \code{CCTK\_nProcs(NULL)} is safe (it will not crash).
+Current drivers handle this case correctly (i.e.\ \code{CCTK\_nProcs(NULL)}
+returns a correct result), but only a ``best effort'' is guaranteed for
+future drivers (or future revisions of current drivers).
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
