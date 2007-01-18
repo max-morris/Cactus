@@ -57,7 +57,7 @@ $testdata = &ParseTestConfigs($testdata,$config_data,\%runconfig);
 $testdata = &FindTestArchiveFiles($testdata);
 
 # Parse test parameter files
-$testdata = &ParseAllParameterFiles($testdata);
+$testdata = &ParseAllParameterFiles($testdata,$config_data,\%runconfig);
 
 # Print database
 #&PrintDataBase($testdata);

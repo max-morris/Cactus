@@ -145,62 +145,68 @@ sub ParseParFile
 
 sub ParseTestConfigs
 {
-  my($testdata,$config_data,$runconfig) = @_;
+  my($testdata,$config_data,$rundata) = @_;
   my($line_number, $line);
   my($test, $ABSTOL, $RELTOL);
 
+  my $arrangement_dir = "$config_data->{'CCTK_DIR'}${sep}arrangements${sep}";
   foreach $thorn (split(" ",$testdata->{"THORNS"}))
   {
-    $arrangement = $testdata->{"$thorn ARRANGEMENT"};
-    if (-r "$config_data->{\"CCTK_DIR\"}${sep}arrangements${sep}$arrangement${sep}$thorn${sep}test${sep}test.ccl" && -r "$config_data->{\"CCTK_DIR\"}${sep}arrangements${sep}$arrangement${sep}$thorn${sep}test${sep}config")
-    {
-      print " Thorn $thorn has a test.ccl file and a config file.\n Config files will be deprecated, using test.ccl file.\n";
-      @config = &read_file("$config_data->{\"CCTK_DIR\"}${sep}arrangements${sep}$arrangement${sep}$thorn${sep}test${sep}config");
-    }
-    elsif(-r "$config_data->{\"CCTK_DIR\"}${sep}arrangements${sep}$arrangement${sep}$thorn${sep}test${sep}test.ccl")
-    {
-      @config = &read_file("$config_data->{\"CCTK_DIR\"}${sep}arrangements${sep}$arrangement${sep}$thorn${sep}test${sep}test.ccl");
-    }
-    elsif(-r "$config_data->{\"CCTK_DIR\"}${sep}arrangements${sep}$arrangement${sep}$thorn${sep}test${sep}config")
-    {
-      @config = &read_file("$config_data->{\"CCTK_DIR\"}${sep}arrangements${sep}$arrangement${sep}$thorn${sep}test${sep}config");
-    }
-    else
-    {
-      next;
-    }
+    my $testdir = $arrangement_dir . $testdata->{"$thorn ARRANGEMENT"} .
+                  "${sep}$thorn${sep}test";
+    my $old_config_file = "$testdir${sep}test.ccl";
+    my $new_config_file = "$testdir${sep}config";
+    my $config_file = '';
 
-
-    if ($config)
+    if (-r $old_config_file and -r $new_config_file)
     {
-      $global = 1;
-      for($line_number = 0; $line_number < @config; $line_number++)
+      print " Thorn $thorn has a test.ccl file and a config file.\n" .
+            " Config files will be deprecated, using test.ccl file.\n";
+      $config_file = $new_config_file;
+    }
+    elsif (-r $new_config_file)
+    {
+      $config_file = $new_config_file;
+    }
+    elsif (-r $old_config_file)
+    {
+      $config_file = $old_config_file;
+    }
+    next unless ($config_file);
+
+    my @config = &read_file($config_file);
+    for($line_number = 0; $line_number < @config; $line_number++)
+    {
+      $line = $config[$line_number];
+
+      # Parse tokens
+      if ($line =~ m/^\s*ABSTOL\s*(.*)/i)
       {
-        $line = $config[$line_number];
-
-        # Parse tokens
-        if ($line =~ m/^\s*ABSTOL\s*(.*)/i)
-        {
-          $ABSTOL = $runconfig->{"$thorn ABSTOL"}=$1;
-        }
-        elsif ($line =~ m/^\s*RELTOL\s*(.*)/i)
-        {
-          $RELTOL = $runconfig->{"$thorn RELTOL"}=$1;
-        }
-        elsif ($line =~ m/^\s*EXTENSIONS\s*(.*)/i)
-        {
-          $testdata->{"EXTENSIONS"} .= "$1 ";
-        }
-        elsif ($line =~ m/^\s*TEST\s*(.*)/i)
-        {
-          ($test, $ABSTOL, $RELTOL, $line_number) = &ParseTestBlock($line_number, \@config);
-          $runconfig->{"$thorn $test ABSTOL"} = $ABSTOL;
-          $runconfig->{"$thorn $test RELTOL"} = $RELTOL;
-        }
-        else
-        {
-          print "  Unrecognised token $line in config file for thorn $thorn\n";
-        }
+        $ABSTOL = $rundata->{"$thorn ABSTOL"}=$1;
+      }
+      elsif ($line =~ m/^\s*RELTOL\s*(.*)/i)
+      {
+        $RELTOL = $rundata->{"$thorn RELTOL"}=$1;
+      }
+      elsif ($line =~ m/^\s*NPROCS\s+(\d+)\s*$/i)
+      {
+        $NPROCS = $rundata->{"$thorn NPROCS"} = $1;
+      }
+      elsif ($line =~ m/^\s*EXTENSIONS\s*(.*)/i)
+      {
+        $testdata->{"EXTENSIONS"} .= "$1 ";
+      }
+      elsif ($line =~ m/^\s*TEST\s*(.*)/i)
+      {
+        ($test, $ABSTOL, $RELTOL, $NPROCS, $line_number) =
+          &ParseTestBlock($line_number, \@config);
+        $rundata->{"$thorn $test ABSTOL"} = $ABSTOL;
+        $rundata->{"$thorn $test RELTOL"} = $RELTOL;
+        $rundata->{"$thorn $test NPROCS"} = $NPROCS;
+      }
+      else
+      {
+        print "  Unrecognised token $line in config file for thorn $thorn\n";
       }
     }
   }
@@ -211,11 +217,7 @@ sub ParseTestConfigs
 sub ParseTestBlock
 {
   my ($line_number, $data) = @_;
-  my ($Test, $ABSTOL, $RELTOL);
-
-  $Test     = "";
-  $ABSTOL   = "";
-  $RELTOL   = "";
+  my ($Test, $ABSTOL, $RELTOL, $NPROCS) = ();
 
   $data->[$line_number] =~ m/^\s*PROVIDES\s*(.*)/i;
 
@@ -242,6 +244,11 @@ sub ParseTestBlock
         $RELTOL = $1;
         next;
       }
+      elsif ($data->[$line_number] =~ m/^\s*NPROCS\s+(\d+)\s*$/i)
+      {
+        $NPROCS = $1;
+        next;
+      }
       elsif($data->[$line_number] =~ m:\s*\}\s*:)
       {
         # do nothing.
@@ -252,7 +259,7 @@ sub ParseTestBlock
       }
     }
   }
-  return ($Test, $ABSTOL, $RELTOL, $line_number);
+  return ($Test, $ABSTOL, $RELTOL, $NPROCS, $line_number);
 }
 
 sub FindTestArchiveFiles
@@ -634,13 +641,32 @@ sub WriteFullResults
 
   $message = "  Tests missed for lack of thorns:\n";
   $missingtests = 0;
-  foreach $thorn (split(" ",$testdata->{"UNRUNNABLETHORNS"}))
+  foreach $thorn (split(' ',$testdata->{'THORNS'}))
   {
-    foreach $parfile (split(" ",$testdata->{"$thorn UNRUNNABLE"}))
+    foreach $parfile (split(' ',$testdata->{"$thorn TESTS"}))
     {
+      my $missing = $testdata->{"$thorn $parfile MISSING"};
+      next unless ($missing);
       $message .= "\n    ".$parfile." in ". $thorn."\n";
       $message .= "      (". $testdata->{"$thorn $parfile DESC"}.")\n";
-      $message .= "      Missing: ".$testdata->{"$thorn $parfile MISSING"}."\n";
+      $message .= "      Missing: $missing\n";
+      $missingtests++;
+    }
+  }
+  print "$message\n" if ($missingtests > 0);
+
+  # Different number of processors required
+  $message = "  Tests missed for different number of processors required:\n";
+  $missingtests = 0;
+  foreach $thorn (split(' ',$testdata->{'THORNS'}))
+  {
+    foreach $parfile (split(' ',$testdata->{"$thorn TESTS"}))
+    {
+      my $nprocs = $testdata->{"$thorn $parfile NPROCS"};
+      next unless ($nprocs);
+      $message .= "\n    ".$parfile." in ". $thorn."\n";
+      $message .= "      (". $testdata->{"$thorn $parfile DESC"}.")\n";
+      $message .= "      Requires $nprocs processors\n";
       $missingtests++;
     }
   }
@@ -1360,15 +1386,21 @@ sub ResetTestStatistics
 
 sub ParseAllParameterFiles
 {
-  my($testdata) = @_;
+  my($testdata, $config_data, $rundata) = @_;
+  my $nprocs_available = $config_data->{'NPROCS'};
 
   # Collect thorns needed for each testsuite
   foreach $thorn (split(" ",$testdata->{"THORNS"}))
   {
     $arr = $testdata->{"$thorn ARRANGEMENT"};
+    my $nprocs = $rundata->{"$thorn NPROCS"};
+    $nprocs = $nprocs_available unless ($nprocs);
 
+    my $nrunnable = 0;
     foreach $testbase (split(" ",$testdata->{"$thorn TESTS"}))
     {
+      my $nprocs_required = $rundata->{"$thorn $testbase NPROCS"};
+      $nprocs_required = $nprocs unless ($nprocs_required);
 
       $parfile = "$testbase.par";
 
@@ -1383,33 +1415,38 @@ sub ParseAllParameterFiles
                        $testdata->{"THORNS"});
 
       # Set whether test is runnable or not
-      if($nmissing == 0)
+      if($nmissing)
       {
-        $testdata->{"$thorn RUNNABLE"} .= "$testbase ";
-        $testdata->{"NRUNNABLE"}++;
-        $testdata->{"$thorn TESTED"} = 1;
-        $testdata->{"$thorn NRUNNABLE"}++;
+        $testdata->{"$thorn UNRUNNABLE"} .= "$testbase ";
+        $testdata->{"$thorn $testbase MISSING"} .= $missing;
+        $testdata->{'NUNRUNNABLE'}++;
+      }
+      elsif ($nprocs_required != $nprocs_available)
+      {
+        $testdata->{"$thorn UNRUNNABLE"} .= "$testbase ";
+        $testdata->{"$thorn $testbase NPROCS"} = $nprocs_required;
+        $testdata->{'NUNRUNNABLE'}++;
       }
       else
       {
-        $testdata->{"$thorn UNRUNNABLE"} .= "$testbase ";
-        $testdata->{"$thorn $testbase MISSING"} .= "$missing";
-        $testdata->{"NUNRUNNABLE"}++;
-        $testdata->{"$thorn NUNRUNNABLE"}++;
+        $testdata->{"$thorn RUNNABLE"} .= "$testbase ";
+        $testdata->{"$thorn TESTED"} = 1;
+        $testdata->{'NRUNNABLE'}++;
+        $nrunnable++;
       }
     }
 
-    if ($testdata->{"$thorn NRUNNABLE"} > 0)
+    if ($nrunnable)
     {
-      $testdata->{"RUNNABLETHORNS"} .= "$thorn ";
-      if ($testdata->{"RUNNABLEARRANGEMENTS"} !~ m:\b$arr\s:)
+      $testdata->{'RUNNABLETHORNS'} .= "$thorn ";
+      if ($testdata->{'RUNNABLEARRANGEMENTS'} !~ m:\b$arr\s:)
       {
-        $testdata->{"RUNNABLEARRANGEMENTS"} .= "$arr ";
+        $testdata->{'RUNNABLEARRANGEMENTS'} .= "$arr ";
       }
     }
     else
     {
-      $testdata->{"UNRUNNABLETHORNS"} .= "$thorn ";
+      $testdata->{'UNRUNNABLETHORNS'} .= "$thorn ";
     }
   }
 
@@ -1417,9 +1454,9 @@ sub ParseAllParameterFiles
 
   foreach $arr (split(" ",$testdata->{"ARRANGEMENTS"}))
   {
-    if ($testdata->{"RUNNABLEARRANGEMENTS"} !~ m:\b$arr\s:)
+    if ($testdata->{'RUNNABLEARRANGEMENTS'} !~ m:\b$arr\s:)
     {
-      $testdata->{"UNRUNNABLEARRANGEMENTS"} .= "$arr ";
+      $testdata->{'UNRUNNABLEARRANGEMENTS'} .= "$arr ";
     }
   }
 

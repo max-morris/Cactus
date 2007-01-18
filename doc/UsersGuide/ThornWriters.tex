@@ -3527,18 +3527,20 @@ rest of the line is a comment. If the last non-blank character of a
 line in a config file is a backslash `\texttt{$\backslash$}', the
 following line is treated as a continuation of the current line.
 Options include test specific absolute and relative tolerances, thorn
-specific absolute and relative tolerances and file extensions. The
-configuration file has the form:
+specific absolute and relative tolerances, the number of procesors required
+to run, and file extensions. The configuration file has the form:
 
 \begin{alltt}
 ABSTOL  <\var{thorn_absolute_tolerance}>
 RELTOL  <\var{thorn_relative_tolerance}>
+NPROCS  <\var{thorn_nprocs}>
 EXTENSIONS  <\var{extension_1} \var{extension_2} \var{extension_3}>
 
 TEST <\var{test_example}>
 \{
   ABSTOL <\var{absolute_tol}>
   RELTOL <\var{relative_tol}>
+  NPROCS <\var{nprocs}>
 \}
 \end{alltt}
 
@@ -3546,8 +3548,12 @@ which states that when comparing files of test \verb|test_example|,
 \verb|absolute_tol| and \verb|relative_tol| {\space} should be used as
 the absolute and relative tolerances. For all other tests in the
 thorn, the default value of absolute and relative tolerances are set
-to \verb|thorn_absolute_tolerance| and
-\verb|thorn_relative_tolerance|. The \texttt{EXTENSIONS} option adds
+to \verb|thorn_absolute_tolerance| and \verb|thorn_relative_tolerance|.
+The \texttt{NPROCS} option specifies the number of processors required to
+run a given testsuite \var{test\_example} or all testsuites of a thorn
+successfully. If no \texttt{NPROCS} option is present, the testsuite(s)
+are assumed to run with any number of processors.
+The \texttt{EXTENSIONS} option adds
 \verb|extension_1|, \verb|extension_2| and \verb|extension_3| to the
 list of file extensions that are compared. This list is global over
 all tests in a configuration.
