@@ -1002,7 +1002,7 @@ sub RunTest
 sub CompareTestFiles
 {
   my ($test,$thorn,$runconfig,$rundata,$config_data,$testdata) = @_;
-  my ($test_dir,$file,$newfile,$oldfile,$maxdiff);
+  my ($test_dir,$file,$newfile,$oldfile);
   my ($vmaxdiff,$tmaxdiff,$numlines);
 
   $test_dir = $testdata->{"$thorn $test TESTOUTPUTDIR"};
@@ -1046,6 +1046,8 @@ sub CompareTestFiles
     # Compare each file in the archived test directory
     foreach $file (split(" ",$testdata->{"$thorn $test DATAFILES"}))
     {
+      my (@maxabsdiff, @absdiff, @valmax) = ();
+
       $newfile = "$test_dir$sep$file";
       $oldfile = "$testdata->{\"$thorn TESTSDIR\"}${sep}${test}${sep}$file";
 
@@ -1060,12 +1062,6 @@ sub CompareTestFiles
       {
         open (INORIG, "<$oldfile") || print "Warning: Archive file $oldfile not found";
         open (INNEW,  "<$newfile") || print "Warning: Test file $newfile not found";
-
-        undef(@maxdiff);
-        undef(@diffvals);
-        undef(@oldvals);
-        undef(@newvals);
-        undef(@valmax);
 
         $numlines = 0;
 
@@ -1086,15 +1082,13 @@ sub CompareTestFiles
           if (($nline !~ /(nan|inf)/) && ($oline !~ /(nan|inf)/))
           {
             # This is the new comparison (subtract last two numbers)
-            my $mynline = $nline;
-            my $myoline = $oline;
 
             # Make sure that floating point numbers have 'e' if exponential.
-            $mynline =~ tr/d/e/;
-            $myoline =~ tr/d/e/;
+            $nline =~ tr/d/e/;
+            $oline =~ tr/d/e/;
 
-            my @newvals = split(' ',$mynline);
-            my @oldvals = split(' ',$myoline);
+            my @newvals = split(' ',$nline);
+            my @oldvals = split(' ',$oline);
 
             my $nnew = scalar(@newvals);
             $nold = scalar(@oldvals);
@@ -1102,34 +1096,32 @@ sub CompareTestFiles
             my $allzero = 1;
             for ($count = 0; $count < $nold; $count++)
             {
-              $diffvals[$count] = abs($newvals[$count] - $oldvals[$count]);
-              $allzero = 0 if ($diffvals[$count] > 0);
+              $absdiff[$count] = abs($newvals[$count] - $oldvals[$count]);
+              $allzero = 0 if ($absdiff[$count]);
+            }
+            next if ($allzero);
+
+            # They diff. But do they differ strongly?
+            $rundata->{"$thorn $test $file NFAILWEAK"}++;
+
+            # store difference for strong failures
+            for ($count = 0; $count < $nold; $count++)
+            {
+              $maxabsdiff[$count] = $absdiff[$count]
+                if ($maxabsdiff[$count] < $absdiff[$count]);
+              my $absoldval = abs ($oldvals[$count]);
+              my $absnewval = abs ($newvals[$count]);
+              $valmax[$count] = $absoldval > $absnewval ?
+                                $absoldval : $absnewval;
             }
 
-            if ($allzero == 0)
+            for ($count = 0; $count < $nold; $count++)
             {
-              # They diff. But do they differ strongly?
-              $rundata->{"$thorn $test $file NFAILWEAK"}++;
-
-              # store difference for strong failures
-              for ($count = 0; $count < $nold; $count++)
-              {
-                $maxdiff[$count] = $diffvals[$count]
-                  if ($maxdiff[$count] < $diffvals[$count]);
-                my $absoldval = abs ($oldvals[$count]);
-                my $absnewval = abs ($newvals[$count]);
-                $valmax[$count] = $absoldval > $absnewval ?
-                                  $absoldval : $absnewval;
-              }
-
-              for ($count = 0; $count < $nold; $count++)
-              {
-                my $vreltol = $reltol * $valmax[$count];
-                my $vtol = $abstol > $vreltol ? $abstol : $vreltol;
-                if ($diffvals[$count] >= $vtol) {
-                  $rundata->{"$thorn $test $file NFAILSTRONG"}++;
-                  last;
-                }
+              my $vreltol = $reltol * $valmax[$count];
+              my $vtol = $abstol > $vreltol ? $abstol : $vreltol;
+              if ($absdiff[$count] >= $vtol) {
+                $rundata->{"$thorn $test $file NFAILSTRONG"}++;
+                last;
               }
             }
           }
@@ -1203,21 +1195,27 @@ sub CompareTestFiles
         print "     TESTSUITE ERROR: $newfile not compared\n";
       }
 
-      for ($count = 1; $count <= $nold; $count++)
+      my $havediffs = 0;
+      my @maxreldiff = @maxabsdiff;
+      for ($count = 0; $count < $nold; $count++)
       {
-        $rundata->{"$thorn $test $file MAXABSDIFF $count"} = $maxdiff[$count];
-        $rundata->{"$thorn $test $file MAXRELDIFF $count"} = 0;
-        if ($maxdiff[$count])
+        next unless ($maxreldiff[$count]);
+        $havediffs = 1;
+        if ($valmax[$count] > 0)
         {
-          if ($valmax[$count] > 0)
-          {
-            $rundata->{"$thorn $test $file MAXRELDIFF $count"} = $maxdiff[$count]/$valmax[$count];
-          }
-          else
-          {
-            print "ERROR: How did I get here, maximum difference is $maxdiff[$count] and maximum value is $valmax[$count] for $file\n";
-          }
+          $maxreldiff[$count] /= $valmax[$count];
         }
+        else
+        {
+          print "ERROR: How did I get here, maximum difference is $maxabsdiff[$count] and maximum value is $valmax[$count] for $file\n";
+        }
+      }
+      if ($havediffs)
+      {
+        splice (@maxabsdiff, $nold);
+        splice (@maxreldiff, $nold);
+        $rundata->{"$thorn $test $file MAXABSDIFF"} = \@maxabsdiff;
+        $rundata->{"$thorn $test $file MAXRELDIFF"} = \@maxreldiff;
       }
 
       $rundata->{"$thorn $test $file NUMLINES"} = $numlines;
@@ -1244,48 +1242,44 @@ sub ReportOnTest
   # Different lines in files
   foreach $file (split(' ',$testdata->{"$thorn $test DATAFILES"}))
   {
-    if ($rundata->{"$thorn $test $file NFAILWEAK"} != 0)
-    {
-      $rundata->{"$thorn $test NFAILWEAK"}++;
-      push (@log, '');
-      if ($rundata->{"$thorn $test $file NFAILSTRONG"} == 0)
-      {
-        push (@log, "  - $file: differences below tolerance on $rundata->{\"$thorn $test $file NFAILWEAK\"} lines");
-      }
-      else
-      {
-        $rundata->{"$thorn $test NFAILSTRONG"}++;
-        push (@log, "  - $file: substantial differences!");
-        push (@log, "      caught  $rundata->{\"$thorn $test $file NNAN\"} NaNs in new $file")
-          if $rundata->{"$thorn $test $file NNAN"};
-        push (@log, "      did not reproduce  $rundata->{\"$thorn $test $file NNANNOTFOUND\"} NaNs from old $file")
-          if $rundata->{"$thorn $test $file NNANNOTFOUND"};
-        push (@log, "      caught  $rundata->{\"$thorn $test $file NINF\"} Infs in new $file")
-          if $rundata->{"$thorn $test $file NINF"};
-        push (@log, "      did not reproduce  $rundata->{\"$thorn $test $file NINFNOTFOUND\"} Infs from old $file")
-          if $rundata->{"$thorn $test $file NINFNOTFOUND"};
-        push (@log, "      significant differences on $rundata->{\"$thorn $test $file NFAILSTRONG\"} (out of $rundata->{\"$thorn $test $file NUMLINES\"}) lines!");
-        foreach $val (sort keys (%$rundata))
-        {
-          if ($val =~ /$thorn $test $file MAXABSDIFF (.*)$/)
-          {
-            push (@log, "      maximum absolute difference in column $1 is $rundata->{$val}")
-              if ($rundata->{"$thorn $test $file MAXABSDIFF $1"});
-          }
-          elsif ($val =~ /$thorn $test $file MAXRELDIFF (.*)$/)
-          {
-            push (@log, "      maximum relative difference in column $1 is $rundata->{$val}")
-              if ($rundata->{"$thorn $test $file MAXRELDIFF $1"});
-          }
-        }
+    my $key = "$thorn $test $file";
+    next unless ($rundata->{"$key NFAILWEAK"} > 0);
 
-        $tmp = $rundata->{"$thorn $test $file NFAILWEAK"} -
-               $rundata->{"$thorn $test $file NFAILSTRONG"};
-        if ($tmp)
-        {
-          push (@log, "      (insignificant differences on $tmp lines)");
-        }
+    $rundata->{"$thorn $test NFAILWEAK"}++;
+    push (@log, '');
+    if ($rundata->{"$key NFAILSTRONG"} == 0)
+    {
+      push (@log, "  - $file: differences below tolerance on $rundata->{\"$key NFAILWEAK\"} lines");
+    }
+    else
+    {
+      $rundata->{"$thorn $test NFAILSTRONG"}++;
+      push (@log, "  - $file: substantial differences!");
+      my $tmp = $rundata->{"$key NNAN"};
+      push (@log, "      caught  $tmp NaNs in new $file") if $tmp;
+      $tmp = $rundata->{"$key NNANNOTFOUND"};
+      push (@log, "      did not reproduce  $tmp NaNs from old $file") if $tmp;
+      $tmp = $rundata->{"$key NINF"};
+      push (@log, "      caught  $tmp Infs in new $file") if $tmp;
+      $tmp = $rundata->{"$key NINFNOTFOUND"};
+      push (@log, "      did not reproduce  $tmp Infs from old $file") if $tmp;
+      $tmp = $rundata->{"$key NFAILSTRONG"};
+      push (@log, "      significant differences on $tmp (out of $rundata->{\"$key NUMLINES\"}) lines!");
+
+      my $maxabsdiff = $rundata->{"$key MAXABSDIFF"};
+      my $maxreldiff = $rundata->{"$key MAXRELDIFF"};
+      my @tmp = ();
+      for (my $c = 0; $c < scalar (@$maxabsdiff); $c++)
+      {
+        next unless ($$maxabsdiff[$c] > 0);
+        my $col = $c + 1;
+        push (@log, "      maximum absolute difference in column $col is $$maxabsdiff[$c]");
+        push (@tmp, "      maximum relative difference in column $col is $$maxreldiff[$c]");
       }
+      push (@log, @tmp);
+
+      $tmp = $rundata->{"$key NFAILWEAK"} - $rundata->{"$key NFAILSTRONG"};
+      push (@log, "      (insignificant differences on $tmp lines)") if $tmp;
     }
   }
 
