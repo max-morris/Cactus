@@ -1300,7 +1300,8 @@ sub ReportOnTest
 
   # Look for files in archive which are not created in test
   # (Note this is bad)
-  if ($testdata->{"$thorn $test NTESTFILES"})
+  my %filesmissing = ();
+  if ($rundata->{"$thorn $test NTESTFILES"})
   {
     foreach $file (split (" ",$testdata->{"$thorn $test DATAFILES"}))
     {
@@ -1308,16 +1309,18 @@ sub ReportOnTest
       if ($rundata->{"$thorn $test TESTFILES"} !~ m:\b$myfile\b:)
       {
         push (@log, "            $file not created in test");
-        $rundata->{"$thorn $test NFILEMISSING"}++;
-        $rundata->{"$thorn $test FILEMISSING"} .= " $file";
+        $filesmissing{$file} = 1;
       }
     }
   }
   else
   {
-    $rundata->{"$thorn $test NFILEMISSING"}++;
-    $rundata->{"$thorn $test FILEMISSING"} = $rundata->{"$thorn $test DATAFILES"};
+    foreach $file (split (" ",$testdata->{"$thorn $test DATAFILES"}))
+    {
+      $filesmissing{$file} = 1;
+    }
   }
+  $rundata->{"$thorn $test FILEMISSING"} = \%filesmissing;
 
   # write diffs to STDOUT and logfile
   if (@log)
@@ -1348,7 +1351,15 @@ sub ReportOnTest
     }
     else
     {
-      $summary = "Failure: $testdata->{\"$thorn $test NDATAFILES\"} files compared, $rundata->{\"$thorn $test NFAILWEAK\"} differ, $rundata->{\"$thorn $test NFAILSTRONG\"} differ significantly";
+      my $nfilesmissing = scalar (keys (%filesmissing));
+      my $nfilescompared = $testdata->{"$thorn $test NDATAFILES"} - $nfilesmissing;
+      my $nfilesfailweak = $rundata->{"$thorn $test NFAILWEAK"} - $nfilesmissing;
+      my $nfilesfailstrong = $rundata->{"$thorn $test NFAILSTRONG"} - $nfilesmissing;
+#      $summary = "Failure: $testdata->{\"$thorn $test NDATAFILES\"} files compared, $rundata->{\"$thorn $test NFAILWEAK\"} differ, $rundata->{\"$thorn $test NFAILSTRONG\"} differ significantly";
+      $summary = 'Failure: ';
+      $summary .= "$nfilesmissing files missing, " if $nfilesmissing;
+      $summary .= "$nfilescompared files compared, $nfilesfailweak differ";
+      $summary .= ", $nfilesfailstrong differ significantly" if $nfilesfailstrong;
       printf "\n  $summary\n";
       $rundata->{"$thorn FAILED"} .= "$test ";
       $rundata->{"NFAILED"}++;
@@ -1489,10 +1500,12 @@ sub ViewResults
       $choice = 1;
       $count = 1;
       &debug_indent;
+      my $filesmissing = $rundata->{"$thorn $test FILEMISSING"};
       foreach $file (split(" ",$testdata->{"$thorn $test DATAFILES"}))
       {
         &debug_print("considering file '$file'");
-        if ($rundata->{"$thorn $test $file NFAILSTRONG"})
+        if ($rundata->{"$thorn $test $file NFAILSTRONG"}
+            and not $filesmissing->{$file})
         {
           $count==1 and print "  Files which differ strongly:\n";
           print "    [$count] $file\n";
