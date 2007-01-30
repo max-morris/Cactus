@@ -1240,21 +1240,22 @@ sub ReportOnTest
   my @log = ();
 
   # Different lines in files
+  push (@log, '');
   foreach $file (split(' ',$testdata->{"$thorn $test DATAFILES"}))
   {
     my $key = "$thorn $test $file";
     next unless ($rundata->{"$key NFAILWEAK"} > 0);
 
     $rundata->{"$thorn $test NFAILWEAK"}++;
-    push (@log, '');
+    # push (@log, '');
     if ($rundata->{"$key NFAILSTRONG"} == 0)
     {
-      push (@log, "  - $file: differences below tolerance on $rundata->{\"$key NFAILWEAK\"} lines");
+      push (@log, "   $file: differences below tolerance on $rundata->{\"$key NFAILWEAK\"} lines");
     }
     else
     {
       $rundata->{"$thorn $test NFAILSTRONG"}++;
-      push (@log, "  - $file: substantial differences!");
+      push (@log, "   $file: substantial differences");
       my $tmp = $rundata->{"$key NNAN"};
       push (@log, "      caught  $tmp NaNs in new $file") if $tmp;
       $tmp = $rundata->{"$key NNANNOTFOUND"};
@@ -1264,7 +1265,7 @@ sub ReportOnTest
       $tmp = $rundata->{"$key NINFNOTFOUND"};
       push (@log, "      did not reproduce  $tmp Infs from old $file") if $tmp;
       $tmp = $rundata->{"$key NFAILSTRONG"};
-      push (@log, "      significant differences on $tmp (out of $rundata->{\"$key NUMLINES\"}) lines!");
+      push (@log, "      significant differences on $tmp (out of $rundata->{\"$key NUMLINES\"}) lines");
 
       my $maxabsdiff = $rundata->{"$key MAXABSDIFF"};
       my $maxreldiff = $rundata->{"$key MAXRELDIFF"};
@@ -1287,12 +1288,13 @@ sub ReportOnTest
 
   # Look for files created by test not in archive
   # (Note this is not so bad)
+  push (@log, '');
   foreach $file (split (" ",$rundata->{"$thorn $test TESTFILES"}))
   {
     $myfile = quotemeta($file);
     if ($testdata->{"$thorn $test DATAFILES"} !~ m:\b$myfile\b:)
     {
-      push (@log, "            $file not in thorn archive");
+      push (@log, "   $file: not in thorn archive");
       $rundata->{"$thorn $test NFILEEXTRA"}++;
       $rundata->{"$thorn $test FILEEXTRA"} .= " $file";
     }
@@ -1300,6 +1302,7 @@ sub ReportOnTest
 
   # Look for files in archive which are not created in test
   # (Note this is bad)
+  push (@log, '');
   my %filesmissing = ();
   if ($rundata->{"$thorn $test NTESTFILES"})
   {
@@ -1308,7 +1311,7 @@ sub ReportOnTest
       $myfile = quotemeta($file);
       if ($rundata->{"$thorn $test TESTFILES"} !~ m:\b$myfile\b:)
       {
-        push (@log, "            $file not created in test");
+        push (@log, "   $file: not created in test");
         $filesmissing{$file} = 1;
       }
     }
@@ -1322,12 +1325,15 @@ sub ReportOnTest
   }
   $rundata->{"$thorn $test FILEMISSING"} = \%filesmissing;
 
+  # Ensure final newline character
+  push (@log, '');
+
   # write diffs to STDOUT and logfile
   if (@log)
   {
     print join ("\n", @log);
 
-    print LOG join ("\n", @log);
+    # print LOG join ("\n", @log);
     my $logfile = $testdata->{"$thorn $test TESTRUNDIR"} . "/$test.diffs";
     open (LOG, "> $logfile") or die "Couldn't open logfile '$logfile'";
     print LOG join ("\n", @log);
