@@ -22,62 +22,50 @@
 sub create_interface_database
 {
   my($n_system,@inargs) = @_;
-  my(%thorns);
   my(%system_database);
-  my($thorn, @indata);
-  my(@new_interface_data);
-  my(@interface_data);
+  my(%thorns, @thorns);
+  my(%interface_data);
 
   %system_database = @inargs[0..2*$n_system-1];
   %thorns = @inargs[2*$n_system..$#inargs];
+  @thorns = sort keys %thorns;
 
   #  Loop through each  thorn's interface file.
-  foreach $thorn (sort keys %thorns)
+  foreach my $thorn (@thorns)
   {
     print "   $thorn\n";
     #       Get the arrangement name for the thorn
     $thorns{$thorn} =~ m:.*/arrangements/([^/]*)/[^/]*:;
-    $arrangement = $1;
+    my $arrangement = $1;
 
     #       Read the data
-    @indata = &read_file("$thorns{$thorn}/interface.ccl");
+    my @indata = &read_file("$thorns{$thorn}/interface.ccl");
 
     #       Get the interface data from it
-    @new_interface_data = &parse_interface_ccl($arrangement,$thorn, @indata);
+    &parse_interface_ccl($arrangement, $thorn, \@indata, \%interface_data);
 
-    &PrintInterfaceStatistics($thorn, @new_interface_data);
-
-    #       Add the interface to the master interface database
-    push (@interface_data, @new_interface_data);
-
+    &PrintInterfaceStatistics($thorn, \%interface_data);
   }
 
-  @interface_data = &cross_index_interface_data(scalar(keys %thorns), scalar(keys %system_database), (sort keys %thorns), %system_database, @interface_data);
+  &cross_index_interface_data (\@thorns, \%interface_data);
 
-  return @interface_data;
+  return %interface_data;
 }
 
 
 
 sub cross_index_interface_data
 {
-  my($n_thorns, $n_system, @indata) = @_;
-  my(@thorns);
-  my(%interface_data);
+  my($thorns_ref, $interface_data_ref) = @_;
   my(%implementations);
-  my(%system_database);
   my($implementation);
   my(%ancestors);
   my(%friends);
   my($thorn,$thorn_implements,$ancestor_imp,$thorn_ancestor,$message,$hint);
 
-  @thorns = @indata[0..$n_thorns-1];
-  %system_database = @indata[$n_thorns..$n_thorns+2*$n_system-1];
-  %interface_data = @indata[$n_thorns+2*$n_system..$#indata];
-
-  foreach $thorn (@thorns)
+  foreach $thorn (@$thorns_ref)
   {
-    $implementation = $interface_data{"\U$thorn\E IMPLEMENTS"};
+    $implementation = $interface_data_ref->{"\U$thorn\E IMPLEMENTS"};
     if($implementation =~ m:^\s*$:)
     {
       $message = "Thorn $thorn doesn't specify an implementation";
@@ -87,51 +75,52 @@ sub cross_index_interface_data
     }
 
     # Put if statement around this to prevent perl -w from complaining.
-    if($interface_data{"IMPLEMENTATION \U$implementation\E THORNS"})
+    if($interface_data_ref->{"IMPLEMENTATION \U$implementation\E THORNS"})
     {
-      $interface_data{"IMPLEMENTATION \U$implementation\E THORNS"} .= "$thorn ";
+      $interface_data_ref->{"IMPLEMENTATION \U$implementation\E THORNS"} .= "$thorn ";
     }
     else
     {
-      $interface_data{"IMPLEMENTATION \U$implementation\E THORNS"} = "$thorn ";
+      $interface_data_ref->{"IMPLEMENTATION \U$implementation\E THORNS"} = "$thorn ";
     }
 
     $implementations{"\U$implementation\E"} = "$implementation";
   }
 
-  $interface_data{"THORNS"} = join(" ", @thorns);
+  $interface_data_ref->{"THORNS"} = join(" ", @$thorns_ref);
 
   foreach $implementation (sort keys %implementations)
   {
 
     # Put if statement around this to prevent perl -w from complaining.
-    if($interface_data{"IMPLEMENTATIONS"})
+    if($interface_data_ref->{"IMPLEMENTATIONS"})
     {
-      $interface_data{"IMPLEMENTATIONS"} .= $implementations{"\U$implementation\E"} . " ";
+      $interface_data_ref->{"IMPLEMENTATIONS"} .= $implementations{"\U$implementation\E"} . " ";
     }
     else
     {
-      $interface_data{"IMPLEMENTATIONS"} = $implementations{"\U$implementation\E"} . " ";
+      $interface_data_ref->{"IMPLEMENTATIONS"} = $implementations{"\U$implementation\E"} . " ";
     }
 
-    &check_implementation_consistency($implementation, %interface_data);
+    &check_implementation_consistency($implementation, $interface_data_ref);
 
-    %ancestors = &get_implementation_ancestors($implementation, 0,  scalar(keys %system_database), %system_database, %interface_data);
+    my %ancestors = ();
+    &get_implementation_ancestors($implementation, $interface_data_ref, \%ancestors);
 
-    $interface_data{"IMPLEMENTATION \U$implementation\E ANCESTORS"} = join(" ",(sort keys %ancestors));
+    $interface_data_ref->{"IMPLEMENTATION \U$implementation\E ANCESTORS"} = join(" ",(sort keys %ancestors));
 
-    $interface_data{"IMPLEMENTATION \U$implementation\E FRIENDS"} = &get_friends_of_me($implementation, scalar(keys %implementations), (sort keys %implementations),%interface_data);
+    $interface_data_ref->{"IMPLEMENTATION \U$implementation\E FRIENDS"} = &get_friends_of_me($implementation, \%implementations, $interface_data_ref);
 
   }
 
   # Create Hash table with thorns as ancestors
-  foreach $thorn (@thorns)
+  foreach $thorn (@$thorns_ref)
   {
-    $thorn_implements = $interface_data{"\U$thorn\E IMPLEMENTS"};
-    foreach $ancestor_imp ( split(' ', $interface_data{"\U$thorn INHERITS\E"}))
+    $thorn_implements = $interface_data_ref->{"\U$thorn\E IMPLEMENTS"};
+    foreach $ancestor_imp ( split(' ', $interface_data_ref->{"\U$thorn INHERITS\E"}))
     {
       next if($ancestor_imp eq '');
-      $thorn_ancestor{uc($thorn)} .= $interface_data{"IMPLEMENTATION \U$ancestor_imp\E THORNS"}. ' ';
+      $thorn_ancestor{uc($thorn)} .= $interface_data_ref->{"IMPLEMENTATION \U$ancestor_imp\E THORNS"}. ' ';
     }
   }
 
@@ -146,133 +135,83 @@ sub cross_index_interface_data
    &CST_error(0,$message,$hint,__LINE__,__FILE__);
   }
 
-  foreach $thorn (@thorns)
+  foreach $thorn (@$thorns_ref)
   {
-    &check_interface_consistency($thorn, %interface_data);
+    &check_interface_consistency($thorn, $interface_data_ref);
   }
 
   foreach $implementation (sort keys %implementations)
   {
-    %friends = &get_implementation_friends($implementation, 0, %interface_data);
-    $interface_data{"IMPLEMENTATION \U$implementation\E FRIENDS"} = join(" ",(sort keys %friends));
+    my %friends = ();
+    &get_implementation_friends($implementation, $interface_data_ref, \%friends);
+    $interface_data_ref->{"IMPLEMENTATION \U$implementation\E FRIENDS"} = join(" ",(sort keys %friends));
   }
-
-  return %interface_data;
 }
 
 
 sub get_friends_of_me
 {
-  my($implementation, $n_implementations,@indata) = @_;
-  my(@implementations);
-  my(%interface_data);
-  my($other_implementation);
-  my($thorn);
-  my($friend,$friends);
+  my ($implementation, $implementations_ref, $interface_data_ref) = @_;
+  my @friends = ();
 
-  @implementations = @indata[0..$n_implementations-1];
-  %interface_data = @indata[$n_implementations..$#indata];
-
-  $friends = "";
-
-  foreach $other_implementation (@implementations)
+  foreach my $other_implementation (sort keys %$implementations_ref)
   {
 
-    $interface_data{"IMPLEMENTATION \U$other_implementation\E THORNS"} =~ m:(\w+):;
+    $interface_data_ref->{"IMPLEMENTATION \U$other_implementation\E THORNS"} =~ m:(\w+):;
 
-    $thorn = $1;
+    my $thorn = $1;
 
-    foreach $friend (split(" ", $interface_data{"\U$thorn\E FRIEND"}))
+    foreach my $friend (split(" ", $interface_data_ref->{"\U$thorn\E FRIEND"}))
     {
-      if($friend =~ m:$implementation:i)
-      {
-        $friends .= "$other_implementation ";
-      }
+      push (@friends, $other_implementation) if ($friend =~ m:$implementation:i);
     }
   }
 
-  return $friends;
+  return join (' ', @friends);
 }
 
 
 sub get_implementation_friends
 {
-  my($implementation, $n_friends, @indata) = @_;
-  my(%friends);
-  my(%interface_data);
-  my($thorn);
-  my($friend, $friends);
-  my($friends_of_me);
-  my($other_implementation);
+  my($implementation, $interface_data_ref, $friends_ref) = @_;
 
-  if($n_friends > 0)
-  {
-    %friends = @indata[0..2*$n_friends-1];
-    %interface_data = @indata[2*$n_friends..$#indata];
-  }
-  else
-  {
-    %friends = ();
-    %interface_data = @indata;
-  }
+  $interface_data_ref->{"IMPLEMENTATION \U$implementation\E THORNS"} =~ m:(\w+):;
 
-  $interface_data{"IMPLEMENTATION \U$implementation\E THORNS"} =~ m:(\w+):;
-
-  $thorn = $1;
+  my $thorn = $1;
 
   # Recurse
-  foreach $friend (split(" ", $interface_data{"\U$thorn\E FRIEND"}),
-                   split(" ", $interface_data{"IMPLEMENTATION \U$implementation\E FRIENDS"}))
+  foreach my $friend (split(" ", $interface_data_ref->{"\U$thorn\E FRIEND"}),
+                      split(" ", $interface_data_ref->{"IMPLEMENTATION \U$implementation\E FRIENDS"}))
   {
-    if(! $friends{"\U$friend\E"})
+    if(! $friends_ref->{"\U$friend\E"})
     {
-      $friends{"\U$friend\E"} = 1;
-      if(! $interface_data{"IMPLEMENTATION \U$friend\E THORNS"})
+      $friends_ref->{"\U$friend\E"} = 1;
+      if(! $interface_data_ref->{"IMPLEMENTATION \U$friend\E THORNS"})
       {
-        $message = "$implementation is friends with $friend - non-existent implementation";
+        my $message = "$implementation is friends with $friend - non-existent implementation";
         &CST_error(0,$message,"",__LINE__,__FILE__);
         next;
       }
-      %friends = &get_implementation_friends($friend, scalar(keys %friends), %friends,%interface_data);
+      &get_implementation_friends($friend, $interface_data_ref, $friends_ref);
     }
   }
-
-  return %friends;
-
 }
 
 sub get_implementation_ancestors
 {
-  my($implementation, $n_ancestors, $n_system, @indata) = @_;
-  my(%ancestors);
-  my(%interface_data);
-  my($thorn);
-  my($ancestor, $ancestors);
+  my($implementation, $interface_data_ref, $ancestors_ref) = @_;
 
-  if($n_ancestors > 0)
-  {
-    %ancestors = @indata[0..2*$n_ancestors-1];
-    %system_database = @indata[2*$n_ancestors..2*($n_ancestors+$n_system)-1];
-    %interface_data = @indata[2*($n_ancestors+$n_system)..$#indata];
-  }
-  else
-  {
-    %ancestors = ();
-    %system_database = @indata[0..2*$n_system-1];
-    %interface_data = @indata[2*$n_system..$#indata];
-  }
+  $interface_data_ref->{"IMPLEMENTATION \U$implementation\E THORNS"} =~ m:(\w+):;
 
-  $interface_data{"IMPLEMENTATION \U$implementation\E THORNS"} =~ m:(\w+):;
-
-  $thorn = $1;
+  my $thorn = $1;
 
   # Recurse.
-  foreach $ancestor (split(" ", $interface_data{"\U$thorn\E INHERITS"}))
+  foreach my $ancestor (split(" ", $interface_data_ref->{"\U$thorn\E INHERITS"}))
   {
-    if(! $ancestors{"\U$ancestor\E"})
+    if(! $ancestors_ref->{"\U$ancestor\E"})
     {
-      $ancestors{"\U$ancestor\E"} = 1;
-      if(! $interface_data{"IMPLEMENTATION \U$ancestor\E THORNS"})
+      $ancestors_ref->{"\U$ancestor\E"} = 1;
+      if(! $interface_data_ref->{"IMPLEMENTATION \U$ancestor\E THORNS"})
       {
         # Implementation not found give extensive information
         %info = &buildthorns("$cctk_home/arrangements","thorns");
@@ -304,16 +243,14 @@ sub get_implementation_ancestors
         next;
       }
 
-      %ancestors = &get_implementation_ancestors($ancestor, scalar(keys %ancestors), scalar(keys %system_database), %ancestors,%system_database, %interface_data);
+      &get_implementation_ancestors($ancestor, $interface_data_ref, $ancestors_ref);
     }
   }
-
-  return %ancestors;
 }
 
 sub check_implementation_consistency
 {
-  my($implementation, %interface_data) = @_;
+  my($implementation, $interface_data_ref) = @_;
   my(@thorns);
   my($thorn);
   my($thing);
@@ -327,14 +264,14 @@ sub check_implementation_consistency
   my(%attributes);
 
   # Find out which thorns provide this implementation.
-  @thorns = split(" ", $interface_data{"IMPLEMENTATION \U$implementation\E THORNS"});
+  @thorns = split(" ", $interface_data_ref->{"IMPLEMENTATION \U$implementation\E THORNS"});
 
   if(scalar(@thorns) > 1)
   {
     foreach $thorn (@thorns)
     {
       # Record the inheritance
-      foreach $thing (split(" ", $interface_data{"\U$thorn\E INHERITS"}))
+      foreach $thing (split(" ", $interface_data_ref->{"\U$thorn\E INHERITS"}))
       {
         if($thing =~ m:\w:)
         {
@@ -351,7 +288,7 @@ sub check_implementation_consistency
       }
 
       # Record the friends
-      foreach $thing (split(" ", $interface_data{"\U$thorn\E FRIEND"}))
+      foreach $thing (split(" ", $interface_data_ref->{"\U$thorn\E FRIEND"}))
       {
         if($thing =~ m:\w:)
         {
@@ -368,7 +305,7 @@ sub check_implementation_consistency
       }
 
       # Record the public groups
-      foreach $thing (split(" ", $interface_data{"\U$thorn\E PUBLIC GROUPS"}))
+      foreach $thing (split(" ", $interface_data_ref->{"\U$thorn\E PUBLIC GROUPS"}))
       {
         if($thing =~ m:\w:)
         {
@@ -385,7 +322,7 @@ sub check_implementation_consistency
       }
 
       # Record the protected groups
-      foreach $thing (split(" ", $interface_data{"\U$thorn\E PROTECTED GROUPS"}))
+      foreach $thing (split(" ", $interface_data_ref->{"\U$thorn\E PROTECTED GROUPS"}))
       {
         if($thing =~ m:\w:)
         {
@@ -465,7 +402,7 @@ sub check_implementation_consistency
       foreach $thorn (@thorns)
       {
         # Remember which variables are defined in this group.
-        foreach $thing (split(" ",$interface_data{"\U$thorn GROUP $group\E"}))
+        foreach $thing (split(" ",$interface_data_ref->{"\U$thorn GROUP $group\E"}))
         {
           # Put if statement around this to prevent perl -w from complaining.
           if($variables{"\U$thing\E"})
@@ -481,11 +418,11 @@ sub check_implementation_consistency
         # Check variable type definition.
         if($attributes{"VTYPE"})
         {
-          if($attributes{"VTYPE"} ne $interface_data{"\U$thorn GROUP $group\E VTYPE"})
+          if($attributes{"VTYPE"} ne $interface_data_ref->{"\U$thorn GROUP $group\E VTYPE"})
           {
             $message  = "Inconsistent implementations of $implementation";
             $message .= " in thorns " . join(" ", @thorns) . ". ";
-            $message .= "Group $group has inconsistent variable type ($attributes{\"VTYPE\"} and $interface_data{\"\\U$thorn GROUP $group\\E VTYPE\"}). ";
+            $message .= "Group $group has inconsistent variable type ($attributes{\"VTYPE\"} and $interface_data_ref->{\"\\U$thorn GROUP $group\\E VTYPE\"}). ";
             $hint = "All public and protected groups implementing $implementation must have groups with consistent properties";
             &CST_error(0,$message,$hint,__LINE__,__FILE__);
             $n_errors++;
@@ -493,17 +430,17 @@ sub check_implementation_consistency
         }
         else
         {
-          $attributes{"VTYPE"} = $interface_data{"\U$thorn GROUP $group\E VTYPE"};
+          $attributes{"VTYPE"} = $interface_data_ref->{"\U$thorn GROUP $group\E VTYPE"};
         }
 
         # Check group type definition.
         if($attributes{"GTYPE"})
         {
-          if($attributes{"GTYPE"} ne $interface_data{"\U$thorn GROUP $group\E GTYPE"})
+          if($attributes{"GTYPE"} ne $interface_data_ref->{"\U$thorn GROUP $group\E GTYPE"})
           {
             $message  = "Inconsistent implementations of $implementation";
             $message .= " in thorns " . join(" ", @thorns) . ". ";
-            $message .= "Group $group has inconsistent group type ($attributes{\"GTYPE\"} and $interface_data{\"\U$thorn GROUP $group\E GTYPE\"}). ";
+            $message .= "Group $group has inconsistent group type ($attributes{\"GTYPE\"} and $interface_data_ref->{\"\U$thorn GROUP $group\E GTYPE\"}). ";
             $hint = "All public and protected groups implementing $implementation must have groups with consistent properties";
             &CST_error(0,$message,$hint,__LINE__,__FILE__);
             $n_errors++;
@@ -511,13 +448,13 @@ sub check_implementation_consistency
         }
         else
         {
-          $attributes{"GTYPE"} = $interface_data{"\U$thorn GROUP $group\E GTYPE"};
+          $attributes{"GTYPE"} = $interface_data_ref->{"\U$thorn GROUP $group\E GTYPE"};
         }
 
         # Check the number of time levels is consistent.
         if($attributes{"TIMELEVELS"})
         {
-          if($attributes{"TIMELEVELS"} ne $interface_data{"\U$thorn GROUP $group\E TIMELEVELS"})
+          if($attributes{"TIMELEVELS"} ne $interface_data_ref->{"\U$thorn GROUP $group\E TIMELEVELS"})
           {
             $message  = "Inconsistent implementations of $implementation\n";
             $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
@@ -528,13 +465,13 @@ sub check_implementation_consistency
         }
         else
         {
-          $attributes{"TIMELEVELS"} = $interface_data{"\U$thorn GROUP $group\E TIMELEVELS"};
+          $attributes{"TIMELEVELS"} = $interface_data_ref->{"\U$thorn GROUP $group\E TIMELEVELS"};
         }
 
         # Check the size array sizes are consistent.
         if($attributes{"SIZE"})
         {
-          if($attributes{"SIZE"} ne $interface_data{"\U$thorn GROUP $group\E SIZE"})
+          if($attributes{"SIZE"} ne $interface_data_ref->{"\U$thorn GROUP $group\E SIZE"})
           {
             $message  = "Inconsistent implementations of $implementation\n";
             $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
@@ -545,13 +482,13 @@ sub check_implementation_consistency
         }
         else
         {
-          $attributes{"SIZE"} = $interface_data{"\U$thorn GROUP $group\E SIZE"};
+          $attributes{"SIZE"} = $interface_data_ref->{"\U$thorn GROUP $group\E SIZE"};
         }
 
         # Check the ghostsize array sizes are consistent.
         if($attributes{"GHOSTSIZE"})
         {
-          if($attributes{"GHOSTSIZE"} ne $interface_data{"\U$thorn GROUP $group\E GHOSTSIZE"})
+          if($attributes{"GHOSTSIZE"} ne $interface_data_ref->{"\U$thorn GROUP $group\E GHOSTSIZE"})
           {
             $message  = "Inconsistent implementations of $implementation\n";
             $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
@@ -562,13 +499,13 @@ sub check_implementation_consistency
         }
         else
         {
-          $attributes{"GHOSTSIZE"} = $interface_data{"\U$thorn GROUP $group\E GHOSTSIZE"};
+          $attributes{"GHOSTSIZE"} = $interface_data_ref->{"\U$thorn GROUP $group\E GHOSTSIZE"};
         }
 
         # Check the distribution of arrays are consistent.
         if($attributes{"DISTRIB"})
         {
-          if($attributes{"DISTRIB"} ne $interface_data{"\U$thorn GROUP $group\E DISTRIB"})
+          if($attributes{"DISTRIB"} ne $interface_data_ref->{"\U$thorn GROUP $group\E DISTRIB"})
           {
             $message  = "Inconsistent implementations of $implementation\n";
             $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
@@ -579,13 +516,13 @@ sub check_implementation_consistency
         }
         else
         {
-          $attributes{"DISTRIB"} = $interface_data{"\U$thorn GROUP $group\E DISTRIB"};
+          $attributes{"DISTRIB"} = $interface_data_ref->{"\U$thorn GROUP $group\E DISTRIB"};
         }
 
         # Check the dimensions are consistant
         if($attributes{"DIM"} && $attributes{"GTYPE"} ne "SCALAR")
         {
-          if($attributes{"DIM"} ne $interface_data{"\U$thorn GROUP $group\E DIM"})
+          if($attributes{"DIM"} ne $interface_data_ref->{"\U$thorn GROUP $group\E DIM"})
           {
             $message  = "Inconsistent implementations of $implementation\n";
             $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
@@ -596,13 +533,13 @@ sub check_implementation_consistency
         }
         else
         {
-          $attributes{"DIM"} = $interface_data{"\U$thorn GROUP $group\E DIM"};
+          $attributes{"DIM"} = $interface_data_ref->{"\U$thorn GROUP $group\E DIM"};
         }
 
         # Check the staggering are consistant
         if($attributes{"STYPE"})
         {
-          if($attributes{"STYPE"} ne $interface_data{"\U$thorn GROUP $group\E STYPE"})
+          if($attributes{"STYPE"} ne $interface_data_ref->{"\U$thorn GROUP $group\E STYPE"})
           {
             $message  = "Inconsistent implementations of $implementation\n";
             $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
@@ -613,7 +550,7 @@ sub check_implementation_consistency
         }
         else
         {
-          $attributes{"STYPE"} = $interface_data{"\U$thorn GROUP $group\E STYPE"};
+          $attributes{"STYPE"} = $interface_data_ref->{"\U$thorn GROUP $group\E STYPE"};
         }
       }
     }
@@ -639,31 +576,31 @@ sub check_implementation_consistency
 
 sub check_interface_consistency
 {
-  my($thorn, %interface_data) = @_;
+  my($thorn, $interface_data_ref) = @_;
   my($implementation);
   my($group,$var1,$var2,$group1,$group2);
   my($ancestor_imp,$ancestor_thorn,$ancestor2_imp,$ancestor2);
   my($message);
 
   # Find implementation
-  $implementation =  $interface_data{"\U$thorn\E IMPLEMENTS"};
+  $implementation =  $interface_data_ref->{"\U$thorn\E IMPLEMENTS"};
 
   # Loop over ancestors
-  foreach $ancestor_imp (split " ",$interface_data{"IMPLEMENTATION \U$implementation\E ANCESTORS"})
+  foreach $ancestor_imp (split " ",$interface_data_ref->{"IMPLEMENTATION \U$implementation\E ANCESTORS"})
   {
     # Need one thorn which implements this ancestor (we already have checked consistency)
-    $ancestor_thorn = $interface_data{"IMPLEMENTATION \U$ancestor_imp\E THORNS"};
+    $ancestor_thorn = $interface_data_ref->{"IMPLEMENTATION \U$ancestor_imp\E THORNS"};
     if ($ancestor_thorn =~ m:(\w+)[^\w]*:)
     {
       $ancestor_thorn = $1;
     }
-    foreach $group1 (split ' ', $interface_data{"\U$ancestor_thorn\E PUBLIC GROUPS"})
+    foreach $group1 (split ' ', $interface_data_ref->{"\U$ancestor_thorn\E PUBLIC GROUPS"})
     {
-      foreach $var1 (split ' ', $interface_data{"\U$ancestor_thorn\E GROUP \U$group1\E"})
+      foreach $var1 (split ' ', $interface_data_ref->{"\U$ancestor_thorn\E GROUP \U$group1\E"})
       {
-        foreach $ancestor2_imp (split " ",$interface_data{"IMPLEMENTATION \U$implementation\E ANCESTORS"})
+        foreach $ancestor2_imp (split " ",$interface_data_ref->{"IMPLEMENTATION \U$implementation\E ANCESTORS"})
         {
-          $ancestor2 = $interface_data{"IMPLEMENTATION \U$ancestor2_imp\E THORNS"};
+          $ancestor2 = $interface_data_ref->{"IMPLEMENTATION \U$ancestor2_imp\E THORNS"};
           if ($ancestor2 =~ m:(\w+)[^\w]*:)
           {
             $ancestor2 = $1;
@@ -671,7 +608,7 @@ sub check_interface_consistency
           # skip the second ancestor if it is the first one
           next if (uc($ancestor2) eq uc($ancestor_thorn));
 
-          foreach $group2 (split ' ', $interface_data{"\U$ancestor2\E PUBLIC GROUPS"})
+          foreach $group2 (split ' ', $interface_data_ref->{"\U$ancestor2\E PUBLIC GROUPS"})
           {
             if (uc($group1) eq uc($group2))
             {
@@ -683,7 +620,7 @@ sub check_interface_consistency
               $message = "Variable $var1 in group $group1 from ancestor implementation $ancestor_imp in thorn $thorn has same name as \n     a public group: $group2 in ancestor implementation $ancestor2_imp (e.g. thorn $ancestor2)";
               &CST_error(1,$message,"",__LINE__,__FILE__);
             }
-            foreach $var2 (split ' ', $interface_data{"\U$ancestor2\E GROUP \U$group2\E"})
+            foreach $var2 (split ' ', $interface_data_ref->{"\U$ancestor2\E GROUP \U$group2\E"})
             {
               if (uc($var2) eq uc($var1))
               {
@@ -696,18 +633,18 @@ sub check_interface_consistency
       }
     }
 
-    foreach $group (split " ",$interface_data{"\U$thorn\E PRIVATE GROUPS"} . ' '. $interface_data{"\U$thorn\E PUBLIC GROUPS"} )
+    foreach $group (split " ",$interface_data_ref->{"\U$thorn\E PRIVATE GROUPS"} . ' '. $interface_data_ref->{"\U$thorn\E PUBLIC GROUPS"} )
     {
-      if ($interface_data{"\U$ancestor_thorn\E PUBLIC GROUPS"} =~ m:(\b$group\b):)
+      if ($interface_data_ref->{"\U$ancestor_thorn\E PUBLIC GROUPS"} =~ m:(\b$group\b):)
       {
         $message = "Group $group in thorn $thorn has same name as \n     public group in ancestor implementation $ancestor_imp (e.g. thorn $ancestor_thorn)";
         &CST_error(0,$message,"",__LINE__,__FILE__);
       }
-      foreach $var (split " ", $interface_data{"\U$thorn\E GROUP \U$group\E"})
+      foreach $var (split " ", $interface_data_ref->{"\U$thorn\E GROUP \U$group\E"})
       {
-        foreach $pub_anc(split " ", $interface_data{"\U$ancestor_thorn\E PUBLIC GROUPS"})
+        foreach $pub_anc(split " ", $interface_data_ref->{"\U$ancestor_thorn\E PUBLIC GROUPS"})
         {
-          if ($interface_data{"\U$ancestor_thorn\E GROUP \U$pub_anc\E"} =~  m/\b$var\b/i)
+          if ($interface_data_ref->{"\U$ancestor_thorn\E GROUP \U$pub_anc\E"} =~  m/\b$var\b/i)
           {
             $message = "Variable $var in group $group in thorn $thorn has same name as \n     a variable in public group: $pub_anc in ancestor implementation $ancestor_imp (e.g. thorn $ancestor_thorn)";
             &CST_error(0,$message,"",__LINE__,__FILE__);
@@ -735,9 +672,9 @@ sub check_interface_consistency
 
 sub parse_interface_ccl
 {
-  my($arrangement, $thorn, @data) = @_;
+  my($arrangement, $thorn, $data_ref, $interface_data_ref) = @_;
   my($line_number, $line, $block, $type, $variable, $description);
-  my($data, %interface_db);
+  my($data);
   my($implementation);
   my($option,%options);
   my(%known_groups);
@@ -746,24 +683,24 @@ sub parse_interface_ccl
 
   # Initialise some stuff to prevent perl -w from complaining.
 
-  $interface_db{"\U$thorn INHERITS\E"} = "";
-  $interface_db{"\U$thorn FRIEND\E"} = "";
-  $interface_db{"\U$thorn PUBLIC GROUPS\E"} = "";
-  $interface_db{"\U$thorn PROTECTED GROUPS\E"} = "";
-  $interface_db{"\U$thorn PRIVATE GROUPS\E"} = "";
-  $interface_db{"\U$thorn USES HEADER\E"} = "";
-  $interface_db{"\U$thorn FUNCTIONS\E"} = "";
-  $interface_db{"\U$thorn PROVIDES FUNCTION\E"} = " ";
-  $interface_db{"\U$thorn REQUIRES FUNCTION\E"} = " ";
-  $interface_db{"\U$thorn USES FUNCTION\E"} = " ";
-  $interface_db{"\U$thorn ARRANGEMENT\E"} = "$arrangement";
+  $interface_data_ref->{"\U$thorn INHERITS\E"} = "";
+  $interface_data_ref->{"\U$thorn FRIEND\E"} = "";
+  $interface_data_ref->{"\U$thorn PUBLIC GROUPS\E"} = "";
+  $interface_data_ref->{"\U$thorn PROTECTED GROUPS\E"} = "";
+  $interface_data_ref->{"\U$thorn PRIVATE GROUPS\E"} = "";
+  $interface_data_ref->{"\U$thorn USES HEADER\E"} = "";
+  $interface_data_ref->{"\U$thorn FUNCTIONS\E"} = "";
+  $interface_data_ref->{"\U$thorn PROVIDES FUNCTION\E"} = " ";
+  $interface_data_ref->{"\U$thorn REQUIRES FUNCTION\E"} = " ";
+  $interface_data_ref->{"\U$thorn USES FUNCTION\E"} = " ";
+  $interface_data_ref->{"\U$thorn ARRANGEMENT\E"} = "$arrangement";
 
   #   The default block is private.
   $block = "PRIVATE";
 
-  for($line_number = 0; $line_number < @data; $line_number++)
+  for($line_number = 0; $line_number < @$data_ref; $line_number++)
   {
-    $line = $data[$line_number];
+    $line = $data_ref->[$line_number];
 
     #       Parse the line
     if($line =~ m/^\s*(PUBLIC|PROTECTED|PRIVATE)\s*$/i)
@@ -778,7 +715,7 @@ sub parse_interface_ccl
         if(!$implementation)
         {
           $implementation = $1;
-          $interface_db{"\U$thorn\E IMPLEMENTS"} = $implementation;
+          $interface_data_ref->{"\U$thorn\E IMPLEMENTS"} = $implementation;
         }
         else
         {
@@ -797,8 +734,8 @@ sub parse_interface_ccl
     # implementation names can be separated by ,\s, where , are stripped out below
     elsif ($line =~ m/^\s*(INHERITS|FRIEND)\s*:(([,\s]*[a-zA-Z]+[a-zA-Z_0-9]*)*[,\s]*)$/i)
     {
-      $interface_db{"\U$thorn $1\E"} .= $2;
-      $interface_db{"\U$thorn $1\E"}=~s/,/ /g;
+      $interface_data_ref->{"\U$thorn $1\E"} .= $2;
+      $interface_data_ref->{"\U$thorn $1\E"}=~s/,/ /g;
     }
     elsif ($line =~ m/^\s*(PUBLIC|PROTECTED|PRIVATE)\s*:\s*$/i)
     {
@@ -834,20 +771,20 @@ sub parse_interface_ccl
 
       }
 
-      $interface_db{"\U$thorn PROVIDES FUNCTION\E"} .= "$funcname ";
-      $interface_db{"\U$thorn PROVIDES FUNCTION\E $funcname WITH"} .= "$provided_by ";
-      $interface_db{"\U$thorn PROVIDES FUNCTION\E $funcname LANG"} .= "$provided_by_language ";
+      $interface_data_ref->{"\U$thorn PROVIDES FUNCTION\E"} .= "$funcname ";
+      $interface_data_ref->{"\U$thorn PROVIDES FUNCTION\E $funcname WITH"} .= "$provided_by ";
+      $interface_data_ref->{"\U$thorn PROVIDES FUNCTION\E $funcname LANG"} .= "$provided_by_language ";
 
     }
     elsif ($line =~ m/^\s*REQUIRES\s*FUNCTION\s*([a-zA-Z_0-9]+)\s*$/i)
     {
       $funcname = $1;
-      $interface_db{"\U$thorn REQUIRES FUNCTION\E"} .= "$funcname ";
+      $interface_data_ref->{"\U$thorn REQUIRES FUNCTION\E"} .= "$funcname ";
     }
     elsif ($line =~ m/^\s*USES\s*FUNCTION\s*([a-zA-Z_0-9]+)\s*$/i)
     {
       $funcname = $1;
-      $interface_db{"\U$thorn USES FUNCTION\E"} .= "$funcname ";
+      $interface_data_ref->{"\U$thorn USES FUNCTION\E"} .= "$funcname ";
     }
     elsif ($line =~ m/^\s*([a-zA-Z][a-zA-Z_0-9:]+)\s*FUNCTION\s*([a-zA-Z_0-9]+)\s*\((.*)\)\s*$/i)
     {
@@ -857,9 +794,9 @@ sub parse_interface_ccl
 
       $funcargs = $rest;
 
-      $interface_db{"\U$thorn FUNCTIONS\E"} .= "${funcname} ";
-      $interface_db{"\U$thorn FUNCTION\E $funcname ARGS"} .= "${funcargs} ";
-      $interface_db{"\U$thorn FUNCTION\E $funcname RET"} .= "${rettype} ";
+      $interface_data_ref->{"\U$thorn FUNCTIONS\E"} .= "${funcname} ";
+      $interface_data_ref->{"\U$thorn FUNCTION\E $funcname ARGS"} .= "${funcargs} ";
+      $interface_data_ref->{"\U$thorn FUNCTION\E $funcname RET"} .= "${rettype} ";
     }
     elsif ($line =~ m/^\s*SUBROUTINE\s*([a-zA-Z_0-9]+)\s*\((.*)\)\s*$/i)
     {
@@ -869,9 +806,9 @@ sub parse_interface_ccl
 
       $funcargs = $rest;
 
-      $interface_db{"\U$thorn FUNCTIONS\E"} .= "${funcname} ";
-      $interface_db{"\U$thorn FUNCTION\E $funcname ARGS"} .= "${funcargs} ";
-      $interface_db{"\U$thorn FUNCTION\E $funcname RET"} .= "${rettype} ";
+      $interface_data_ref->{"\U$thorn FUNCTIONS\E"} .= "${funcname} ";
+      $interface_data_ref->{"\U$thorn FUNCTION\E $funcname ARGS"} .= "${funcargs} ";
+      $interface_data_ref->{"\U$thorn FUNCTION\E $funcname RET"} .= "${rettype} ";
     }
     elsif ($line =~ m/^\s*(CCTK_)?(CHAR|BYTE|INT|INT1|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)\s*(([a-zA-Z][a-zA-Z_0-9]*)\s*(\[([^]]+)\])?)\s*(.*)\s*$/i)
     {
@@ -893,10 +830,10 @@ sub parse_interface_ccl
       {
         &CST_error(0,"Duplicate group $current_group in thorn $thorn",'',
                    __LINE__,__FILE__);
-        if($data[$line_number+1] =~ m:\{:)
+        if($data_ref->[$line_number+1] =~ m:\{:)
         {
             &CST_error(1,'Skipping interface block','',__LINE__,__FILE__);
-            $line_number++ until ($data[$line_number] =~ m:\}:);
+            $line_number++ until ($data_ref->[$line_number] =~ m:\}:);
         }
         next;
       }
@@ -905,18 +842,18 @@ sub parse_interface_ccl
         $known_groups{"\U$current_group\E"} = 1;
 
         # Initialise some stuff to prevent perl -w from complaining.
-        $interface_db{"\U$thorn GROUP $current_group\E"} = "";
+        $interface_data_ref->{"\U$thorn GROUP $current_group\E"} = "";
       }
 
-      $interface_db{"\U$thorn $block GROUPS\E"} .= " $current_group";
-      $interface_db{"\U$thorn GROUP $current_group\E VTYPE"} = "\U$vtype\E";
+      $interface_data_ref->{"\U$thorn $block GROUPS\E"} .= " $current_group";
+      $interface_data_ref->{"\U$thorn GROUP $current_group\E VTYPE"} = "\U$vtype\E";
 
       # Grab optional group description from end of $options_list
       if ($options_list =~ /(=?)\s*"([^"]*)"\s*$/)
       {
         if (!$1)
         {
-          if ($data[$line_number+1] =~ m/^\s*\{\s*$/)
+          if ($data_ref->[$line_number+1] =~ m/^\s*\{\s*$/)
           {
             &CST_error(1,"Group description for $current_group in thorn " .
                        "$thorn must be placed at end of variable block " .
@@ -942,31 +879,31 @@ sub parse_interface_ccl
 
         if($option =~ m:DIM|DIMENSION:i)
         {
-          $interface_db{"\U$thorn GROUP $current_group\E DIM"} = $options{$option};
+          $interface_data_ref->{"\U$thorn GROUP $current_group\E DIM"} = $options{$option};
         }
         elsif($option =~ m:STAGGER:i)
         {
-          $interface_db{"\U$thorn GROUP $current_group\E STYPE"} = "\U$options{$option}\E";
+          $interface_data_ref->{"\U$thorn GROUP $current_group\E STYPE"} = "\U$options{$option}\E";
         }
         elsif($option =~ m:TYPE:i)
         {
-          $interface_db{"\U$thorn GROUP $current_group\E GTYPE"} = "\U$options{$option}\E";
+          $interface_data_ref->{"\U$thorn GROUP $current_group\E GTYPE"} = "\U$options{$option}\E";
         }
         elsif($option =~ m:TIMELEVELS:i)
         {
-          $interface_db{"\U$thorn GROUP $current_group\E TIMELEVELS"} = "\U$options{$option}\E";
+          $interface_data_ref->{"\U$thorn GROUP $current_group\E TIMELEVELS"} = "\U$options{$option}\E";
         }
         elsif($option =~ m:GHOSTSIZE:i)
         {
-          $interface_db{"\U$thorn GROUP $current_group\E GHOSTSIZE"} = "\U$options{$option}\E";
+          $interface_data_ref->{"\U$thorn GROUP $current_group\E GHOSTSIZE"} = "\U$options{$option}\E";
         }
         elsif($option =~ m:DISTRIB:i)
         {
-          $interface_db{"\U$thorn GROUP $current_group\E DISTRIB"} = "\U$options{$option}\E";
+          $interface_data_ref->{"\U$thorn GROUP $current_group\E DISTRIB"} = "\U$options{$option}\E";
         }
         elsif($option =~ m:SIZE:i)
         {
-          $interface_db{"\U$thorn GROUP $current_group\E SIZE"} = "\U$options{$option}\E";
+          $interface_data_ref->{"\U$thorn GROUP $current_group\E SIZE"} = "\U$options{$option}\E";
         }
         elsif($option =~ m:TAGS:i)
         {
@@ -978,7 +915,7 @@ sub parse_interface_ccl
           $options{$option} =~ s/\\/\\\\/g;
           $options{$option} =~ s/\"/\\\"/g;
 
-          $interface_db{"\U$thorn GROUP $current_group\E TAGS"} = $options{$option};
+          $interface_data_ref->{"\U$thorn GROUP $current_group\E TAGS"} = $options{$option};
         }
         else
         {
@@ -991,73 +928,73 @@ sub parse_interface_ccl
       }
 
       # Put in defaults
-      if(! $interface_db{"\U$thorn GROUP $current_group\E GTYPE"})
+      if(! $interface_data_ref->{"\U$thorn GROUP $current_group\E GTYPE"})
       {
-        $interface_db{"\U$thorn GROUP $current_group\E GTYPE"} = "SCALAR";
+        $interface_data_ref->{"\U$thorn GROUP $current_group\E GTYPE"} = "SCALAR";
       }
 
-      if(! $interface_db{"\U$thorn GROUP $current_group\E DIM"})
+      if(! $interface_data_ref->{"\U$thorn GROUP $current_group\E DIM"})
       {
-        $interface_db{"\U$thorn GROUP $current_group\E DIM"} = 3;
+        $interface_data_ref->{"\U$thorn GROUP $current_group\E DIM"} = 3;
       }
 
-      if(! $interface_db{"\U$thorn GROUP $current_group\E TIMELEVELS"})
+      if(! $interface_data_ref->{"\U$thorn GROUP $current_group\E TIMELEVELS"})
       {
-        $interface_db{"\U$thorn GROUP $current_group\E TIMELEVELS"} = 1;
+        $interface_data_ref->{"\U$thorn GROUP $current_group\E TIMELEVELS"} = 1;
       }
 
-      if(! $interface_db{"\U$thorn GROUP $current_group\E STYPE"})
+      if(! $interface_data_ref->{"\U$thorn GROUP $current_group\E STYPE"})
       {
-        $interface_db{"\U$thorn GROUP $current_group\E STYPE"} = "NONE";
+        $interface_data_ref->{"\U$thorn GROUP $current_group\E STYPE"} = "NONE";
       }
 
-      if(! $interface_db{"\U$thorn GROUP $current_group\E DISTRIB"})
+      if(! $interface_data_ref->{"\U$thorn GROUP $current_group\E DISTRIB"})
       {
-        $interface_db{"\U$thorn GROUP $current_group\E DISTRIB"} = "DEFAULT";
+        $interface_data_ref->{"\U$thorn GROUP $current_group\E DISTRIB"} = "DEFAULT";
       }
 
-      if(! $interface_db{"\U$thorn GROUP $current_group\E COMPACT"})
+      if(! $interface_data_ref->{"\U$thorn GROUP $current_group\E COMPACT"})
       {
-        $interface_db{"\U$thorn GROUP $current_group\E COMPACT"} = 0;
+        $interface_data_ref->{"\U$thorn GROUP $current_group\E COMPACT"} = 0;
       }
 
       # Override defaults for scalars
-      if($interface_db{"\U$thorn GROUP $current_group\E GTYPE"} eq "SCALAR")
+      if($interface_data_ref->{"\U$thorn GROUP $current_group\E GTYPE"} eq "SCALAR")
       {
-        $interface_db{"\U$thorn GROUP $current_group\E DIM"} = 0;
-        $interface_db{"\U$thorn GROUP $current_group\E DISTRIB"} = "CONSTANT";
+        $interface_data_ref->{"\U$thorn GROUP $current_group\E DIM"} = 0;
+        $interface_data_ref->{"\U$thorn GROUP $current_group\E DISTRIB"} = "CONSTANT";
       }
 
       # Check that it is a known group type
-      if($interface_db{"\U$thorn GROUP $current_group\E GTYPE"} !~ m:^\s*(SCALAR|GF|ARRAY)\s*$:)
+      if($interface_data_ref->{"\U$thorn GROUP $current_group\E GTYPE"} !~ m:^\s*(SCALAR|GF|ARRAY)\s*$:)
       {
           $message =  "Unknown GROUP TYPE " .
-          $interface_db{"\U$thorn GROUP $current_group\E GTYPE"} .
+          $interface_data_ref->{"\U$thorn GROUP $current_group\E GTYPE"} .
             " for group $current_group of thorn $thorn";
           $hint = "Allowed group types are SCALAR, GF or ARRAY";
           &CST_error(0,$message,$hint,__LINE__,__FILE__);
-          if($data[$line_number+1] =~ m:\{:)
+          if($data_ref->[$line_number+1] =~ m:\{:)
           {
               &CST_error(1,"Skipping interface block in $thorn","",
                          __LINE__,__FILE__);
-              $line_number++ until ($data[$line_number] =~ m:\}:);
+              $line_number++ until ($data_ref->[$line_number] =~ m:\}:);
           }
         next;
       }
 
       # Check that it is a known distribution type
-      if($interface_db{"\U$thorn GROUP $current_group\E DISTRIB"} !~ m:DEFAULT|CONSTANT:)
+      if($interface_data_ref->{"\U$thorn GROUP $current_group\E DISTRIB"} !~ m:DEFAULT|CONSTANT:)
       {
           $message =  "Unknown DISTRIB TYPE " .
-          $interface_db{"\U$thorn GROUP $current_group\E DISTRIB"} .
+          $interface_data_ref->{"\U$thorn GROUP $current_group\E DISTRIB"} .
             " for group $current_group of thorn $thorn";
           $hint = "Allowed distribution types are DEFAULT or CONSTANT";
           &CST_error(0,$message,"",__LINE__,__FILE__);
-          if($data[$line_number+1] =~ m:\{:)
+          if($data_ref->[$line_number+1] =~ m:\{:)
           {
               &CST_error(1,"Skipping interface block in $thorn",'',
                          __LINE__,__FILE__);
-              $line_number++ until ($data[$line_number] =~ m:\}:);
+              $line_number++ until ($data_ref->[$line_number] =~ m:\}:);
           }
         next;
       }
@@ -1066,16 +1003,16 @@ sub parse_interface_ccl
       if($isgrouparray)
       {
         # get its size
-        $interface_db{"\U$thorn GROUP $current_group\E VARARRAY_SIZE"} = $grouparray_size;
+        $interface_data_ref->{"\U$thorn GROUP $current_group\E VARARRAY_SIZE"} = $grouparray_size;
       }
         # Fill in data for the scalars/arrays/functions
         $line_number++;
-        if($data[$line_number] =~ m/^\s*\{\s*$/)
+        if($data_ref->[$line_number] =~ m/^\s*\{\s*$/)
         {
           $line_number++;
-          while($data[$line_number] !~ m:\}:i)
+          while($data_ref->[$line_number] !~ m:\}:i)
           {
-            @functions = split(/[^a-zA-Z_0-9]+/, $data[$line_number]);
+            @functions = split(/[^a-zA-Z_0-9]+/, $data_ref->[$line_number]);
             foreach $function (@functions)
             {
               if ($function eq $current_group)
@@ -1102,7 +1039,7 @@ sub parse_interface_ccl
                 {
                   $known_variables{"\U$function\E"} = 1;
 
-                  $interface_db{"\U$thorn GROUP $current_group\E"} .= " $function";
+                  $interface_data_ref->{"\U$thorn GROUP $current_group\E"} .= " $function";
                 }
                 else
                 {
@@ -1114,7 +1051,7 @@ sub parse_interface_ccl
             $line_number++;
           }
           # Grab optional group description
-          $data[$line_number] =~ m:\}\s*"([^"]*)":;
+          $data_ref->[$line_number] =~ m:\}\s*"([^"]*)":;
           $description = $1;
         }
         else
@@ -1125,7 +1062,7 @@ sub parse_interface_ccl
           {
             $known_variables{"\U$function\E"} = 1;
 
-            $interface_db{"\U$thorn GROUP $current_group\E"} .= " $function";
+            $interface_data_ref->{"\U$thorn GROUP $current_group\E"} .= " $function";
           }
           else
           {
@@ -1136,31 +1073,31 @@ sub parse_interface_ccl
           # Decrement the line number, since the line is the first line of the next CCL statement.
           $line_number--;
         }
-        $interface_db{"\U$thorn GROUP $current_group\E DESCRIPTION"} = $description;
+        $interface_data_ref->{"\U$thorn GROUP $current_group\E DESCRIPTION"} = $description;
     }
     elsif ($line =~ m/^\s*(USES\s*INCLUDE)S?\s*(SOURCE)S?\s*:\s*(.*)\s*$/i)
     {
-      $interface_db{"\U$thorn USES SOURCE\E"} .= " $3";
+      $interface_data_ref->{"\U$thorn USES SOURCE\E"} .= " $3";
     }
     elsif ($line =~ m/^\s*(USES\s*INCLUDE)S?\s*(HEADER)?S?\s*:\s*(.*)\s*$/i)
     {
-      $interface_db{"\U$thorn USES HEADER\E"} .= " $3";
+      $interface_data_ref->{"\U$thorn USES HEADER\E"} .= " $3";
     }
     elsif ($line =~ m/^\s*(INCLUDE)S?\s*(SOURCE)S?\s*:\s*(.*)\s+IN\s+(.*)\s*$/i)
     {
       $header = $3;
       $header =~ s/ //g;
-      $interface_db{"\U$thorn ADD SOURCE\E"} .= " $header";
+      $interface_data_ref->{"\U$thorn ADD SOURCE\E"} .= " $header";
 #      print "Adding $header to $4\n";
-      $interface_db{"\U$thorn ADD SOURCE $header TO\E"} = $4;
+      $interface_data_ref->{"\U$thorn ADD SOURCE $header TO\E"} = $4;
     }
     elsif ($line =~ m/^\s*(INCLUDE)S?\s*(HEADER)?S?\s*:\s*(\S*)\s+IN\s+(\S*)\s*$/i)
     {
       $header = $3;
       $header =~ s/ //g;
-      $interface_db{"\U$thorn ADD HEADER\E"} .= " $header";
+      $interface_data_ref->{"\U$thorn ADD HEADER\E"} .= " $header";
 #      print "Adding $header to $4\n";
-      $interface_db{"\U$thorn ADD HEADER $header TO\E"} = $4;
+      $interface_data_ref->{"\U$thorn ADD HEADER $header TO\E"} = $4;
     }
     else
     {
@@ -1169,7 +1106,7 @@ sub parse_interface_ccl
         &CST_error(0,'...Skipping interface block with missing keyword....','',
                    __LINE__,__FILE__);
 
-        $line_number++ until ($data[$line_number] =~ m:\}:);
+        $line_number++ until ($data_ref->[$line_number] =~ m:\}:);
       }
       else
       {
@@ -1177,8 +1114,6 @@ sub parse_interface_ccl
       }
     }
   }
-
-  return %interface_db;
 }
 
 
@@ -1203,26 +1138,26 @@ sub print_interface_database
 #@@*/
 sub PrintInterfaceStatistics
 {
-  my($thorn, %interface_database) = @_;
+  my($thorn, $interface_database_ref) = @_;
   my($block);
   my($sep);
 
-  print "           Implements: " . $interface_database{"\U$thorn IMPLEMENTS"} . "\n";
+  print "           Implements: " . $interface_database_ref->{"\U$thorn IMPLEMENTS"} . "\n";
 
-  if($interface_database{"\U$thorn INHERITS"} ne "")
+  if($interface_database_ref->{"\U$thorn INHERITS"} ne "")
   {
-    print "           Inherits:  " . $interface_database{"\U$thorn INHERITS"} . "\n";
+    print "           Inherits:  " . $interface_database_ref->{"\U$thorn INHERITS"} . "\n";
   }
 
-  if($interface_database{"\U$thorn FRIEND"} ne "")
+  if($interface_database_ref->{"\U$thorn FRIEND"} ne "")
   {
-    print "           Friend of: " . $interface_database{"\U$thorn FRIEND"} . "\n";
+    print "           Friend of: " . $interface_database_ref->{"\U$thorn FRIEND"} . "\n";
   }
 
   $sep = "           ";
   foreach $block ("Public", "Protected", "Private")
   {
-    print $sep . scalar(split(" ", $interface_database{"\U$thorn $block\E GROUPS"})) . " $block";
+    print $sep . scalar(split(" ", $interface_database_ref->{"\U$thorn $block\E GROUPS"})) . " $block";
     $sep = ", ";
   }
 
