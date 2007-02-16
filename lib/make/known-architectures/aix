@@ -65,8 +65,8 @@ else
   CCTK_WriteLine make.arch.defn 'AIX_f77_FLAGS = -qfixed'
   CCTK_WriteLine make.arch.defn 'AIX_F_FLAGS = -qfixed'
   CCTK_WriteLine make.arch.defn 'AIX_f_FLAGS = -qfixed'
-  FPP='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl'
 
+  : ${FPP='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl'}
   : ${F_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'}
   : ${F77_DEPEND=$F_DEPEND}
 
