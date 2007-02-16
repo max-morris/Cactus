@@ -165,7 +165,7 @@ endef
 
 # Define how to do a f90 compilation
 define PREPROCESS_f90
-cat $< > $(basename $(notdir $<)).f90
+cat $< > $(basename $(notdir $<)).$(F90_SUFFIX)
 endef
 
 
