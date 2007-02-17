@@ -194,8 +194,10 @@ if test -z "$MKDIR" ; then
   AC_CHECK_PROGS(MKDIR, mkdir)
 fi
 
-if test -z "$SHELL" ; then
-  AC_CHECK_PROGS(SHELL, sh bash)
+# autoconf sets $SHELL unconditionally; we can only overwrite it here.
+# The user has to set $CONFIG_SHELL to override this.
+if test -z "$CONFIG_SHELL" ; then
+  AC_CHECK_PROGS(SHELL, bash sh)
 fi
 
 AC_SUBST(LD)
