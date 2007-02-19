@@ -6,7 +6,7 @@
 #   @desc
 #            Configure Cactus to compile with the LAM version of MPI.
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/LAM,v 1.14 2006-08-28 15:23:48 tradke Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/LAM,v 1.15 2007-02-19 09:49:14 tradke Exp $
 # @@*/
 
 echo '  LAM selected'
@@ -85,7 +85,7 @@ else
   MPI_LIBS='mpi lam dl pthread'
 
   if test -r "$LAM_LIB_DIR/liblammpi++.a" ; then
-    MPI_LIBS="$MPI_LIBS lammpi++"
+    MPI_LIBS="lammpi++ $MPI_LIBS"
   fi
 
   # if a LAM config header file exists, extract possible device libs and libdirs
