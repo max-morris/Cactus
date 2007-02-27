@@ -50,7 +50,7 @@ else
   fi
 
   # Fortran compilers
-                  # suppress congratulatory message on successful compilation
+  # suppress congratulatory message on successful compilation
   : ${F90FLAGS="-q$AIX_BITS -qextname -qsuppress=1501-510:cmpmsg"}
   : ${F77FLAGS="-q$AIX_BITS -qextname -qsuppress=1501-510:cmpmsg"}
   : ${F90_DEBUG_FLAGS='-g'}
@@ -59,15 +59,15 @@ else
   : ${F90_SUFFIX='f'}
   CCTK_WriteLine make.arch.defn 'F90FLAGS += $(AIX_$(subst .,,$(suffix $<))_FLAGS)'
   CCTK_WriteLine make.arch.defn 'F77FLAGS += $(AIX_$(subst .,,$(suffix $<))_FLAGS)'
-  CCTK_WriteLine make.arch.defn 'AIX_F90_FLAGS ='
-  CCTK_WriteLine make.arch.defn 'AIX_f90_FLAGS ='
+  CCTK_WriteLine make.arch.defn 'AIX_F90_FLAGS = -qfree'
+  CCTK_WriteLine make.arch.defn 'AIX_f90_FLAGS = -qfree'
   CCTK_WriteLine make.arch.defn 'AIX_F77_FLAGS = -qfixed'
   CCTK_WriteLine make.arch.defn 'AIX_f77_FLAGS = -qfixed'
   CCTK_WriteLine make.arch.defn 'AIX_F_FLAGS = -qfixed'
   CCTK_WriteLine make.arch.defn 'AIX_f_FLAGS = -qfixed'
 
   : ${FPP='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl'}
-  : ${F_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'}
+  : ${F_DEPEND='$(FPP) -M $(FPPFLAGS)'}
   : ${F77_DEPEND=$F_DEPEND}
 
   F77_VERSION=`$F77 2>&1 | head -n1`
@@ -116,7 +116,6 @@ else
 
   case "$F90" in
     xlf|xlf_r|xlf90|xlf90_r)
-     : ${F90_DEPEND='$(F90) -E -M $(F90FLAGS)'}
      : ${F90FLAGS="-q$AIX_BITS"}
      : ${F90_OPTIMISE_FLAGS="-O3 -qarch=auto -qtune=auto -qcache=auto -qhot"}
      ;;
@@ -127,7 +126,6 @@ else
 
   case "$F77" in
     xlf|xlf_r|xlf77|xlf77_r|xlf90|xlf90_r)
-     : ${F77_DEPEND='$(F77) -E -M $(F77FLAGS)'}
      : ${FF77LAGS="-q$AIX_BITS"}
      : ${F77_OPTIMISE_FLAGS="-O3 -qarch=auto -qtune=auto -qcache=auto -qhot"}
      ;;
@@ -140,9 +138,6 @@ else
   : ${ARFLAGS="-X$AIX_BITS -rucs"}
   if test -z "$LIBS" -a "$LD" != 'xlf90' ; then
     LIBS=xlf90
-    if test -r /usr/lib/libxlopt.a ; then
-      LIBS="$LIBS xlopt"
-    fi
   fi
 
   # in 32-bit mode: allow each process to use up to 2 GB of virtual memory
