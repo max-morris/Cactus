@@ -113,6 +113,8 @@ void CCTK_FCALL CCTK_FNAME (CCTK_ParameterSetNotifyUnregister)
                            (CCTK_INT *status, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_ParameterValString)
                            (CCTK_INT *nchars, THREE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_ParameterSet)
+                           (CCTK_INT *status, THREE_FORTSTRING_ARG);
 
 /********************************************************************
  ********************* Local Routine Prototypes *********************
@@ -685,6 +687,19 @@ int CCTK_ParameterSet (const char *name, const char *thorn, const char *value)
   }
 
   return (retval);
+}
+
+
+void CCTK_FCALL CCTK_FNAME (CCTK_ParameterSet)
+                           (CCTK_INT *status, THREE_FORTSTRING_ARG)
+{
+  THREE_FORTSTRING_CREATE (name, thorn, value)
+
+  *status = CCTK_ParameterSet (name, thorn, value);
+
+  free (name);
+  free (thorn);
+  free (value);
 }
 
 
