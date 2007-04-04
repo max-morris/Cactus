@@ -673,6 +673,18 @@ EOF
     CRAY*X-MP:*:*:*)
 	echo xmp-cray-unicos
         exit 0 ;;
+    CRAY*XT3:*:*:*)
+	echo xt3-cray-catamount
+        exit 0 ;;
+    CRAY*XT4:*:*:*)
+	echo xt3-cray-catamount
+        exit 0 ;;
+    cray*xt3:*:*:*)
+	echo xt3-cray-catamount
+        exit 0 ;;
+    cray*xt4:*:*:*)
+	echo xt3-cray-catamount
+        exit 0 ;;
     CRAY*Y-MP:*:*:*)
 	echo ymp-cray-unicos${UNAME_RELEASE}
 	exit 0 ;;
