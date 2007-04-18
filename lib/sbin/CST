@@ -6,7 +6,7 @@
 #  @desc
 #             Parses the the configuration files for thorns.
 #  @enddesc
-#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.76 2005-09-25 20:05:31 schnetter Exp $
+#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.77 2007-04-18 18:10:55 schnetter Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -586,7 +586,7 @@ sub TopoSort
       # otherwise we'll get a cyclic list later in the topological sort
       $uses_thorns .= "$thorn $_\n" if ($thorn ne $_);
     }
-    $uses_thorns = "dummy $thorn\n" if (! $uses_thorns);
+    $uses_thorns = "cctk_unlikely_dummy_name $thorn\n" if (! $uses_thorns);
     $data .= $uses_thorns;
   }
 
@@ -607,7 +607,7 @@ sub TopoSort
     &CST_error (0,  "Tsort script dumped core\n" ) if $dumped_core;
 
     $data =  join(' ', split("\n", $data));
-    $data =~ s/dummy//;
+    $data =~ s/cctk_unlikely_dummy_name//;
     $data =~ s/  / /;
   }
   
