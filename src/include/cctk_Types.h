@@ -38,28 +38,40 @@ typedef const char * CCTK_STRING;
 
 #ifdef HAVE_CCTK_REAL16
 #define HAVE_CCTK_COMPLEX32 1
-typedef struct
+typedef struct CCTK_COMPLEX32
 {
   CCTK_REAL16 Re;
   CCTK_REAL16 Im;
+#ifdef __cplusplus
+  CCTK_REAL16 real() const { return Re; }
+  CCTK_REAL16 imag() const { return Im; }
+#endif
 } CCTK_COMPLEX32;
 #endif
 
 #ifdef HAVE_CCTK_REAL8
 #define HAVE_CCTK_COMPLEX16 1
-typedef struct
+typedef struct CCTK_COMPLEX16
 {
   CCTK_REAL8 Re;
   CCTK_REAL8 Im;
+#ifdef __cplusplus
+  CCTK_REAL8 real() const { return Re; }
+  CCTK_REAL8 imag() const { return Im; }
+#endif
 } CCTK_COMPLEX16;
 #endif
 
 #ifdef HAVE_CCTK_REAL4
 #define HAVE_CCTK_COMPLEX8 1
-typedef struct
+typedef struct CCTK_COMPLEX8
 {
   CCTK_REAL4 Re;
   CCTK_REAL4 Im;
+#ifdef __cplusplus
+  CCTK_REAL4 real() const { return Re; }
+  CCTK_REAL4 imag() const { return Im; }
+#endif
 } CCTK_COMPLEX8;
 #endif
 
