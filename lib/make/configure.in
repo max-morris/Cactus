@@ -255,28 +255,32 @@ AC_SUBST(WARN_MODE)
 # Set the warning flags if they've not been set by now
 # (using GNU compiler warning flags as a reasonable default)
 AC_SUBST(C_WARN_FLAGS)
-if test -z "$C_WARN_FLAGS" -a "$CC" = 'gcc' ; then
-  C_WARN_FLAGS='-Wall -W -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Winline'
+if test "$CC" = 'gcc' ; then
+  : ${C_WARN_FLAGS='-Wall -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wbad-function-cast -Wsign-compare'}
 else
   : ${C_WARN_FLAGS=''}
 fi
 
 AC_SUBST(CXX_WARN_FLAGS)
-if test -z "$CXX_WARN_FLAGS" -a \( "$CXX" = 'c++' -o "$CXX" = 'g++' \) ; then
-  CXX_WARN_FLAGS='-Wall -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Winline -Woverloaded-virtual'
+if test "$CXX" = 'c++' -o "$CXX" = 'g++' ; then
+  : ${CXX_WARN_FLAGS='-Wall -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Woverloaded-virtual'}
 else
   : ${CXX_WARN_FLAGS=''}
 fi
 
 AC_SUBST(F77_WARN_FLAGS)
-if test -z "$F77_WARN_FLAGS" -a "$F77" = 'g77' ; then
-  F77_WARN_FLAGS='-Wall'
+if test "$F77" = 'g77' ; then
+  : ${F77_WARN_FLAGS='-Wall'}
 else
   : ${F77_WARN_FLAGS=''}
 fi
 
 AC_SUBST(F90_WARN_FLAGS)
-: ${F90_WARN_FLAGS=''}
+if test "$F90" = 'gfortran' ; then
+  : ${F90_WARN_FLAGS='-Wall -Wshadow -Wsurprising'}
+else
+  : ${F90_WARN_FLAGS=''}
+fi
 
 
 AC_SUBST(DEBUG_MODE)
