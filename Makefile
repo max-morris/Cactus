@@ -19,7 +19,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.174 2006-06-06 15:25:39 rideout Exp $
+#   @version $Id: Makefile,v 1.175 2007-05-21 20:58:15 schnetter Exp $
 # @@*/
 
 ##################################################################################
@@ -272,6 +272,7 @@ $(CONFIGURATIONS):
 	  echo "Building configuration $@"; \
 	  echo $(DIVIDER);\
 	fi
+	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CONFIGS_DIR)/$@ CCTK_HOME=$(CCTK_HOME) $(TPARFLAGS) rebuild
 	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CONFIGS_DIR)/$@ CCTK_HOME=$(CCTK_HOME) $(TPARFLAGS)
 
 # Clean target
