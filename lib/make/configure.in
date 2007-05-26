@@ -557,13 +557,14 @@ CCTK_CHECK_HEADERS(crypt.h,[#ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif])
 CCTK_CHECK_HEADERS(signal.h)
+CCTK_CHECK_HEADERS(malloc.h)
 
 AC_HEADER_TIME
 
 #Check type of socklen
 
 # Check if we have socklen_t available
-AC_MSG_CHECKING([if socklen_t is defined])
+AC_MSG_CHECKING([whether socklen_t is defined])
 AC_CACHE_VAL(cctk_cv_have_socklen_t,
 [AC_TRY_COMPILE([#include <stdio.h>
 #include <stdlib.h>
@@ -615,6 +616,27 @@ if test "$cctk_cv_have_SOCKET" = 'yes'; then
 else
   AC_MSG_RESULT(no)
 fi
+
+CCTK_CHECK_FUNCS(mallinfo)
+CCTK_CHECK_FUNCS(mallopt)
+
+# Check if M_MMAP_THRESHOLD is defined
+AC_MSG_CHECKING([whether M_MMAP_THRESHOLD is defined])
+AC_CACHE_VAL(cctk_cv_have_M_MMAP_THRESHOLD,
+[AC_TRY_COMPILE([#include <stdlib.h>
+#ifdef HAVE_MALLOC_H
+#include <malloc.h>
+#endif],
+[int x=M_MMAP_THRESHOLD; return 0], eval "cctk_cv_have_M_MMAP_THRESHOLD=yes",
+eval "cctk_cv_have_M_MMAP_THRESHOLD=no")
+])
+if test "$cctk_cv_have_M_MMAP_THRESHOLD" = 'yes'; then
+  AC_DEFINE(HAVE_M_MMAP_THRESHOLD_VALUE)
+  AC_MSG_RESULT(yes)
+else
+  AC_MSG_RESULT(no)
+fi
+
 
 # Check if we have __int64
 AC_MSG_CHECKING([if __int64 is defined])

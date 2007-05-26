@@ -5,7 +5,7 @@
 #   @desc
 #            Timestamp file for forcing reconfiguring configurations
 #   @enddesc
-#   @version $Id: force-reconfigure,v 1.10 2006-07-19 11:02:36 schnetter Exp $
+#   @version $Id: force-reconfigure,v 1.11 2007-05-26 20:06:56 schnetter Exp $
 # @@*/
 
 31 Mar 2004: created
@@ -17,3 +17,4 @@
 08 Nov 2004: add HAVE_HDF5_STREAM_VFD and HDF5_LFS_FLAGS makefile variables
 10 Mar 2006: fix order of external/system libs on the linker command line
 19 Jul 2006: detect presence of real*16 in Fortran correctly
+26 May 2007: check for <malloc.h>, mallinfo, mallopt, and M_MMAP_THRESHOLD
