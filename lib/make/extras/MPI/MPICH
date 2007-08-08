@@ -6,7 +6,7 @@
 #   @desc
 #            Configuration options for MPI=MPICH
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.26 2006-07-05 16:00:50 swhite Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/extras/MPI/MPICH,v 1.27 2007-08-08 12:04:13 tradke Exp $
 # @@*/
 
 
@@ -43,13 +43,22 @@ fi
 # Find the MPICH architecture
 
 if test -z "$MPICH_ARCH" ; then
-  if test -x "$MPICH_DIR/bin/tarch" ; then
-    MPICH_ARCH=`$MPICH_DIR/bin/tarch`
-    echo "  MPICH architecture is $MPICH_ARCH"
-  else
-    echo "  Cannot execute $MPICH_DIR/bin/tarch"
-    exit 2
+  # MPICH2 doesn't install tarch
+  if test ! -x "$MPICH_DIR/bin/mpich2version" ; then
+    if test -x "$MPICH_DIR/bin/tarch" ; then
+      MPICH_ARCH=`$MPICH_DIR/bin/tarch`
+      echo "  MPICH architecture is $MPICH_ARCH"
+    else
+      echo "  Cannot execute $MPICH_DIR/bin/tarch"
+      exit 2
+    fi
   fi
+fi
+
+if test -x "$MPICH_DIR/bin/mpich2version" ; then
+  # see MPICH2 User's Guide, sect. 5.3: Special Issues for C++
+  CXXFLAGS="$CXXFLAGS -DMPICH_IGNORE_CXX_SEEK"
+  CPPFLAGS="$CPPFLAGS -DMPICH_IGNORE_CXX_SEEK"
 fi
 
 # Find the MPICH device - this isn't necessary for mpich-1.2.0
@@ -152,8 +161,21 @@ case "$MPICH_DEVICE" in
     # otherwise leave them empty
     mpichlib_conf_file="$MPICH_DIR/etc/mpichlib.conf"
     if test -r "$mpichlib_conf_file" ; then
-      base_lib_list=`grep BASE_LIB_LIST $mpichlib_conf_file | perl -ne 's/BASE_LIB_LIST="(.+)"/\1/; print'`
       MPI_WITH_PMPI=`grep MPI_WITH_PMPI $mpichlib_conf_file | perl -ne 's/MPI_WITH_PMPI="(.+)"/\1/; print'`
+      base_lib_list=`grep BASE_LIB_LIST $mpichlib_conf_file | perl -ne 's/BASE_LIB_LIST="(.+)"/\1/; print'`
+      MPICH_DEVICE_LIB_DIR=`echo "$base_lib_list" | perl -nae '@libdirs = (); foreach $libdir (@F) { push (@libdirs, $libdir) if ($libdir =~ s/^-L(.+)/\1/) } print "@libdirs"'`
+      MPICH_DEVICE_LIBS=`echo "$base_lib_list" | perl -nae '@libs = (); foreach $lib (@F) { push (@libs, $lib) if ($lib =~ s/^-l(.+)/\1/) } print "@libs"'`
+    elif test -x "$MPICH_DIR/bin/mpich2version" -a -f "$MPICH_DIR/etc/mpicc.conf"; then
+      mpich2_conf_file="$MPICH_DIR/etc/mpicc.conf"
+
+      # for MPICH2: reverse the value of NEEDSPLIB into MPI_WITH_PMPI
+      MPI_WITH_PMPI=`grep NEEDSPLIB $mpich2_conf_file | perl -ne 's/NEEDSPLIB="(.+)"/\1/; print'`
+      if test "$MPI_WITH_PMPI" = 'no'; then
+        MPI_WITH_PMPI='yes'
+      elif test "$MPI_WITH_PMPI" = 'yes'; then
+        MPI_WITH_PMPI='no'
+      fi
+      base_lib_list=`grep MPI_OTHERLIBS $mpich2_conf_file | perl -ne 's/MPI_OTHERLIBS="(.+)"/\1/; print'`
       MPICH_DEVICE_LIB_DIR=`echo "$base_lib_list" | perl -nae '@libdirs = (); foreach $libdir (@F) { push (@libdirs, $libdir) if ($libdir =~ s/^-L(.+)/\1/) } print "@libdirs"'`
       MPICH_DEVICE_LIBS=`echo "$base_lib_list" | perl -nae '@libs = (); foreach $lib (@F) { push (@libs, $lib) if ($lib =~ s/^-l(.+)/\1/) } print "@libs"'`
     else
@@ -176,7 +198,13 @@ else
 fi
 
 # Set the MPI version name
-MPI_VERSION="MPICH_$MPICH_DEVICE"
+if test -x "$MPICH_DIR/bin/mpich2version" ; then
+  MPICH2_VERSION=`$MPICH_DIR/bin/mpich2version -v`
+  MPICH2_DEVICE=`$MPICH_DIR/bin/mpich2version -d`
+  MPI_VERSION="MPICH2 ${MPICH2_VERSION} (${MPICH2_DEVICE})"
+else
+  MPI_VERSION="MPICH_$MPICH_DEVICE"
+fi
 
 # Finally set the library lines.
 MPI_LIBS="$MPICH_LIB $MPICH_DEVICE_LIBS"
