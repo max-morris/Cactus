@@ -6,7 +6,7 @@
 #   @desc
 #            Known architecture stuff for MacOS X (Darwin)
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.18 2006-11-11 18:48:41 schnetter Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.19 2007-08-08 12:05:44 tradke Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
@@ -278,10 +278,6 @@ else
 
       # add the libpath
       : ${LIBDIRS="$intel_dir/lib"}
-      # add the linker script if the linker is not Intel
-      if test `basename $LD` != 'icc' -a `basename $LD` != 'icpc' ; then
-        : ${LDFLAGS="-Qy $intel_dir/lib/icrt.link"}
-      fi
       : ${LIBS='ifcore imf svml m'}
 
       F77_VERSION="`$F77 -V 2>&1 | grep -i version | head -n1`"
