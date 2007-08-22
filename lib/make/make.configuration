@@ -95,6 +95,10 @@ ifeq ($(strip $(MAKECMDGOALS)), build)
 -include $(CONFIG)/make.thornlist
 endif
 
+ifeq ($(suffix $(strip $(MAKECMDGOALS))), .custom)
+-include $(CONFIG)/make.thornlist
+endif
+
 # When building utility programs, include makefile definitions
 # generated from a thorn's configuration.ccl
 ifeq ($(strip $(UTILS)),)
