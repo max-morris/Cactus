@@ -32,6 +32,8 @@
 
 #include "cctk_Timers.h"
 
+#include "util_Table.h"
+
 static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_ScheduleInterface_c);
@@ -84,6 +86,7 @@ typedef struct
   cTimerData *info;
   cTimerData *total_time;
   int print_headers;
+  FILE *file;                   /* output file */
 
   /* Stuff passed in in user calls */
 
@@ -155,16 +158,24 @@ static int CCTKi_ScheduleCallWhile(int n_whiles,
                                    t_attribute *attribute,
                                    t_sched_data *data,
                                    int first);
-static int CCTKi_ScheduleCallFunction(void *function, t_attribute *attribute, t_sched_data *data);
+static int CCTKi_ScheduleCallFunction(void *function,
+                                      t_attribute *attribute,
+                                      t_sched_data *data);
 
 static int SchedulePrintTimes(const char *where, t_sched_data *data);
-static int CCTKi_SchedulePrintTimesFunction(void *function, t_attribute *attribute, t_sched_data *data);
+static int CCTKi_SchedulePrintTimesFunction(void *function,
+                                            t_attribute *attribute,
+                                            t_sched_data *data);
 static void CCTKi_SchedulePrintTimerInfo(cTimerData *info,
                                          cTimerData *total_time,
                                          const char *where,
-                                         const char *description);
-static void CCTKi_SchedulePrintTimerHeaders(cTimerData *info);
-static void PrintDelimiterLine (char delimiter, const cTimerData *timer);
+                                         const char *description,
+                                         FILE *file);
+static void CCTKi_SchedulePrintTimerHeaders(cTimerData *info,
+                                            FILE *file);
+static void PrintDelimiterLine (char delimiter,
+                                const cTimerData *timer,
+                                FILE *file);
 
 
 /********************************************************************
@@ -759,12 +770,12 @@ int CCTK_ScheduleTraverse(const char *where,
     }
     if(retcode == 0)
     {
-      sprintf(current_point, "%s$%s", where, "ENTRY");
+      sprintf(current_point, "%s$ENTRY", where);
       ScheduleTraverse(current_point, GH, CallFunction);
 
       ScheduleTraverse(where, GH, CallFunction);
 
-      sprintf(current_point, "%s$%s", where, "EXIT");
+      sprintf(current_point, "%s$EXIT", where);
       ScheduleTraverse(current_point, GH, CallFunction);
     }
   }
@@ -963,8 +974,8 @@ int CCTK_SchedulePrint(const char *where)
 
 /*@@
    @routine    CCTK_SchedulePrintTimes
-   @date       Fri Sep 17 21:52:44 1999
-   @author     Tom Goodale
+   @date       2007-01-16
+   @author     Erik Schnetter
    @desc
    Prints out the schedule timings.
    @enddesc
@@ -983,6 +994,37 @@ int CCTK_SchedulePrint(const char *where)
 @@*/
 int CCTK_SchedulePrintTimes(const char *where)
 {
+  return CCTK_SchedulePrintTimesToFile(where, stdout);
+}
+
+/*@@
+   @routine    CCTK_SchedulePrintTimesToFile
+   @date       Fri Sep 17 21:52:44 1999
+   @author     Tom Goodale
+   @desc
+   Prints out the schedule timings to a file.
+   @enddesc
+   @calls
+
+   @var     where
+   @vdesc   Schedule point
+   @vtype   const char *
+   @vio     in
+   @endvar
+
+   @var     file
+   @vdesc   Output file, must be open for writing
+   @vtype   FILE *
+   @vio     in
+   @endvar
+
+   @returntype int
+   @returndesc
+   0 - success
+   @endreturndesc
+@@*/
+int CCTK_SchedulePrintTimesToFile(const char *where, FILE *file)
+{
   t_sched_data data;
 
   if(!timerinfo)
@@ -993,51 +1035,59 @@ int CCTK_SchedulePrintTimes(const char *where)
   data.GH = NULL;
   data.schedpoint = schedpoint_misc;
   data.print_headers = 1;
+  data.file = file;
   data.info = timerinfo;
   data.total_time = CCTK_TimerCreateData();
 
   if(!where)
   {
-    SchedulePrintTimes("CCTK_RECOVER_VARIABLES", &data);
-/*  printf("\n"); */
-    SchedulePrintTimes("CCTK_CHECKPOINT", &data);
-/*  printf("\n"); */
     SchedulePrintTimes("CCTK_STARTUP", &data);
-/*  printf("\n"); */
     SchedulePrintTimes("CCTK_WRAGH", &data);
-/*  printf("\n"); */
     SchedulePrintTimes("CCTK_PARAMCHECK", &data);
-/*  printf("\n"); */
+    SchedulePrintTimes("CCTK_PREREGRIDINITIAL$ENTRY", &data);
+    SchedulePrintTimes("CCTK_PREREGRIDINITIAL", &data);
+    SchedulePrintTimes("CCTK_PREREGRIDINITIAL$EXIT", &data);
+    SchedulePrintTimes("CCTK_POSTREGRIDINITIAL$ENTRY", &data);
+    SchedulePrintTimes("CCTK_POSTREGRIDINITIAL", &data);
+    SchedulePrintTimes("CCTK_POSTREGRIDINITIAL$EXIT", &data);
     SchedulePrintTimes("CCTK_BASEGRID$ENTRY", &data);
     SchedulePrintTimes("CCTK_BASEGRID", &data);
     SchedulePrintTimes("CCTK_BASEGRID$EXIT", &data);
-/*  printf("\n"); */
     SchedulePrintTimes("CCTK_INITIAL$ENTRY", &data);
     SchedulePrintTimes("CCTK_INITIAL", &data);
     SchedulePrintTimes("CCTK_INITIAL$EXIT", &data);
-/*  printf("\n"); */
+    SchedulePrintTimes("CCTK_POSTRESTRICTINITIAL$ENTRY", &data);
+    SchedulePrintTimes("CCTK_POSTRESTRICTINITIAL", &data);
+    SchedulePrintTimes("CCTK_POSTRESTRICTINITIAL$EXIT", &data);
     SchedulePrintTimes("CCTK_POSTINITIAL$ENTRY", &data);
     SchedulePrintTimes("CCTK_POSTINITIAL", &data);
     SchedulePrintTimes("CCTK_POSTINITIAL$EXIT", &data);
-/*  printf("\n"); */
+    SchedulePrintTimes("CCTK_RECOVER_VARIABLES", &data);
+    SchedulePrintTimes("CCTK_POST_RECOVER_VARIABLES", &data);
+    SchedulePrintTimes("CCTK_CPINITIAL", &data);
+    SchedulePrintTimes("CCTK_PREREGRID$ENTRY", &data);
+    SchedulePrintTimes("CCTK_PREREGRID", &data);
+    SchedulePrintTimes("CCTK_PREREGRID$EXIT", &data);
+    SchedulePrintTimes("CCTK_POSTREGRID$ENTRY", &data);
+    SchedulePrintTimes("CCTK_POSTREGRID", &data);
+    SchedulePrintTimes("CCTK_POSTREGRID$EXIT", &data);
     SchedulePrintTimes("CCTK_PRESTEP$ENTRY", &data);
     SchedulePrintTimes("CCTK_PRESTEP", &data);
     SchedulePrintTimes("CCTK_PRESTEP$EXIT", &data);
-/*  printf("\n"); */
     SchedulePrintTimes("CCTK_EVOL$ENTRY", &data);
     SchedulePrintTimes("CCTK_EVOL", &data);
     SchedulePrintTimes("CCTK_EVOL$EXIT", &data);
-/*  printf("\n"); */
+    SchedulePrintTimes("CCTK_POSTRESTRICT$ENTRY", &data);
+    SchedulePrintTimes("CCTK_POSTRESTRICT", &data);
+    SchedulePrintTimes("CCTK_POSTRESTRICT$EXIT", &data);
     SchedulePrintTimes("CCTK_POSTSTEP$ENTRY", &data);
     SchedulePrintTimes("CCTK_POSTSTEP", &data);
     SchedulePrintTimes("CCTK_POSTSTEP$EXIT", &data);
-/*  printf("\n"); */
+    SchedulePrintTimes("CCTK_CHECKPOINT", &data);
     SchedulePrintTimes("CCTK_ANALYSIS$ENTRY", &data);
     SchedulePrintTimes("CCTK_ANALYSIS", &data);
     SchedulePrintTimes("CCTK_ANALYSIS$EXIT", &data);
-/*  printf("\n"); */
     SchedulePrintTimes("CCTK_TERMINATE", &data);
-/*  printf("\n"); */
     SchedulePrintTimes("CCTK_SHUTDOWN", &data);
   }
   else
@@ -1052,7 +1102,8 @@ int CCTK_SchedulePrintTimes(const char *where)
   {
     CCTK_TimerStopI (total_timer);
     CCTK_TimerI (total_timer, timerinfo);
-    CCTKi_SchedulePrintTimerInfo (timerinfo, NULL, "", "Total time for simulation");
+    CCTKi_SchedulePrintTimerInfo
+      (timerinfo, NULL, "", "Total time for simulation", file);
 
     /* just in case this is not at termination yet ... */
     CCTK_TimerStartI (total_timer);
@@ -1862,6 +1913,11 @@ static int SchedulePrint(const char *where)
    @vtype   t_sched_data
    @vio     in
    @endvar
+   @var     file
+   @vdesc   Output file, must be open for writing
+   @vtype   FILE *
+   @vio     in
+   @endvar
 
    @returntype int
    @returndesc
@@ -1894,7 +1950,8 @@ static int SchedulePrintTimes(const char *where, t_sched_data *data)
       }
       description = malloc (strlen (where) + 16);
       sprintf (description, "Total time for %s", where);
-      CCTKi_SchedulePrintTimerInfo(data->total_time, NULL, "", description);
+      CCTKi_SchedulePrintTimerInfo(data->total_time, NULL, "", description,
+                                   data->file);
       free (description);
     }
   }
@@ -2477,14 +2534,15 @@ static int CCTKi_SchedulePrintTimesFunction(void *function,
 
     if(data->print_headers)
     {
-      CCTKi_SchedulePrintTimerHeaders(data->info);
+      CCTKi_SchedulePrintTimerHeaders(data->info, data->file);
 
       data->print_headers = 0;
     }
 
     CCTKi_SchedulePrintTimerInfo(data->info, data->total_time,
                                  attribute->FunctionData.thorn,
-                                 attribute->description);
+                                 attribute->description,
+                                 data->file);
   }
   else
   {
@@ -2497,24 +2555,25 @@ static int CCTKi_SchedulePrintTimesFunction(void *function,
 static void CCTKi_SchedulePrintTimerInfo(cTimerData *timer,
                                          cTimerData *total_time,
                                          const char *where,
-                                         const char *description)
+                                         const char *description,
+                                         FILE *file)
 {
   int i, j;
 
 
   if (indent_level > 0)
   {
-    printf ("%*s", indent_level, " ");
+    fprintf (file, "%*s", indent_level, " ");
   }
 
   /* print delimiter line */
   if (*where == 0)
   {
-    PrintDelimiterLine ('-', timer);
+    PrintDelimiterLine ('-', timer, file);
   }
 
   /* print the timer description */
-  printf ("%-16.16s| %-40.40s", where, description);
+  fprintf (file, "%-16.16s| %-40.40s", where, description);
 
   /* print the actual timer values */
   for (i = 0; i < timer->n_vals; i++)
@@ -2524,60 +2583,63 @@ static void CCTKi_SchedulePrintTimerInfo(cTimerData *timer,
     switch (timer->vals[i].type)
     {
       case val_int:
-        printf ("| %*d ", j, timer->vals[i].val.i);
+        fprintf (file, "| %*d ", j, timer->vals[i].val.i);
         if (total_time)
         {
           total_time->vals[i].val.i += timer->vals[i].val.i;
         }
         break;
       case val_long:
-        printf ("| %*ld ", j, timer->vals[i].val.l);
+        fprintf (file, "| %*ld ", j, timer->vals[i].val.l);
         if (total_time)
         {
           total_time->vals[i].val.l += timer->vals[i].val.l;
         }
         break;
       case val_double:
-        printf ("| %*.8f ", j, timer->vals[i].val.d);
+        fprintf (file, "| %*.8f ", j, timer->vals[i].val.d);
         if (total_time)
         {
           total_time->vals[i].val.d += timer->vals[i].val.d;
         }
         break;
       default:
-        printf ("Unknown value type at line %d of %s\n", __LINE__, __FILE__);
+        fprintf (file, "Unknown value type at line %d of %s\n", __LINE__, __FILE__);
     }
   }
 
-  putchar ('\n');
+  fprintf (file, "\n");
 
   /* print delimiter line */
   if (*where == 0)
   {
-    PrintDelimiterLine ('=', timer);
+    PrintDelimiterLine ('=', timer, file);
   }
 }
 
 
-static void CCTKi_SchedulePrintTimerHeaders (cTimerData *timer)
+static void CCTKi_SchedulePrintTimerHeaders (cTimerData *timer, FILE *file)
 {
   int i;
 
 
-  PrintDelimiterLine ('=', timer);
+  PrintDelimiterLine ('=', timer, file);
 
-  printf ("%-16.16s| %-40.40s", "Thorn", "Scheduled routine in time bin");
+  fprintf (file,
+           "%-16.16s| %-40.40s", "Thorn", "Scheduled routine in time bin");
   for (i = 0; i < timer->n_vals; i++)
   {
-    printf ("| %s [%s] ", timer->vals[i].heading, timer->vals[i].units);
+    fprintf (file, "| %s [%s] ", timer->vals[i].heading, timer->vals[i].units);
   }
-  putchar ('\n');
+  fprintf (file, "\n");
 
-  PrintDelimiterLine ('=', timer);
+  PrintDelimiterLine ('=', timer, file);
 }
 
 
-static void PrintDelimiterLine (char delimiter, const cTimerData *timer)
+static void PrintDelimiterLine (char delimiter,
+                                const cTimerData *timer,
+                                FILE *file)
 {
   int i, len;
 
@@ -2589,7 +2651,7 @@ static void PrintDelimiterLine (char delimiter, const cTimerData *timer)
   }
   for (i = 0; i < len; i++)
   {
-    putchar (delimiter);
+    fprintf (file, "%c", delimiter);
   }
-  putchar ('\n');
+  fprintf (file, "\n");
 }

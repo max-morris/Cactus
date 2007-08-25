@@ -11,6 +11,8 @@
 #ifndef _CCTK_SCHEDULE_H_
 #define _CCTK_SCHEDULE_H_
 
+#include <stdio.h>
+
 typedef enum {LangNone, LangC, LangFortran} cLanguage;
 
 typedef enum {FunctionNoArgs, FunctionOneArg, FunctionStandard} cFunctionType;
@@ -66,6 +68,7 @@ int CCTK_ScheduleTraverse(const char *where,
 
 int CCTK_SchedulePrint(const char *where);
 int CCTK_SchedulePrintTimes(const char *where);
+int CCTK_SchedulePrintTimesToFile(const char *where, FILE *file);
 
 cLanguage CCTK_TranslateLanguage(const char *sval);
 
