@@ -689,7 +689,8 @@ else
 fi
 
 AC_C_CONST
-AC_C_INLINE
+#AC_C_INLINE
+CCTK_CHECK_C_INLINE
 
 CCTK_CHECK_C_RESTRICT
 CCTK_CHECK_CXX_RESTRICT
@@ -1082,12 +1083,9 @@ do
         CCTK_WriteLine cctk_Extradefs.h ''
         CCTK_WriteLine cctk_Extradefs.h '/* $extra definitions */'
         CCTK_WriteLine make.extra.defn ''
-        CCTK_WriteLine make.extra.defn "# start of $extra definitions"
+        CCTK_WriteLine make.extra.defn "# $extra definitions"
         # Call the setup script
         . $srcdir/extras/$extra/setup.sh
-        # Put some more comments in
-        CCTK_WriteLine make.extra.defn "# end of $extra definitions"
-        CCTK_WriteLine make.extra.defn ''
     fi
   fi
 done
@@ -1106,6 +1104,7 @@ X_LIB_DIR="$x_libraries"
 X_INC_DIR="$x_includes"
 
 # Finish the cctk_Extradefs.h file
+CCTK_WriteLine cctk_Extradefs.h ''
 CCTK_WriteLine cctk_Extradefs.h '#endif /*_CCTK_EXTRADEFS_H*/'
 
 dnl Run any other scripts necessary

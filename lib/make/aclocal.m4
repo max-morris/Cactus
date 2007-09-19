@@ -46,6 +46,54 @@ changequote([, ])dnl
 done
 ])
 
+dnl CCTK_TRY_LINK_2(INCLUDES, FUNCTION-BODY, OTHER-FUNCTION_BODY,
+dnl                [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
+AC_DEFUN(CCTK_TRY_LINK_2,
+[cat > conftest.$ac_ext <<EOF
+ifelse(AC_LANG, [FORTRAN77],
+[
+      program main
+      call [$2]
+      call main2
+      end
+],
+[dnl This sometimes fails to find confdefs.h, for some reason.
+dnl [#]line __oline__ "[$]0"
+[#]line __oline__ "configure"
+#include "confdefs.h"
+[$1]
+int main() {
+[$2]
+; return 0; }
+])EOF
+cat > conftest2.$ac_ext <<EOF
+ifelse(AC_LANG, [FORTRAN77],
+[
+      subroutine main2
+      call [$3]
+      end
+],
+[dnl This sometimes fails to find confdefs.h, for some reason.
+dnl [#]line __oline__ "[$]0"
+[#]line __oline__ "configure"
+#include "confdefs.h"
+[$1]
+int main2() {
+[$3]
+; return 0; }
+])EOF
+if AC_TRY_EVAL(ac_link conftest2.$ac_ext) && test -s conftest${ac_exeext}; then
+  ifelse([$4], , :, [rm -rf conftest*
+  $4])
+else
+  echo "configure: failed program was:" >&AC_FD_CC
+  cat conftest.$ac_ext >&AC_FD_CC
+ifelse([$5], , , [  rm -rf conftest*
+  $5
+])dnl
+fi
+rm -f conftest*])
+
 
 dnl CCTK_FIND_NULLDEVICE
 dnl Have to do it in this rather bizarre way
@@ -315,6 +363,33 @@ case "$cctk_cv_cxx_restrict" in
   restrict | yes) ;;
   no) AC_DEFINE(CCTK_CXX_RESTRICT, ) ;;
   *)  AC_DEFINE_UNQUOTED(CCTK_CXX_RESTRICT, $cctk_cv_cxx_restrict) ;;
+esac
+])
+
+dnl Do nothing if the compiler accepts the inline keyword.  Otherwise
+dnl define inline to __inline__ or __inline if one of those work,
+dnl otherwise define inline to be empty.
+dnl 
+dnl The setting '__inline__ __attribute__((__gnu_inline__))' is for gcc
+dnl 4.3 and later.  By default this version of gcc follows the new ANSI
+dnl standard for "static inline" and "extern inline", which is
+dnl incompatible with many libraries, leading to linker errors about
+dnl duplicate symbols.  This setting makes gcc fall back to the old
+dnl meaning.
+dnl 
+AC_DEFUN(CCTK_CHECK_C_INLINE,
+[AC_CACHE_CHECK([for C inline], cctk_cv_c_inline,
+[cctk_cv_c_inline=no
+for ac_kw in inline __inline__ __inline '__inline__ __attribute__((__gnu_inline__))'; do
+dnl  AC_TRY_COMPILE(, [} $ac_kw foo() {], [cctk_cv_c_inline=$ac_kw; break])
+  CCTK_TRY_LINK_2(, [foo();], [} $ac_kw foo() {], [cctk_cv_c_inline=$ac_kw; break])
+done
+])
+case "$cctk_cv_c_inline" in
+  inline | yes) ;;
+  no) AC_DEFINE(inline, ) ;;
+  *)  AC_DEFINE_UNQUOTED(inline, $cctk_cv_c_inline)
+      AC_DEFINE(HAVE_CCTK_C_INLINE, 1) ;;
 esac
 ])
 
