@@ -83,7 +83,7 @@ while (<STDIN>)
     }
     if (! $found)
     {
-      print STDERR "$srcfile:$line: Warning: While tracing include depencencies: Include file \"$name\" not found\n";
+      print STDERR "$srcfile:$line: Warning: While tracing include dependencies: Include file \"$name\" not found\n";
       if (@otherdirs)
       {
         print STDERR "   Searched in thorn directory and in [" . join(', ', @otherdirs) . "]\n";
@@ -163,7 +163,7 @@ while (<STDIN>)
     }
     if (! $found)
     {
-      print STDERR "$srcfile:$line: Warning: While tracing module depencencies: Source file for module \"$name\" not found\n";
+      print STDERR "$srcfile:$line: Warning: While tracing module dependencies: Source file for module \"$name\" not found\n";
       if (@otherdirs)
       {
         print STDERR "   Searched in thorn directory and in [" . join(', ', @otherdirs) . "]\n";
