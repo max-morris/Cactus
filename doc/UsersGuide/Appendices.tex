@@ -766,7 +766,7 @@ beginning of a line followed by \var{<default value>} on that same line.
   {\t STEERABLE} specifies when a parameter value may be changed.  By
   default parameters may not be changed after the parameter file has
   been read, or on restarting from checkpoint.  This option relaxes
-  this restricting, specifying that the parameter may be changed at
+  this restriction, specifying that the parameter may be changed at
   recovery time from a parameter file or at any time using the Flesh
   routine {\tt CCTK\_ParameterSet} --- see the Reference Guide.
 
@@ -1031,7 +1031,7 @@ PROVIDES <\var{Capability}>
 \{
   SCRIPT <\var{Configuration script}>
   LANG <\var{Language}>
-  [OPTIONS [<option>[,<option>]...]] 
+  [OPTIONS [<option>[,<option>]...]]
 \}
 \end{alltt}
 
@@ -1040,7 +1040,7 @@ this capability has a given detection script which may be used to
 configure it (e.g. running an autoconf script or detecting an external
 library's location).  The script should output configuration
 information on its standard output --- the syntax is described below
-in sectio \ref{sec:Appendix.configuration.ccl.configscript}.  The
+in section \ref{sec:Appendix.configuration.ccl.configscript}.  The
 script may also indicate the failure to detect a capability by
 returning a non-zero exit code;  this will stop the build after the
 CST stage.
@@ -1087,6 +1087,8 @@ files included by thorns.  It does this by outputting lines to its
 standard output:
 
 \begin{itemize}
+
+% [[How about the MESSAGE field?]]
 
 \item
 
