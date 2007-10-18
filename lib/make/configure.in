@@ -354,6 +354,18 @@ if test "x$F90" != "x" -a "x$F90" != "xnone" -a "x$F77" = "x" ; then
   F77_PROFILE_FLAGS=$F90_PROFILE_FLAGS
 fi
 
+# Set default Fortran compilers
+AC_SUBST(F90)
+if test -z "$F90" ; then
+  F90='none'
+fi
+
+AC_SUBST(F77)
+if test -z "$F77" ; then
+  F77='none'
+fi
+
+
 # The known architecture stuff has probably set the LIBS variable
 # So remember what it is and set it to blank to prevent any problems with the
 # rest of the configure stuff.
@@ -1110,16 +1122,6 @@ CCTK_WriteLine cctk_Extradefs.h '#endif /*_CCTK_EXTRADEFS_H*/'
 dnl Run any other scripts necessary
 
 AC_OUTPUT_COMMANDS(,$PERL -s $PERL_CONFIGURE_SCRIPT -compiler_f77="$F77" -opts_f77="$F77FLAGS" -compiler_f90="$F90" -opts_f90="$F90FLAGS" .)
-
-# Set default Fortran compilers
-AC_SUBST(F90)
-if test -z "$F90" ; then
-  F90='none'
-fi
-AC_SUBST(F77)
-if test -z "$F77" ; then
-  F77='none'
-fi
 
 dnl Output everything
 CCTK_FinishFiles
