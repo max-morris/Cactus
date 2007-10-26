@@ -9,6 +9,13 @@
 #   @version   $Header$
 # @@*/
 
+if test -e "/usr/bin/aprun" ; then
+  echo "This is probably a Cray XT4 series system."
+  echo "Using known-architectures xt4-cray-linux"
+  . $srcdir/known-architectures/xt4-cray-linux
+else
+
+
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
 
   if test -z "$FPP" -a -z "$FPPFLAGS"; then
@@ -201,7 +208,7 @@ else
       : ${F77_OPTIMISE_FLAGS='-fast -Mvect=assoc'}
       : ${F77_WARN_FLAGS='-Minfo -Mneginfo'}
       : ${F90_OPTIMISE_FLAGS='-fast -Mvect=assoc'}
-      : ${F90_OPTIMISE_FLAGS='-Minfo -Mneginfo'}
+      : ${F90_WARN_FLAGS='-Minfo -Mneginfo'}
       : ${F77_DEBUG_FLAGS='-g'}
       : ${F90_DEBUG_FLAGS='-g'}
       F90_VERSION="`$F90 -V 2>&1 | grep -i pgf90 | head -n1`"
@@ -536,3 +543,6 @@ else
 # This is caught by lib/make/extras/MPI/NATIVE then.
 
 fi
+
+fi
+
