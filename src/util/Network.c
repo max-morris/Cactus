@@ -81,15 +81,17 @@ void Util_GetHostName (char *name, int length)
   if (! strchr (name, '.'))
   {
 #ifdef HAVE_GETHOSTBYNAME
-    struct hostent *thishostent;
-
+    struct hostent *thishostent=0;
+#ifndef CRAY_XT
     thishostent = gethostbyname (name);
+#endif
 
     if (thishostent)
     {
       strncpy (name, thishostent->h_name, length);
       name[length - 1] = 0;
     }
+    else name[0]='\0';
 #endif
   }
 }
