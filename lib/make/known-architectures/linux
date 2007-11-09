@@ -53,7 +53,7 @@ else
       LINUX_F90_COMP=Compaq
     elif test "`$F90 -v 2>&1 | grep PathScale`" ; then
       LINUX_F90_COMP=PathScale
-    elif test "`$F90 -dumpversion 2>&1 | grep 'GNU Fortran 95'`" ; then
+    elif test "`$F90 -dumpversion 2>&1 | grep 'GNU Fortran'`" ; then
       LINUX_F90_COMP=gnu95
     elif test "`$F90 -? 2>&1 | grep -i absoft`" ; then
       LINUX_F90_COMP=absoft77
@@ -78,7 +78,7 @@ else
   elif test -n "$F77" ; then
     if test "`$F77 -v 2>&1 | grep -i 'gcc version'`" ; then
       LINUX_F90_COMP=gnu77
-    elif test "`$F77 -dumpversion 2>&1 | grep 'GNU Fortran 95'`" ; then
+    elif test "`$F77 -dumpversion 2>&1 | grep 'GNU Fortran'`" ; then
       LINUX_F90_COMP=gnu95
     elif test "`$F77 -? 2>&1 | grep -i absoft`" ; then
       LINUX_F90_COMP=absoft77
