@@ -22,7 +22,7 @@ typedef struct T_SKTREE
   void *data;
 } t_sktree;
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -45,7 +45,7 @@ t_sktree *SKTreeFindFirst(t_sktree *root);
 
 void SKTreeDebugNodes(t_sktree *root, int depth);
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 }
 #endif
 

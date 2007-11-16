@@ -11,7 +11,7 @@
 #ifndef _BINARYTREE_H_
 #define _BINARYTREE_H_ 1
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 extern "C" 
 {
 #endif
@@ -51,7 +51,7 @@ uBinTree *Util_BinTreeFindNode(uBinTree *root,
                                void *data, 
                                int (*compare)(const void *, const void *));
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 }
 #endif
 
