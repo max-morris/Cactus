@@ -1159,6 +1159,19 @@ void CCTKi_FinaliseParamWarn (void)
   CCTK_INT cctk_strong_param_check;
 
 
+  /*
+   * Let all processors catch up before continuing.
+   *
+   * In case of parameter errors this should avoid racing problems
+   * in parallel simulations using a certain MPI implementation where
+   * the run would die prematurely because some processors called CCTK_Abort()
+   * earlier than others, and in the logfile one couldn't easily find the real
+   * reason for the abort anymore.
+   *
+   * (see http://www.cactuscode.org/old/pipermail/developers/2007-December/005480.html)
+   */
+  CCTK_Barrier(NULL);
+
   if (param_errors)
   {
     cctk_strong_param_check_ptr =
