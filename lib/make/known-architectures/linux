@@ -270,37 +270,19 @@ else
         i?86 | x86_64)
           # add the necessary libraries according to the compiler version
           if test "`$F90 -V 2>&1 | grep Version | sed 's/.*Version //' | sed 's/\..*//'`" -ge 8; then
-            if test "`$F90 -V 2>&1 | grep EM64T`"; then
-#              TR: '-xP' only works on Intel EMT64 processors, not on Opterons
-#                  Since they cannot be distinguished, I commented out this
-#                  optimization option for now.
-#              intel_p4_opt_flag='-xP'
-              intel_p4_opt_flag=''
-            else
-              intel_p4_opt_flag='-xN'
-            fi
             : ${LIBS='ifcore imf svml m'}
           else
-            intel_p4_opt_flag='-xW'
             : ${LIBS='intrins IEPCF90 F90 imf svml m irc cxa cprts cxa pthread'}
           fi
-
-          # check if the processor is a Pentium4 (ie. supports SSE2 instructions)
-          default_intel_fopt_flags='-O3 -ip'
-          if test "`grep -w flags /proc/cpuinfo 2>&1 | grep -w sse2`"; then
-            default_intel_fopt_flags="-O2 $intel_p4_opt_flag -ip"
-          fi
-
-          # add the libpath if the linker is not Intel
+          # add the libpath
+          : ${LIBDIRS="$intel_dir/lib"}
+          # add the linker script if the linker is not Intel
           if test `basename $LD` != 'icc' -a `basename $LD` != 'icpc' ; then
-            : ${LIBDIRS="$intel_dir/lib"}
             : ${LDFLAGS="-Qy $intel_dir/lib/icrt.link"}
           fi
           ;;
 
         ia64)
-          default_intel_fopt_flags='-O2 -ip'
-
           # add the necessary libraries according to the compiler version
           if test "`$F90 -V 2>&1 | grep Version | sed 's/.*Version //' | sed 's/\..*//'`" -ge 8; then
             : ${LIBS='ifcore dl imf m'}
@@ -317,8 +299,10 @@ else
           echo "Don't know compiler options for cpu $host_cpu"
           ;;
       esac
-      : ${F77_OPTIMISE_FLAGS="$default_intel_fopt_flags"}
-      : ${F90_OPTIMISE_FLAGS="$default_intel_fopt_flags"}
+      # Be conservative about the default optimisation options; the
+      # user can always override them
+      : ${F77_OPTIMISE_FLAGS="-O2 -ip"}
+      : ${F90_OPTIMISE_FLAGS="-O2 -ip"}
       F77_VERSION="`$F77 -V 2>&1 | grep -i version | head -n1`"
       F90_VERSION="`$F90 -V 2>&1 | grep -i version | head -n1`"
       ;;
@@ -359,24 +343,25 @@ else
   case `basename $CC` in
     # GNU
     gcc | cc)
-      : ${CFLAGS='-pipe'}
+      : ${CFLAGS='-pipe -std=gnu99'}
       : ${C_OPTIMISE_FLAGS='-O3'}
       CC_VERSION="`$CC -v 2>&1 | grep -i version | head -n1`"
       ;;
     # Intel
     [ei]cc)
-      if test "$OPTIMISE" = 'no'; then
-        : ${CFLAGS='-O0 -restrict'}
-      else
-        : ${CFLAGS='-restrict'}
-      fi
-      if test "$host_cpu" = 'ia64' -o "$host_cpu" = 'x86_64'; then
-        : ${C_OPTIMISE_FLAGS='-O2 -ip'}
-      else
-        : ${C_OPTIMISE_FLAGS='-O3 -ip'}
-      fi
-      : ${C_DEPEND='$(CC) -M $(CPPFLAGS)'}
       icc_version=`$CC -V 2>&1 | grep Version | sed 's/.*Version //' | cut -c1`
+      if test "$OPTIMISE" = 'no'; then
+        icc_opt='-O0'
+      else
+        icc_opt=''
+      fi
+      if test $icc_version -ge 8; then
+        icc_c99='-std=gnu99'
+      else
+        icc_c99='-c99'
+      fi
+      : ${CFLAGS="$icc_opt $icc_c99"}
+      : ${C_DEPEND='$(CC) -M $(CPPFLAGS)'}
       if test $icc_version -ge 8; then
         c_warn_flags='-Wall -w1 -Wcheck'
       else
