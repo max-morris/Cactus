@@ -6,7 +6,7 @@
 #    @desc
 #               Known-architectures file for IBM Bluegene/L systems
 #    @enddesc
-#    @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/bgl,v 1.4 2006-02-02 03:38:08 goodale Exp $
+#    @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/bgl,v 1.5 2008-01-19 13:52:01 schnetter Exp $
 #  @@*/
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
@@ -50,8 +50,8 @@ else
   : ${F77_DEBUG_FLAGS='-g'}
 
   : ${F90_SUFFIX='f'}
-  CCTK_WriteLine make.arch.defn 'F77FLAGS += $(BGL_$(subst .,,$(suffix $<))_FLAGS)'
   CCTK_WriteLine make.arch.defn 'F90FLAGS += $(BGL_$(subst .,,$(suffix $<))_FLAGS)'
+  CCTK_WriteLine make.arch.defn 'F77FLAGS += $(BGL_$(subst .,,$(suffix $<))_FLAGS)'
   CCTK_WriteLine make.arch.defn 'BGL_F90_FLAGS ='
   CCTK_WriteLine make.arch.defn 'BGL_f90_FLAGS ='
   CCTK_WriteLine make.arch.defn 'BGL_F77_FLAGS = -qfixed'
