@@ -349,7 +349,7 @@ else
       ;;
     # Intel
     [ei]cc)
-      icc_version=`$CC -V 2>&1 | grep Version | sed 's/.*Version //' | cut -c1`
+      icc_version=`$CC -V 2>&1 | grep Version | sed 's/.*Version //' | cut -f1 -d.`
       if test "$OPTIMISE" = 'no'; then
         icc_opt='-O0'
       else
@@ -413,7 +413,7 @@ else
           CXX_OPTIMISE_FLAGS="$CXX_OPTIMISE_FLAGS -ip"
         fi
       fi
-      icpc_version=`$CXX -V 2>&1 | grep Version | sed 's/.*Version //' | cut -c1`
+      icpc_version=`echo $icpc_fullversion | cut -f1 -d.`
       if test $icpc_version -ge 8; then
         cxx_warn_flags='-Wall -w1 -Wcheck'
       else
