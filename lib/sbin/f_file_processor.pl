@@ -35,11 +35,11 @@ $line_directives = $line_directives eq 'yes';
 # Pick the correct set of comments to remove.
 if ($free_format)
 {
-  $standard_comments = "\\s*[!]";
+  $standard_comments = "^\\s*!(?!\$(omp|hpf))";
 }
 else
 {
-  $standard_comments = "[cC!]";
+  $standard_comments = "^[c!*](?!\$(omp|hpf))";
 }
 
 # Maximum line length for free form Fortran
@@ -90,7 +90,7 @@ while (<>)
   # Chop Fortran comments to 132 columns (they stay in code)
   # removing any quotes
   # (standard c C, or even ! comments)
-  if (/^$standard_comments.*$/)
+  if (/$standard_comments/i)
   {
     # Remove quotes
     s/['"]//g;
@@ -110,11 +110,11 @@ while (<>)
     # the following code by Fokke Dijkstra also checks for comments
     # on a line with a string
     # Search for possible comment
-    if (/!/)
+    if (/!(?!\$(omp|hpf))/)
     {
       # find all ! " and ' and check for strings or comments
       $string = 0;
-      while (m/([!"'])/g)
+      while (m/(["'!])/g)
       {
         # keep track of position for substr include last character
         $position = (pos) - 1;
