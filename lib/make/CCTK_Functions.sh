@@ -61,7 +61,7 @@ CCTK_CreateFile()
 {
   # Remove old file
   if test -f "$1.tmp" ; then
-    rm $1.tmp
+    rm -f $1.tmp
   fi
 
   # Create temporary file
@@ -183,9 +183,9 @@ CCTK_FinishFiles()
       if test -f $i ; then
         if cmp -s $i $i.tmp 2>/dev/null ; then
           echo "$i is unchanged"
-          rm $i.tmp
+          rm -f $i.tmp
         else
-          rm $i
+          rm -f $i
           mv $i.tmp $i
         fi
       else
