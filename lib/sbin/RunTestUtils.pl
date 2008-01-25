@@ -549,7 +549,7 @@ sub RunCactus
   printf "\n  Issuing $command\n";
 
   $retcode = 0;
-  open (CMD, "pwd; $command |");
+  open (CMD, "pwd; $command 2>&1 |");
   open (LOG, "> $testname.log");
 
   while (<CMD>)
