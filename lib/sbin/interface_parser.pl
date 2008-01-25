@@ -213,7 +213,7 @@ sub get_implementation_ancestors
       $ancestors_ref->{"\U$ancestor\E"} = 1;
       if(! $interface_data_ref->{"IMPLEMENTATION \U$ancestor\E THORNS"})
       {
-        # Implementation not found give extensive information
+        # Implementation not found; give extensive information
         %info = &buildthorns("$cctk_home/arrangements","thorns");
         $suggest_thorns = "";
         foreach $thorninfo (sort keys %info)
