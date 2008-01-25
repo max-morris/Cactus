@@ -21,6 +21,7 @@
 #undef HAVE_CRYPT
 #undef HAVE_FINITE
 #undef HAVE_ISNAN
+#undef HAVE_ISINF
 #undef HAVE_MKSTEMP
 #undef HAVE_VA_COPY
 
@@ -33,10 +34,23 @@
 /* Do we have socklen_t ? Default to 'int' if not. */
 #undef HAVE_SOCKLEN_T
 #ifdef HAVE_SOCKLEN_T
-#define CCTK_SOCKLEN_T socklen_t
+#  define CCTK_SOCKLEN_T socklen_t
 #else
-#define CCTK_SOCKLEN_T int
+#  define CCTK_SOCKLEN_T int
 #endif
+
+/* Do we have hrtime_t ? */
+#undef HAVE_HRTIME_T
+
+/* Some timing functions */
+#undef HAVE_GETHRTIME
+#undef HAVE_READ_REAL_TIME
+#undef HAVE_TIME_BASE_TO_TIME
+#undef HAVE_CLOCK_GETTIME
+#undef HAVE_MACH_ABSOLUTE_TIME
+
+/* Cray UNICOS _rtc() (real-time clock) intrinsic */
+#undef HAVE__RTC
 
 /* Some include things */
 #undef HAVE_TIME_H
@@ -48,6 +62,7 @@
 #undef HAVE_UNISTD_H
 #undef HAVE_STRING_H
 #undef HAVE_ASSERT_H
+#undef HAVE_TGMATH_H
 #undef HAVE_SYS_STAT_H
 #undef HAVE_GETOPT_H
 #undef HAVE_REGEX_H
@@ -57,6 +72,9 @@
 #undef HAVE_WINSOCK2_H
 #undef HAVE_CRYPT_H
 #undef HAVE_DIRENT_H
+#undef HAVE_C_ASM_H
+#undef HAVE_INTRINSICS_H
+#undef HAVE_MACH_MACH_TIME_H
 #undef HAVE_SIGNAL_H
 #undef HAVE_MALLOC_H
 #undef HAVE_MALLINFO

@@ -511,7 +511,7 @@ CCTK_CHECK_FUNCS(gethostbyname,
 )
 
 # Check if we have mode_t available
-AC_MSG_CHECKING([if mode_t is defined])
+AC_MSG_CHECKING([whether mode_t is defined])
 AC_CACHE_VAL(cctk_cv_have_mode_t,
 [AC_TRY_COMPILE([#include <stdio.h>
 #include <stdlib.h>
@@ -542,9 +542,13 @@ CCTK_CHECK_HEADERS(sys/types.h)
 CCTK_CHECK_HEADERS(unistd.h)
 CCTK_CHECK_HEADERS(string.h)
 CCTK_CHECK_HEADERS(assert.h)
+CCTK_CHECK_HEADERS(tgmath.h)
 CCTK_CHECK_HEADERS(sys/stat.h)
 CCTK_CHECK_HEADERS(getopt.h)
 CCTK_CHECK_HEADERS(dirent.h)
+CCTK_CHECK_HEADERS(c_asm.h)
+CCTK_CHECK_HEADERS(intrinsics.h)
+CCTK_CHECK_HEADERS(mach/mach_time.h)
 CCTK_HEADER_REGEX
 CCTK_CHECK_HEADERS(sys/filio.h,[#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
@@ -603,7 +607,7 @@ else
 fi
 
 # Check if someone has defined SOCKET
-AC_MSG_CHECKING([if SOCKET is defined])
+AC_MSG_CHECKING([whether SOCKET is defined])
 AC_CACHE_VAL(cctk_cv_have_SOCKET,
 [AC_TRY_COMPILE([#include <stdio.h>
 #include <stdlib.h>
@@ -628,6 +632,25 @@ if test "$cctk_cv_have_SOCKET" = 'yes'; then
 else
   AC_MSG_RESULT(no)
 fi
+
+# Check for timing functions
+
+dnl AC_CHECK_TYPE([hrtime_t],[AC_DEFINE(HAVE_HRTIME_T, 1, [Define to 1 if hrtime_t is defined in <sys/time.h>])],,[#if HAVE_SYS_TIME_H
+dnl #include <sys/time.h>
+dnl #endif])
+AC_CHECK_TYPE(hrtime_t)
+
+AC_CHECK_FUNCS([gethrtime read_real_time time_base_to_time clock_gettime mach_absolute_time])
+
+dnl Cray UNICOS _rtc() (real-time clock) intrinsic
+AC_MSG_CHECKING([for _rtc intrinsic])
+rtc_ok=yes
+AC_TRY_LINK([#ifdef HAVE_INTRINSICS_H
+#include <intrinsics.h>
+#endif], [_rtc()], [AC_DEFINE(HAVE__RTC,1,[Define if you have the UNICOS _rtc() intrinsic.])], [rtc_ok=no])
+AC_MSG_RESULT($rtc_ok)
+
+# Check for memory allocation functions
 
 CCTK_CHECK_FUNCS(mallinfo)
 CCTK_CHECK_FUNCS(mallopt)
@@ -726,6 +749,9 @@ CCTK_CHECK_FUNCS(finite, , CCTK_CHECK_LIB_FUNC(m, finite))
 
 dnl Do we have isnan(3)
 CCTK_CHECK_FUNCS(isnan, , CCTK_CHECK_LIB_FUNC(m, isnan))
+
+dnl Do we have isinf(3)
+CCTK_CHECK_FUNCS(isinf, , CCTK_CHECK_LIB_FUNC(m, isinf))
 
 dnl Do we have mkstemp(3)
 CCTK_CHECK_FUNCS(mkstemp, , CCTK_CHECK_LIB_FUNC(c, mkstemp))
@@ -1126,4 +1152,3 @@ AC_OUTPUT_COMMANDS(,$PERL -s $PERL_CONFIGURE_SCRIPT -compiler_f77="$F77" -opts_f
 dnl Output everything
 CCTK_FinishFiles
 AC_OUTPUT(make.config.defn make.config.deps make.config.rules)
-
