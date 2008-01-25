@@ -6,7 +6,7 @@
 #   @desc
 #            Known architecture stuff for MacOS X (Darwin)
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.19 2007-08-08 12:05:44 tradke Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.20 2008-01-25 15:02:14 schnetter Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
@@ -251,8 +251,8 @@ else
 
       CCTK_WriteLine make.arch.defn 'F90FLAGS += $(DARWIN_$(subst .,,$(suffix $<))_FLAGS)'
       CCTK_WriteLine make.arch.defn 'F77FLAGS += $(DARWIN_$(subst .,,$(suffix $<))_FLAGS)'
-      CCTK_WriteLine make.arch.defn 'DARWIN_F90_FLAGS ='
-      CCTK_WriteLine make.arch.defn 'DARWIN_f90_FLAGS ='
+      CCTK_WriteLine make.arch.defn 'DARWIN_F90_FLAGS = -qfree'
+      CCTK_WriteLine make.arch.defn 'DARWIN_f90_FLAGS = -qfree'
       CCTK_WriteLine make.arch.defn 'DARWIN_F77_FLAGS = -qfixed'
       CCTK_WriteLine make.arch.defn 'DARWIN_f77_FLAGS = -qfixed'
       CCTK_WriteLine make.arch.defn 'DARWIN_F_FLAGS = -qfixed'
