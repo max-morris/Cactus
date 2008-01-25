@@ -163,7 +163,6 @@ sub CreateVariableBindings
   push(@data, '');
   push(@data, '');
 
-  push(@data, '#include <string.h>');
   push(@data, '#include "cctk_ActiveThorns.h"');
   push(@data, '');
 
