@@ -438,13 +438,18 @@ sub parse_param_ccl
                          "'$variable' in thorn '$thorn' is not an integer",
                          '', __LINE__, __FILE__);
             }
+            if ($type eq 'REAL' && $default !~ /^[+-]?(\d+([.]\d*)?|[.]\d+)([eEdD][+-]?\d+)?$/) {
+              &CST_error(0, "Default '$default' for real parameter " .
+                         "'$variable' in thorn '$thorn' is not a real",
+                         '', __LINE__, __FILE__);
+            }
             if ($type =~ m:INT|REAL: && $default =~ m:":)
             {
               &CST_error(0, "String default given for $type $variable in " .
                             "$thorn",
                          '', __LINE__, __FILE__);
             }
-            elsif ($type =~ m:STRING|KEYWORD: && $default !~ m:".*":)
+            elsif ($type =~ m:STRING: && $default !~ m:".*":)
             {
               &CST_error(0, "Default given for $type $variable in $thorn " .
                             "is not a string",
