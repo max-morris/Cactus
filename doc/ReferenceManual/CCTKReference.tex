@@ -400,7 +400,7 @@ from Fortran.
   in addition to printing them to screen
 
 \item[\code{CCTK\_InterpGridArrays}] [\pageref{CCTK-InterpGridArrays}]
-  Performs an interpolation on a list of CCTK grid arrays,
+  Performs an interpolation on a list of CCTK grid variables,
   using a chosen external local interpolation operator
 
 \item[\code{CCTK\_InterpHandle}] [\pageref{CCTK-InterpHandle}]
@@ -636,6 +636,10 @@ from Fortran.
 %  [\pageref{CCTK-Reduce}]
 %  Perform a reduction operation using a registered operator
 
+%\item[\code{CCTK\_Reduce1}]
+%  [\pageref{CCTK-Reduce1}]
+%  Perform a reduction operation using a registered operator
+
 \item[\code{CCTK\_ReductionHandle}] [\pageref{CCTK-ReductionHandle}]
   Get the handle for a registered reduction operator
 
@@ -692,6 +696,12 @@ from Fortran.
 \item[\code{CCTK\_RegisterReductionOperator}]
   [\pageref{CCTK-RegisterReductionOperator}]
   Register a function as providing a reduction operation
+
+\item[\code{CCTK\_SchedulePrintTimes}] [\pageref{CCTK-SchedulePrintTimes}]
+  Output the timing results for a certain schedule item to stdout
+
+\item[\code{CCTK\_SchedulePrintTimesToFile}] [\pageref{CCTK-SchedulePrintTimesToFile}]
+  Output the timing results for a certain schedule item to a file
 
 \item[\code{CCTK\_SetupGH}] [\pageref{CCTK-SetupGH}]
   Sets up a CCTK grid hierarchy
@@ -2574,15 +2584,6 @@ Checks a STRING or KEYWORD parameter for equality with a given string
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "cctk.h"
-%Entering a function descrpition for CCTK\_Equals
-\begin{FunctionDescription}{CCTK\_Equals}
-\label{CCTK-Equals}
-Checks a STRING or KEYWORD parameter for equality with a given string
-
-\begin{SynopsisSection}
-\begin{Synopsis}{C}
-\begin{verbatim}
-#include "cctk.h"
 int status = CCTK_Equals(const char* parameter, const char* value)
 \end{verbatim}
 \end{Synopsis}
@@ -2598,10 +2599,10 @@ status = CCTK_Equals(parameter, value)
 
 \begin{ResultSection}
 \begin{Result}{1}
-if the parameter is (case-independent) equal to the specified value
+if the parameter is (case-independently) equal to the specified value
 \end{Result}
 \begin{Result}{0}
-if the parameter is (case-independent) not equal to the specified value
+if the parameter is (case-independently) not equal to the specified value
 \end{Result}
 \end{ResultSection}
 
@@ -5224,12 +5225,13 @@ CCTK_InfoCallbackRegister(NULL,DumpInfo);
 %Entering a function descrpition for CCTK\_InterpGridArrays
 \begin{FunctionDescription}{CCTK\_InterpGridArrays}
 \label{CCTK-InterpGridArrays}
-Interpolate a list of distributed grid arrays
+Interpolate a list of distributed grid variables
 
 The computation is optimized for the case of interpolating a
-number of grid arrays at a time; in this case all the interprocessor
+number of grid variables at a time; in this case all the interprocessor
 communication can be done together, and the same interpolation
-coefficients can be used for all the arrays.
+coefficients can be used for all the variables.  A grid variable can
+be either a grid function or a grid array.
 
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -5323,18 +5325,18 @@ These coordinates are with respect to the coordinate system defined by
 \code{coord\_system\_handle}.
 \end{Parameter}
 \begin{Parameter}{N\_input\_arrays ($\ge 0$)}
-The number of input arrays to be interpolated.
+The number of input variables to be interpolated.
 If \code{N\_input\_arrays} is zero then no interpolation is done; such a call
 may be useful for setup, interpolator querying, etc.
 Note that if the parameter table entry \code{operand\_indices} is used to specify
-a nontrivial (e.g.\ one-to-many) mapping of input arrays to output arrays,
+a nontrivial (e.g.\ one-to-many) mapping of input variables to output arrays,
 only the
-unique set of input arrays should be given here.
+unique set of input variables should be given here.
 \end{Parameter}
 \begin{Parameter}{input\_array\_variable\_indices ($\ne$ NULL)}
-(Pointer to) an array of \code{N\_input\_arrays} CCTK grid array indices (as
-returned by \code{CCTK\_VarIndex}) specifying the input grid arrays for the
-interpolation. For any element with an index value of -1 in the grid array
+(Pointer to) an array of \code{N\_input\_arrays} CCTK grid variable indices (as
+returned by \code{CCTK\_VarIndex}) specifying the input grid variables for the
+interpolation. For any element with an index value of -1 in the grid variable
 indices array, that interpolation is skipped. This may be useful if the main
 purpose of the call is e.g.\ to do some query or setup computation.
 \end{Parameter}
@@ -5344,7 +5346,7 @@ If \code{N\_output\_arrays} is zero then no interpolation is done; such a call
 may be useful for setup, interpolator querying, etc.
 Note that \code{N\_output\_arrays} may differ from \code{N\_input\_arrays}, e.g.\
 if the \code{operand\_indices} parameter-table entry is used to specify a
-nontrivial (e.g.\ many-to-one) mapping of input arrays to output arrays.
+nontrivial (e.g.\ many-to-one) mapping of input variables to output arrays.
 If such a mapping is specified, only the unique set of output arrays
 should be given in the \code{output\_arrays} argument.
 \end{Parameter}
@@ -5363,7 +5365,7 @@ is e.g.\ to do some query or setup computation.
 \end{ParameterSection}
 
 \begin{Discussion}
-This function interpolates a list of CCTK grid arrays (in a multiprocessor run
+This function interpolates a list of CCTK grid variables (in a multiprocessor run
 these are generally distributed over processors) on a list of interpolation
 points. The grid topology and coordinates are implicitly specified via a Cactus
 coordinate system.
@@ -5373,7 +5375,7 @@ each processor will get whatever interpolated data it asks for.
 The routine \code{CCTK\_InterpGridArrays} does not do the actual interpolation
 itself but rather takes care of whatever interprocessor communication may be
 necessary, and -- for each processor's local patch of the domain-decomposed grid
-arrays -- calls \code{CCTK\_InterpLocalUniform} to invoke an external
+variables -- calls \code{CCTK\_InterpLocalUniform} to invoke an external
 local interpolation operator (as identified by an interpolation handle).
 
 Additional parameters for the interpolation operation of both
@@ -5434,7 +5436,7 @@ flesh will supply only a dummy routine for it which -- if called -- does
 nothing but print a warning message saying that it wasn't overloaded by
 another thorn, and stop the code. So one will always need to compile in
 and activate a driver-specific thorn which provides an interpolation routine
-for CCTK grid arrays and properly overloads \code{CCTK\_InterpGridArrays}
+for CCTK grid variables and properly overloads \code{CCTK\_InterpGridArrays}
 with it at startup.
 
 Details of the operation performed, and what (if any) inputs and/or
@@ -9324,7 +9326,11 @@ Util_TableDestroy(param_table_handle);
 
 % CCTK\_Reduce here
 %Reduction.c
-%Entering a function descrpition for CCTK\_ReduceGridArrays
+
+% CCTK\_Reduce1 here
+%Reduction.c
+
+%Entering a function description for CCTK\_ReduceGridArrays
 \begin{FunctionDescription}{CCTK\_ReduceGridArrays}
 \label{CCTK-ReduceGridArrays}
 Performs reduction on a list of distributed grid arrays
@@ -10142,6 +10148,139 @@ Reduces a list of local arrays globally
 %%%%%
 % SSS
 %%%%%
+
+
+
+% ScheduleInterface.c
+\begin{FunctionDescription}{CCTK\_SchedulePrintTimes}
+  \label{CCTK-SchedulePrintTimes}
+  Output the timing results for a certain schedule item to stdout
+  
+  \begin{SynopsisSection}
+    \begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+int status = CCTK_SchedulePrintTimes(const char *where)
+\end{verbatim}
+    \end{Synopsis}
+  \end{SynopsisSection}
+  
+  \begin{ResultSection}
+    \begin{ResultNote}
+      Return code of \texttt{DoScheduleTraverse}, or
+    \end{ResultNote}
+    \begin{Result}{0}
+      Success.
+    \end{Result}
+  \end{ResultSection}
+  
+  \begin{ParameterSection}
+    \begin{Parameter}{where}
+      Name of schedule item, or \texttt{NULL} to print the whole
+      schedule
+    \end{Parameter}
+  \end{ParameterSection}
+  
+  \begin{Discussion}
+    Output the timing results for a certain schedule item to stdout.
+    The schedule item is traversed recursively if it is a schedule
+    group or a schedule bin.
+    
+    This routine is used to produce the timing output when the
+    parameter \texttt{Cactus::cctk\_timer\_output} is set to
+    \texttt{yes}.
+  \end{Discussion}
+  
+  \begin{SeeAlsoSection}
+    \begin{SeeAlso}{CCTK\_SchedulePrintTimesToFile}
+      Output the timing results for a certain schedule item to a file
+    \end{SeeAlso}
+  \end{SeeAlsoSection}
+  
+  \begin{ExampleSection}
+    \begin{Example}{C}
+      Output the timer results for the Analysis bin:
+\begin{verbatim}
+#include "cctk.h"
+int status = CCTK_SchedulePrintTimes("CCTK_ANALYSIS")
+\end{verbatim}
+    \end{Example}
+  \end{ExampleSection}
+  
+\end{FunctionDescription}
+
+
+
+% ScheduleInterface.c
+\begin{FunctionDescription}{CCTK\_SchedulePrintTimesToFile}
+  \label{CCTK-SchedulePrintTimesToFile}
+  Output the timing results for a certain schedule item to stdout
+  
+  \begin{SynopsisSection}
+    \begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+int status = CCTK_SchedulePrintTimesToFile(const char *where)
+\end{verbatim}
+    \end{Synopsis}
+  \end{SynopsisSection}
+  
+  \begin{ResultSection}
+    \begin{ResultNote}
+      Return code of \texttt{DoScheduleTraverse}, or
+    \end{ResultNote}
+    \begin{Result}{0}
+      Success.
+    \end{Result}
+  \end{ResultSection}
+  
+  \begin{ParameterSection}
+    \begin{Parameter}{where}
+      Name of schedule item, or \texttt{NULL} to print the whole
+      schedule
+    \end{Parameter}
+    \begin{Parameter}{file}
+      File to which the results are output; the file must be open for
+      writing
+    \end{Parameter}
+  \end{ParameterSection}
+  
+  \begin{Discussion}
+    Output the timing results for a certain schedule item to a file.
+    The schedule item is traversed recursively if it is a schedule
+    group or a schedule bin.
+    
+    Note that each processor will output its results.  You should
+    either call this routine on only a single processor, or you should
+    pass different files on different processors.
+  \end{Discussion}
+  
+  \begin{SeeAlsoSection}
+    \begin{SeeAlso}{CCTK\_SchedulePrintTimes}
+      Output the timing results for a certain schedule item to stdout
+    \end{SeeAlso}
+  \end{SeeAlsoSection}
+
+  \begin{ExampleSection}
+    \begin{Example}{C}
+      Output the timer results of processor 3 for the Analysis bin to
+      a file:
+\begin{verbatim}
+#include <stdio.h>
+#include "cctk.h"
+if (CCTK_MyProc(cctkGH)==3)
+{
+  FILE *file = fopen("timing-results.txt", "a");
+  int status = CCTK_SchedulePrintTimesToFile("CCTK_ANALYSIS", file)
+  fclose(file);
+}
+\end{verbatim}
+    \end{Example}
+  \end{ExampleSection}
+  
+\end{FunctionDescription}
+
+
 
 % CommOverloadables.c
 \begin{CCTKFunc}{CCTK\_SetupGH}{Setup a new GH}
