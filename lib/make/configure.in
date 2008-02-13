@@ -1088,9 +1088,11 @@ AC_SUBST(TRANSFORM_DIRS)
 AC_SUBST(SYS_INC_DIRS)
 : ${SYS_INC_DIRS=' '}
 
-# How to link in the non-Cactus libraries
+# How to link in the non-Cactus libraries:
+# Add -L and -l prefixes, but only for file names;
+# allow arbitrary options in between
 AC_SUBST(GENERAL_LIBRARIES)
-: ${GENERAL_LIBRARIES='$(LIBDIRS:%=-L%) $(LIBS:%=-l%)'}
+: ${GENERAL_LIBRARIES='$(patsubst -L-%,-%,$(LIBDIRS:%=-L%)) $(patsubst -l-%,-%,$(LIBS:%=-l%))'}
 
 
 # Do we need to make sure Perl makes a backup when editting in place ?
