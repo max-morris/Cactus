@@ -593,12 +593,19 @@ Used to specify auxiliary libraries and directories to find them in.
 
 \begin{Lentry}
 \item [\texttt{LIBS}]
-Additional libraries.  \emph{Warning:} This variable is ignored while
+Additional libraries.
+This variable can also contain linker options, e.g.\ to switch between
+static and dynamic linking.  (Cactus adds an \verb+-l+ prefix to
+library names, but does not modify linker options.)
+\emph{Warning:} This variable is ignored while
 the compilers and linkers are autodetected.  This can lead to strange
 errors while configuring.  You can pass the additional libraries in
 the variable \texttt{LD} instead.
 
 \item [\texttt{LIBDIRS}] Any other library directories.
+This variable can also contain linker options.  (Cactus adds an
+\verb+-L+ prefix to library directories, but does not modify linker
+options.)
 \end{Lentry}
 
 \item {Extra include directories}
