@@ -67,7 +67,7 @@ else
       if test "`/opt/absoft/bin/f95 -V foo.f 2>&1 | grep Absoft`" ; then
         LINUX_F90_COMP=absoft
       else
-        echo 'Unknown Linux f90 compiler.'
+        echo "Unknown Linux f90 compiler '$LINUX_F90_COMP'."
         echo 'Please add appropriate information to'
         echo "  $srcdir/known-architectures/linux"
         echo 'and send the updated file to CactusMaint'
@@ -75,7 +75,7 @@ else
       fi
       rm foo.f
     fi
-  elif test -n "$F77" ; then
+  elif test -n "$F77" && test "$F77" != 'none' ; then
     if test "`$F77 -v 2>&1 | grep -i 'gcc version'`" ; then
       LINUX_F90_COMP=gnu77
     elif test "`$F77 -dumpversion 2>&1 | grep 'GNU Fortran'`" ; then
@@ -91,7 +91,7 @@ else
     elif test "`$F90 -v 2>&1 | grep PathScale`" ; then
       LINUX_F90_COMP=PathScale
     else
-      echo 'Unknown Linux f77 compiler.'
+      echo "Unknown Linux f77 compiler '$F77'."
       echo 'Please add appropriate information to'
       echo "  $srcdir/known-architectures/linux"
       echo 'and send the updated file to CactusMaint'
@@ -329,7 +329,7 @@ else
       : ${LIBS='m'}
       ;;
     *)
-      echo 'Unknown Linux f90 compiler.'
+      echo "Unknown Linux f90 compiler '$LINUX_F90_COMP'."
       echo 'Please add appropriate information to'
       echo "  $srcdir/known-architectures/linux-gnu"
       echo 'and send the updated file to CactusMaint'
