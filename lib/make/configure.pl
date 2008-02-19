@@ -39,29 +39,29 @@ if ($retcode > 0)
 
 sub test_fortran_name
 {
-  local($data);
-  local($use_f77,$use_f90);
-  local($retcode, $line, $name, $case, $n_underscores);
-  local($underscore_suffix, $normal_suffix, $case_prefix);
+  my($data);
+  my($use_f77,$use_f90);
+  my($retcode, $line, $name, $case, $n_underscores);
+  my($underscore_suffix, $normal_suffix, $case_prefix);
 
   $use_f77 = 0;
   $use_f90 = 0;
 
-  if($compiler_f77 && $compiler_f77 ne "" && $compiler_f77 !~ /none/)
-  {
-    ($retcode,$case, $n_underscores) = &compile_fortran_name($compiler_f77,$opts_f77);
-    if ($retcode <= 0)
-    {
-      $use_f77 = 1
-    };
-  }
-  elsif ($compiler_f90 && $compiler_f90 ne "" && $compiler_f90 !~ /none/)
+  if ($compiler_f90 && $compiler_f90 ne "" && $compiler_f90 ne "none")
   {
     ($retcode,$case, $n_underscores) = &compile_fortran_name($compiler_f90,$opts_f90);
     if ($retcode <= 0)
     {
-      $use_f90 = 1
-    };
+      $use_f90 = 1;
+    }
+  }
+  elsif($compiler_f77 && $compiler_f77 ne "" && $compiler_f77 ne "none")
+  {
+    ($retcode,$case, $n_underscores) = &compile_fortran_name($compiler_f77,$opts_f77);
+    if ($retcode <= 0)
+    {
+      $use_f77 = 1;
+    }
   }
 
   if($use_f90 || $use_f77)
@@ -69,11 +69,11 @@ sub test_fortran_name
     # Determine the case and number of underscores
     ($underscore_suffix, $normal_suffix, $case_prefix) = &determine_transformation($n_underscores, $case);
 
-    $data =  "
+    $data = "
 sub fortran_name
 {
-  local(\$old_name) = \@_;
-  local(\$new_name);
+  my(\$old_name) = \@_;
+  my(\$new_name);
 
   \$new_name = \"$case_prefix\$old_name\\E\";
 
@@ -101,13 +101,10 @@ sub fortran_name
       print "Creating null fortran name conversion routine\n";
     }
 $data = "
-
 sub fortran_name
 {
-  local(\$old_name) = \@_;
-
+  my (\$old_name) = \@_;
   return \"\\L\$old_name\";
-
 }
 ";
   }
@@ -118,22 +115,22 @@ sub fortran_name
 
 sub test_fortran_common_name
 {
-  local($data);
-  local($retcode, $line, $name, $case, $n_underscores);
-  local($underscore_suffix, $normal_suffix, $case_prefix);
+  my($data);
+  my($retcode, $line, $name, $case, $n_underscores);
+  my($underscore_suffix, $normal_suffix, $case_prefix);
 
   $use_f77 = 0;
   $use_f90 = 0;
 
-  if($compiler_f77 && $compiler_f77 ne "" && $compiler_f77 !~ /none/)
-  {
-    ($retcode,$case, $n_underscores) = &compile_fortran_common_name($compiler_f77,$opts_f77);
-    if ($retcode <=0) {$use_f77 = 1};
-  }
-  elsif ($compiler_f90 && $compiler_f90 ne "" && $compiler_f90 !~ /none/)
+  if ($compiler_f90 && $compiler_f90 ne "" && $compiler_f90 !~ /none/)
   {
     ($retcode,$case, $n_underscores) = &compile_fortran_common_name($compiler_f90,$opts_f90);
     if ($retcode<=0) {$use_f90 = 1};
+  }
+  elsif($compiler_f77 && $compiler_f77 ne "" && $compiler_f77 !~ /none/)
+  {
+    ($retcode,$case, $n_underscores) = &compile_fortran_common_name($compiler_f77,$opts_f77);
+    if ($retcode <=0) {$use_f77 = 1};
   }
 
   if($use_f90 || $use_f77)
@@ -144,11 +141,10 @@ sub test_fortran_common_name
     $data =  "
 sub fortran_common_name
 {
-  local(\$old_name) = \@_;
-  local(\$new_name);
+  my (\$old_name) = \@_;
+  my (\$new_name);
 
   \$new_name = \"$case_prefix\$old_name\\E\";
-
   if(\$new_name =~ m:_: )
   {
       \$new_name = \$new_name.\"$underscore_suffix\";
@@ -177,10 +173,9 @@ sub fortran_common_name
 
 sub fortran_common_name
 {
-  local(\$old_name) = \@_;
+  my (\$old_name) = \@_;
 
   return \"\\L\$old_name\";
-
 }
 ";
 }
@@ -190,7 +185,7 @@ sub fortran_common_name
 
 sub determine_transformation
 {
-  local ($n_underscores, $case) = @_;
+  my ($n_underscores, $case) = @_;
 
   if($n_underscores == 0)
   {
@@ -225,10 +220,10 @@ sub determine_transformation
 
 sub compile_fortran_common_name
 {
-  local($compiler,$opts) = @_;
-  local($data);
-  local($retcode, $line, $name, $case, $n_underscores);
-  local($underscore_suffix, $normal_suffix, $case_prefix);
+  my($compiler,$opts) = @_;
+  my($data);
+  my($retcode, $line, $name, $case, $n_underscores);
+  my($underscore_suffix, $normal_suffix, $case_prefix);
 
   # Create a test file
   open(OUT, ">fname_test.f") || die "Cannot open fname_test.f\n";
@@ -236,11 +231,9 @@ sub compile_fortran_common_name
   print OUT <<EOT;
       subroutine test_name
       real b
-      common /test_common/b
+      common /test_common/ b
       b = 2.0
-      return
       end
-
 EOT
 
   close OUT;
@@ -261,19 +254,22 @@ EOT
     # Search the object file for the appropriate symbols
     open(IN, "<fname_test.o") || open(IN, "<fname_test.obj") || die "Cannot open fname_test.o\n";
 
+    $n_underscores = -1;
     while(<IN>)
     {
-      $line = $_;
-      if($line =~ m:(_[\w_]*)?(TEST_COMMON)(_*):i)
+      my $line = $_;
+      # This line may contain several matches
+      while($line =~ m:(_[\w_]*)?(TEST_COMMON)(_*):i)
       {
-	$prefix = $1;
-	$name = $2;
-	$underscores = $3;
+	my $prefix = $1;
+	my $name = $2;
+	my $underscores = $3;
+        my $nextline = $';   #'
 
 	# This is a pain.  If all symbols have underscores, need to remove
 	# the first one here.
 
-	if($symbols_preceeded_by_underscores)
+	if($symbols_preceded_by_underscores)
 	{
 	  if($prefix =~ m:^_(.*):)
 	  {
@@ -281,37 +277,63 @@ EOT
 	  }
 	}
 
+        my $tmp_case, $tmp_n_underscores;
 	if($name =~ m:TEST_COMMON:)
 	{
-	  print "Uppercase - ";
-	  $case = 1;
+	  $tmp_case = 1;
 	}
 	if($name =~ m:test_common:)
 	{
-	  print "Lowercase - ";
-	  $case = 0;
+	  $tmp_case = 0;
 	}
 	if($underscores eq "")
 	{
-	  print " No trailing underscore\n";
-	  $n_underscores = 0;
+	  $tmp_n_underscores = 0;
 	}
 	if($underscores eq "_")
 	{
-	  print "One trailing underscore\n";
-	  $n_underscores = 1;
+	  $tmp_n_underscores = 1;
 	}
 	if($underscores eq "__")
 	{
-	  print "Two trailing underscores\n";
-	  $n_underscores = 2;
+	  $tmp_n_underscores = 2;
 	}
 
-	last;
+        # Look for the maximum number of underscores;
+        # if the name occurs with fewer underscores it may be debug information
+        if($tmp_n_underscores > $n_underscores)
+        {
+          $case = $tmp_case;
+          $n_underscores = $tmp_n_underscores;
+        }
+
+        # Remove what currently matched; continue with the remaineder
+        $line = $nextline;
       }
     }
 
     close IN;
+
+    if($case == 1)
+    {
+      print "Uppercase - ";
+    }
+    elsif($case == 0)
+    {
+      print "Lowercase - ";
+    }
+    if($n_underscores == 0)
+    {
+      print "No trailing underscore\n";
+    }
+    elsif($n_underscores == 1)
+    {
+      print "One trailing underscore\n";
+    }
+    elsif($n_underscores == 2)
+    {
+      print "Two trailing underscores\n";
+    }
   }
   # Delete the temporary files
   unlink <fname_test.*>;
@@ -322,10 +344,10 @@ EOT
 
 sub compile_fortran_name
 {
-  local($compiler,$opts) = @_;
-  local($data);
-  local($retcode, $line, $name, $case, $n_underscores);
-  local($underscore_suffix, $normal_suffix, $case_prefix);
+  my($compiler,$opts) = @_;
+  my($data);
+  my($retcode, $line, $name, $case, $n_underscores);
+  my($underscore_suffix, $normal_suffix, $case_prefix);
 
   # Create a test file
   open(OUT, ">fname_test.f") || die "Cannot open fname_test.f\n";
@@ -335,9 +357,7 @@ sub compile_fortran_name
       integer a
       a = 1
       call test_name(a)
-      return
       end
-
 EOT
 
   close OUT;
@@ -358,58 +378,89 @@ EOT
     # Search the object file for the appropriate symbols
     open(IN, "<fname_test.o") || open(IN, "<fname_test.obj") || die "Cannot open fname_test.o\n";
 
+    $n_underscores = -1;
     while(<IN>)
     {
-      $line = $_;
-      if($line =~ m:(TEST_NAME)(_*):i)
+      my $line = $_;
+      # This line may contain several matches
+      while($line =~ m:(TEST_NAME)(_*):i)
       {
-	$name = $1;
-	$underscores = $2;
+	my $name = $1;
+	my $underscores = $2;
+        my $nextline = $';   #'
 
 	# Extremely quick hack to sort out problems later on with common block
 	# names.
 	
+        my $tmp_symbols_preceded_by_underscores;
 	if($_ =~ m:_TEST_NAME:i)
 	{
-	  $symbols_preceeded_by_underscores=1;
+	  $tmp_symbols_preceded_by_underscores=1;
 	}
 	else
 	{
-	  $symbols_preceeded_by_underscores=0;
+	  $tmp_symbols_preceded_by_underscores=0;
 	}
 
-	# Find out suffices.
+	# Find out suffixes.
+        my $tmp_case, $tmp_n_underscores;
 	if($name =~ m:TEST_NAME:)
 	{
-	  print "Uppercase - ";
-	  $case = 1;
+	  $tmp_case = 1;
 	}
 	if($name =~ m:test_name:)
 	{
-	  print "Lowercase - ";
-	  $case = 0;
+	  $tmp_case = 0;
 	}
 	if($underscores eq "")
 	{
-	  print " No trailing underscore\n";
-	  $n_underscores = 0;
+	  $tmp_n_underscores = 0;
 	}
 	if($underscores eq "_")
 	{
-	  print "One trailing underscore\n";
-	  $n_underscores = 1;
+	  $tmp_n_underscores = 1;
 	}
 	if($underscores eq "__")
 	{
-	  print "Two trailing underscores\n";
-	  $n_underscores = 2;
+	  $tmp_n_underscores = 2;
 	}
 
-	last;
+        # Look for the maximum number of underscores;
+        # if the name occurs with fewer underscores it may be debug information
+        if($tmp_n_underscores > $n_underscores)
+        {
+          $symbols_preceded_by_underscores = $tmp_symbols_preceded_by_underscores;
+          $case = $tmp_case;
+          $n_underscores = $tmp_n_underscores;
+        }
+
+        # Remove what currently matched; continue with the remaineder
+        $line = $nextline;
       }
     }
 
     close IN;
+
+    if($case == 1)
+    {
+      print "Uppercase - ";
+    }
+    elsif($case == 0)
+    {
+      print "Lowercase - ";
+    }
+    if($n_underscores == 0)
+    {
+      print "No trailing underscore\n";
+    }
+    elsif($n_underscores == 1)
+    {
+      print "One trailing underscore\n";
+    }
+    elsif($n_underscores == 2)
+    {
+      print "Two trailing underscores\n";
+    }
 
   }
 
