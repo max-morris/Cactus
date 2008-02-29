@@ -933,9 +933,16 @@ sub parse_interface_ccl
         $interface_data_ref->{"\U$thorn GROUP $current_group\E GTYPE"} = "SCALAR";
       }
 
-      if(! $interface_data_ref->{"\U$thorn GROUP $current_group\E DIM"})
+      if (! $interface_data_ref->{"\U$thorn GROUP $current_group\E DIM"})
       {
-        $interface_data_ref->{"\U$thorn GROUP $current_group\E DIM"} = 3;
+        if ($interface_data_ref->{"\U$thorn GROUP $current_group\E GTYPE"} eq 'SCALAR')
+        {
+          $interface_data_ref->{"\U$thorn GROUP $current_group\E DIM"} = 0;
+        }
+        else
+        {
+          $interface_data_ref->{"\U$thorn GROUP $current_group\E DIM"} = 3;
+        }
       }
 
       if(! $interface_data_ref->{"\U$thorn GROUP $current_group\E TIMELEVELS"})
@@ -958,11 +965,61 @@ sub parse_interface_ccl
         $interface_data_ref->{"\U$thorn GROUP $current_group\E COMPACT"} = 0;
       }
 
-      # Override defaults for scalars
-      if($interface_data_ref->{"\U$thorn GROUP $current_group\E GTYPE"} eq "SCALAR")
+      if ($interface_data_ref->{"\U$thorn GROUP $current_group\E GTYPE"} eq "SCALAR")
       {
+        my $dim = $interface_data_ref->{"\U$thorn GROUP $current_group\E DIM"};
+        if ($dim && $dim ne '0')
+        {
+          my $message =  "Inconsistent GROUP DIM $dim for SCALAR group $current_group of thorn $thorn";
+          my $hint = "The only allowed group dimension for scalar groups is '0'";
+          &CST_error (0, $message, $hint, __LINE__, __FILE__);
+          if ($data_ref->[$line_number+1] =~ m:\{:)
+          {
+            &CST_error (1, "Skipping interface block in $thorn", '',
+                        __LINE__, __FILE__);
+            ++ $line_number until ($data_ref->[$line_number] =~ m:\}:);
+          }
+          next;
+        }
         $interface_data_ref->{"\U$thorn GROUP $current_group\E DIM"} = 0;
-        $interface_data_ref->{"\U$thorn GROUP $current_group\E DISTRIB"} = "CONSTANT";
+
+        my $distrib = $interface_data_ref->{"\U$thorn GROUP $current_group\E DISTRIB"};
+        if ($distrib && $distrib ne 'CONSTANT')
+        {
+          my $message =  "Inconsistent GROUP DISTRIB $distrib for SCALAR group $current_group of thorn $thorn";
+          my $hint = "The only allowed group distribution for scalar groups is 'CONSTANT'";
+          &CST_error (0, $message, $hint, __LINE__, __FILE__);
+          if ($data_ref->[$line_number+1] =~ m:\{:)
+          {
+            &CST_error (1, "Skipping interface block in $thorn", '',
+                        __LINE__, __FILE__);
+            ++ $line_number until ($data_ref->[$line_number] =~ m:\}:);
+          }
+          next;
+        }
+        $interface_data_ref->{"\U$thorn GROUP $current_group\E DISTRIB"} =
+            "CONSTANT";
+      }
+
+      # Override defaults for grid functions
+      if ($interface_data_ref->{"\U$thorn GROUP $current_group\E GTYPE"} eq "GF")
+      {
+        my $distrib = $interface_data_ref->{"\U$thorn GROUP $current_group\E DISTRIB"};
+        if ($distrib && $distrib ne 'DEFAULT')
+        {
+          my $message =  "Inconsistent GROUP DISTRIB $distrib for GF group $current_group of thorn $thorn";
+          my $hint = "The only allowed group distribution for grid function groups is 'DEFAULT'";
+          &CST_error (0, $message, $hint, __LINE__, __FILE__);
+          if ($data_ref->[$line_number+1] =~ m:\{:)
+          {
+            &CST_error (1, "Skipping interface block in $thorn", '',
+                        __LINE__, __FILE__);
+            ++ $line_number until ($data_ref->[$line_number] =~ m:\}:);
+          }
+          next;
+        }
+        $interface_data_ref->{"\U$thorn GROUP $current_group\E DISTRIB"} =
+            "DEFAULT";
       }
 
       # Check that it is a known group type
