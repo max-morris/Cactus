@@ -957,7 +957,14 @@ sub parse_interface_ccl
 
       if(! $interface_data_ref->{"\U$thorn GROUP $current_group\E DISTRIB"})
       {
-        $interface_data_ref->{"\U$thorn GROUP $current_group\E DISTRIB"} = "DEFAULT";
+        if ($interface_data_ref->{"\U$thorn GROUP $current_group\E GTYPE"} eq 'SCALAR')
+        {
+          $interface_data_ref->{"\U$thorn GROUP $current_group\E DISTRIB"} = 'CONSTANT';
+        }
+        else
+        {
+          $interface_data_ref->{"\U$thorn GROUP $current_group\E DISTRIB"} = 'DEFAULT';
+        }
       }
 
       if(! $interface_data_ref->{"\U$thorn GROUP $current_group\E COMPACT"})
