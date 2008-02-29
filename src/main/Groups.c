@@ -2269,7 +2269,7 @@ int CCTK_TraverseString (const char *traverse_string,
       {
         (*callback) (vindex, option_string, callback_arg);
       }
-      retval += last - first + 1;
+      if (retval >= 0) retval += last - first + 1;
     }
     /* Only emit an error message if the name is really invalid.  If
        it is a valid group name, but the group has zero variables,
