@@ -879,6 +879,8 @@ int CCTK_SchedulePrint(const char *where)
     SchedulePrint("CCTK_PARAMCHECK");
     putchar ('\n');
     puts ("  Initialisation");
+    puts ("    if (NOT (recover initial data AND recovery_mode is 'strict'))");
+    indent_level +=2;
     puts ("    [CCTK_PREREGRIDINITIAL]");
     SchedulePrint("CCTK_PREREGRIDINITIAL$ENTRY");
     SchedulePrint("CCTK_PREREGRIDINITIAL");
@@ -892,8 +894,6 @@ int CCTK_SchedulePrint(const char *where)
     SchedulePrint("CCTK_BASEGRID$ENTRY");
     SchedulePrint("CCTK_BASEGRID");
     SchedulePrint("CCTK_BASEGRID$EXIT");
-    puts ("    if (NOT (recover initial data AND recovery_mode is 'strict'))");
-    indent_level +=2;
     puts ("      [CCTK_INITIAL]");
     SchedulePrint("CCTK_INITIAL$ENTRY");
     SchedulePrint("CCTK_INITIAL");
@@ -914,6 +914,10 @@ int CCTK_SchedulePrint(const char *where)
     SchedulePrint("CCTK_POSTSTEP$EXIT");
     puts ("    endif");
     puts ("    if (recover initial data)");
+    puts ("    [CCTK_BASEGRID]");
+    SchedulePrint("CCTK_BASEGRID$ENTRY");
+    SchedulePrint("CCTK_BASEGRID");
+    SchedulePrint("CCTK_BASEGRID$EXIT");
     puts ("      [CCTK_RECOVER_VARIABLES]");
     SchedulePrint("CCTK_RECOVER_VARIABLES");
     puts ("      [CCTK_POST_RECOVER_VARIABLES]");
@@ -930,7 +934,7 @@ int CCTK_SchedulePrint(const char *where)
     SchedulePrint("CCTK_ANALYSIS$EXIT");
     indent_level -=2;
     puts ("    endif");
-    puts ("    Output of grid variables");
+    puts ("    Output grid variables");
     putchar ('\n');
     puts ("  do loop over timesteps");
     puts ("    [CCTK_PREREGRID]");
@@ -975,7 +979,7 @@ int CCTK_SchedulePrint(const char *where)
     SchedulePrint("CCTK_ANALYSIS$EXIT");
     indent_level -=2;
     puts ("    endif");
-    puts ("    Output of grid variables");
+    puts ("    Output grid variables");
     puts ("  enddo");
     putchar ('\n');
     puts ("  Termination routines");
