@@ -1240,7 +1240,7 @@ sub ReportOnTest
   my @log = ();
 
   # Different lines in files
-  push (@log, '');
+  push (@log, '') if (@log);
   foreach $file (split(' ',$testdata->{"$thorn $test DATAFILES"}))
   {
     my $key = "$thorn $test $file";
@@ -1288,7 +1288,7 @@ sub ReportOnTest
 
   # Look for files created by test not in archive
   # (Note this is not so bad)
-  push (@log, '');
+  push (@log, '') if (@log);
   foreach $file (split (" ",$rundata->{"$thorn $test TESTFILES"}))
   {
     $myfile = quotemeta($file);
@@ -1302,7 +1302,7 @@ sub ReportOnTest
 
   # Look for files in archive which are not created in test
   # (Note this is bad)
-  push (@log, '');
+  push (@log, '') if (@log);
   my %filesmissing = ();
   if ($rundata->{"$thorn $test NTESTFILES"})
   {
@@ -1326,12 +1326,12 @@ sub ReportOnTest
   $rundata->{"$thorn $test FILEMISSING"} = \%filesmissing;
 
   # Ensure final newline character
-  push (@log, '');
+  push (@log, '') if (@log);
 
   # write diffs to STDOUT and logfile
   if (@log)
   {
-    print join ("\n", @log);
+    print "\n", join ("\n", @log);
 
     # print LOG join ("\n", @log);
     my $logfile = $testdata->{"$thorn $test TESTRUNDIR"} . "/$test.diffs";
