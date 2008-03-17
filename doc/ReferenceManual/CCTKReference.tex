@@ -8413,6 +8413,16 @@ int ierr = CCTK_ParameterSet (const char *name,
                               const char *value);
 \end{verbatim}
 \end{Synopsis}
+
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_ParameterSet (ierr, name, thorn, value)
+CCTK_INT ierr
+character*(*) name
+character*(*) thorn
+character*(*) value
+\end{verbatim}
+\end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ResultSection}
@@ -8426,12 +8436,10 @@ Error code
 Parameter name
 \end{Parameter}
 \begin{Parameter}{thorn}
-Thorn name (for private parameters) or implementation name (for
-restricted parameters)
+Thorn name (for private parameters) or implementation name (for restricted parameters)
 \end{Parameter}
-\begin{Parameter}{type}
-If not NULL, a pointer to an integer which will hold the type of the
-parameter
+\begin{Parameter}{value}
+The new (stringified) value for the parameter parameter
 \end{Parameter}
 \end{ParameterSection}
 
