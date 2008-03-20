@@ -84,6 +84,7 @@ sub CreateVariableBindings
 
   push(@data, '/* prototype for CCTKi_VarDataPtr() goes here');
   push(@data, '   because we don\'t want to include another CCTK header file */');
+  push(@data, '#include "cGH.h"');
   push(@data, '#ifdef __cplusplus');
   push(@data, 'extern "C"');
   push(@data, '#endif');
