@@ -1,9 +1,9 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.80 2006-06-13 15:06:00 schnetter Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.81 2008-03-20 14:12:47 schnetter Exp $
 
-Also available at http://www.cactuscode.org/Documentation/FAQ
+Also available at http://www.cactuscode.org/Documentation/faq
 
 
 ==============================================================================
@@ -345,39 +345,41 @@ Background:
 A1  How did Cactus start?
 
     Cactus originated in the Numerical Relativity community to realise
-    the large scale computing needs and collaborative working practices
-    required to model objects such as black holes, neutron stars and
-    and gravitational waves using Einsteins Theory of General Relativity.
+    the large scale computing needs and collaborative working
+    practices required to model objects such as black holes, neutron
+    stars and and gravitational waves using Einsteins Theory of
+    General Relativity.
 
     In particular, Cactus grew out of codes, experiences, and ideas of
-    members of the NCSA and AEI numerical relativity groups together with
-    a number of friends and collaborators. Since the first Beta release
-    of Cactus 4.0 many suggestions and contributions have also been made
-    by the users.
+    members of the NCSA and AEI numerical relativity groups together
+    with a number of friends and collaborators.  Since the first Beta
+    release of Cactus 4.0 many suggestions and contributions have also
+    been made by the users.
 
 
 A2  Who develops and maintains Cactus?
 
-    Cactus is primarily developed and maintained at the Max Planck Institute
-    for Gravitational Physics (Albert Einstein Institute) in Potsdam, Germany.
-    The funding for this support is mainly obtained through independent
-    grants for projects in both computer science and physics which focus
-    around Cactus.
+    Cactus is primarily developed and maintained at the Center for
+    Computation & Technology at Louisiana State University in Baton
+    Rouge, USA.  The funding for this support is mainly obtained
+    through state and federal grants for projects in both computer
+    science and physics which focus around Cactus.
 
 
 A3  How can I get involved?
 
     First, if you use Cactus, send bug reports, bug fixes, comments,
-    suggestions, documentation to cactusmaint@cactuscode.org, or use
-    the bug tracking/feature request system.
+    suggestions, documentation to <cactusmaint@cactuscode.org>, or use
+    the mailing list <users@cactuscode.org> and the bug
+    tracking/feature request system.
 
     If you have written thorns which could be useful to other people,
     make them available for others to use (if you have a web page,
     send us the link to put on our page).
 
     To find out about any existing or upcoming research programmer or
-    student positions associated with Cactus development please contact
-    Ed Seidel (eseidel@aei.mpg.de).
+    student positions associated with Cactus development please
+    contact Gabrielle Allen <gallen@cct.lsu.edu>.
 
 
 -------------------------------------------------------------------------------
