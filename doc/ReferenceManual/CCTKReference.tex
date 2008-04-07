@@ -465,6 +465,9 @@ from Fortran.
 \item[\code{CCTK\_MaxDim}] [\pageref{CCTK-MaxDim}]
   Get the maximum dimension of any grid variable
 
+\item[\code{CCTK\_MaxGFDim}] [\pageref{CCTK-MaxGFDim}]
+  Get the maximum dimension of all grid functions
+
 \item[\code{CCTK\_MaxTimeLevels}] [\pageref{CCTK-MaxTimeLevels}]
   Gives the maximum number of timelevels for a group
 
@@ -7038,6 +7041,31 @@ and not the active thorn list.
 \hfill {\bf C} && {\t dim = CCTK\_MaxDim() };
 \\
 \hfill {\bf Fortran} && {\t call  CCTK\_MaxDim(dim)}
+\\
+\end{tabular}
+\end{examples}
+\begin{errorcodes}
+\end{errorcodes}
+\end{CCTKFunc}
+
+
+\begin{CCTKFunc}{CCTK\_MaxGFDim}{Get the maximum dimension of all grid
+    functions }
+\label{CCTK-MaxGFDim}
+\subroutine{int}{integer}{dim}
+\showargs
+\begin{params}
+\parameter{dim}{The maximum dimension of all grid functions}
+\end{params}
+\begin{discussion}
+Note that the maximum dimension will depend only on the active thorn list,
+and not the compiled thorn list.
+\end{discussion}
+\begin{examples}
+\begin{tabular}{@{}p{3cm}cp{11cm}}
+\hfill {\bf C} && {\t dim = CCTK\_MaxGFDim() };
+\\
+\hfill {\bf Fortran} && {\t call  CCTK\_MaxGFDim(dim)}
 \\
 \end{tabular}
 \end{examples}

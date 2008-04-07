@@ -112,7 +112,7 @@ int CactusDefaultInterpGridArrays (const cGH *GH, int N_dims,
    @desc
                Default cactus SetupGH routine.
    @enddesc
-   @calls      CCTK_MaxDim
+   @calls      CCTK_MaxGFDim
                CCTK_NumVars
                CCTK_MaxTimeLevelsVI
                CCTK_NumGroups
@@ -157,7 +157,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
   thisGH = malloc(sizeof(cGH));
   if(thisGH)
   {
-    thisGH->cctk_dim = CCTK_MaxDim();
+    thisGH->cctk_dim = CCTK_MaxGFDim();
 
     /* Need this to be at least one otherwise the memory allocation will fail */
     cctk_dim = thisGH->cctk_dim;

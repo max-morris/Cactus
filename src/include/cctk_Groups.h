@@ -64,6 +64,7 @@ int         CCTK_GroupTypeI(int group);
 const char *CCTK_ImpFromVarI(int var);
 
 int         CCTK_MaxDim(void);
+int         CCTK_MaxGFDim(void);
 
 int         CCTK_NumGroups(void);
 

@@ -82,6 +82,8 @@ void CCTK_FCALL CCTK_FNAME (CCTK_ImpFromVarI)
                            (int *nchars, int *var, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_MaxDim)
                            (int *dim);
+void CCTK_FCALL CCTK_FNAME (CCTK_MaxGFDim)
+                           (int *dim);
 void CCTK_FCALL CCTK_FNAME (CCTK_MaxTimeLevels)
                            (int *num, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_MaxTimeLevelsGI)
@@ -450,6 +452,31 @@ void CCTK_FCALL CCTK_FNAME (CCTK_MaxDim)
                            (int *dim)
 {
   *dim = CCTK_MaxDim ();
+}
+
+
+ /*@@
+   @routine    CCTK_MaxGFDim
+   @date       2008-03-19
+   @author     Erik Schnetter
+   @desc
+               Gets the maximum dimension of all grid function groups.
+   @enddesc
+
+   @returntype int
+   @returndesc
+               the maximum dimension of all grid function groups
+   @endreturndesc
+@@*/
+int CCTK_MaxGFDim (void)
+{
+  return (gfdim);
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_MaxGFDim)
+                           (int *dim)
+{
+  *dim = CCTK_MaxGFDim ();
 }
 
 
