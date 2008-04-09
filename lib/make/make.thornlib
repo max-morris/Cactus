@@ -126,7 +126,16 @@ $(addsuffix /make.identity, $(SUBDIRS) $(THORNBINDINGS)):
 # be used via xargs.
 
 OBJS-words = $(words $(OBJS))
-OBJS-words-max = 1000
+
+ifeq ($(shell uname),AIX)
+# Be conservative about the maximum number of objects that can be
+# handled at once.  AIX has a command line length limit of about
+# 32000.  Each object's path name may be about 100 characters long.
+OBJS-words-max = 200
+else
+# Assume that the system has no limit to speak of.
+OBJS-words-max = 10000
+endif
 
 ifeq ($(shell test $(OBJS-words) -le $(OBJS-words-max) && echo 1), 1)
 
