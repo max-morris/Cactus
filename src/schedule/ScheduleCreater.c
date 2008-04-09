@@ -48,6 +48,7 @@ static int ScheduleItemNumber(t_sched_group *group,
 
 
 static int ScheduleSetupWhiles(t_sched_item *item);
+static int ScheduleSetupIfs(t_sched_item *item);
 
 /********************************************************************
  ********************* Other Routine Prototypes *********************
@@ -533,8 +534,11 @@ static t_sched_item *ScheduleCreateItem(const char *name, t_sched_modifier *modi
 
       this->n_whiles = 0;
       this->whiles = NULL;
+      this->n_ifs = 0;
+      this->ifs = NULL;
 
       ScheduleSetupWhiles(this);
+      ScheduleSetupIfs(this);
 
       this->attributes = attributes;
 
@@ -676,6 +680,10 @@ static t_sched_modifier_type ScheduleTranslateModifierType(const char *modifier)
   {
     retval = sched_while;
   }
+  else if(!strcmp(modifier, "if"))
+  {
+    retval = sched_if;
+  }
 
 #ifdef DEBUG_SCHEDULAR
   printf("Translated modifier type %s to %d\n", modifier, retval);
@@ -747,7 +755,7 @@ static int ScheduleSortGroup(t_sched_group *group)
 #endif
     for(modifier = group->scheditems[item].modifiers; modifier; modifier = modifier->next)
     {
-      if(modifier->type == sched_while)
+      if(modifier->type == sched_while || modifier->type == sched_if)
       {
         continue;
       }
@@ -956,6 +964,70 @@ static int ScheduleSetupWhiles(t_sched_item *item)
         else
         {
           item->n_whiles--;
+          retval--;
+        }
+      }
+      else
+      {
+        retval--;
+      }
+    }
+  }
+
+  return retval;
+}
+
+ /*@@
+   @routine    ScheduleSetupIfs
+   @date       Dec 27, 2005
+   @author     Erik Schnetter
+   @desc 
+   Make an array of all the ifs in the modifier list for a schedule item.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     item
+   @vdesc   The schedule item to work on
+   @vtype   t_sched_item *
+   @vio     inout
+   @vcomment 
+ 
+   @endvar 
+   @returntype int
+   @returndesc 
+   Number of whiles
+   @endreturndesc
+@@*/
+static int ScheduleSetupIfs(t_sched_item *item)
+{
+  int retval;
+  t_sched_modifier *modifier;
+  char **temp;
+
+  retval = 0;
+
+  for(modifier = item->modifiers; modifier; modifier = modifier->next)
+  {
+    if(modifier->type == sched_if)
+    {
+      item->n_ifs++;
+      temp = (char **)realloc(item->ifs, item->n_ifs*sizeof(char *));
+
+      if(temp)
+      {
+        item->ifs = temp;
+
+        temp[item->n_ifs-1] = (char *)malloc((strlen(modifier->argument)+1)*sizeof(char));
+        if(temp[item->n_ifs-1])
+        {
+          strcpy(temp[item->n_ifs-1], modifier->argument);
+        }
+        else
+        {
+          item->n_ifs--;
           retval--;
         }
       }

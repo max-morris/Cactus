@@ -14,7 +14,11 @@
 
 /* Types needed by other routines. */
 
-typedef enum {sched_mod_none, sched_before, sched_after, sched_while} t_sched_modifier_type;
+typedef enum {
+  sched_mod_none,
+  sched_before, sched_after,
+  sched_while, sched_if
+} t_sched_modifier_type;
 
 typedef struct T_SCHED_MODIFIER
 {
@@ -58,7 +62,8 @@ int CCTKi_DoScheduleSortAllGroups(void);
 int CCTKi_DoScheduleTraverse(const char *group_name,
                              int (*item_entry)(void *, void *),
                              int (*item_exit)(void *, void *),
-                             int  (*while_check)(int, char **, void *, void *, int),
+                             int (*while_check)(int, char **, void *, void *, int),
+                             int (*if_check)(int, char **, void *, void *),
                              int (*function_process)(void *, void *, void *),
                              void *data);
 

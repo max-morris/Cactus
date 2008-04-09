@@ -33,6 +33,7 @@ int CCTKi_ScheduleFunction(void *function,
                            int n_before,
                            int n_after,
                            int n_while,
+                           int n_if,
                            const int *timelevels, 
                            ...);
 
@@ -50,6 +51,7 @@ int CCTKi_ScheduleGroup(const char *realname,
                         int n_before,
                         int n_after,
                         int n_while,
+                        int n_if,
                         const int *timelevels,
                         ...
                         );

@@ -55,6 +55,8 @@ typedef struct
 
   int n_whiles;
   char **whiles;
+  int n_ifs;
+  char **ifs;
 
   void *attributes;
 

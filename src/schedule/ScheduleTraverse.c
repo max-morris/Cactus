@@ -34,9 +34,12 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
                                  void *attributes,
                                  int n_whiles,
                                  char **whiles,
+                                 int n_ifs,
+                                 char **ifs,
                                  int (*item_entry)(void *, void *),
                                  int (*item_exit)(void *, void *),
-                                 int  (*while_check)(int, char **, void *, void *, int),
+                                 int (*while_check)(int, char **, void *, void *, int),
+                                 int (*if_check)(int, char **, void *, void *),
                                  int (*function_process)(void *, void *, void *),
                                  void *data);
 
@@ -44,9 +47,12 @@ static int ScheduleTraverseFunction(void *function,
                                     void *attributes,
                                     int n_whiles,
                                     char **whiles,
+                                    int n_ifs,
+                                    char **ifs,
                                     int (*item_entry)(void *, void *),
                                     int (*item_exit)(void *, void *),
-                                    int  (*while_check)(int, char **, void *, void *, int),
+                                    int (*while_check)(int, char **, void *, void *, int),
+                                    int (*if_check)(int, char **, void *, void *),
                                     int (*function_process)(void *, void *, void *),
                                     void *data);
 
@@ -102,6 +108,13 @@ static int ScheduleTraverseFunction(void *function,
    @vcomment 
  
    @endvar 
+   @var     if_check
+   @vdesc   function to be called to check an if statement
+   @vtype   int (*)(int, char **, void *, void *, int)
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
    @var     function_process
    @vdesc   function to be called on any function
    @vtype   int (*)(void *, void *, void *)
@@ -126,7 +139,8 @@ static int ScheduleTraverseFunction(void *function,
 int CCTKi_DoScheduleTraverse(const char *group_name,
                              int (*item_entry)(void *, void *),
                              int (*item_exit)(void *, void *),
-                             int  (*while_check)(int, char **, void *, void *, int),
+                             int (*while_check)(int, char **, void *, void *, int),
+                             int (*if_check)(int, char **, void *, void *),
                              int (*function_process)(void *, void *, void *),
                              void *data)
 {
@@ -146,9 +160,12 @@ int CCTKi_DoScheduleTraverse(const char *group_name,
                                     NULL,
                                     0,
                                     NULL,
+                                    0,
+                                    NULL,
                                     item_entry, 
                                     item_exit, 
                                     while_check, 
+                                    if_check, 
                                     function_process,
                                     data);
   }
@@ -211,6 +228,20 @@ int CCTKi_DoScheduleTraverse(const char *group_name,
    @vcomment 
  
    @endvar 
+   @var     n_ifs
+   @vdesc   number of ifs
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     ifs
+   @vdesc   array of if strings
+   @vtype   char **
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
    @var     item_entry
    @vdesc   function to be called on entry to an item
    @vtype   int (*)(void *, void *)
@@ -227,6 +258,13 @@ int CCTKi_DoScheduleTraverse(const char *group_name,
    @endvar 
    @var     while_check
    @vdesc   function to be called to check a while statement
+   @vtype   int (*)(int, char **, void *, void *, int)
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     if_check
+   @vdesc   function to be called to check a if statement
    @vtype   int (*)(int, char **, void *, void *, int)
    @vio     in
    @vcomment 
@@ -257,9 +295,12 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
                                  void *attributes,
                                  int n_whiles,
                                  char **whiles,
+                                 int n_ifs,
+                                 char **ifs,
                                  int (*item_entry)(void *, void *),
                                  int (*item_exit)(void *, void *),
-                                 int  (*while_check)(int, char **, void *, void *, int),
+                                 int (*while_check)(int, char **, void *, void *, int),
+                                 int (*if_check)(int, char **, void *, void *),
                                  int (*function_process)(void *, void *, void *),
                                  void *data)
 {
@@ -268,17 +309,35 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
   int called_item_entry;
   t_sched_group *newgroup;
 
-  /* If there is a while-list associated with this item, check if the group should be
-   * exectuted at all.
+  doit = 1;
+
+  /* If there is an if-list associated with this item, check if the
+   * group should be exectuted at all.
+   */
+
+  if(n_ifs > 0 && if_check)
+  {
+    doit = doit && if_check(n_ifs, ifs, attributes, data);
+  }
+
+  /* If there is a while-list associated with this item, check if the
+   * group should be exectuted at all.
+   *
+   * If there are both an if-list and a while-list, then both are
+   * checked when the group is entered, but only the while-list is
+   * checked to determine whether the loop should continue.  This
+   * means that the if-statement is outside the while-statement, as in
+   *
+   * IF (...)
+   *   WHILE (...)
+   *     schedule stuff
+   *   END WHILE
+   * END IF
    */
 
   if(n_whiles > 0 && while_check)
   {
-    doit = while_check(n_whiles, whiles, attributes, data,1);
-  }
-  else
-  {
-    doit = 1;
+    doit = doit && while_check(n_whiles, whiles, attributes, data,1);
   }
 
   /* Call a item entry function if it is defined. */
@@ -297,7 +356,7 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
   }
 
   /* Now traverse the group. */
-  while(doit )
+  while(doit)
   {
       
     /* Traverse in the sorted order - assumes group has been sorted ! */
@@ -310,9 +369,12 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
                                    group->scheditems[group->order[item]].attributes,
                                    group->scheditems[group->order[item]].n_whiles,
                                    group->scheditems[group->order[item]].whiles,
+                                   group->scheditems[group->order[item]].n_ifs,
+                                   group->scheditems[group->order[item]].ifs,
                                    item_entry,
-                                   item_exit,                                  
+                                   item_exit,
                                    while_check,
+                                   if_check,
                                    function_process,
                                    data);
           break;
@@ -324,9 +386,12 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
                                 group->scheditems[group->order[item]].attributes,
                                 group->scheditems[group->order[item]].n_whiles,
                                 group->scheditems[group->order[item]].whiles,
+                                group->scheditems[group->order[item]].n_ifs,
+                                group->scheditems[group->order[item]].ifs,
                                 item_entry, 
                                 item_exit, 
                                 while_check, 
+                                if_check, 
                                 function_process,
                                 data);
           break;
@@ -398,6 +463,20 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
    @vcomment 
  
    @endvar 
+   @var     n_ifs
+   @vdesc   number of ifs
+   @vtype   int
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     ifs
+   @vdesc   array of if strings
+   @vtype   char **
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
    @var     item_entry
    @vdesc   function to be called on entry to an item
    @vtype   int (*)(void *, void *)
@@ -414,6 +493,13 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
    @endvar 
    @var     while_check
    @vdesc   function to be called to check a while statement
+   @vtype   int (*)(int, char **, void *, void *, int)
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+   @var     if_check
+   @vdesc   function to be called to check a if statement
    @vtype   int (*)(int, char **, void *, void *, int)
    @vio     in
    @vcomment 
@@ -443,26 +529,36 @@ static int ScheduleTraverseFunction(void *function,
                                     void *attributes,
                                     int n_whiles,
                                     char **whiles,
+                                    int n_ifs,
+                                    char **ifs,
                                     int (*item_entry)(void *, void *),
                                     int (*item_exit)(void *, void *),
-                                    int  (*while_check)(int, char **, void *, void *, int),
+                                    int (*while_check)(int, char **, void *, void *, int),
+                                    int (*if_check)(int, char **, void *, void *),
                                     int (*function_process)(void *, void *, void *),
                                     void *data)
 {
   int doit;
   int called_item_entry;
 
-  /* If there is a while-list associated with this function, check if the function should be
-   * executed at all.
+  doit = 1;
+
+  /* If there is an if-list associated with this function, check if
+   * the function should be executed at all.
+   */
+
+  if(n_ifs > 0 && if_check)
+  {
+    doit = doit && if_check(n_ifs, ifs, attributes, data);
+  }
+
+  /* If there is a while-list associated with this function, check if
+   * the function should be executed at all.
    */
 
   if(n_whiles > 0 && while_check)
   {
-    doit = while_check(n_whiles, whiles, attributes, data,1);
-  }
-  else
-  {
-    doit = 1;
+    doit = doit && while_check(n_whiles, whiles, attributes, data,1);
   }
 
   /* Call a item entry function if it is defined. */
@@ -481,7 +577,7 @@ static int ScheduleTraverseFunction(void *function,
   }
 
   /* Now traverse the . */
-  while(doit )
+  while(doit)
   {
     
     /* Now actually do something with the function. */
@@ -493,7 +589,6 @@ static int ScheduleTraverseFunction(void *function,
       doit = while_check(n_whiles, whiles, attributes, data,0) ;
     }
     else
-
     {
       doit = 0;
     }

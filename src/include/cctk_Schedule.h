@@ -86,6 +86,7 @@ int CCTK_ScheduleFunction(void *function,
                           int n_before,
                           int n_after,
                           int n_while,
+                          int n_if,
                           ...);
 
 int CCTK_ScheduleGroup(const char *name,
@@ -99,6 +100,7 @@ int CCTK_ScheduleGroup(const char *name,
                        int n_before,
                        int n_after,
                        int n_while,
+                       int n_if,
                        ...);
 
 int CCTK_ScheduleGroupStorage(const char *group);

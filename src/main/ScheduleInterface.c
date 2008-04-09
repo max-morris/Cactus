@@ -129,6 +129,7 @@ static int ParseOption(t_attribute *attribute,
 static t_sched_modifier *CreateModifiers(int n_before,
                                          int n_after,
                                          int n_while,
+                                         int n_if,
                                          va_list *ap);
 
 int ValidateModifiers(t_sched_modifier *modifier);
@@ -149,6 +150,11 @@ static int CCTKi_SchedulePrintWhile(int n_whiles,
                                     t_attribute *attribute,
                                     t_sched_data *data,
                                     int first);
+static int CCTKi_SchedulePrintIf(int n_if,
+                                 char **ifs,
+                                 t_attribute *attribute,
+                                 t_sched_data *data,
+                                 int first);
 static int CCTKi_SchedulePrintFunction(void *function, t_attribute *attribute, t_sched_data *data);
 
 static int CCTKi_ScheduleCallEntry(t_attribute *attribute, t_sched_data *data);
@@ -158,6 +164,10 @@ static int CCTKi_ScheduleCallWhile(int n_whiles,
                                    t_attribute *attribute,
                                    t_sched_data *data,
                                    int first);
+static int CCTKi_ScheduleCallIf(int n_ifs,
+                                char **ifs,
+                                t_attribute *attribute,
+                                t_sched_data *data);
 static int CCTKi_ScheduleCallFunction(void *function,
                                       t_attribute *attribute,
                                       t_sched_data *data);
@@ -369,6 +379,11 @@ int CCTK_CallFunction(void *function,
    @vtype   int
    @vio     in
    @endvar
+   @var     n_if
+   @vdesc   Number of vars to schedule if
+   @vtype   int
+   @vio     in
+   @endvar
    @var     timelevels
    @vdesc   The number of timelevels of the storage groups to enable.
    @vtype   const int *
@@ -400,6 +415,7 @@ int CCTKi_ScheduleFunction(void *function,
                            int n_before,
                            int n_after,
                            int n_while,
+                           int n_if,
                            const int *timelevels,
                            ...
                            )
@@ -414,13 +430,14 @@ int CCTKi_ScheduleFunction(void *function,
   attribute = CreateAttribute(where,name,description, language, thorn, implementation,
                               n_mem_groups, n_comm_groups, n_trigger_groups,
                               n_sync_groups, n_options, timelevels, &ap);
-  modifier  = CreateModifiers(n_before, n_after, n_while, &ap);
+  modifier  = CreateModifiers(n_before, n_after, n_while, n_if, &ap);
 
   va_end(ap);
 
   ValidateModifiers(modifier);
 
-  if(attribute && (modifier || (n_before == 0 && n_after == 0 && n_while == 0)))
+  if(attribute && (modifier || (n_before == 0 && n_after == 0 &&
+                                n_while == 0 && n_if == 0)))
   {
     attribute->FunctionData.type = TranslateFunctionType(where);
 
@@ -525,6 +542,11 @@ int CCTKi_ScheduleFunction(void *function,
    @vtype   int
    @vio     in
    @endvar
+   @var     n_if
+   @vdesc   Number of vars to schedule if
+   @vtype   int
+   @vio     in
+   @endvar
    @var     timelevels
    @vdesc   The number of timelevels of the storage groups to enable.
    @vtype   const int *
@@ -554,6 +576,7 @@ int CCTKi_ScheduleGroup(const char *realname,
                         int n_before,
                         int n_after,
                         int n_while,
+                        int n_if,
                         const int *timelevels,
                         ...
                         )
@@ -568,13 +591,14 @@ int CCTKi_ScheduleGroup(const char *realname,
   attribute = CreateAttribute(where,name,description, NULL, thorn, implementation,
                               n_mem_groups, n_comm_groups, n_trigger_groups,
                               n_sync_groups, n_options, timelevels, &ap);
-  modifier  = CreateModifiers(n_before, n_after, n_while, &ap);
+  modifier  = CreateModifiers(n_before, n_after, n_while, n_if, &ap);
 
   va_end(ap);
 
   ValidateModifiers(modifier);
 
-  if(attribute && (modifier || (n_before == 0 && n_after == 0 && n_while == 0)))
+  if(attribute && (modifier || (n_before == 0 && n_after == 0 &&
+                                n_while == 0 && n_if == 0)))
   {
     retcode = CCTKi_DoScheduleGroup(where, name, realname, modifier, (void *)attribute);
 
@@ -1237,6 +1261,7 @@ static int ScheduleTraverse(const char *where,
      (int (*)(void *, void *))                    CCTKi_ScheduleCallEntry,
      (int (*)(void *, void *))                    CCTKi_ScheduleCallExit,
      (int (*)(int, char **, void *, void *, int)) CCTKi_ScheduleCallWhile,
+     (int (*)(int, char **, void *, void *))      CCTKi_ScheduleCallIf,
      (int (*)(void *, void *, void *))            calling_function,
      (void *)&data);
 
@@ -1473,6 +1498,11 @@ static t_attribute *CreateAttribute(const char *where,
    @vtype   int
    @vio     in
    @endvar
+   @var     n_if
+   @vdesc   Number of vars to schedule if
+   @vtype   int
+   @vio     in
+   @endvar
    @var     ap
    @vdesc   options
    @vtype   va_list of multiple const char *
@@ -1489,6 +1519,7 @@ static t_attribute *CreateAttribute(const char *where,
 static t_sched_modifier *CreateModifiers(int n_before,
                                          int n_after,
                                          int n_while,
+                                         int n_if,
                                          va_list *ap)
 {
   t_sched_modifier *modifier;
@@ -1496,6 +1527,7 @@ static t_sched_modifier *CreateModifiers(int n_before,
   modifier = CreateTypedModifier(NULL, "before", n_before, ap);
   modifier = CreateTypedModifier(modifier, "after", n_after, ap);
   modifier = CreateTypedModifier(modifier, "while", n_while, ap);
+  modifier = CreateTypedModifier(modifier, "if", n_if, ap);
 
   return modifier;
 }
@@ -1506,7 +1538,7 @@ static t_sched_modifier *CreateModifiers(int n_before,
    @author     Gabrielle Allen
    @desc
    Validates a schedule modifier list. At the moment just check that
-   the while modifier uses a CCTK_INT grid variable.
+   the while and if modifiers use a CCTK_INT grid variable.
    @enddesc
    @calls
 
@@ -1537,6 +1569,18 @@ int ValidateModifiers(t_sched_modifier *modifier)
       {
         CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
                    "While qualifier %s is not a CCTK_INT grid variable",
+                   modifier->argument);
+        retval = -1;
+      }
+    }
+    else if (modifier->type == sched_if)
+    {
+      vindex = CCTK_VarIndex(modifier->argument);
+      type = CCTK_VarTypeI(vindex);
+      if (type != CCTK_VARIABLE_INT)
+      {
+        CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+                   "If qualifier %s is not a CCTK_INT grid variable",
                    modifier->argument);
         retval = -1;
       }
@@ -1779,7 +1823,7 @@ static int ParseOption(t_attribute *attribute,
    @vtype   const char *
    @vio     in
    @vcomment
-   before, after, while
+   before, after, while, if
    @endvar
    @var     n_items
    @vdesc   Number of items on list
@@ -1910,10 +1954,11 @@ static int SchedulePrint(const char *where)
   if(where)
   {
     retcode = CCTKi_DoScheduleTraverse(where,
-       (int (*)(void *, void *))                    CCTKi_SchedulePrintEntry,
-       (int (*)(void *, void *))                    CCTKi_SchedulePrintExit,
-       (int  (*)(int, char **, void *, void *, int))CCTKi_SchedulePrintWhile,
-       (int (*)(void *, void *, void *))            CCTKi_SchedulePrintFunction,
+       (int (*)(void *, void *))                   CCTKi_SchedulePrintEntry,
+       (int (*)(void *, void *))                   CCTKi_SchedulePrintExit,
+       (int (*)(int, char **, void *, void *, int))CCTKi_SchedulePrintWhile,
+       (int (*)(int, char **, void *, void *, int))CCTKi_SchedulePrintIf,
+       (int (*)(void *, void *, void *))           CCTKi_SchedulePrintFunction,
        (void *)&data);
   }
   else
@@ -1966,7 +2011,7 @@ static int SchedulePrintTimes(const char *where, t_sched_data *data)
     memset (data->total_time->vals, 0,
             data->total_time->n_vals * sizeof (data->total_time->vals[0]));
 
-    retcode = CCTKi_DoScheduleTraverse(where, NULL, NULL, NULL,
+    retcode = CCTKi_DoScheduleTraverse(where, NULL, NULL, NULL, NULL,
        (int (*)(void *, void *, void *)) CCTKi_SchedulePrintTimesFunction,
        (void *)data);
 
@@ -2151,6 +2196,84 @@ static int CCTKi_SchedulePrintWhile(int n_whiles,
   {
     indent_level -= 2;
     printf("%*s\n", indent_level + 9, "end while");
+  }
+
+  return first;
+}
+
+/*@@
+   @routine    CCTKi_SchedulePrintIf
+   @date       Dec 27, 2005
+   @author     Erik Schnetter
+   @desc
+   Routine called for if of a group when traversing for printing.
+   @enddesc
+   @calls
+
+   @var     n_ifs
+   @vdesc   number of if statements
+   @vtype   int
+   @vio     in
+   @endvar
+   @var     ifs
+   @vdesc   if statements
+   @vtype   char **
+   @vio     in
+   @endvar
+   @var     attribute
+   @vdesc   schedule item attributes
+   @vtype   t_attribute *
+   @vio     in
+   @endvar
+   @var     data
+   @vdesc   data associated with schedule item
+   @vtype   t_sched_data
+   @vio     in
+   @endvar
+   @var     first
+   @vdesc   flag - is this the first time we are checking if on this schedule item
+   @vtype   int
+   @vio     in
+   @endvar
+
+   @returntype int
+   @returndesc
+   0 - schedule item is inactive
+   1 - schedule item is active
+   @endreturndesc
+@@*/
+static int CCTKi_SchedulePrintIf(int n_ifs,
+                                 char **ifs,
+                                 t_attribute *attribute,
+                                 t_sched_data *data,
+                                 int first)
+{
+  int i;
+
+  /* prevent compiler warnings about unused parameters */
+  attribute = attribute;
+  data = data;
+
+  if(first)
+  {
+    printf("%*s", indent_level + 2 + 7, "if (");
+
+    for(i = 0; i < n_ifs; i++)
+    {
+      if(i > 0)
+      {
+        printf(" && ");
+      }
+
+      printf(ifs[i]);
+    }
+    printf(")\n");
+    indent_level += 2;
+  }
+  else
+  {
+    indent_level -= 2;
+    printf("%*s\n", indent_level + 9, "end if");
   }
 
   return first;
@@ -2460,6 +2583,64 @@ static int CCTKi_ScheduleCallWhile(int n_whiles,
   for(i = 0; i < n_whiles; i++)
   {
     retcode = retcode && *((CCTK_INT *)CCTK_VarDataPtr(data->GH, 0, whiles[i]));
+  }
+
+  return retcode;
+}
+
+/*@@
+   @routine    CCTKi_ScheduleCallIf
+   @date       Dec 2007, 2005
+   @author     Erik Schnetter
+   @desc
+   Routine called to check variables to see if a group or function should be executed.
+   @enddesc
+   @calls
+
+   @var     n_ifs
+   @vdesc   number of if statements
+   @vtype   int
+   @vio     in
+   @endvar
+   @var     ifs
+   @vdesc   if statements
+   @vtype   char **
+   @vio     in
+   @endvar
+   @var     attribute
+   @vdesc   schedule item attributes
+   @vtype   t_attribute *
+   @vio     in
+   @endvar
+   @var     data
+   @vdesc   data associated with schedule item
+   @vtype   t_sched_data
+   @vio     in
+   @endvar
+
+   @returntype int
+   @returndesc
+   0 - schedule item is inactive
+   1 - schedule item is active
+   @endreturndesc
+@@*/
+static int CCTKi_ScheduleCallIf(int n_ifs,
+                                char **ifs,
+                                t_attribute *attribute,
+                                t_sched_data *data)
+{
+  int i;
+  int retcode;
+
+  /* prevent compiler warnings about unused parameters */
+  attribute = attribute;
+
+  retcode = 1;
+
+  /* FIXME - should do a lot of validation either here or on registration */
+  for(i = 0; i < n_ifs; i++)
+  {
+    retcode = retcode && *((CCTK_INT *)CCTK_VarDataPtr(data->GH, 0, ifs[i]));
   }
 
   return retcode;

@@ -112,7 +112,7 @@ sub parse_schedule_ccl
   my($n_statements);
   my($name, $as, $type, $description, $where, $language,
        $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
-       $options, $before_list, $after_list, $while_list);
+       $options, $before_list, $after_list, $while_list, $if_list);
   my($groups);
 
   $buffer       = "";
@@ -126,7 +126,8 @@ sub parse_schedule_ccl
       ($line_number,
        $name, $as, $type, $description, $where, $language,
        $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
-       $options,$before_list, $after_list, $while_list) = &ParseScheduleBlock($thorn,$line_number, @data);
+       $options,$before_list, $after_list, $while_list, $if_list)
+          = &ParseScheduleBlock($thorn,$line_number, @data);
 
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks NAME"}        = $name;
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks AS"}          = $as;
@@ -142,6 +143,7 @@ sub parse_schedule_ccl
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks BEFORE"}      = $before_list;
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks AFTER"}       = $after_list;
       $schedule_db{"\U$thorn\E BLOCK_$n_blocks WHILE"}       = $while_list;
+      $schedule_db{"\U$thorn\E BLOCK_$n_blocks IF"}          = $if_list;
 
       $buffer .= "\@BLOCK\@$n_blocks\n";
       $n_blocks++;
@@ -193,12 +195,13 @@ sub ParseScheduleBlock
   my($thorn,$line_number, @data) = @_;
   my($name, $as, $type, $description, $where, $language,
      $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
-     $options, $before_list, $after_list, $while_list);
+     $options, $before_list, $after_list, $while_list, $if_list);
   my(@fields);
   my($field);
   my(@before_list)    = ();
   my(@after_list)     = ();
   my(@while_list)     = ();
+  my(@if_list)        = ();
   my(@mem_groups)     = ();
   my(@comm_groups)    = ();
   my(@trigger_groups) = ();
@@ -330,6 +333,16 @@ sub ParseScheduleBlock
       $keyword = "WHILE";
       $field++;
     }
+    elsif($fields[$field] =~ m:^IF$:i)
+    {
+      if($keyword ne "")
+      {
+        &CST_error(0,"Error parsing schedule block line '$data[$line_number]'",
+                   "",__LINE__,__FILE__);
+      }
+      $keyword = "IF";
+      $field++;
+    }
     elsif($keyword ne "" && $fields[$field] =~ m:\s*\(\s*:)
     {
       # Parse a clause of the form BEFORE(a,b,c)
@@ -363,6 +376,10 @@ sub ParseScheduleBlock
       {
         push(@while_list, @current_sched_list);
       }
+      elsif($keyword eq "IF")
+      {
+        push(@if_list, @current_sched_list);
+      }
 
       # Reset keyword to empty for next time.
       $keyword = "";
@@ -380,6 +397,10 @@ sub ParseScheduleBlock
       elsif($keyword eq "WHILE")
       {
         push(@while_list, $fields[$field]);
+      }
+      elsif($keyword eq "IF")
+      {
+        push(@if_list, $fields[$field]);
       }
       $field++;
       $keyword = "";
@@ -499,12 +520,13 @@ sub ParseScheduleBlock
   $before_list    = join(",", @before_list);
   $after_list     = join(",", @after_list);
   $while_list     = join(",", @while_list);
+  $if_list        = join(",", @if_list);
 
 
   return ($line_number,
           $name, $as, $type, $description, $where, $language,
           $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
-          $options,$before_list, $after_list, $while_list);
+          $options,$before_list, $after_list, $while_list, $if_list);
 
 }
 

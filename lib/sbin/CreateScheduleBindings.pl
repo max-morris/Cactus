@@ -344,6 +344,7 @@ sub ScheduleBlock
   my(@before_list);
   my(@after_list);
   my(@while_list);
+  my(@if_list);
 
   # Extract group and routine information from the databases
   ($mem_groups, $tlist) = &ScheduleSelectGroups($thorn, $implementation,
@@ -385,6 +386,10 @@ sub ScheduleBlock
   @while_list = &ScheduleSelectVars($thorn, $implementation,
                                     $rhschedule_db->{"\U$thorn\E BLOCK_$block WHILE"},
                                     $rhinterface_db);
+
+  @if_list = &ScheduleSelectVars($thorn, $implementation,
+                                 $rhschedule_db->{"\U$thorn\E BLOCK_$block IF"},
+                                 $rhinterface_db);
 
 
   # Create a block so that we can have local variables.
@@ -479,10 +484,11 @@ sub ScheduleBlock
   $buffer .= $indent . scalar(@before_list) . ",  /* Number of BEFORE  routines  */\n";
   $buffer .= $indent . scalar(@after_list) . ",  /* Number of AFTER   routines  */\n";
   $buffer .= $indent . scalar(@while_list) . ",  /* Number of WHILE   variables */\n";
+  $buffer .= $indent . scalar(@if_list) . ",  /* Number of IF   variables */\n";
   $buffer .= $indent . "cctkschedulei_tlevelarray  /* Array of timelevel data for storage groups */";
 
   foreach $item (@$mem_groups, @$comm_groups, @$trigger_groups, @$sync_groups,
-                 @options, @before_list, @after_list, @while_list)
+                 @options, @before_list, @after_list, @while_list, @if_list)
   {
     $buffer .= ",\n$indent\"$item\"";
   }
