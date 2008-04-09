@@ -1366,7 +1366,9 @@ A usual simple specification for a schedule declaration is
 
 The full specification for a schedule declaration is
 \begin{alltt}schedule [GROUP] <function|\var{schedule group name}> AT|IN <\var{schedule bin}|\var{group name}>
-         [BEFORE|AFTER <\var{item}>|(<\var{item}> <\var{item}> ...)] [WHILE <\var{variable}>] [AS <\var{alias}>]
+         [AS <\var{alias}>]
+         [WHILE <\var{variable}>] [IF <\var{variable}>]
+         [BEFORE|AFTER <\var{item}>|(<\var{item}> <\var{item}> ...)]
 \{
   LANG: <\var{language}>
   [STORAGE:       <\var{group}>,<\var{group}>...]
@@ -1419,6 +1421,35 @@ AT} the main schedule bins.  (That is, groups may be nested.)
 The options define various characteristics of the schedule item.
 
 \begin{Lentry}
+\item[\texttt{AS}]
+This assigns a new name to a function for scheduling purposes.  This
+is used, for instance, to allow a thorn to schedule something before
+or after a routine from another implementation;  two thorns providing this
+implementation can schedule a routine \texttt{AS} the same thing, thus
+allowing other thorns to operate independently of which one is active.
+
+\item[\texttt{WHILE}]
+This specifies a \texttt{CCTK\_INT} grid scalar which is used to
+control the execution of this item.  As long as the grid scalar has
+a nonzero value the schedule item will be executed repeatedly.  This
+allows dynamic behaviour with scheduling.
+
+\item[\texttt{IF}]
+This specifies a \texttt{CCTK\_INT} grid scalar which is used to
+control the execution of this item.  If the grid scalar has a
+nonzero value the schedule item will be executed, otherwise the item
+will be ignored.  This allows dynamic behaviour with scheduling.
+
+If both an \texttt{IF} and a \texttt{WHILE} clause are present, then
+the schedule is executed according to the following pseudocode:
+\begin{verbatim}
+IF condition
+  WHILE condition
+    SCHEDULE item
+  END WHILE
+END IF
+\end{verbatim}
+
 \item[\texttt{BEFORE} or \texttt{AFTER}]
 These specify either
 \begin{itemize}
@@ -1443,19 +1474,6 @@ Note that the set of all \texttt{BEFORE}/\texttt{AFTER} options in
 all active schedule blocks of all active thorns, \emph{must} specify
 a (directed) graph with no cycles; if there are any cycles then the
 scheduler will abort with a fatal error.
-
-\item[\texttt{WHILE}]
-This specifies a \texttt{CCTK\_INT} grid scalar which is used to control
-the execution of this item.  If the grid scalar has a nonzero value
-the schedule item will be executed, otherwise the item will be
-ignored.  This allows some dynamic behaviour with scheduling.
-
-\item[\texttt{AS}]
-This assigns a new name to a function for scheduling purposes.  This
-is used, for instance, to allow a thorn to schedule something before
-or after a routine from another implementation;  two thorns providing this
-implementation can schedule a routine \texttt{AS} the same thing, thus
-allowing other thorns to operate independently of which one is active.
 \end{Lentry}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
