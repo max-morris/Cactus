@@ -4320,7 +4320,8 @@ Returns the number of ghostzones for a given group.
 
 \begin{FunctionDescription}{CCTK\_GroupStorageDecrease}
 \label{CCTK-GroupStorageDecrease}
-Increases the number of timelevels allocated for the given variable groups.
+Decrease the number of timelevels allocated for the given variable
+groups.
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
 int numTL = CactusDefaultGroupStorageDecrease (const cGH *GH, int n\_groups, const int *groups, const int *timelevels, int *status);
@@ -4329,7 +4330,9 @@ int numTL = CactusDefaultGroupStorageDecrease (const cGH *GH, int n\_groups, con
 
 \begin{ResultSection}
 \begin{Result}{}
-The total number of timelevels with storage enabled for all groups queried or modified.\end{Result}
+  The new total number of timelevels with storage enabled for all
+  groups queried or modified.
+\end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
@@ -4349,13 +4352,29 @@ number of time levels to reduce storage for for each group
 list of group indices to allocate storage for
 \end{Parameter}
 \begin{Parameter}{status}
-optional return array which, if not NULL, will, on return, contain the number of timelevels which were previously allocated storage for each group
+  optional return array which, if not NULL, will, on return, contain
+  the number of timelevels which were previously allocated storage for
+  each group
 \end{Parameter}
 \end{ParameterSection}
 
 \begin{Discussion}
- The decrease group storage routine should decrease the memory allocated to the specified number of timelevels for each listed group, returning the previous number of timelevels enabled for that group in the status array, if that is not NULL.  It should never increase the number of timelevels enabled, i.e. if it is asked to reduce to more timelevels than are enabled it should not change the storage for that group.
- This default checks for the presence of the older DisableGroupStorage function, and if that is not available it flags an error. If it is available it makes a call to it, and puts its return value in the status flag for the group.  A driver should replace the appropriate GV pointers on the cGH structure when they change the storage state of a GV.
+  The decrease group storage routine decreases the memory allocated to
+  the specified number of timelevels for each listed group, returning
+  the previous number of timelevels enabled for that group in the
+  status array, if that is not NULL.  It never increases the number of
+  timelevels enabled, i.e., if it is asked to reduce to more
+  timelevels than are enabled, it does not change the storage for that
+  group.
+
+  There is a default implementation which checks for the presence of
+  the older DisableGroupStorage function, and if that is not available
+  it flags an error.  If it is available it makes a call to it, and
+  puts its return value in the status flag for the group.  Usually, a
+  driver has overloaded the default implementation.
+
+  A driver should replace the appropriate GV pointers on the cGH
+  structure when it changes the storage state of a GV.
 \end{Discussion}
 \end{FunctionDescription}
 
@@ -4371,7 +4390,9 @@ int numTL = CactusDefaultGroupStorageIncrease (const cGH *GH, int n\_groups, con
 
 \begin{ResultSection}
 \begin{Result}{}
-The total number of timelevels with storage enabled for all groups queried or modified.\end{Result}
+  The new total number of timelevels with storage enabled for all
+  groups queried or modified.
+\end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
@@ -4391,14 +4412,29 @@ number of time levels to allocate storage for for each group
 list of group indices to allocate storage for
 \end{Parameter}
 \begin{Parameter}{status}
-optional return array which, if not NULL, will, on return, contain the number of timelevels which were previously allocated storage for each group
+  optional return array which, if not NULL, will, on return, contain
+  the number of timelevels which were previously allocated storage for
+  each group
 \end{Parameter}
 \end{ParameterSection}
 
 \begin{Discussion}
-The increase group storage routine should increase the allocated memory to the specified number of timelevels of each listed group, returning the previous number of timelevels enabled for that group in the status array, if that is not NULL. It should never decrease the number of timelevels enabled, i.e. if it is asked to enable less timelevels than are already enabled it should not change the storage for that group.
- This default checks for the presence of the older
-  EnableGroupStorage function, and if that is not available it flags an error. If it is available it makes a call to it, and puts its return value in the status flag for the group.
+  The increase group storage routine increases the allocated memory to
+  the specified number of timelevels of each listed group, returning
+  the previous number of timelevels enabled for that group in the
+  status array, if that is not NULL.  It never decreases the number of
+  timelevels enabled, i.e., if it is asked to enable less timelevels
+  than are already enabled it does not change the storage for that
+  group.
+
+  There is a default implementation which checks for the presence of
+  the older EnableGroupStorage function, and if that is not available
+  it flags an error.  If it is available it makes a call to it, and
+  puts its return value in the status flag for the group.  Usually, a
+  driver has overloaded the default implementation.
+
+  A driver should replace the appropriate GV pointers on the cGH
+  structure when it changes the storage state of a GV.
 \end{Discussion}
 \end{FunctionDescription}
 
@@ -4540,10 +4576,10 @@ no group exists with the specified name
 \parameter{group}{The variable index}
 \end{params}
 \begin{discussion}
-The group's group type index indicates the type of variables in the group.
-Either scalars, grid functions or arrays. The group type can be checked
-with the Cactus provided macros for \code{CCTK\_SCALAR},
-\code{CCTK\_GF}, \code{CCTK\_ARRAY}.
+  The group's group type index indicates the type of variables in the
+  group.  Either scalars, grid functions or arrays.  The group type
+  can be checked with the Cactus provided macros for
+  \code{CCTK\_SCALAR}, \code{CCTK\_GF}, \code{CCTK\_ARRAY}.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
@@ -7033,8 +7069,8 @@ The number of local reduction operators registered
 \parameter{dim}{The maximum dimension}
 \end{params}
 \begin{discussion}
-Note that the maximum dimension will depend on the compiled thorn list,
-and not the active thorn list.
+Note that the maximum dimension will depend only on the active thorn list,
+and not the compiled thorn list.
 \end{discussion}
 \begin{examples}
 \begin{tabular}{@{}p{3cm}cp{11cm}}
