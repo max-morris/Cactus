@@ -932,6 +932,10 @@ int CCTK_SchedulePrint(const char *where)
     SchedulePrint("CCTK_POSTRESTRICTINITIAL$ENTRY");
     SchedulePrint("CCTK_POSTRESTRICTINITIAL");
     SchedulePrint("CCTK_POSTRESTRICTINITIAL$EXIT");
+    puts ("      [CCTK_POSTPOSTINITIAL]");
+    SchedulePrint("CCTK_POSTPOSTINITIAL$ENTRY");
+    SchedulePrint("CCTK_POSTPOSTINITIAL");
+    SchedulePrint("CCTK_POSTPOSTINITIAL$EXIT");
     puts ("      [CCTK_POSTSTEP]");
     SchedulePrint("CCTK_POSTSTEP$ENTRY");
     SchedulePrint("CCTK_POSTSTEP");
@@ -1116,6 +1120,9 @@ int CCTK_SchedulePrintTimesToFile(const char *where, FILE *file)
     SchedulePrintTimes("CCTK_POSTRESTRICTINITIAL$ENTRY", &data);
     SchedulePrintTimes("CCTK_POSTRESTRICTINITIAL", &data);
     SchedulePrintTimes("CCTK_POSTRESTRICTINITIAL$EXIT", &data);
+    SchedulePrintTimes("CCTK_POSTPOSTINITIAL$ENTRY", &data);
+    SchedulePrintTimes("CCTK_POSTPOSTINITIAL", &data);
+    SchedulePrintTimes("CCTK_POSTPOSTINITIAL$EXIT", &data);
     SchedulePrintTimes("CCTK_RECOVER_VARIABLES", &data);
     SchedulePrintTimes("CCTK_POST_RECOVER_VARIABLES", &data);
     SchedulePrintTimes("CCTK_CPINITIAL", &data);
