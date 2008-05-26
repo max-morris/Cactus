@@ -153,6 +153,7 @@ static void CactusInitialiseGH (const tFleshConfig *config, cGH *GH)
 
     /* Traverse poststep initial routines which should only be done once */
     CCTK_Traverse (GH, "CCTK_POSTINITIAL");
+    CCTK_Traverse (GH, "CCTK_POSTPOSTINITIAL");
     CCTK_Traverse (GH, "CCTK_POSTSTEP");
   }
 
