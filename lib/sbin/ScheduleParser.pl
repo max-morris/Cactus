@@ -22,6 +22,7 @@ our @schedule_bins = (
     'INITIAL',
     'POSTRESTRICTINITIAL',
     'POSTINITIAL',
+    'POSTPOSTINITIAL',
     # Recovery                  
     'RECOVER_VARIABLES',
     'POST_RECOVER_VARIABLES',
