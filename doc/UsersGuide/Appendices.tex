@@ -1296,6 +1296,13 @@ value.  All later routines are ignored.  Schedule clauses \texttt{BEFORE},
         that depend on the initial data.  This timebin is also not run
         when recovering from a checkpoint file.
 
+\item[{\tt CCTK\_POSTPOSTINITIAL}]
+        This is the place to modify initial data, or to calculate data
+        that depend on the initial data.  This timebin is executed
+        after the recursive initialisation of finer grids if there is
+        a mesh refinement hierarchy, and it is also not run
+        when recovering from a checkpoint file.
+
 \item[{\tt CCTK\_RECOVER\_VARIABLES}]
         Used by thorns with relevant IO methods as the point 
         to read in all the grid variables when recovering from 
