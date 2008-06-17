@@ -102,7 +102,15 @@ sub buildthorns
   {
     foreach $thorn (@total_list)
     {
-      if( -r "$thorn/interface.ccl" && -r "$thorn/param.ccl")
+      # don't check for {interface,param}.ccl files
+      # when compiling a list of thorns to be updated
+      if( $choice eq 'thorns-to-update' )
+      {
+        # include this thorn with no further thorn info
+        # (only the keys are needed by the calling routine)
+        $info{$thorn} = 1;
+      }
+      elsif ( -r "$thorn/interface.ccl" && -r "$thorn/param.ccl")
       {
         $info{$thorn} = &ThornInfo($thorn);
       }

@@ -19,7 +19,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.175 2007-05-21 20:58:15 schnetter Exp $
+#   @version $Id: Makefile,v 1.176 2008-06-17 17:13:10 tradke Exp $
 # @@*/
 
 ##################################################################################
@@ -373,7 +373,7 @@ else
 	@echo "  -testsuite     : run the test suites."
 	@echo "  -thornlist     : regenerate the ThornList file."
 	@echo "  -ThornGuide    : create the thorn manual for a specific configuration."
-	@echo "  -cvsupdate     : update the files for a specific configuration."
+	@echo "  -update        : update the files for a specific configuration from CVS and/or SVN."
 	@echo "  -examples      : copy thorn parameter files to examples directory."
 endif
 	@echo $(DIVIDER)
@@ -392,7 +392,7 @@ endif
 	@echo "  cvsdiff          - show differences between installed Cactus and"
 	@echo "                     version in CVS repository."
 	@echo "  cvsstatus        - report on status of Cactus (when installed from CVS)."
-	@echo "  cvsupdate        - update flesh and arrangements from CVS."
+	@echo "  update           - update flesh and arrangements from CVS and/or SVN."
 	@echo "  default          - create a new configuration with a default name."
 	@echo "  distclean        - delete all existing configurations."
 	@echo "  downsize         - remove non-essential files."
@@ -1192,20 +1192,32 @@ cvsstatus:
 
 # run cvsudpate on a configuration
 
-.PHONY: cvsupdate
+.PHONY: update
 
 cvsupdate:
+	$(PERL) -s $(CCTK_HOME)/lib/sbin/CVSUpdate.pl arrangements
+update:
 	$(PERL) -s $(CCTK_HOME)/lib/sbin/CVSUpdate.pl arrangements
 
 
 ifneq ($strip($(CONFIGURATIONS)),)
 .PHONY $(addsuffix -cvsupdate,$(CONFIGURATIONS)):
+.PHONY $(addsuffix -update,$(CONFIGURATIONS)):
 
 $(addsuffix -cvsupdate,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
-	@echo Updating files for configuration $(@:%-cvsupdate=%)
-	if test -r $(CONFIGS_DIR)/$(@:%-cvsupdate=%)/ThornList ; then \
-          $(PERL) -s lib/sbin/CVSUpdate.pl arrangements $(CONFIGS_DIR)/$(@:%-cvsupdate=%)/ThornList; \
+	@echo Updating files for configuration $(@:%-update=%)
+	if test -r $(CONFIGS_DIR)/$(@:%-update=%)/ThornList ; then \
+          $(PERL) -s lib/sbin/CVSUpdate.pl arrangements $(CONFIGS_DIR)/$(@:%-update=%)/ThornList; \
+          cd $(CCTK_HOME);   \
+        fi
+	@echo " Done."
+
+$(addsuffix -update,$(CONFIGURATIONS)):
+	@echo $(DIVIDER)
+	@echo Updating files for configuration $(@:%-update=%)
+	if test -r $(CONFIGS_DIR)/$(@:%-update=%)/ThornList ; then \
+          $(PERL) -s lib/sbin/CVSUpdate.pl arrangements $(CONFIGS_DIR)/$(@:%-update=%)/ThornList; \
           cd $(CCTK_HOME);   \
         fi
 	@echo " Done."
@@ -1213,8 +1225,13 @@ endif
 
 %-cvsupdate:
 	@echo $(DIVIDER)
-	@echo Configuration $(@:%-cvsupdate=%) does not exist.
+	@echo Configuration $(@:%-update=%) does not exist.
 	@echo CVS Update aborted.
+
+%-update:
+	@echo $(DIVIDER)
+	@echo Configuration $(@:%-update=%) does not exist.
+	@echo Update aborted.
 
 .PHONY: cvsdiff
 

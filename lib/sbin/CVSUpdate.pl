@@ -11,18 +11,20 @@
 
 my $cvs_ops="-z6 -q";
 my $cvs_update_ops="-d -P";
+my $svn_ops="";
 # Set this to eg -r TAGNAME checkout from a TAG
 my $cvs_symbolic_name="";
+my $svn_symbolic_name="";
 
 require "lib/sbin/MakeUtils.pl";
 
 $debug = 0;
 if ($debug)
 {
-  print "DEBUG mode: cvs commands not issued\n\n";
+  print "DEBUG mode: cvs/svn commands not issued\n\n";
 }
 
-print("\nUpdating Flesh\n");
+print("Updating Flesh\n");
 $command = "cvs $cvs_ops update $cvs_update_ops $cvs_symbolic_name CONTRIBUTORS COPYRIGHT Makefile lib doc src arrangements/README";
 if ($debug)
 {
@@ -59,7 +61,7 @@ chomp ($home);
 $arrangement_dir = "$home/$arrangement_dir";
 
 if ($thornlist =~ /^$/) {
-   %info = &buildthorns($arrangement_dir,"thorns");
+   %info = &buildthorns($arrangement_dir,"thorns-to-update");
 } else {
    %info = &ReadThornlist($thornlist);
 }
@@ -76,7 +78,7 @@ foreach $thorn (sort keys %info)
     {
       chdir ("$arrangement_dir/$arrangement/doc") ||
         die "Cannot change to arrangement directory '$arrangement_dir/$arrangement'\n";
-      print("\nUpdating $arrangement\n");
+      print("Updating arrangement $arrangement\n");
       $command = "cvs $cvs_ops update $cvs_update_ops $cvs_symbolic_name";
       if($debug)
       {
@@ -106,30 +108,47 @@ foreach $thorn (sort keys %info)
     }
   }
 
-  if( ! -d "$arrangement_dir/$thorn/CVS")
+  if( -d "$arrangement_dir/$thorn/CVS")
   {
-    print "Ignoring $thorn - no CVS directory\n";
+    $command = "cvs $cvs_ops update $cvs_update_ops $cvs_symbolic_name";
+  }
+  if( -d "$arrangement_dir/$thorn/.svn")
+  {
+    $command = "svn $svn_ops update $svn_symbolic_name";
+  }
+  if ( ! -d "$arrangement_dir/$thorn/CVS" &&
+       ! -d "$arrangement_dir/$thorn/.svn" )
+  {
+    print "Ignoring $thorn - no CVS or .svn directory\n";
+    next;
+  }
+  if ( -d "$arrangement_dir/$thorn/CVS" &&
+       -d "$arrangement_dir/$thorn/.svn" )
+  {
+    print "Ignoring $thorn - both CVS and .svn directory\n";
     next;
   }
 
   chdir ("$arrangement_dir/$thorn") ||
     die "Cannot change to thorn directory '$arrangement_dir/$thorn'\n";
-  print("\nUpdating $thorn\n");
-  $command = "cvs $cvs_ops update $cvs_update_ops $cvs_symbolic_name";
+  print("Updating thorn $thorn\n");
   if($debug)
   {
     $this_dir = `pwd`;
     chop($this_dir);
     print "In directory $this_dir\n";
     print "Issuing command\n  $command\n";
-    foreach $file (`ls CVS`)
+    if ( -d "$arrangement_dir/$thorn/CVS" )
     {
-      chop($file);
-      print "Contents of $file\n";
-      open (FILE, "<CVS/$file") || die "Could not open CVS file";
-      while (<FILE>)
+      foreach $file (`ls CVS`)
       {
-        print;
+        chop($file);
+        print "Contents of $file\n";
+        open (FILE, "<CVS/$file") || die "Could not open CVS file";
+        while (<FILE>)
+        {
+          print;
+        }
       }
     }
   }
