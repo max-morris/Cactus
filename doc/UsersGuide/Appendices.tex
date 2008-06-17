@@ -676,16 +676,17 @@ beginning of a line followed by \var{<default value>} on that same line.
       \var{<integer>}                   \# means only \var{<integer>}
       \var{<lower bound>}:\var{<upper bound>} \# means all integers in the range
                                   \# from \var{<lower bound>} to \var{<upper bound>}
-      \var{<lower bound>}:\var{<upper bound>}:\var{<positive integer step>}
+      \var{<lower bound>}:\var{<upper bound>}:\var{<positive step>}
                                   \# means all integers in the range
                                   \# from \var{<lower bound>} to \var{<upper bound>}
-                                  \# in steps of \var{<positive integer step>}
+                                  \# in steps of \var{<positive step>}
     \end{alltt}
     where \var{<lower bound>} has one of the forms
     \begin{alltt}
       \var{<empty field>}   \# means no lower limit
       *               \# means no lower limit
       \var{<integer>}       \# means a closed interval starting at \var{<integer>}
+      [\var{<integer>}      \# also means a closed interval starting at \var{<integer>}
       (\var{<integer>}      \# means an open interval starting at \var{<integer>}
     \end{alltt}
     and \var{<upper bound>} has one of the forms
@@ -693,6 +694,7 @@ beginning of a line followed by \var{<default value>} on that same line.
       \var{<empty field>}   \# means no upper limit
       *               \# means no upper limit
       \var{<integer>}       \# means a closed interval ending at \var{<integer>}
+      \var{<integer>}]      \# also means a closed interval ending at \var{<integer>}
       \var{<integer>})      \# means an open interval ending at \var{<integer>}
     \end{alltt}
 
@@ -1282,6 +1284,11 @@ value.  All later routines are ignored.  Schedule clauses \texttt{BEFORE},
 \item[{\tt CCTK\_INITIAL}] 
         This is the place to set up any required initial data. This timebin
         is not run when recovering from a checkpoint file.
+
+\item[{\tt CCTK\_POSTINITIAL}]
+        This is the place to modify initial data, or to calculate data
+        that depend on the initial data.  This timebin is also not run
+        when recovering from a checkpoint file.
         
 \item[{\tt CCTK\_POSTRESTRICTINITIAL}]
         This timebin is used only in mesh refinement settings.  It is
@@ -1290,11 +1297,6 @@ value.  All later routines are ignored.  Schedule clauses \texttt{BEFORE},
         {\tt CCTK\_POSTRESTRICT}.  It is,
         e.g., necessary to re-apply the
         boundary conditions after every restriction operation.
-
-\item[{\tt CCTK\_POSTINITIAL}]
-        This is the place to modify initial data, or to calculate data
-        that depend on the initial data.  This timebin is also not run
-        when recovering from a checkpoint file.
 
 \item[{\tt CCTK\_POSTPOSTINITIAL}]
         This is the place to modify initial data, or to calculate data
