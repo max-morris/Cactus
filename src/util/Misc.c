@@ -363,12 +363,10 @@ int Util_InList(const char *string1, int n_elements, ...)
 @@*/
 int Util_IntInRange(int inval, const char *range)
 {
-  int retval;
-  regmatch_t pmatch[6];
+  int retval = 0;
+  regmatch_t pmatch[8];
   int start_closed, end_closed;
   int start, end, step;
-
-  retval = 0;
 
   /* Valid ranges are of the form start:end:step
    * possibly preceeded by a [ or ( and ended by a ) or ] to indicate
@@ -379,14 +377,37 @@ int Util_IntInRange(int inval, const char *range)
    *
    * 1 - [ or (
    * 2 - start
-   * 3 - end
-   * 4 - step
-   * 5 - ) or ]
+   * 3 - whether end is present
+   * 4 - end
+   * 5 - whether step is present
+   * 6 - step
+   * 7 - ) or ]
    */
 
-  if(CCTK_RegexMatch(range,
-                     "(\\[|\\()?([^]):]*):?([^]):]*)?:?([^]):]*)?(\\]|\\))?",
-                     6, pmatch) != 0)
+#define R_BEGIN "(\\[|\\()?"
+#define R_VALUE "([^]):]*)"
+#define R_SEP   ":"
+#define R_END   "(\\]|\\))?"
+
+#define R_MAYBE(x) "(" x ")?"
+
+  const char pattern[] =
+    R_BEGIN
+    R_VALUE
+    R_MAYBE(R_SEP
+            R_VALUE
+            R_MAYBE(R_SEP
+                    R_VALUE))
+    R_END;
+
+#undef R_BEGIN
+#undef R_VALUE
+#undef R_SEP
+#undef R_END
+
+#undef R_MAYBE
+
+  if(CCTK_RegexMatch(range, pattern, 8, pmatch) != 0)
   {
     /* First work out if the range is closed at the lower end. */
     if(pmatch[1].rm_so != -1)
@@ -408,7 +429,13 @@ int Util_IntInRange(int inval, const char *range)
        (pmatch[2].rm_eo-pmatch[2].rm_so > 0) &&
        range[pmatch[2].rm_so] != '*')
     {
-      start = atoi(range+pmatch[2].rm_so);
+      char *endptr;
+      start = strtol(range+pmatch[2].rm_so, &endptr, 10);
+      if (endptr == range+pmatch[2].rm_so)
+      {
+        CCTK_Warn(1, __LINE__, __FILE__, "Flesh", "Invalid start");
+        start = INT_MIN;
+      }
     }
     else
     {
@@ -416,27 +443,57 @@ int Util_IntInRange(int inval, const char *range)
       start = INT_MIN;
     }
 
-    /* Next find the end of the range */
-    if(pmatch[3].rm_so != -1 &&
-       (pmatch[3].rm_eo-pmatch[3].rm_so > 0) &&
-       range[pmatch[3].rm_so] != '*')
+    /* Next find whether end of the range is present */
+    if(pmatch[3].rm_so != -1)
     {
-      end = atoi(range+pmatch[3].rm_so);
+      /* Next find the end of the range */
+      if(pmatch[4].rm_so != -1 &&
+         (pmatch[4].rm_eo-pmatch[4].rm_so > 0) &&
+         range[pmatch[4].rm_so] != '*')
+      {
+        char *endptr;
+        end = strtol(range+pmatch[4].rm_so, &endptr, 10);
+        if (endptr == range+pmatch[4].rm_so)
+        {
+          CCTK_Warn(1, __LINE__, __FILE__, "Flesh", "Invalid end");
+          end = INT_MIN;
+        }
+      }
+      else
+      {
+        /* No end range given, so use the largest integer available. */
+        end = INT_MAX;
+      }
     }
     else
     {
-      /* No end range given, so use the largest integer available. */
-      end = INT_MAX;
+      /* End range not given, so interval has length zero. */
+      end = start;
     }
 
-    /* Next find the step of the range */
-    if(pmatch[4].rm_so != -1 && (pmatch[4].rm_eo-pmatch[4].rm_so > 0))
+    /* Next find whether step of the range is present */
+    if(pmatch[5].rm_so != -1)
     {
-      step = atoi(range+pmatch[4].rm_so);
+      /* Next find the step of the range */
+      if(pmatch[6].rm_so != -1 && (pmatch[6].rm_eo-pmatch[6].rm_so > 0))
+      {
+        char *endptr;
+        step = strtol(range+pmatch[6].rm_so, &endptr, 10);
+        if (endptr == range+pmatch[6].rm_so)
+        {
+          CCTK_Warn(1, __LINE__, __FILE__, "Flesh", "Invalid step");
+          step = 1;
+        }
+      }
+      else
+      {
+        /* No step given, so default to 1. */
+        step = 1;
+      }
     }
     else
     {
-      /* No step given, so default to 1. */
+      /* Step not given, so default to 1. */
       step = 1;
     }
     if (step <= 0)
@@ -446,9 +503,9 @@ int Util_IntInRange(int inval, const char *range)
     }
 
     /* Finally work out if the range is closed at the upper end. */
-    if(pmatch[5].rm_so != -1)
+    if(pmatch[7].rm_so != -1)
     {
-      switch(range[pmatch[5].rm_so])
+      switch(range[pmatch[7].rm_so])
       {
         case ')' : end_closed = 0; break;
         case ']' :
@@ -460,12 +517,12 @@ int Util_IntInRange(int inval, const char *range)
       end_closed = 1;
     }
 
-    /* Cast to unsigned int, because the subtraction (inval - start)
+    /* Cast to unsigned long, because the subtraction (inval - start)
        can overflow, and wrap-around is legal in C only for unsigned
        types.  */
     if(inval >= start + !start_closed &&
        inval <= end   - !end_closed   &&
-       ! (((unsigned int)inval-(unsigned int)start) % (unsigned int)step))
+       ! (((unsigned long)inval-(unsigned long)start) % (unsigned long)step))
     {
       retval = 1;
     }
@@ -512,55 +569,159 @@ int Util_IntInRange(int inval, const char *range)
 @@*/
 int Util_DoubleInRange(double inval, const char *range)
 {
-  int retval;
-  regmatch_t pmatch[6];
-  double start, end;
-
-  retval = 0;
+  int retval = 0;
+  regmatch_t pmatch[8];
+  int start_closed, end_closed;
+  double start, end, step;
 
   /*
    * The following regular expression may match five substrings:
    *
    * 1 - [ or (
    * 2 - start
-   * 3 - end
-   * 4 - step
-   * 5 - ) or ]
+   * 3 - whether end is present
+   * 4 - end
+   * 5 - whether step is present
+   * 6 - step
+   * 7 - ) or ]
    */
 
-  if(CCTK_RegexMatch(range,
-                     "(\\[|\\()?([^]):]*):?([^]):]*)?:?([^]):]*)?(\\]|\\))?",
-                     6, pmatch) != 0)
+#define R_BEGIN "(\\[|\\()?"
+#define R_VALUE "([^]):]*)"
+#define R_SEP   ":"
+#define R_END   "(\\]|\\))?"
+
+#define R_MAYBE(x) "(" x ")?"
+
+  const char pattern[] =
+    R_BEGIN
+    R_VALUE
+    R_MAYBE(R_SEP
+            R_VALUE
+            R_MAYBE(R_SEP
+                    R_VALUE))
+    R_END;
+
+#undef R_BEGIN
+#undef R_VALUE
+#undef R_SEP
+#undef R_END
+
+#undef R_MAYBE
+
+  if(CCTK_RegexMatch(range, pattern, 8, pmatch) != 0)
   {
+    /* First work out if the range is closed at the lower end. */
+    if(pmatch[1].rm_so != -1)
+    {
+      switch(range[pmatch[1].rm_so])
+      {
+        case '(' : start_closed = 0; break;
+        case '[' :
+        default  : start_closed = 1;
+      }
+    }
+    else
+    {
+      start_closed = 1;
+    }
+
     /* Next find the start of the range */
     if(pmatch[2].rm_so != -1 &&
        (pmatch[2].rm_eo-pmatch[2].rm_so > 0) &&
        range[pmatch[2].rm_so] != '*')
     {
-      start = atof(range+pmatch[2].rm_so);
+      char *endptr;
+      start = strtod(range+pmatch[2].rm_so, &endptr);
+      if (endptr == range+pmatch[2].rm_so)
+      {
+        CCTK_Warn(1, __LINE__, __FILE__, "Flesh", "Invalid start");
+        start = -HUGE_VAL;
+      }
     }
     else
     {
-      /* No start range given, so use the smallest float available. */
-      start = -DBL_MAX;
+      /* No start range given, so use the smallest double available. */
+      start = -HUGE_VAL;
     }
 
-    /* Next find the end of the range */
-    if(pmatch[3].rm_so != -1 &&
-       (pmatch[3].rm_eo-pmatch[3].rm_so > 0) &&
-       range[pmatch[3].rm_so] != '*')
+    /* Next find whether end of the range is present */
+    if(pmatch[3].rm_so != -1)
     {
-      end = atof(range+pmatch[3].rm_so);
+      /* Next find the end of the range */
+      if(pmatch[4].rm_so != -1 &&
+         (pmatch[4].rm_eo-pmatch[4].rm_so > 0) &&
+         range[pmatch[4].rm_so] != '*')
+      {
+        char *endptr;
+        end = strtod(range+pmatch[4].rm_so, &endptr);
+        if (endptr == range+pmatch[4].rm_so)
+        {
+          CCTK_Warn(1, __LINE__, __FILE__, "Flesh", "Invalid end");
+          end = HUGE_VAL;
+        }
+      }
+      else
+      {
+        /* No end range given, so use the largest double available. */
+        end = HUGE_VAL;
+      }
     }
     else
     {
-      /* No end range given, so use the largest float available. */
-      end = DBL_MAX;
+      /* End range not given, so interval has length zero. */
+      end = start;
     }
 
-    if(inval >= start /*+ !start_closed */&&
-       inval <= end  /* - !end_closed */ /* &&
-                                       ! ((inval-start) % step)*/)
+    /* Next find whether step of the range is present */
+    if(pmatch[5].rm_so != -1)
+    {
+      /* Next find the step of the range */
+      if(pmatch[6].rm_so != -1 && (pmatch[6].rm_eo-pmatch[6].rm_so > 0))
+      {
+        char *endptr;
+        step = strtod(range+pmatch[6].rm_so, &endptr);
+        if (endptr == range+pmatch[6].rm_so)
+        {
+          CCTK_Warn(1, __LINE__, __FILE__, "Flesh", "Invalid step");
+          step = 0;
+        }
+      }
+      else
+      {
+        /* No step given, so default to 0. */
+        step = 0;
+      }
+    }
+    else
+    {
+      /* Step not given, so default to 0. */
+      step = 0;
+    }
+    if (step < 0)
+    {
+      CCTK_Warn(1, __LINE__, __FILE__, "Flesh", "Invalid step");
+      step = 0;
+    }
+
+    /* Finally work out if the range is closed at the upper end. */
+    if(pmatch[7].rm_so != -1)
+    {
+      switch(range[pmatch[7].rm_so])
+      {
+        case ')' : end_closed = 0; break;
+        case ']' :
+        default  : end_closed = 1;
+      }
+    }
+    else
+    {
+      end_closed = 1;
+    }
+
+    if((start_closed ? inval >= start : inval > start) &&
+       (end_closed   ? inval <= end   : inval < end  ) &&
+       (step         ? ! fmod (inval - start, step) : 1))
     {
       retval = 1;
     }
@@ -746,6 +907,7 @@ int CCTK_SetDoubleInRangeList(CCTK_REAL *data, const char *value,
   va_list ap;
 
   char *element;
+  char *endptr;
 
   CCTK_REAL inval;
 
@@ -757,7 +919,7 @@ int CCTK_SetDoubleInRangeList(CCTK_REAL *data, const char *value,
   strncpy(temp, value, sizeof(temp) - 1);
   temp[sizeof(temp) - 1] = 0;
 
-  for (p=0;p<strlen(temp);p++)
+  for (p=0;temp[p];p++)
   {
     if (temp[p] == 'E' ||
         temp[p] == 'd' ||
@@ -768,7 +930,12 @@ int CCTK_SetDoubleInRangeList(CCTK_REAL *data, const char *value,
     }
   }
 
-  inval = atof(temp);
+  inval = strtod(temp, &endptr);
+  if (endptr == temp)
+  {
+    retval = 0;
+    return retval;
+  }
 
   /* Walk through the element list. */
   va_start(ap, n_elements);
@@ -835,6 +1002,7 @@ int CCTK_SetIntInRangeList(CCTK_INT *data, const char *value,
   va_list ap;
 
   char *element;
+  char *endptr;
 
   CCTK_INT inval;
 
@@ -842,7 +1010,12 @@ int CCTK_SetIntInRangeList(CCTK_INT *data, const char *value,
 
   /* Convert the value string to an int.*/
 
-  inval = atoi(value);
+  inval = strtol(value, &endptr, 10);
+  if (endptr == value)
+  {
+    retval = 0;
+    return retval;
+  }
 
   /* Walk through the element list. */
   va_start(ap, n_elements);
