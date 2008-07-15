@@ -19,7 +19,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.176 2008-06-17 17:13:10 tradke Exp $
+#   @version $Id: Makefile,v 1.177 2008-07-15 21:18:40 schnetter Exp $
 # @@*/
 
 ##################################################################################
@@ -1206,26 +1206,24 @@ ifneq ($strip($(CONFIGURATIONS)),)
 
 $(addsuffix -cvsupdate,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
-	@echo Updating files for configuration $(@:%-update=%)
-	if test -r $(CONFIGS_DIR)/$(@:%-update=%)/ThornList ; then \
-          $(PERL) -s lib/sbin/CVSUpdate.pl arrangements $(CONFIGS_DIR)/$(@:%-update=%)/ThornList; \
-          cd $(CCTK_HOME);   \
+	@echo Updating files for configuration $(@:%-cvsupdate=%)
+	if test -r $(CONFIGS_DIR)/$(@:%-cvsupdate=%)/ThornList ; then \
+          $(PERL) -s lib/sbin/CVSUpdate.pl arrangements $(CONFIGS_DIR)/$(@:%-cvsupdate=%)/ThornList; \
         fi
-	@echo " Done."
+	@echo Done.
 
 $(addsuffix -update,$(CONFIGURATIONS)):
 	@echo $(DIVIDER)
 	@echo Updating files for configuration $(@:%-update=%)
 	if test -r $(CONFIGS_DIR)/$(@:%-update=%)/ThornList ; then \
           $(PERL) -s lib/sbin/CVSUpdate.pl arrangements $(CONFIGS_DIR)/$(@:%-update=%)/ThornList; \
-          cd $(CCTK_HOME);   \
         fi
-	@echo " Done."
+	@echo Done.
 endif
 
 %-cvsupdate:
 	@echo $(DIVIDER)
-	@echo Configuration $(@:%-update=%) does not exist.
+	@echo Configuration $(@:%-cvsupdate=%) does not exist.
 	@echo CVS Update aborted.
 
 %-update:
