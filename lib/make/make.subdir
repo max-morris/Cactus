@@ -14,6 +14,19 @@
 # Include the main make definitions for this configuration
 include $(CONFIG)/make.config.defn
 
+BINDINGS_DIR=$(TOP)/bindings
+
+# Include the configuration make.THORN_NAME.defn for the thorn
+# if it is not Cactus or CactusBindings
+# (Note: This adds to INC_DIRS which is not necessary -- 
+#  should we empty and completely re-set INC_DIRS here,
+#  instead of exporting it from make.thornlib?)
+ifneq ($(THORN), CactusBindings)
+ifneq ($(THORN), Cactus)
+-include $(BINDINGS_DIR)/Configuration/Thorns/make.$(THORN).defn
+endif
+endif
+
 # Add appropriate include lines
 INC_DIRS += $(SRCDIR) $(SRCDIR)/include 
 
