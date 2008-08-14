@@ -381,6 +381,7 @@ else
       CC_VERSION="`$CC -V 2>&1 | grep -i pgcc | head -n1`"
       ;;
     pathcc)
+      : ${CFLAGS='-std=gnu99'}
       : ${C_OPTIMISE_FLAGS='-Ofast'}
       CC_VERSION="`$CC -v 2>&1 | grep -i version | head -n1`"
       ;;
