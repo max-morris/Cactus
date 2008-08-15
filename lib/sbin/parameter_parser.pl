@@ -634,11 +634,18 @@ sub CheckParameterDefault
     for ($i=1; $i<=$nranges; $i++)
     {
       $range = $parameter_db{"\U$thorn $variable\E range $i range"};
-      $range =~ /^([\s\*0-9]*):([\s\*0-9]*)/;
-      $min = $1;
-      $max = $2;
-      $foundit = 1 if (($min =~ /^\s*[\*\s]*\s*$/ || $default >= $min) &&
-                       ($max =~ /^\s*[\*\s]*\s*$/ || $default <= $max));
+      $range =~ /^([\(]?)([\s\*0-9]*):([\s\*0-9]*)([\)]?)/;
+      $lower_bounds_excluded = $1 eq '(';
+      $min = $2;
+      $max = $3;
+      $upper_bounds_excluded = $4 eq ')';
+      $foundit = 1 if ($min =~ /^\s*[\*\s]*\s*$/ or
+                       ($lower_bounds_excluded ? $default >  $min :
+                                                 $default >= $min))
+                      and
+                      ($max =~ /^\s*[\*\s]*\s*$/ or
+                       ($upper_bounds_excluded ? $default <  $max :
+                                                 $default <= $max));
     }
     if ($nranges > 0 && $foundit == 0)
     {
@@ -655,11 +662,18 @@ sub CheckParameterDefault
     for ($i=1; $i<=$nranges; $i++)
     {
       $range = $parameter_db{"\U$thorn $variable\E range $i range"};
-      $range =~ /^([\s\*0-9\.eE+-]*):([\s\*0-9\.eE+-]*)/;
-      $min = $1;
-      $max = $2;
-      $foundit = 1 if (($min =~ /^\s*[\*\s]*\s*$/ || $default >= $min) &&
-                       ($max =~ /^\s*[\*\s]*\s*$/ || $default <= $max));
+      $range =~ /^([\(]?)([\s\*0-9\.eE+-]*):([\s\*0-9\.eE+-]*)([\)]?)/;
+      $lower_bounds_excluded = $1 eq '(';
+      $min = $2;
+      $max = $3;
+      $upper_bounds_excluded = $4 eq ')';
+      $foundit = 1 if ($min =~ /^\s*[\*\s]*\s*$/ or
+                       ($lower_bounds_excluded ? $default >  $min :
+                                                 $default >= $min))
+                      and
+                      ($max =~ /^\s*[\*\s]*\s*$/ or
+                       ($upper_bounds_excluded ? $default <  $max :
+                                                 $default <= $max));
     }
     if ($nranges > 0 && $foundit == 0)
     {
