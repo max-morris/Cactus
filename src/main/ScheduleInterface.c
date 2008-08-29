@@ -153,8 +153,7 @@ static int CCTKi_SchedulePrintWhile(int n_whiles,
 static int CCTKi_SchedulePrintIf(int n_if,
                                  char **ifs,
                                  t_attribute *attribute,
-                                 t_sched_data *data,
-                                 int first);
+                                 t_sched_data *data);
 static int CCTKi_SchedulePrintFunction(void *function, t_attribute *attribute, t_sched_data *data);
 
 static int CCTKi_ScheduleCallEntry(t_attribute *attribute, t_sched_data *data);
@@ -1961,11 +1960,11 @@ static int SchedulePrint(const char *where)
   if(where)
   {
     retcode = CCTKi_DoScheduleTraverse(where,
-       (int (*)(void *, void *))                   CCTKi_SchedulePrintEntry,
-       (int (*)(void *, void *))                   CCTKi_SchedulePrintExit,
-       (int (*)(int, char **, void *, void *, int))CCTKi_SchedulePrintWhile,
-       (int (*)(int, char **, void *, void *, int))CCTKi_SchedulePrintIf,
-       (int (*)(void *, void *, void *))           CCTKi_SchedulePrintFunction,
+       (int (*)(void *, void *))                    CCTKi_SchedulePrintEntry,
+       (int (*)(void *, void *))                    CCTKi_SchedulePrintExit,
+       (int (*)(int, char **, void *, void *, int)) CCTKi_SchedulePrintWhile,
+       (int (*)(int, char **, void *, void *))      CCTKi_SchedulePrintIf,
+       (int (*)(void *, void *, void *))            CCTKi_SchedulePrintFunction,
        (void *)&data);
   }
   else
@@ -2237,11 +2236,6 @@ static int CCTKi_SchedulePrintWhile(int n_whiles,
    @vtype   t_sched_data
    @vio     in
    @endvar
-   @var     first
-   @vdesc   flag - is this the first time we are checking if on this schedule item
-   @vtype   int
-   @vio     in
-   @endvar
 
    @returntype int
    @returndesc
@@ -2252,8 +2246,7 @@ static int CCTKi_SchedulePrintWhile(int n_whiles,
 static int CCTKi_SchedulePrintIf(int n_ifs,
                                  char **ifs,
                                  t_attribute *attribute,
-                                 t_sched_data *data,
-                                 int first)
+                                 t_sched_data *data)
 {
   int i;
 
@@ -2261,29 +2254,20 @@ static int CCTKi_SchedulePrintIf(int n_ifs,
   attribute = attribute;
   data = data;
 
-  if(first)
-  {
-    printf("%*s", indent_level + 2 + 7, "if (");
+  printf("%*s", indent_level + 2 + 7, "if (");
 
-    for(i = 0; i < n_ifs; i++)
+  for(i = 0; i < n_ifs; i++)
+  {
+    if(i > 0)
     {
-      if(i > 0)
-      {
-        printf(" && ");
-      }
-
-      printf(ifs[i]);
+      printf(" && ");
     }
-    printf(")\n");
-    indent_level += 2;
-  }
-  else
-  {
-    indent_level -= 2;
-    printf("%*s\n", indent_level + 9, "end if");
-  }
 
-  return first;
+    printf(ifs[i]);
+  }
+  printf(")\n");
+
+  return 1;
 }
 
 /*@@

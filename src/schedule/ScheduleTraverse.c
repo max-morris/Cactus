@@ -39,7 +39,7 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
                                  int (*item_entry)(void *, void *),
                                  int (*item_exit)(void *, void *),
                                  int (*while_check)(int, char **, void *, void *, int),
-                                 int (*if_check)(int, char **, void *, void *, int),
+                                 int (*if_check)(int, char **, void *, void *),
                                  int (*function_process)(void *, void *, void *),
                                  void *data);
 
@@ -52,7 +52,7 @@ static int ScheduleTraverseFunction(void *function,
                                     int (*item_entry)(void *, void *),
                                     int (*item_exit)(void *, void *),
                                     int (*while_check)(int, char **, void *, void *, int),
-                                    int (*if_check)(int, char **, void *, void *, int),
+                                    int (*if_check)(int, char **, void *, void *),
                                     int (*function_process)(void *, void *, void *),
                                     void *data);
 
@@ -110,7 +110,7 @@ static int ScheduleTraverseFunction(void *function,
    @endvar 
    @var     if_check
    @vdesc   function to be called to check an if statement
-   @vtype   int (*)(int, char **, void *, void *, int)
+   @vtype   int (*)(int, char **, void *, void *)
    @vio     in
    @vcomment 
  
@@ -140,7 +140,7 @@ int CCTKi_DoScheduleTraverse(const char *group_name,
                              int (*item_entry)(void *, void *),
                              int (*item_exit)(void *, void *),
                              int (*while_check)(int, char **, void *, void *, int),
-                             int (*if_check)(int, char **, void *, void *, int),
+                             int (*if_check)(int, char **, void *, void *),
                              int (*function_process)(void *, void *, void *),
                              void *data)
 {
@@ -265,7 +265,7 @@ int CCTKi_DoScheduleTraverse(const char *group_name,
    @endvar 
    @var     if_check
    @vdesc   function to be called to check a if statement
-   @vtype   int (*)(int, char **, void *, void *, int)
+   @vtype   int (*)(int, char **, void *, void *)
    @vio     in
    @vcomment 
  
@@ -300,7 +300,7 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
                                  int (*item_entry)(void *, void *),
                                  int (*item_exit)(void *, void *),
                                  int (*while_check)(int, char **, void *, void *, int),
-                                 int (*if_check)(int, char **, void *, void *, int),
+                                 int (*if_check)(int, char **, void *, void *),
                                  int (*function_process)(void *, void *, void *),
                                  void *data)
 {
@@ -317,7 +317,7 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
 
   if(n_ifs > 0 && if_check)
   {
-    doit = doit && if_check(n_ifs, ifs, attributes, data, 1);
+    doit = doit && if_check(n_ifs, ifs, attributes, data);
   }
 
   /* If there is a while-list associated with this item, check if the
@@ -500,7 +500,7 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
    @endvar 
    @var     if_check
    @vdesc   function to be called to check a if statement
-   @vtype   int (*)(int, char **, void *, void *, int)
+   @vtype   int (*)(int, char **, void *, void *)
    @vio     in
    @vcomment 
  
@@ -534,7 +534,7 @@ static int ScheduleTraverseFunction(void *function,
                                     int (*item_entry)(void *, void *),
                                     int (*item_exit)(void *, void *),
                                     int (*while_check)(int, char **, void *, void *, int),
-                                    int (*if_check)(int, char **, void *, void *, int),
+                                    int (*if_check)(int, char **, void *, void *),
                                     int (*function_process)(void *, void *, void *),
                                     void *data)
 {
@@ -549,7 +549,7 @@ static int ScheduleTraverseFunction(void *function,
 
   if(n_ifs > 0 && if_check)
   {
-    doit = doit && if_check(n_ifs, ifs, attributes, data, 1);
+    doit = doit && if_check(n_ifs, ifs, attributes, data);
   }
 
   /* If there is a while-list associated with this function, check if
