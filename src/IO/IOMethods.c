@@ -124,7 +124,7 @@ int CCTKi_RegisterIOMethod (const char *thorn, const char *name)
 
       /* Initialise the I/O method structure with dummy routines */
       new_method->implementation = CCTK_ThornImplementation (thorn);
-      new_method->name           = name;
+      new_method->name           = Util_Strdup (name);
       new_method->OutputGH       = DummyOutputGH;
       new_method->OutputVarAs    = DummyOutputVarAs;
       new_method->TriggerOutput  = DummyTriggerOutput;
