@@ -467,8 +467,8 @@ int Util_IntInRange(int inval, const char *range)
     }
     else
     {
-      /* End range not given, so interval has length zero. */
-      end = start;
+      /* End range not given, so interval has either zero or infinite length. */
+      end = start == INT_MIN ? INT_MAX : start;
     }
 
     /* Next find whether step of the range is present */
@@ -669,8 +669,8 @@ int Util_DoubleInRange(double inval, const char *range)
     }
     else
     {
-      /* End range not given, so interval has length zero. */
-      end = start;
+      /* End range not given, so interval has either zero or infinite length. */
+      end = start == -HUGE_VAL ? HUGE_VAL : start;
     }
 
     /* Next find whether step of the range is present */
