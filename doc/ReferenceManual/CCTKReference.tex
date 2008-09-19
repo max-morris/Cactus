@@ -261,9 +261,19 @@ from Fortran.
   Given a group index, returns information about the variables
   held in the group
 
+\item[\code{CCTK\_GroupDimFromVarI}] [\pageref{CCTK-GroupDimFromVarI}]
+  Given a variable index, returns the dimension of all variables in the group
+  associated with this variable
+
+\item[\code{CCTK\_GroupDimI}] [\pageref{CCTK-GroupDimI}]
+  Given a group index, returns the dimension of variables in that group
+
 \item[\code{CCTK\_GroupDynamicData}] [\pageref{CCTK-GroupDynamicData}]
   Given a group index, returns information about the variables
   held in the group
+
+\item[\code{CCTK\_GroupGhostsizesI}] [\pageref{CCTK-GroupGhostsizesI}]
+  Given a group index, returns the ghost size array of that group
 
 \item[\code{CCTK\_GroupgshGI}] [\pageref{CCTK-GroupgshGI}]
   Given a group index, return an array of the global size
@@ -343,6 +353,9 @@ from Fortran.
 \item[\code{CCTK\_GroupnghostzonesVN}] [\pageref{CCTK-GroupnghostzonesVN}]
   Given a group variable, return an array with the number of ghostzones
   in each dimension of the variable's group
+
+\item[\code{CCTK\_GroupSizesI}] [\pageref{CCTK-GroupSizesI}]
+  Given a group index, returns the size array of that group
 
 \item[\code{CCTK\_GroupStorageDecrease}] [\pageref{CCTK-GroupStorageDecrease}]
   Decrease the active number of timelevels for a list of groups
@@ -821,7 +834,7 @@ from Fortran.
 %%%%%
 
 % CommOverloadables.c
-%Entering a function descrpition for CCTK\_Abort
+%Entering a function description for CCTK\_Abort
 \begin{FunctionDescription}{CCTK\_Abort}
 \label{CCTK-Abort}
 Abnormal Cactus termination.
@@ -905,7 +918,7 @@ call CCTK_Abort (dummy, cctkGH)
 
 
 % ActiveThorns.c
-%Entering a function descrpition for CCTK\_ActivatingThorn
+%Entering a function description for CCTK\_ActivatingThorn
 \begin{FunctionDescription}{CCTK\_ActivatingThorn}
 \label{CCTK-ActivatingThorn}
 Finds the thorn which activated a particular implementation.
@@ -981,7 +994,7 @@ The implementation is inactive, or an error occurred.
 
 
 % cctk_GroupsOnGH.h
-%Entering a function descrpition for CCTK\_ActiveTimeLevels
+%Entering a function description for CCTK\_ActiveTimeLevels
 \begin{FunctionDescription}{CCTK\_ActiveTimeLevels}
 \label{CCTK-ActiveTimeLevels}
 Returns the number of active time levels for a group.
@@ -1105,7 +1118,7 @@ Illegal arguments given.
 
 
 % cctk_Comm.h
-%Entering a function descrpition for CCTK\_ArrayGroupSize}{
+%Entering a function description for CCTK\_ArrayGroupSize}{
 \begin{FunctionDescription}{CCTK\_ArrayGroupSize}{}
 \label{CCTK-ArrayGroupSize}
 Returns a pointer to the processor-local size for variables in a
@@ -1167,7 +1180,7 @@ but many are not yet documented.
 
 
 % cctk_Comm.h
-%Entering a function descrpition for CCTK\_ArrayGroupSizeI}{
+%Entering a function description for CCTK\_ArrayGroupSizeI}{
 \begin{FunctionDescription}{CCTK\_ArrayGroupSizeI}{}
 \label{CCTK-ArrayGroupSizeI}
 Returns a pointer to the processor-local size for variables in a
@@ -1256,7 +1269,7 @@ it must be called by all processors otherwise the code will hang.
 % CCC
 %%%%%
 
-%Entering a function descrpition for CCTK\_ClockRegister
+%Entering a function description for CCTK\_ClockRegister
 \begin{FunctionDescription}{CCTK\_ClockRegister}
 \label{CCTK-ClockRegister}
 Registers a named timer clock with the Flesh.
@@ -1780,7 +1793,7 @@ Error.
 
 
 % cctk_ActiveThorns.c
-%Entering a function descrpition for CCTK\_CompiledThorn
+%Entering a function description for CCTK\_CompiledThorn
 \begin{FunctionDescription}{CCTK\_CompiledThorn}
 \label{CCTK-CompiledThorn}
 Return the name of the compiled thorn with given index.
@@ -2578,7 +2591,7 @@ the Cactus scheduler via a thorn's \code{schedule.ccl} file.
 %\end{ErrorSection}
 \end{FunctionDescription}
 
-%Entering a function descrpition for CCTK\_Equals
+%Entering a function description for CCTK\_Equals
 \begin{FunctionDescription}{CCTK\_Equals}
 \label{CCTK-Equals}
 Checks a STRING or KEYWORD parameter for equality with a given string
@@ -2718,7 +2731,7 @@ It never returns to the caller.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Groups.c
-%Entering a function descrpition for CCTK\_FirstVarIndex
+%Entering a function description for CCTK\_FirstVarIndex
 \begin{FunctionDescription}{CCTK\_FirstVarIndex}
 \label{CCTK-FirstVarIndex}
 Given a group name, returns the first variable index in the group.
@@ -2788,7 +2801,7 @@ Group has no members.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Groups.c
-%Entering a function descrpition for CCTK\_FirstVarIndexI
+%Entering a function description for CCTK\_FirstVarIndexI
 \begin{FunctionDescription}{CCTK\_FirstVarIndexI}
 \label{CCTK-FirstVarIndexI}
 Given a group index, returns the first variable index in the group.
@@ -2853,7 +2866,7 @@ Group has no members.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%Entering a function descrpition for CCTK\_FortranString
+%Entering a function description for CCTK\_FortranString
 \begin{FunctionDescription}{CCTK\_FortranString}
 \label{CCTK-FortranString}
 Copy the contents of a C string into a Fortran string variable
@@ -3270,7 +3283,7 @@ The number of grid array reduction operators registered
 
 
 % GroupsOnGH.h
-%Entering a function descrpition for CCTK\_GroupbboxGI, CCTK\_GroupbboxGN
+%Entering a function description for CCTK\_GroupbboxGI, CCTK\_GroupbboxGN
 \begin{FunctionDescription}{CCTK\_GroupbboxGI, CCTK\_GroupbboxGN}
 \label{CCTK-GroupbboxGI}
 \label{CCTK-GroupbboxGN}
@@ -3338,7 +3351,7 @@ Returns the lower bounds for a given variable.
 \end{FunctionDescription}
 
 
-%Entering a function descrpition for CCTK\_GroupbboxVI, CCTK\_GroupbboxVN
+%Entering a function description for CCTK\_GroupbboxVI, CCTK\_GroupbboxVN
 \begin{FunctionDescription}{CCTK\_GroupbboxVI, CCTK\_GroupbboxVN}
 \label{CCTK-GroupbboxVI}
 \label{CCTK-GroupbboxVN}
@@ -3408,7 +3421,7 @@ Returns the upper bounds for a given group.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Groups.c
-%Entering a function descrpition for CCTK\_GroupData
+%Entering a function description for CCTK\_GroupData
 \begin{FunctionDescription}{CCTK\_GroupData}
 \label{CCTK-GroupData}
 Given a group index, returns information about the group and its variables.
@@ -3544,8 +3557,90 @@ printf("this group's arrays are %-dimensional and have %d time levels\n",
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Entering a function description for CCTK\_GroupDimFromVarI
+\begin{FunctionDescription}{CCTK\_GroupDimFromVarI}
+\label{CCTK-GroupDimFromVarI}
+Given a variable index, returns the dimension of all variables in the corresponding group.
 
-%Entering a function descrpition for CCTK\_GroupDynamicData}{
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int dim = CCTK_GroupDimFromVarI(int varindex);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_GroupDimFromVarI(dim, varindex)
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{\rm positive} the dimension of the group\end{Result}
+\begin{Result}{\rm -1} invalid variable index \end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{varindex}Variable index\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+The dimension of all variables in a group associcated with the given variable is returned.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_GroupDimI}
+Returns the dimension for a given group
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\end{FunctionDescription}
+
+%Entering a function description for CCTK\_GroupDimI
+\begin{FunctionDescription}{CCTK\_GroupDimI}
+\label{CCTK-GroupDimI}
+Given a group index, returns the dimension of that group.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int dim = CCTK_GroupDimI(int groupindex);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_GroupDimI(dim, groupindex)
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{\rm positive} the dimension of the group\end{Result}
+\begin{Result}{\rm -1} invalid group index \end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{groupindex}Group index\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+The dimension of variables in the given group is returned.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_GroupDimFromVarI}
+Returns the dimension for a group given by a member variable index
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\end{FunctionDescription}
+
+
+%Entering a function description for CCTK\_GroupDynamicData}{
 \begin{FunctionDescription}{CCTK\_GroupDynamicData}{}
 \label{CCTK-GroupDynamicData}
 Returns the driver's internal data for a given group
@@ -3609,7 +3704,46 @@ The members of this structure that are set are :
 %\end{ExampleSection}
 \end{FunctionDescription}
 
-%Entering a function descrpition for CCTK\_GroupgshGI, CCTK\_GroupgshGN
+%Entering a function description for CCTK\_GroupGhostsizesI
+\begin{FunctionDescription}{CCTK\_GroupGhostsizesI}
+\label{CCTK-GroupGhostsizesI}
+Given a group index, return a pointer to an array containing the ghost sizes of the group in each dimension.
+ 
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+CCTK_INT **ghostsizes = CCTK_GroupGhostsizesI(int groupindex);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{\rm non-NULL} a pointer to the ghost size array\end{Result}
+\begin{Result}{\rm NULL} invalid group index \end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{groupindex}Group index\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+The ghost sizes in each dimension for a given group are returned as a pointer reference.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_GroupDimI}
+Returns the dimension for a group.
+\end{SeeAlso}
+\begin{SeeAlso}{CCTK\_GroupSizesI}
+Returns the size arrays for a group.
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\end{FunctionDescription}
+
+%Entering a function description for CCTK\_GroupgshGI, CCTK\_GroupgshGN
 \begin{FunctionDescription}{CCTK\_GroupgshGI, CCTK\_GroupgshGN}
 \label{CCTK-GroupgshGI}
 \label{CCTK-GroupgshGN}
@@ -3682,7 +3816,7 @@ Returns the local size for a given variable.
 \end{FunctionDescription}
 
 
-%Entering a function descrpition for CCTK\_GroupgshVI, CCTK\_GroupgshVN
+%Entering a function description for CCTK\_GroupgshVI, CCTK\_GroupgshVN
 \begin{FunctionDescription}{CCTK\_GroupgshVI, CCTK\_GroupgshVN}
 \label{CCTK-GroupgshVI}
 \label{CCTK-GroupgshVN}
@@ -3835,7 +3969,7 @@ The variable name should be in the form \code{<implementation>::<variable>}
 \end{CCTKFunc}
 
 
-%Entering a function descrpition for CCTK\_GrouplbndGI, CCTK\_GrouplbndGN
+%Entering a function description for CCTK\_GrouplbndGI, CCTK\_GrouplbndGN
 \begin{FunctionDescription}{CCTK\_GrouplbndGI, CCTK\_GrouplbndGN}
 \label{CCTK-GrouplbndGI}
 \label{CCTK-GrouplbndGN}
@@ -3909,7 +4043,7 @@ Returns the upper bounds for a given variable.
 \end{FunctionDescription}
 
 
-%Entering a function descrpition for CCTK\_GrouplbndVI, CCTK\_GrouplbndVN
+%Entering a function description for CCTK\_GrouplbndVI, CCTK\_GrouplbndVN
 \begin{FunctionDescription}{CCTK\_GrouplbndVI, CCTK\_GrouplbndVN}
 \label{CCTK-GrouplbndVI}
 \label{CCTK-GrouplbndVN}
@@ -3983,7 +4117,7 @@ Returns the upper bounds for a given variable.
 \end{FunctionDescription}
 
 
-%Entering a function descrpition for CCTK\_GrouplshGI, CCTK\_GrouplshGN
+%Entering a function description for CCTK\_GrouplshGI, CCTK\_GrouplshGN
 \begin{FunctionDescription}{CCTK\_GrouplshGI, CCTK\_GrouplshGN}
 \label{CCTK-GrouplshGI}
 \label{CCTK-GrouplshGN}
@@ -4056,7 +4190,7 @@ Returns the local size for a given variable.
 \end{FunctionDescription}
 
 
-%Entering a function descrpition for CCTK\_GrouplshVI, CCTK\_GrouplshVN
+%Entering a function description for CCTK\_GrouplshVI, CCTK\_GrouplshVN
 \begin{FunctionDescription}{CCTK\_GrouplshVI, CCTK\_GrouplshVN}
 \label{CCTK-GrouplshVI}
 \label{CCTK-GrouplshVN}
@@ -4184,7 +4318,7 @@ No Fortran routine exists at the moment.
 
 
 
-%Entering a function descrpition for CCTK\_GroupnghostzonesGI, CCTK\_GroupnghostzonesGN
+%Entering a function description for CCTK\_GroupnghostzonesGI, CCTK\_GroupnghostzonesGN
 \begin{FunctionDescription}{CCTK\_GroupnghostzonesGI, CCTK\_GroupnghostzonesGN}
 \label{CCTK-GroupnghostzonesGI}
 \label{CCTK-GroupnghostzonesGN}
@@ -4250,7 +4384,7 @@ Returns the number of ghostzones for a given variable.
 \end{FunctionDescription}
 
 
-%Entering a function descrpition for CCTK\_GroupnghostzonesVI, CCTK\_GroupnghostzonesVN
+%Entering a function description for CCTK\_GroupnghostzonesVI, CCTK\_GroupnghostzonesVN
 \begin{FunctionDescription}{CCTK\_GroupnghostzonesVI, CCTK\_GroupnghostzonesVN}
 \label{CCTK-GroupnghostzonesVI}
 \label{CCTK-GroupnghostzonesVN}
@@ -4316,6 +4450,45 @@ Returns the number of ghostzones for a given group.
 
 \end{FunctionDescription}
 
+
+%Entering a function description for CCTK\_GroupSizesI
+\begin{FunctionDescription}{CCTK\_GroupSizesI}
+\label{CCTK-GroupSizesI}
+Given a group index, return a pointer to an array containing the sizes of the group in each dimension.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+CCTK_INT **ghostsizes = CCTK_GroupSizesI(int groupindex);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{\rm non-NULL} a pointer to the size array\end{Result}
+\begin{Result}{\rm NULL} invalid group index \end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{groupindex}Group index\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+The sizes in each dimension for a given group are returned as a pointer reference.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_GroupDimI}
+Returns the dimension for a group.
+\end{SeeAlso}
+\begin{SeeAlso}{CCTK\_GroupGhostsizesI}
+Returns the size arrays for a group.
+\end{SeeAlso}
+\end{SeeAlsoSection}
+
+\end{FunctionDescription}
 
 
 \begin{FunctionDescription}{CCTK\_GroupStorageDecrease}
@@ -4594,7 +4767,7 @@ no group exists with the specified name
 \end{errorcodes}
 \end{CCTKFunc}
 
-%Entering a function descrpition for CCTK\_GroupTypeI}{
+%Entering a function description for CCTK\_GroupTypeI}{
 \begin{FunctionDescription}{CCTK\_GroupTypeI}{}
 \label{CCTK-GroupTypeI}
 Provides a group's group type index given a group index
@@ -4638,7 +4811,7 @@ This function takes a variable index rather than a group index as its argument.
 \end{FunctionDescription}
 
 
-%Entering a function descrpition for CCTK\_GroupubndGI, CCTK\_GroupubndGN
+%Entering a function description for CCTK\_GroupubndGI, CCTK\_GroupubndGN
 \begin{FunctionDescription}{CCTK\_GroupubndGI, CCTK\_GroupubndGN}
 \label{CCTK-GroupubndGI}
 \label{CCTK-GroupubndGN}
@@ -4712,7 +4885,7 @@ Returns the upper bounds for a given variable.
 \end{FunctionDescription}
 
 
-%Entering a function descrpition for CCTK\_GroupubndVI, CCTK\_GroupubndVN
+%Entering a function description for CCTK\_GroupubndVI, CCTK\_GroupubndVN
 \begin{FunctionDescription}{CCTK\_GroupubndVI, CCTK\_GroupubndVN}
 \label{CCTK-GroupubndVI}
 \label{CCTK-GroupubndVN}
@@ -4822,7 +4995,7 @@ No Fortran routine exists at the moment
 
 
 % cctk_ActiveThorns.c
-%Entering a function descrpition for CCTK\_ImplementationRequires
+%Entering a function description for CCTK\_ImplementationRequires
 \begin{FunctionDescription}{CCTK\_ImplementationRequires}
 \label{CCTK-ImplementationRequires}
 Return the ancestors for an implementation.
@@ -4904,7 +5077,7 @@ uStringList *imps = CCTK_ImplementationRequires(const char *imp);
 
 
 % cctk_ActiveThorns.c
-%Entering a function descrpition for CCTK\_ImplementationThorn
+%Entering a function description for CCTK\_ImplementationThorn
 \begin{FunctionDescription}{CCTK\_ImplementationThorn}
 \label{CCTK-ImplementationThorn}
 Returns the name of one thorn providing an implementation.
@@ -4986,7 +5159,7 @@ Error.
 
 
 % cctk_ActiveThorns.c
-%Entering a function descrpition for CCTK\_ImpThornList
+%Entering a function description for CCTK\_ImpThornList
 \begin{FunctionDescription}{CCTK\_ImpThornList}
 \label{CCTK-ImpThornList}
 Return the thorns for an implementation.
@@ -5069,7 +5242,7 @@ Name of implementation
 
 
 % WarnLevel.c
-%Entering a function descrpition for CCTK\_INFO
+%Entering a function description for CCTK\_INFO
 \begin{FunctionDescription}{CCTK\_INFO}
 \label{CCTK-INFO}
 Macro to print a single string as an information message to screen
@@ -5261,7 +5434,7 @@ CCTK_InfoCallbackRegister(NULL,DumpInfo);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%Entering a function descrpition for CCTK\_InterpGridArrays
+%Entering a function description for CCTK\_InterpGridArrays
 \begin{FunctionDescription}{CCTK\_InterpGridArrays}
 \label{CCTK-InterpGridArrays}
 Interpolate a list of distributed grid variables
@@ -5659,7 +5832,7 @@ A negative value is returned for invalid/unregistered interpolation operator nam
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %notyet % Interp.c
-%Entering a function descrpition for CCTK\_InterpLocalNonUniform
+%Entering a function description for CCTK\_InterpLocalNonUniform
 %notyet \begin{FunctionDescription}{CCTK\_InterpLocalNonUniform}
 %notyet \label{CCTK-InterpLocalNonUniform}
 %notyet Interpolate a list of processor-local arrays
@@ -5962,7 +6135,7 @@ A negative value is returned for invalid/unregistered interpolation operator nam
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Interp.c
-%Entering a function descrpition for CCTK\_InterpLocalUniform
+%Entering a function description for CCTK\_InterpLocalUniform
 \begin{FunctionDescription}{CCTK\_InterpLocalUniform}
 \label{CCTK-InterpLocalUniform}
 Interpolate a list of processor-local arrays
@@ -6303,7 +6476,7 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %notyet % Interp.c
-%Entering a function descrpition for CCTK\_InterpLocalWarped
+%Entering a function description for CCTK\_InterpLocalWarped
 %notyet \begin{FunctionDescription}{CCTK\_InterpLocalWarped}
 %notyet \label{CCTK-InterpLocalWarped}
 %notyet Interpolate a list of processor-local arrays
@@ -6613,7 +6786,7 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 % here should be CCTK\_InterpRegisterOpLocalNonUniform
 
 % Interp.c
-%Entering a function descrpition for CCTK\_InterpRegisterOpLocalUniform
+%Entering a function description for CCTK\_InterpRegisterOpLocalUniform
 \begin{FunctionDescription}{CCTK\_InterpRegisterOpLocalUniform}
 \label{CCTK-InterpRegisterOpLocalUniform}
 Register a \code{CCTK\_InterpLocalUniform} interpolation operator.
@@ -6796,7 +6969,7 @@ See also
 \end{CCTKFunc}
 
 % ActiveThorns.c
-%Entering a function descrpition for CCTK\_IsThornActive
+%Entering a function description for CCTK\_IsThornActive
 \begin{FunctionDescription}{CCTK\_IsThornActive}
 \label{CCTK-IsThornActive}
 Reports whether a thorn was activated in a parameter file
@@ -6942,7 +7115,7 @@ The number of local reduction operators registered
 \end{FunctionDescription}
 
 %Reduction.c
-%Entering a function descrpition for CCTK\_LocalArrayReduceOperatorImplementation
+%Entering a function description for CCTK\_LocalArrayReduceOperatorImplementation
 \begin{FunctionDescription}{CCTK\_LocalArrayReduceOperatorImplementation}
 \label{CCTK-LocalArrayReduceOperatorImplementation}
 Provide the implementation which provides an local array reduction operator
@@ -6999,7 +7172,7 @@ The number of local reduction operators registered
 \end{FunctionDescription}
 
 %Reduction.c
-%Entering a function descrpition for CCTK\_LocalArrayReductionHandle
+%Entering a function description for CCTK\_LocalArrayReductionHandle
 \begin{FunctionDescription}{CCTK\_LocalArrayReductionHandle}
 \label{CCTK-LocalArrayReductionHandle}
 Returns the handle of a given local array reduction operator
@@ -7302,7 +7475,7 @@ of current drivers).
 
 
 % util/Misc.c
-%Entering a function descrpition for CCTK\_NullPointer
+%Entering a function description for CCTK\_NullPointer
 \begin{FunctionDescription}{CCTK\_NullPointer}%%%
 \label{CCTK-NullPointer}
 Returns a C-style NULL pointer value.
@@ -7360,7 +7533,7 @@ call Util_TableSetPointer(ierror, table_handle, pointer_var, "NULL pointer")
 
 
 % cctk_ActiveThorns.c
-%Entering a function descrpition for CCTK\_NumCompiledImplementations
+%Entering a function description for CCTK\_NumCompiledImplementations
 \begin{FunctionDescription}{CCTK\_NumCompiledImplementations}
 \label{CCTK-NumCompiledImplementations}
 Return the number of implementations compiled in.
@@ -7436,7 +7609,7 @@ Number of implementations compiled in.
 
 
 % cctk_ActiveThorns.c
-%Entering a function descrpition for CCTK\_NumCompiledThorns
+%Entering a function description for CCTK\_NumCompiledThorns
 \begin{FunctionDescription}{CCTK\_NumCompiledThorns}
 \label{CCTK-NumCompiledThorns}
 Return the number of thorns compiled in.
@@ -7511,7 +7684,7 @@ Number of thorns compiled in.
 
 
 %Reduction.c
-%Entering a function descrpition for CCTK\_NumGridArrayReductionOperators
+%Entering a function description for CCTK\_NumGridArrayReductionOperators
 \begin{FunctionDescription}{CCTK\_NumGridArrayReductionOperators}
 \label{CCTK-NumGridArrayReductionOperators}
 The number of grid array reduction operators registered
@@ -7581,7 +7754,7 @@ The name of the grid reduction operator, or NULL if none is registered
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%Entering a function descrpition for CCTK\_NumIOMethods
+%Entering a function description for CCTK\_NumIOMethods
 \begin{FunctionDescription}{CCTK\_NumIOMethods}
 \label{CCTK-NumIOMethods}
 Find the total number of I/O methods registered with the flesh
@@ -7713,7 +7886,7 @@ Registers a function as a reduction operator of a certain name
 
 
 % cctk_GroupsOnGH.h
-%Entering a function descrpition for CCTK\_NumTimeLevels
+%Entering a function description for CCTK\_NumTimeLevels
 \begin{FunctionDescription}{CCTK\_NumTimeLevels}
 \label{CCTK-NumTimeLevels}
 Returns the number of active time levels for a group (deprecated).
@@ -7838,7 +8011,7 @@ Illegal arguments given.
 \end{FunctionDescription}
 
 
-%Entering a function descrpition for CCTK\_NumTimerClocks
+%Entering a function description for CCTK\_NumTimerClocks
 \begin{FunctionDescription}{CCTK\_NumTimerClocks}
 \label{CCTK-NumTimerClocks}
 Given a {\tt cTimerData} structure, returns its number of clocks.
@@ -8270,7 +8443,7 @@ No parameter with that name was found.
 
 
 % Parameters.c
-%Entering a function descrpition for CCTK\_ParameterGet
+%Entering a function description for CCTK\_ParameterGet
 \begin{FunctionDescription}{CCTK\_ParameterGet}
 \label{CCTK-ParameterGet}
 Get the data pointer to and type of a parameter's value.
@@ -8344,7 +8517,7 @@ No parameter with that name was found.
 
 
 % WaveLevel.c
-%Entering a function descrpition for CCTK\_ParameterLevel
+%Entering a function description for CCTK\_ParameterLevel
 \begin{FunctionDescription}{CCTK\_ParameterLevel}
 \label{CCTK-ParameterLevel}
 Return the parameter checking level.
@@ -8389,7 +8562,7 @@ Parameter checking level now being used.
 
 
 % Parameters.c
-%Entering a function descrpition for CCTK\_ParameterQueryTimesSet
+%Entering a function description for CCTK\_ParameterQueryTimesSet
 \begin{FunctionDescription}{CCTK\_ParameterQueryTimesSet}
 \label{CCTK-ParameterQueryTimesSet}
 Return number of times a parameter has been set.
@@ -8462,7 +8635,7 @@ No parameter with that name exists.
 
 
 % Parameters.c
-%Entering a function descrpition for CCTK\_ParameterSet
+%Entering a function description for CCTK\_ParameterSet
 \begin{FunctionDescription}{CCTK\_ParameterSet}
 \label{CCTK-ParameterSet}
 Sets the value of a parameter.
@@ -8556,7 +8729,7 @@ parameter as used.
 
 
 % Parameters.c
-%Entering a function descrpition for CCTK\_ParameterSetNotifyRegister
+%Entering a function description for CCTK\_ParameterSetNotifyRegister
 \begin{FunctionDescription}{CCTK\_ParameterSetNotifyRegister}
 \label{CCTK-ParameterSetNotifyRegister}
 Registers a parameter set operation notify callback
@@ -8693,7 +8866,7 @@ void RegisterNotifyCallback (void)
 
 
 % Parameters.c
-%Entering a function descrpition for CCTK\_ParameterSetNotifyUnregister
+%Entering a function description for CCTK\_ParameterSetNotifyUnregister
 \begin{FunctionDescription}{CCTK\_ParameterSetNotifyUnregister}
 \label{CCTK-ParameterSetNotifyUnregister}
 Unregisters a parameter set operation notify callback
@@ -8757,7 +8930,7 @@ call CCTK_ParameterSetNotifyUnregister (CCTK_THORNSTRING)
 
 
 % Parameters.c
-%Entering a function descrpition for CCTK\_ParameterValString
+%Entering a function description for CCTK\_ParameterValString
 \begin{FunctionDescription}{CCTK\_ParameterValString}
 \label{CCTK-ParameterValString}
 Get the string representation of a parameter's value.
@@ -8851,7 +9024,7 @@ No parameter with that name was found.
 
 
 % Parameters.c
-%Entering a function descrpition for CCTK\_ParameterWalk
+%Entering a function description for CCTK\_ParameterWalk
 \begin{FunctionDescription}{CCTK\_ParameterWalk}
 \label{CCTK-ParameterWalk}
 Walk through the list of parameters.
@@ -8954,7 +9127,7 @@ checked.
 
 
 % util/Misc.c
-%Entering a function descrpition for CCTK\_PointerTo
+%Entering a function description for CCTK\_PointerTo
 \begin{FunctionDescription}{CCTK\_PointerTo}%%%
 \label{CCTK-PointerTo}
 Returns a pointer to a Fortran variable.
@@ -9186,7 +9359,7 @@ A negative error code is returned for an invalid group name.
 % RRR
 %%%%%
 
-%Entering a function descrpition for CCTK\_ReduceArraysGlobally
+%Entering a function description for CCTK\_ReduceArraysGlobally
 \begin{FunctionDescription}{CCTK\_ReduceArraysGlobally}
 \label{CCTK-ReduceArraysGlobally}
 Performs global reduction on a list of arrays
@@ -9598,7 +9771,7 @@ Util_TableDestroy(param_table_handle);
 \end{FunctionDescription}
 
 %Reduction.c
-%Entering a function descrpition for CCTK\_ReduceLocalArrays
+%Entering a function description for CCTK\_ReduceLocalArrays
 \begin{FunctionDescription}{CCTK\_ReduceLocalArrays}
 \label{CCTK-ReduceLocalArrays}
 Performs reduction on a list of local grid arrays
@@ -9943,7 +10116,7 @@ displayed in the order in which they are registered.
 \end{CCTKFunc}
 
 %Reduction.c
-%Entering a function descrpition for CCTK\_RegisterGridArrayReductionOperator
+%Entering a function description for CCTK\_RegisterGridArrayReductionOperator
 \begin{FunctionDescription}{CCTK\_RegisterGridArrayReductionOperator}
 \label{CCTK-RegisterGridArrayReductionOperator}
 Registers a function as a grid array reduction operator of a certain name
@@ -10091,7 +10264,7 @@ IO methods should be registered at \code{CCTK\_STARTUP}.
 \end{CCTKFunc}
 
 %Reduction.c
-%Entering a function descrpition for CCTK\_RegisterLocalArrayReductionOperator
+%Entering a function description for CCTK\_RegisterLocalArrayReductionOperator
 \begin{FunctionDescription}{CCTK\_RegisterLocalArrayReductionOperator}
 \label{CCTK-RegisterLocalArrayReductionOperator}
 Registers a function as a reduction operator of a certain name
@@ -10152,7 +10325,7 @@ The number of local reduction operators registered
 \end{SeeAlsoSection}
 \end{FunctionDescription}
 
-%Entering a function descrpition for CCTK\_RegisterReduceArraysGloballyOperator
+%Entering a function description for CCTK\_RegisterReduceArraysGloballyOperator
 \begin{FunctionDescription}{CCTK\_RegisterReduceArraysGloballyOperator}
 \label{CCTK-RegisterReduceArraysGloballyOperator}
 Registers a function as a reduction operator of a certain name
@@ -10737,7 +10910,7 @@ if (status != 2)
 % TTT
 %%%%%
 
-%Entering a function descrpition for CCTK\_TerminateNext
+%Entering a function description for CCTK\_TerminateNext
 \begin{FunctionDescription}{CCTK\_TerminateNext}
 \label{CCTK-TerminateNext}
 Causes a Cactus simulation to terminate after present iteration finishes
@@ -10908,7 +11081,7 @@ Error.
 
 
 
-%Entering a function descrpition for CCTK\_Timer
+%Entering a function description for CCTK\_Timer
 \begin{FunctionDescription}{CCTK\_Timer}
 \label{CCTK-Timer}
 Fills a {\tt cTimerData}
@@ -11484,7 +11657,7 @@ with the Cactus provided macros for \code{CCTK\_VARIABLE\_INT}, \code{CCTK\_VARI
 \end{errorcodes}
 \end{CCTKFunc}
 
-%Entering a function descrpition for CCTK\_VarTypeSize
+%Entering a function description for CCTK\_VarTypeSize
 \begin{FunctionDescription}{CCTK\_VarTypeSize}
 \label{CCTK-VarTypeSize}
 Provides variable type size in bytes from the variable type index
@@ -11591,7 +11764,7 @@ CCTK_VInfo(CCTK_THORNSTRING, "Output files will go to '%s'", outdir);
 \end{FunctionDescription}
 
 
-%Entering a function descrpition for CCTK\_VWarn
+%Entering a function description for CCTK\_VWarn
 \begin{FunctionDescription}{CCTK\_VWarn}
 \label{CCTK-VWarn}
 Possibly prints a formatted string with a variable argument list as
@@ -11738,7 +11911,7 @@ CCTK_VWarn(CCTK_WARN_ALERT, __LINE__, __FILE__, CCTK_THORNSTRING,
 
 
 % WarnLevel.c
-%Entering a function descrpition for CCTK\_WARN
+%Entering a function description for CCTK\_WARN
 \begin{FunctionDescription}{CCTK\_WARN}
 \label{CCTK-WARN}
 Macro to print a single string as a warning message and possibly stop the code
