@@ -34,7 +34,6 @@ $do_fix_fnames = 0;
 
 # parse the file up to a ";\n"
 $/ = ";\n";
-$* = 1;
 
 while (<>)
 {
@@ -44,22 +43,22 @@ while (<>)
     # skip one-line comments
     # (note that this is still incomplete for multi-line C comments -
     #  it is not checked if some code follows after the closing '*/')
-    if ($mline !~ m/^\s*\/\// && $mline !~ m/^\s*\/\*.*\*\/\s*$/)
+    if ($mline !~ m/^\s*\/\//m && $mline !~ m/^\s*\/\*.*\*\/\s*$/m)
     {
       # Remove a ; from after the DECLARE_CCTK_* macros
-      $mline =~ s/(DECLARE_CCTK_(PARAMETERS|ARGUMENTS))(\s*;)?/$1/;
+      $mline =~ s/(DECLARE_CCTK_(PARAMETERS|ARGUMENTS))(\s*;)?/$1/m;
 
       # Remove a ; from after the fileversion macro
       # such a semicolon could lead to warning messages.
-      $mline =~ s/^\s*(CCTK_FILEVERSION\s*\([^)]*\))(\s*;)?/$1/;
-      $mline =~ s/^\s*((ONE|TWO|THREE|FOUR|FIVE)_FORTSTRING_(CREATE|PTR)\s*\([^)]*\))(\s*;)?/$1/;
+      $mline =~ s/^\s*(CCTK_FILEVERSION\s*\([^)]*\))(\s*;)?/$1/m;
+      $mline =~ s/^\s*((ONE|TWO|THREE|FOUR|FIVE)_FORTSTRING_(CREATE|PTR)\s*\([^)]*\))(\s*;)?/$1/m;
 
       # start counting braces
-      $n_arg_left_braces++  while ($mline =~ m/({)/g);
-      $n_arg_right_braces++ while ($mline =~ m/(})/g);
+      $n_arg_left_braces++  while ($mline =~ m/({)/gm);
+      $n_arg_right_braces++ while ($mline =~ m/(})/gm);
 
       # check if we have to fix names of fortran wrappers
-      $do_fix_fnames = 1 if ($mline =~ /(CCTK_FNAME|CCTK_FORTRAN_COMMON_NAME)/);
+      $do_fix_fnames = 1 if ($mline =~ /(CCTK_FNAME|CCTK_FORTRAN_COMMON_NAME)/m);
     }
 
     $routine .= $mline . "\n";
@@ -89,33 +88,33 @@ fixfnames ($routine);
 sub fixfnames
 {
   my $myroutine = shift (@_);
-  @flines = split /(;)/,$myroutine;
+  @flines = split /(;)/m,$myroutine;
 
 #  print $myroutine;
 
   foreach $fline (@flines)
   {
-    while ($fline =~ m:CCTK_FNAME\s*\(([^\)]*)\):)
+    while ($fline =~ m:CCTK_FNAME\s*\(([^\)]*)\):m)
     {
       $arglist = $1;
-      $arglist =~ s:[\s\n\t]+::g;
+      $arglist =~ s:[\s\n\t]+::gm;
 
       @args = split(",", $arglist );
 
       $new = &fortran_name($args[$#args]);
 
-      $fline =~ s:CCTK_FNAME\s*\(([^\)]*)\):$new:;
+      $fline =~ s:CCTK_FNAME\s*\(([^\)]*)\):$new:m;
     }
-    while ($fline =~ m:CCTK_FORTRAN_COMMON_NAME\s*\(([^\)]*)\):)
+    while ($fline =~ m:CCTK_FORTRAN_COMMON_NAME\s*\(([^\)]*)\):m)
     {
       $arglist = $1;
-      $arglist =~ s:[\s\n\t]+::g;
+      $arglist =~ s:[\s\n\t]+::gm;
 
       @args = split(",", $arglist );
 
       $new = &fortran_common_name($args[$#args]);
 
-      $fline =~ s:CCTK_FORTRAN_COMMON_NAME\s*\(([^\)]*)\):$new:;
+      $fline =~ s:CCTK_FORTRAN_COMMON_NAME\s*\(([^\)]*)\):$new:m;
     }
 
     print $fline;
