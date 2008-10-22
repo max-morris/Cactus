@@ -502,29 +502,30 @@ sub ParseFile
         if($active)
         {
           my $argument = $1;
-          if($argument =~ m/<[^>]*>\s*/)
+
+          # Allow people to use macros to define name of include file
+          ($argument,undef) = &ParseAndExpand($argument,$filename,$linenumber);
+
+          if($argument !~ m/\s*(\"|<)(.+)(\"|>)\s*$/)
           {
-            # Ignore system includes
-            print OUTSTREAM "$line\n" if $printline;
+            print STDERR "Invalid filename $argument in #include directive at $filename:$linenumber\n";
           }
           else
           {
-            # Allow people to use macros to define name of include file
-            ($argument,undef) = &ParseAndExpand($argument,$filename,$linenumber);
-
-            if($argument !~ m/\s*\"(.+)\"\s*$/)
+            # Process the new file.
+            # Don't need to pass $active since wouldn't be here if inactive.
+            #
+            # Silently ignore files which are included via '#include <header>'
+            # but couldn't be found in the include path.
+            my $token = $1;
+            my ($dummy, $fullpath) = &FindFile($2,$current_wd,\@include_path);
+            if (-r $fullpath or $token eq '"')
             {
-              print STDERR "Invalid filename $argument in #include directive at $filename:$linenumber\n";
+              &ProcessFile($2,$filename,$linenumber,$printline);
             }
-            else
+            if($printline && $active)
             {
-              # Process the new file.  Don't need to pass $active since wouldn't be here if inactive.
-              &ProcessFile($1,$filename,$linenumber,$printline);
-
-              if($printline && $active)
-              {
-                print "# $linenumber \"$filename\"\n";
-              }
+              print "# $linenumber \"$filename\"\n";
             }
           }
         }
