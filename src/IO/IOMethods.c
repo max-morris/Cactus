@@ -21,6 +21,7 @@
 #include "cctk_FortranString.h"
 #include "cctk_WarnLevel.h"
 #include "cctk_IO.h"
+#include "util_String.h"
 
 static const char *rcsid = "$Header$";
 
