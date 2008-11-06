@@ -70,8 +70,8 @@ else
   : ${F_DEPEND='$(FPP) -M $(FPPFLAGS)'}
   : ${F77_DEPEND=$F_DEPEND}
 
-  F77_VERSION=`$F77 2>&1 | head -n1`
-  F90_VERSION=`$F90 2>&1 | head -n1`
+  F77_VERSION=`$F77 -qversion 2>&1 | head -n1`
+  F90_VERSION=`$F90 -qversion 2>&1 | head -n1`
 
   # NOTE IBM XLC/XLF optimizations.
   # Tested -02 through -O5.  On BSSNCarpet runs, "-O3 -qhot" performed
@@ -92,7 +92,7 @@ else
      : ${C_DEPEND_OUT=' > /dev/null ; mv $(basename $(basename $@)).u $@'}
      : ${CFLAGS="-q$AIX_BITS -qlanglvl=stdc99"}
      : ${C_OPTIMISE_FLAGS="-O3 -qarch=auto -qtune=auto -qcache=auto -qhot"}
-     CC_VERSION=`$CC 2>&1 | head -n1`
+     CC_VERSION=`$CC -qversion 2>&1 | head -n1`
      ;;
     *)
      ;;
@@ -108,7 +108,7 @@ else
      : ${CXX_DEPEND_OUT=' > /dev/null ; mv $(basename $(basename $@)).u $@'}
      : ${CXXFLAGS="-q$AIX_BITS"}
      : ${CXX_OPTIMISE_FLAGS="-O3 -qarch=auto -qtune=auto -qcache=auto -qhot"}
-     CXX_VERSION=`$CXX 2>&1 | head -n1`
+     CXX_VERSION=`$CXX -qversion 2>&1 |head -n1`
      ;;
     *)
      ;;
