@@ -1443,7 +1443,7 @@ static t_attribute *CreateAttribute(const char *where,
       this->FunctionData.n_SyncGroups = n_sync_groups;
 
       /* Add a timer to the item */
-      timername = malloc (strlen (thorn) + strlen (description) +
+      timername = malloc (strlen (thorn) + strlen (name) +
                           strlen (where) + 100);
       if (!timername)
       {
@@ -1454,7 +1454,7 @@ static t_attribute *CreateAttribute(const char *where,
       else
       {
         sprintf (timername, "[%04d] %s: %s in %s",
-                 timernum++, thorn, description, where);
+                 timernum++, thorn, name, where);
         this->timer_handle = CCTK_TimerCreate(timername);
         if (this->timer_handle < 0)
         {
