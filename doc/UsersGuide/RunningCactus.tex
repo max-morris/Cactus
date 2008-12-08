@@ -482,8 +482,7 @@ compiler reports error messages about unrecognised \verb|#| directives.
 
 \item [\texttt{CROSS\_COMPILE}] Enables cross compilation.
   Available options are \texttt{yes} and \texttt{no}, the default is
-  \texttt{no}. To create a cross compiled configuration one must explicitly set
-  this option to \texttt{yes}.
+  \texttt{no}. To create a cross compiled configuration one must explicitly set   this option to \texttt{yes}. 
 
 \item [\texttt{DISABLE\_REAL16}] Disable support for the data type
 \texttt{CCTK\_REAL16}.  The only options available are \texttt{yes} and
@@ -515,6 +514,27 @@ type of debuggin being used.
 \item [\texttt{F77\_DEBUG\_FLAGS}]
 Debug flags for the Fortran 77 compiler, their use depends on the
 type of debugging being used.
+
+\item [\texttt{OPENMP}]
+* Specifies whether OpenMP support should be enabled. The only options
+  currently available are \texttt{yes} and \texttt{no}. The default
+  is to disable OpenMP support.
+
+\item [\texttt{C\_OPENMP\_FLAGS}]
+OpenMP flags for the C compiler, their use depends on the type of
+OpenMP support being used.
+
+\item [\texttt{CXX\_OPENMP\_FLAGS}]
+OpenMP flags for the C++ compiler, their use depends on the type of
+OpenMP support being used.
+
+\item [\texttt{F90\_OPENMP\_FLAGS}]
+OpenMP flags for the Fortran 90 compiler, their use depends on the
+type of OpenMP support being used.
+
+\item [\texttt{F77\_OPENMP\_FLAGS}]
+OpenMP flags for the Fortran 77 compiler, their use depends on the
+type of OpenMP support being used.
 
 \item [\texttt{OPTIMISE, OPTIMIZE}]
 * Specifies what type of optimisation should be used. The only options currently

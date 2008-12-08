@@ -92,6 +92,7 @@ else
      : ${C_DEPEND_OUT=' > /dev/null ; mv $(basename $(basename $@)).u $@'}
      : ${CFLAGS="-q$AIX_BITS -qlanglvl=stdc99"}
      : ${C_OPTIMISE_FLAGS="-O3 -qarch=auto -qtune=auto -qcache=auto -qhot"}
+     : ${C_OPENMP_FLAGS='-qsmp=omp'}
      CC_VERSION=`$CC -qversion 2>&1 | head -n1`
      ;;
     *)
@@ -108,6 +109,7 @@ else
      : ${CXX_DEPEND_OUT=' > /dev/null ; mv $(basename $(basename $@)).u $@'}
      : ${CXXFLAGS="-q$AIX_BITS"}
      : ${CXX_OPTIMISE_FLAGS="-O3 -qarch=auto -qtune=auto -qcache=auto -qhot"}
+     : ${CXX_OPENMP_FLAGS='-qsmp=omp'}
      CXX_VERSION=`$CXX -qversion 2>&1 |head -n1`
      ;;
     *)
@@ -115,9 +117,10 @@ else
   esac
 
   case "$F90" in
-    xlf|xlf_r|xlf90|xlf90_r)
+    xlf|xlf_r|xlf90|xlf90_r|xlf95|xlf95_r)
      : ${F90FLAGS="-q$AIX_BITS"}
      : ${F90_OPTIMISE_FLAGS="-O3 -qarch=auto -qtune=auto -qcache=auto -qhot"}
+     : ${F90_OPENMP_FLAGS='-qsmp=omp'}
      ;;
     *)
      : ${F90_OPTIMISE_FLAGS="-O3"}
@@ -125,9 +128,10 @@ else
   esac
 
   case "$F77" in
-    xlf|xlf_r|xlf77|xlf77_r|xlf90|xlf90_r)
+    xlf|xlf_r|xlf77|xlf77_r|xlf90|xlf90_r|xlf95|xlf95_r)
      : ${FF77LAGS="-q$AIX_BITS"}
      : ${F77_OPTIMISE_FLAGS="-O3 -qarch=auto -qtune=auto -qcache=auto -qhot"}
+     : ${F77_OPENMP_FLAGS='-qsmp=omp'}
      ;;
     *)
      : ${F77_OPTIMISE_FLAGS="-O3"}

@@ -145,8 +145,19 @@ else
         : ${LIBS='gfortran'}
         : ${LIBDIRS="$gnu95_libdir"}
       fi
-      F77_VERSION="`$F77 -dumpversion 2>&1 | grep -i version | head -n1`"
-      F90_VERSION="`$F90 -dumpversion 2>&1 | grep -i version | head -n1`"
+      F77_VERSION="`$F77 -dumpversion 2>&1 | head -n1`"
+      F90_VERSION="`$F90 -dumpversion 2>&1 | head -n1`"
+      # only gfortran versions 4.1 and higher support OpenMP
+      major_version=`echo $F77_VERSION | cut -f5 -d' ' | cut -f1 -d'.'`
+      minor_version=`echo $F77_VERSION | cut -f5 -d' ' | cut -f2 -d'.'`
+      if test ! \( $major_version -lt 4 -o \( $major_version = 4 -a $minor_version -lt 1 \) \) ; then
+        : ${F77_OPENMP_FLAGS='-fopenmp'}
+      fi
+      major_version=`echo $F90_VERSION | cut -f5 -d' ' | cut -f1 -d'.'`
+      minor_version=`echo $F90_VERSION | cut -f5 -d' ' | cut -f2 -d'.'`
+      if test ! \( $major_version -lt 4 -o \( $major_version = 4 -a $minor_version -lt 1 \) \) ; then
+        : ${F90_OPENMP_FLAGS='-fopenmp'}
+      fi
       ;;
     pacific)
       if test "$LINUX_G77_USES_LIBG2C" = 'yes' ; then
@@ -264,6 +275,9 @@ else
         : ${F90FLAGS='-align -w95'}
       fi
 
+      : ${F77_OPENMP_FLAGS='-openmp'}
+      : ${F90_OPENMP_FLAGS='-openmp'}
+
       intel_dir="$(dirname $(dirname $(which $F90)))"
 
       case "$host_cpu" in
@@ -314,6 +328,8 @@ else
     PathScale)
       : ${F77FLAGS='-fno-second-underscore'}
       : ${F90FLAGS='-fno-second-underscore'}
+      : ${F77_OPENMP_FLAGS='-openmp'}
+      : ${F90_OPENMP_FLAGS='-openmp'}
       : ${F77_OPTIMISE_FLAGS='-Ofast'}
       : ${F90_OPTIMISE_FLAGS='-Ofast'}
       if test "$OPTIMISE" != 'no'; then
@@ -346,6 +362,12 @@ else
       : ${CFLAGS='-pipe -std=gnu99'}
       : ${C_OPTIMISE_FLAGS='-O3'}
       CC_VERSION="`$CC -v 2>&1 | grep -i version | head -n1`"
+      major_version=`echo $CC_VERSION | cut -f3 -d' ' | cut -f1 -d'.'`
+      minor_version=`echo $CC_VERSION | cut -f3 -d' ' | cut -f2 -d'.'`
+      # only GCC versions 4.1 and higher support OpenMP
+      if test ! \( $major_version -lt 4 -o \( $major_version = 4 -a $minor_version -lt 1 \) \) ; then
+        : ${C_OPENMP_FLAGS='-fopenmp'}
+      fi
       ;;
     # Intel
     [ei]cc)
@@ -369,6 +391,7 @@ else
       fi
       : ${C_WARN_FLAGS="$c_warn_flags"}
       CC_VERSION="`$CC -V 2>&1 | grep -i version | head -n1`"
+      : ${C_OPENMP_FLAGS='-openmp'}
       ;;
     sgicc)
       : ${C_OPTIMISE_FLAGS='-O3'}
@@ -384,6 +407,7 @@ else
       : ${CFLAGS='-std=gnu99'}
       : ${C_OPTIMISE_FLAGS='-Ofast'}
       CC_VERSION="`$CC -v 2>&1 | grep -i version | head -n1`"
+      : ${C_OPENMP_FLAGS='-openmp'}
       ;;
   esac
 
@@ -393,6 +417,12 @@ else
       : ${CXXFLAGS='-pipe'}
       : ${CXX_OPTIMISE_FLAGS='-O3'}
       CXX_VERSION="`$CXX -v 2>&1 | grep -i version | head -n1`"
+      major_version=`echo $CXX_VERSION | cut -f3 -d' ' | cut -f1 -d'.'`
+      minor_version=`echo $CXX_VERSION | cut -f3 -d' ' | cut -f2 -d'.'`
+      # only GCC versions 4.1 and higher support OpenMP
+      if test ! \( $major_version -lt 4 -o \( $major_version = 4 -a $minor_version -lt 1 \) \) ; then
+        : ${CXX_OPENMP_FLAGS='-fopenmp'}
+      fi
       ;;
     # Intel
     [ei]cc | [ei]cpc)
@@ -423,6 +453,7 @@ else
       : ${CXX_WARN_FLAGS="$cxx_warn_flags"}
       : ${CXX_DEPEND='$(CXX) -M $(CPPFLAGS)'}
       CXX_VERSION="`$CXX -V 2>&1 | grep -i version | head -n1`"
+      : ${CXX_OPENMP_FLAGS='-openmp'}
       ;;
     sgiCC)
       : ${CXX_OPTIMISE_FLAGS='-O3'}
@@ -437,10 +468,12 @@ else
         : ${LDFLAGS='-Wl,--allow-multiple-definition'}
       fi
       CXX_VERSION="`$CXX -V 2>&1 | grep pgCC | head -n1`"
+      : ${CXX_OPENMP_FLAGS='-mp'}
       ;;
     pathCC)
       : ${CXX_OPTIMISE_FLAGS='-Ofast'}
       CXX_VERSION="`$CXX -v 2>&1 | grep -i version | head -n1`"
+      : ${CXX_OPENMP_FLAGS='-openmp'}
       ;;
   esac
 
