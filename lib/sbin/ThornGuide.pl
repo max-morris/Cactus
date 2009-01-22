@@ -48,7 +48,7 @@ $cctk_home  .= '/' if (($cctk_home !~ /\/$/) && (defined $cctk_home));
 # set up the sbin dir, tacking cctk_home on the front
 my $sbin_dir = "${cctk_home}lib/sbin";
 
-my $cactus_style_file = "${cctk_home}doc/latex/cactus";
+my $cactus_style_file = "../../../doc/latex/cactus";
 ##############
 # REQUIRE(S) #
 ##############
