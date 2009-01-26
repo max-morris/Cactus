@@ -216,8 +216,10 @@ else
       # workaround for calling C varargs functions from Fortran
       : ${F77FLAGS='-Mx,125,0x200'}
       : ${F90FLAGS='-Mx,125,0x200'}
+      : ${F77_OPENMP_FLAGS='-mp'}
       : ${F77_OPTIMISE_FLAGS='-fast -Mvect=assoc'}
       : ${F77_WARN_FLAGS='-Minfo -Mneginfo'}
+      : ${F90_OPENMP_FLAGS='-mp'}
       : ${F90_OPTIMISE_FLAGS='-fast -Mvect=assoc'}
       : ${F90_WARN_FLAGS='-Minfo -Mneginfo'}
       : ${F77_DEBUG_FLAGS='-g'}
@@ -399,6 +401,7 @@ else
       CC_VERSION="`$CC -v 2>&1 | grep -i version | head -n1`"
       ;;
     pgcc)
+      : ${C_OPENMP_FLAGS='-mp'}
       : ${C_OPTIMISE_FLAGS='-fast -O3 -Mvect=assoc'}
       : ${C_WARN_FLAGS='-Minfo -Mneginfo'}
       CC_VERSION="`$CC -V 2>&1 | grep -i pgcc | head -n1`"
@@ -462,13 +465,13 @@ else
       ;;
     pgCC)
       : ${CXXFLAGS='--no_using_std'}
+      : ${CXX_OPENMP_FLAGS='-mp'}
       : ${CXX_OPTIMISE_FLAGS='-fast -O3 -Mvect=assoc'}
       : ${CXX_WARN_FLAGS='-Minfo -Mneginfo'}
       if test `basename $LD` = 'pgCC'; then
         : ${LDFLAGS='-Wl,--allow-multiple-definition'}
       fi
       CXX_VERSION="`$CXX -V 2>&1 | grep pgCC | head -n1`"
-      : ${CXX_OPENMP_FLAGS='-mp'}
       ;;
     pathCC)
       : ${CXX_OPTIMISE_FLAGS='-Ofast'}
