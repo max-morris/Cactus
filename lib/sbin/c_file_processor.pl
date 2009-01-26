@@ -34,6 +34,7 @@ $do_fix_fnames = 0;
 
 # parse the file up to a ";\n"
 $/ = ";\n";
+#$* = 1; enable multiline support -- no longer supported in perl 5.10
 
 while (<>)
 {

@@ -27,8 +27,6 @@
 # Reads input from stdin.
 # The result will be printed to stdout.
 
-$MULTILINE_MATCHING = 1;                         # Multi-line is on!
-
 # Do we want line directives?
 $line_directives = $line_directives eq 'yes';
 
@@ -206,14 +204,14 @@ sub fixed_format_splitline
   my ($LINE) = @_;
 
   # Note the new treatement of comments with \S
-  if ($LINE =~ /^([^\S].{71,71})/)
+  if ($LINE =~ /^([^\S].{71,71})/m)
   {
     &printline ($1);
-    $LINE =~ s/.{72,72}//;
-    while ($LINE =~ /^(.{66,66})/)
+    $LINE =~ s/.{72,72}//m;
+    while ($LINE =~ /^(.{66,66})/m)
     {
       &printline ("     &$1");
-      $LINE =~ s/.{66,66}//;
+      $LINE =~ s/.{66,66}//m;
     }
     &printline ("     &$LINE");
   }
@@ -240,36 +238,36 @@ sub free_format_splitline
   my $maxlen1i = $max_line_length - $indentation - 1;
   my $maxlen2i = $max_line_length - $indentation - 2;
 
-  if ($LINE =~ /^(.{$maxlen1,$maxlen1})../)
+  if ($LINE =~ /^(.{$maxlen1,$maxlen1})../m)
   {
     $OUT = $1;
     # Check if the line already has a continuation mark.
-    $OUT = "$OUT&" if (! ($OUT =~ /\&\s*$/));
+    $OUT = "$OUT&" if (! ($OUT =~ /\&\s*$/m));
     &printline ($OUT);
-    $LINE =~ s/.{$maxlen1,$maxlen1}//;
+    $LINE =~ s/.{$maxlen1,$maxlen1}//m;
 
-    while ($LINE =~ /^(.{$maxlen1i,$maxlen1i})/)
+    while ($LINE =~ /^(.{$maxlen1i,$maxlen1i})/m)
     {
-      $LINE =~ /^(.{$maxlen2i,$maxlen2i})/;
+      $LINE =~ /^(.{$maxlen2i,$maxlen2i})/m;
       $OUT = $1;
-      $OUT = "$indent&$OUT" if (! ($OUT =~ /^\s*\&/));
-      $OUT = "$OUT&" if (! ($OUT =~ /\&\s*$/));
+      $OUT = "$indent&$OUT" if (! ($OUT =~ /^\s*\&/m));
+      $OUT = "$OUT&" if (! ($OUT =~ /\&\s*$/m));
       &printline ($OUT);
-      $LINE =~ s/.{$maxlen2i,$maxlen2i}//;
+      $LINE =~ s/.{$maxlen2i,$maxlen2i}//m;
     }
 
-    if ($LINE =~ /^\&\s*$/)
+    if ($LINE =~ /^\&\s*$/m)
     {
       &printline ("$indent& $LINE");
     }
-    elsif ($LINE =~ /^\s*\&\s*$/)
+    elsif ($LINE =~ /^\s*\&\s*$/m)
     {
       &printline ("$indent&$LINE");
     }
     else
     {
       $OUT = $LINE;
-      $OUT = "$indent&$OUT" if (! ($LINE =~ /^\s*\&/));
+      $OUT = "$indent&$OUT" if (! ($LINE =~ /^\s*\&/m));
       &printline ($OUT);
     }
   }
