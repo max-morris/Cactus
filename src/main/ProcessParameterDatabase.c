@@ -146,7 +146,11 @@ int CCTKi_ProcessParameterDatabase (tFleshConfig *ConfigData)
   if (parameter_file == NULL)
   {
     CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
-                "Cannot open parameter file '%s'", ConfigData->parameter_file_name);
+                "Cannot open parameter file '%s'.  "
+                "(This can also be an MPI problem; "
+                "e.g. you may be using the wrong version of 'mpirun', "
+                "or may have forgotten to call 'lamboot'.)",
+                ConfigData->parameter_file_name);
   }
 
   if (parameter_file)
