@@ -363,7 +363,7 @@ else
     gcc | cc)
       : ${CFLAGS='-pipe -std=gnu99'}
       : ${C_OPTIMISE_FLAGS='-O3'}
-      CC_VERSION="`$CC -v 2>&1 | grep -i version | head -n1`"
+      CC_VERSION="`$CC -v 2>&1 | grep -i "gcc version" | head -n1`"
       major_version=`echo $CC_VERSION | cut -f3 -d' ' | cut -f1 -d'.'`
       minor_version=`echo $CC_VERSION | cut -f3 -d' ' | cut -f2 -d'.'`
       # only GCC versions 4.1 and higher support OpenMP
@@ -419,7 +419,7 @@ else
     gcc | [gc]++)
       : ${CXXFLAGS='-pipe'}
       : ${CXX_OPTIMISE_FLAGS='-O3'}
-      CXX_VERSION="`$CXX -v 2>&1 | grep -i version | head -n1`"
+      CXX_VERSION="`$CXX -v 2>&1 | grep -i "gcc version" | head -n1`"
       major_version=`echo $CXX_VERSION | cut -f3 -d' ' | cut -f1 -d'.'`
       minor_version=`echo $CXX_VERSION | cut -f3 -d' ' | cut -f2 -d'.'`
       # only GCC versions 4.1 and higher support OpenMP
