@@ -19,7 +19,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.177 2008-07-15 21:18:40 schnetter Exp $
+#   @version $Id: Makefile,v 1.178 2009-01-26 23:27:22 schnetter Exp $
 # @@*/
 
 ##################################################################################
@@ -396,14 +396,14 @@ endif
 	@echo "  default          - create a new configuration with a default name."
 	@echo "  distclean        - delete all existing configurations."
 	@echo "  downsize         - remove non-essential files."
-	@echo "  MaintGuide       - create maintainers manual, MaintGuide.ps."
+	@echo "  MaintGuide       - create maintainers manual, MaintGuide.pdf."
 	@echo "  newthorn         - create a new thorn."
 	@echo "  TAGS             - create an emacs TAGS file."
 	@echo "  tags             - create a vi TAGS file."
 	@echo "  thorninfo        - give information about all available thorns."
-	@echo "  UsersGuide       - create users manual doc/UsersGuide.ps."
-	@echo "  ReferenceManual  - create reference manual doc/ReferenceManual.ps."
-	@echo "  ThornGuide       - create the thorn manual doc/ThornGuide.ps."
+	@echo "  UsersGuide       - create users manual doc/UsersGuide.pdf."
+	@echo "  ReferenceManual  - create reference manual doc/ReferenceManual.pdf."
+	@echo "  ThornGuide       - create the thorn manual doc/ThornGuide.pdf."
 	@echo "  ThornDoc         - create documentation for all thorns in doc/ThornDoc."
 	@echo "  ArrangementDoc   - create documentation for all arrangements"
 	@echo "                     in doc/ArrangementDoc."
@@ -1001,79 +1001,76 @@ AllDoc: UsersGuide ReferenceManual MaintGuide ThornDoc ArrangementDoc
 
 # Make the Users Guide
 
-.PHONY: UsersGuide.ps
-UsersGuide.ps: UsersGuide
+.PHONY: UsersGuide.pdf
+UsersGuide.pdf: UsersGuide
 
 .PHONY: UsersGuide
 UsersGuide:
 	@echo $(DIVIDER)
-	@echo Creating user documentation UsersGuide.ps
+	@echo Creating user documentation UsersGuide.pdf
 	cd doc/UsersGuide;                          \
-	echo "  Running LaTeX....";                 \
-	latex  -interaction=nonstopmode UsersGuide.tex > LATEX_MESSAGES 2>&1; \
-	latex  -interaction=nonstopmode UsersGuide.tex > LATEX_MESSAGES 2>&1; \
-	latex  -interaction=nonstopmode UsersGuide.tex > LATEX_MESSAGES 2>&1; \
+	echo "  Running pdflates....";              \
+	pdflatex  -interaction=nonstopmode UsersGuide.tex > LATEX_MESSAGES 2>&1; \
+	pdflatex  -interaction=nonstopmode UsersGuide.tex > LATEX_MESSAGES 2>&1; \
+	pdflatex  -interaction=nonstopmode UsersGuide.tex > LATEX_MESSAGES 2>&1; \
 	if grep "^\! " "LATEX_MESSAGES"; then                            \
 	  echo "  Problem in $<.  See doc/UsersGuide/LATEX_MESSAGES.";      \
 	  exit 1;                                                           \
 	elif grep "^LaTeX Warning:" "LATEX_MESSAGES"; then                  \
 	  echo "  For more information see doc/UsersGuide/LATEX_MESSAGES."; \
 	fi;                                                                 \
-	echo "  Running dvips....";                                         \
-	dvips -f ./UsersGuide.dvi 2> DVIPS_MESSAGES | $(CCTK_HOME)/lib/sbin/FixPageNumbersInPostscript.pl > $(CCTK_HOME)/doc/UsersGuide.ps 
-	@echo "  UsersGuide.ps created in doc directory."
+	cp UsersGuide.pdf $(CCTK_HOME)/doc/UsersGuide.pdf 
+	@echo "  UsersGuide.pdf created in doc directory."
 	@echo "  Done."
 	@echo $(DIVIDER)
 
 # Make the Reference Manual
 
-.PHONY: ReferenceManual.ps
-ReferenceManual.ps: ReferenceManual
+.PHONY: ReferenceManual.pdf
+ReferenceManual.pdf: ReferenceManual
 
 .PHONY: ReferenceManual
 ReferenceManual:
 	@echo $(DIVIDER)
-	@echo Creating user reference manual ReferenceManual.ps
+	@echo Creating user reference manual ReferenceManual.pdf
 	cd doc/ReferenceManual;                     \
-	echo "  Running LaTeX....";                 \
-	latex  -interaction=nonstopmode ReferenceManual.tex > LATEX_MESSAGES 2>&1; \
-	latex  -interaction=nonstopmode ReferenceManual.tex > LATEX_MESSAGES 2>&1; \
-	latex  -interaction=nonstopmode ReferenceManual.tex > LATEX_MESSAGES 2>&1; \
+	echo "  Running pdflatex....";              \
+	pdflatex  -interaction=nonstopmode ReferenceManual.tex > LATEX_MESSAGES 2>&1; \
+	pdflatex  -interaction=nonstopmode ReferenceManual.tex > LATEX_MESSAGES 2>&1; \
+	pdflatex  -interaction=nonstopmode ReferenceManual.tex > LATEX_MESSAGES 2>&1; \
 	if grep "^\! " "LATEX_MESSAGES"; then                            \
 	  echo "  Problem in $<.  See doc/ReferenceManual/LATEX_MESSAGES."; \
 	  exit 1;                                                           \
 	elif grep "^LaTeX Warning:" "LATEX_MESSAGES"; then    \
 	  echo "  For more information see doc/ReferenceManual/LATEX_MESSAGES."; \
 	fi;                                         \
-	echo "  Running dvips....";                 \
-	dvips -f ./ReferenceManual.dvi 2> DVIPS_MESSAGES | $(CCTK_HOME)/lib/sbin/FixPageNumbersInPostscript.pl > $(CCTK_HOME)/doc/ReferenceManual.ps
-	@echo "  ReferenceManual.ps created in doc directory."
+	cp ReferenceManual.pdf $(CCTK_HOME)/doc/ReferenceManual.pdf
+	@echo "  ReferenceManual.pdf created in doc directory."
 	@echo "  Done."
 	@echo $(DIVIDER)
 
 # Make the Maintainers' Guide
 
-.PHONY: MaintGuide.ps
-MaintGuide.ps: MaintGuide
+.PHONY: MaintGuide.pdf
+MaintGuide.pdf: MaintGuide
 
 .PHONY: MaintGuide
 MaintGuide:
 	@echo $(DIVIDER)
-	@echo Creating maintainers documentation MaintGuide.ps
+	@echo Creating maintainers documentation MaintGuide.pdf
 	cd doc/MaintGuide;                          \
-	echo "  Running LaTeX....";                 \
-	latex  -interaction=nonstopmode MaintGuide.tex > LATEX_MESSAGES 2>&1; \
-	latex  -interaction=nonstopmode MaintGuide.tex > LATEX_MESSAGES 2>&1; \
-	latex  -interaction=nonstopmode MaintGuide.tex > LATEX_MESSAGES 2>&1; \
+	echo "  Running pdflatex....";              \
+	pdflatex  -interaction=nonstopmode MaintGuide.tex > LATEX_MESSAGES 2>&1; \
+	pdflatex  -interaction=nonstopmode MaintGuide.tex > LATEX_MESSAGES 2>&1; \
+	pdflatex  -interaction=nonstopmode MaintGuide.tex > LATEX_MESSAGES 2>&1; \
 	if grep "^\! " "LATEX_MESSAGES"; then                               \
 	  echo "  Problem in $<.  See doc/MaintGuide/LATEX_MESSAGES.";      \
 	  exit 1;                                                           \
 	elif grep "^LaTeX Warning:" "LATEX_MESSAGES"; then                  \
 	  echo "  For more information see doc/MaintGuide/LATEX_MESSAGES."; \
 	fi;                                                                 \
-	echo "  Running dvips....";                 \
-	dvips -f ./MaintGuide.dvi 2> DVIPS_MESSAGES | $(CCTK_HOME)/lib/sbin/FixPageNumbersInPostscript.pl > $(CCTK_HOME)/doc/MaintGuide.ps
-	@echo "  MaintGuide.ps created in doc directory."
+	cp MaintGuide.pdf $(CCTK_HOME)/doc/MaintGuide.pdf
+	@echo "  MaintGuide.pdf created in doc directory."
 	@echo "  Done."
 	@echo $(DIVIDER)
 
@@ -1081,20 +1078,20 @@ MaintGuide:
 DOCDIR		= $(CCTK_HOME)/doc
 THORNBUILD	= $(DOCDIR)/ThornGuide/build
 
-.PHONY: ThornGuide.ps
-ThornGuide.ps: ThornGuide
+.PHONY: ThornGuide.pdf
+ThornGuide.pdf: ThornGuide
 
 .PHONY: ThornGuide
 ThornGuide:
 	@echo $(DIVIDER)
-	@echo Creating thorn documentation ThornGuide.ps
+	@echo Creating thorn documentation ThornGuide.pdf
 	rm -rf $(THORNBUILD);
 	mkdir $(THORNBUILD);
 	cd $(THORNBUILD); \
 	$(MAKE) -f $(DOCDIR)/ThornGuide/Makefile DOCBUILDDIR=doc/ThornGuide/build
-	if test -e "$(THORNBUILD)/ThornGuide.ps"; then \
-	  mv "$(THORNBUILD)/ThornGuide.ps" $(DOCDIR)/ThornGuide.ps; \
-	  echo "  ThornGuide.ps created in doc directory."; \
+	if test -e "$(THORNBUILD)/ThornGuide.pdf"; then \
+	  mv "$(THORNBUILD)/ThornGuide.pdf" $(DOCDIR)/ThornGuide.pdf; \
+	  echo "  ThornGuide.pdf created in doc directory."; \
 	  echo "  Done."; \
 	fi
 	@echo $(DIVIDER)
@@ -1135,9 +1132,9 @@ $(addsuffix -ThornGuide,$(CONFIGURATIONS)):
 	if test -r $(CONFIGDIR)/ThornList ; then \
 	  cd $(CONFIGBUILDDIR); \
 	  $(MAKE) -f $(DOCDIR)/ThornGuide/Makefile THORNLIST=$(CONFIGDIR)/ThornList MASTER_FILE=$(GUIDENAME) DOCBUILDDIR=$(CONFIGBUILDDIR); \
-	  if test -e "$(CONFIGBUILDDIR)/$(GUIDENAME).ps"; then \
-	    mv "$(CONFIGBUILDDIR)/$(GUIDENAME).ps" $(DOCDIR)/$(GUIDENAME).ps; \
-	    echo "  $(GUIDENAME).ps created in doc directory."; \
+	  if test -e "$(CONFIGBUILDDIR)/$(GUIDENAME).pdf"; then \
+	    mv "$(CONFIGBUILDDIR)/$(GUIDENAME).pdf" $(DOCDIR)/$(GUIDENAME).pdf; \
+	    echo "  $(GUIDENAME).pdf created in doc directory."; \
 	    echo "  Done."; \
 	  fi \
         else \
