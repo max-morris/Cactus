@@ -609,7 +609,7 @@ sub FindFiles
     $f =~ m:.*\.([^\s\.]+)\s*$:;
     $extension = $1;
 
-    if ($f !~ /^(\.\#.*|\.|\.\.|.*\.par|CVS|.*~)$/)
+    if ($f !~ /^(\.\#.*|\.|\.\.|.*\.par|CVS|.svn|.*~)$/)
     {
       if ($extension =~ /.+/ && $testdata->{"EXTENSIONS"} =~ /\b$extension\b/)
       {
