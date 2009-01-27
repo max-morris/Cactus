@@ -41,10 +41,11 @@ if(!$package)
 
 do {
    push @author_names,  &prompt("Thorn Author Name");
-   push @author_emails, &prompt("Email Address");
+   push @author_emails, &prompt("Email Address ('none' for none)");
    $another_author = &prompt("Add another author? Y/N");
 } while ($another_author =~ /^y/i);
 
+$licence = &prompt("Licence");
 
 chdir $package_dir;
 
@@ -98,27 +99,33 @@ close OUT;
 
 open(OUT, ">README") || die "Cannot create README";
 
-print OUT "CVS info   : \$" . "Header:\$\n\n";
 print OUT "Cactus Code Thorn $thorn_name\n";
-print OUT "Thorn Author(s)     : ";
+print OUT "Author(s)    : ";
 for ($i = 0; $i < (@author_names); $i++) {
    if ($i ne 0) { 
       print OUT "\n                    : ";
    }
-   print OUT "$author_names[$i] <$author_emails[$i]>";
+   if ($author_emails[$i] ne "none") {
+     print OUT "$author_names[$i] <$author_emails[$i]>";
+   } else {
+     print OUT "$author_names[$i]";
+   }
 }
-print OUT "\nThorn Maintainer(s) : ";
+print OUT "\nMaintainer(s): ";
 for ($i = 0; $i < (@author_names); $i++) {
    if ($i ne 0) {
       print OUT "\n                    : ";
    }
-   print OUT "$author_names[$i] <$author_emails[$i]>";
+   if ($author_emails[$i] ne "none") {
+     print OUT "$author_names[$i] <$author_emails[$i]>";
+   } else {
+     print OUT "$author_names[$i]";
+   }
 }
-print OUT "\n";
+print OUT "\nLicence      : $licence\n";
 print OUT "--------------------------------------------------------------------------\n";
 print OUT "\n";
-print OUT "Purpose of the thorn:\n";
-print OUT "\n";
+print OUT "1. Purpose\n\nnot documented\n";
 
 close OUT;
 
