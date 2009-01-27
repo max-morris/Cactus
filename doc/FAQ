@@ -1,7 +1,7 @@
 
 Cactus Code Frequently Asked Questions
 
-$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.81 2008-03-20 14:12:47 schnetter Exp $
+$Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/FAQ,v 1.82 2009-01-27 17:22:19 gallen Exp $
 
 Also available at http://www.cactuscode.org/Documentation/faq
 
@@ -162,6 +162,7 @@ C36 (Linux) Compiling Cactus with Redhat 8 or 9 it fails in CactusBase/IOUtil
 
 C37 Why can't I use different F90 and F77 compilers with Cactus?
 
+C38 What can I do about __builtin errors reported by Intel 9.0?
 
 ------------------------------------------------------------------------------
 Running:
@@ -441,6 +442,7 @@ B4  When running GetCactus it tells me it is refusing to update my thorn
     for the initial checkout, and then using cvs.cactuscode.org for an update.
 
     To fix this problem, simply be consistent with repository locations.
+
 
 B5  Tell me how I can get thorns?
 
@@ -1099,6 +1101,24 @@ C37 Why can't I use different F90 and F77 compilers with Cactus?
     compilers for F90 and F77 if they used the same conventions. In 
     principle we could check to make sure that they are compatible, but for 
     now we require you to use the same compiler for both F77 and F90 code.
+
+C38 What can I do about __builtin errors reported by Intel 9.0?
+
+    This problem is solved with the Intel 9.1 compilers. The rest of this is for those 
+    who are still using Intel 9.0.
+
+    The documentation for Intel 9.0 C/C++ claims only that it is compatible with Gcc 3.x; 
+    in fact Intel 9.0 is not compatible with Gcc 4.x. It tries to read the Gcc C++ header 
+    files, but fails in the case of Gcc 4.x
+
+    We have submitted a feature request to Intel, and we hear that they intend to fix the 
+    problem in the 9.1 release. Until then, configure with
+
+    SYS_INC_DIRS = /opt/intel/compiler90/include/c++
+    LD = icpc -L/opt/intel/compiler90/lib/ -lcprts -lunwind -lcxa
+
+    (where the paths point to your Intel compiler installation, of course). This will cause
+    the compiler to use its own C++ header files, and associated libraries.
 
 
 ------------------------------------------------------------------------------
