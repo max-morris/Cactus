@@ -3820,7 +3820,7 @@ Cactus provides a mechanism for thorns to add code to
 include files which can be used by any other thorn.
 Such include files can contain executable source code, or header/declaration
 information. A distinction is made between these two cases, since included
-executable code is protected from being run if a thorn is compiled but
+executable code is protected from being run if a thorn is compiled, but
 not active by being wrapped by a call to \texttt{CCTK\_IsThornActive}.
 
 Any thorn
@@ -3833,10 +3833,10 @@ USES INCLUDE [SOURCE|HEADER]: <\var{file_name}>
 
 (If the optional \verb![SOURCE|HEADER]! is omitted, \verb|HEADER| is
 assumed.  Note that this can be dangerous, as included \emph{source}
-code which is incorrectly assumed to be \emph{header} code will be
+code, which is incorrectly assumed to be \emph{header} code, will be
 executed in another thorn \emph{even if the providing thorn is
-inactive}.  Thus it is recommended to always include the optional
-\verb![SOURCE|HEADER]! specification.)  Any thorn which wishes to add
+inactive}.  Thus, it is recommended to always include the optional
+\verb![SOURCE|HEADER]! specification.)  Any thorn that wishes to add
 to this include file, declares in its own \texttt{interface.ccl}
 
 \begin{alltt}
@@ -3845,10 +3845,10 @@ INCLUDE [SOURCE|HEADER]: <\var{file_to_include}> in <\var{file_name}>
 
 \subsubsection{Example}
 
-For an example of this in practice, for the case of Fortran code,
-consider thorn A which
+As an example of this in practice, for the case of Fortran code,
+consider a thorn A, which
 wants to gather terms for a calculation from any thorn
-which wishes to provide them. Thorn A could have
+that wishes to provide them. Thorn A could have
 the lines in its source code
 
 \begin{verbatim}
@@ -3873,7 +3873,7 @@ and would add to its own \texttt{interface.ccl}
 INCLUDE SOURCE: Bterms.inc in AllSources.inc
 \end{verbatim}
 
-The final file for thorn A  which is compiled will contain the code
+The final file for thorn A which is compiled, will contain the code
 \begin{verbatim}
 c Get source code from other thorns
       allterms = 0d0
@@ -3893,10 +3893,10 @@ the declaration \texttt{DECLARE\_CCTK\_FUNCTIONS}.
 
 Cactus provides a mechanism for overriding the standard C memory
 allocation routines (\texttt{malloc, free,} \ldots) with Cactus specific
-routines, that track the amount of memory allocated and from where the
+routines that track the amount of memory allocated, and from where, the
 allocation call was made. This information can be accessed by the user
 to provide an understanding of the memory consumption between two
-instances and to track down possible memory leaks. This feature is
+instances, and to track down possible memory leaks. This feature is
 available in C only.
 
 \subsection{Activating Memory Tracing}
@@ -3915,7 +3915,7 @@ flags, redefines \texttt{malloc})
 The \texttt{CCTK\_MALLOC} statements can also be used directly in the C
 code. But by employing them this way, only a fraction of the total
 memory consumption is traced. Also, they cannot be turned off at
-configure time. (this behavior might change). For example:
+configure time. For example:
 \begin{verbatim}
 machine> gmake bigbuild DEBUG=yes
 
@@ -3929,7 +3929,7 @@ is reconfigured with memory tracing only.
 \label{sec:usmetr}
 
 You can  request Cactus to store the memory consumption at a certain
-instance in the program flow and return the difference in memory
+instance in the program flow, and return the difference in memory
 allocation some time later.
 
 \begin{Lentry}
@@ -3942,10 +3942,10 @@ allocation some time later.
 \item[\texttt{long int CCTK\_MemTicketCash(int your\_ticket)}]
         Cash in your ticket: return the memory difference between now and the
         time the ticket was requested. Tickets can be cashed in
-        several times. See Example below.
+        several times. See example below.
         This only tracks the real data memory, which is the same as in
         undebug mode. It does not keep track of the internal allocations
-        done to provide the database, motivation is that this is not
+        done to provide the database, the motivation is that this is not
         allocated either if you compile undebugged.
 
 \item[\texttt{int CCTK\_MemTicketDelete(int your\_ticket)}]
@@ -3958,13 +3958,13 @@ allocation some time later.
         data structures).
 
 \item[\texttt{void CCTK\_MemStat}] Prints an info string, stating the current,
-        past and total memory (in bytes) allocation between two
+        past, and total memory (in bytes) allocation between two
         successive calls to this routine, as well as the difference.
 \end{Lentry}
 
 Sample C code demonstrating the ticket handling. Two tickets are
 requested during \texttt{malloc} operations. The \texttt{CCTK\_MALLOC} statement is
-used directly. They are cashed in and the memory
+used directly. They are cashed in, and the memory
 difference is printed. Ticket 1 is cashed twice. The tickets are
 deleted at the end.
 \begin{verbatim}
@@ -3999,10 +3999,10 @@ CCTK_MemTicketDelete(t2);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section[Calls to different language]{Calls between different programming languages}
+\section[Calls to different language]{Calls between Different Programming Languages}
 %\pagestyle{empty}
 
-\subsection{Calling C routines from Fortran}
+\subsection{Calling C Routines from Fortran}
 \label{sec:cacrofr}
 
 To make the following C routine,
@@ -4014,7 +4014,7 @@ int <routine name>(<argument list>)\\
 }
 }
 
-also callable from Fortran, a new routine must added, which is
+also callable from Fortran, a new routine must be added, which is
 declared using the \texttt{CCTK\_FCALL} and \texttt{CCTK\_FNAME} macros:
 
 {\tt
@@ -4022,7 +4022,7 @@ void CCTK\_FCALL CCTK\_FNAME(<routine name>)(int *ierr, <argument list>)\\
 <rewrite routine code, or call C routine itself>
 }
 
-The convention used in Cactus is that \texttt{<routine name>} be the same as any
+The convention used in Cactus, is that \texttt{<routine name>} be the same as any
 C routine name, and that this is mixed-case.  The macros change
 the case and number of underscores of the routine name to match that expected
 by Fortran.
@@ -4056,20 +4056,20 @@ void CCTK_FCALL CCTK_FNAME(MyCRoutine)(CCTK_INT *arg1,
 Fortran passes string arguments in a special, compiler-dependent, way.
 To facilitate this, the CCTK provides a set of macros to enable the
 translation to C strings.
-The macros are defined in \texttt{cctk\_FortranString.h} which
+The macros are defined in \texttt{cctk\_FortranString.h}, which
 should be included in your C file.
 
 String arguments \emph{must always come last} in the argument list for
 these macros to be effective (some Fortran compilers automatically
-migrate the strings to the end so there is no portable workaround).
+migrate the strings to the end, so there is no portable workaround).
 
-The macros to use depends upon the number of string arguments -- we
+The macros to use depend upon the number of string arguments--we
 currently support up to three.  The macros are
 \texttt{<ONE|TWO|THREE>\_FORTSTRING\_ARG}.
 Corresponding to each of these are two macros
 \texttt{<ONE|TWO|THREE>\_FORTSTRING\_CREATE} and
-\texttt{<ONE|TWO|THREE>\_FORTSTRING\_PTR}
-which take one,two,or three arguments depending on the number of strings.
+\texttt{<ONE|TWO|THREE>\_FORTSTRING\_PTR},
+which take one, two, or three arguments depending on the number of strings.
 The latter set is only necessary if a string is to be modified.
 In more detail:
 
@@ -4094,7 +4094,7 @@ In more detail:
         should be used if you need to modify one of the passed-in strings.
         They declare and define pointers to the passed-in strings.
 
-\item[\texttt{cctk\_strlen<1|2|3>}] these integer variables,
+\item[\texttt{cctk\_strlen<1|2|3>}] These integer variables,
         automatically defined by
         the \texttt{CREATE} macro, hold the lengths of the passed in
         Fortran strings.
@@ -4114,7 +4114,7 @@ int CCTK_FCALL CCTK_FNAME(CompareStrings)(TWO_FORTSTRING_ARG)
   int retval;
 
   /* Allocate and create C strings with \0 at end. */
-  /* This makes variable declarations so must be before
+  /* This makes variable declarations, so it must be before
      any executable statements.*/
 
   TWO_FORTSTRING_CREATE(arg1,arg2)
@@ -4139,7 +4139,7 @@ the \texttt{FORTSTRING\_PTR} macros, which declare and set up pointers
 to the strings passed from C. Note that this macro must be used
 \emph{after} the \texttt{FORTSTRING\_CREATE} macro. For example, the
 following routine copies the contents of the second string to the
-first string.
+first string
 
 \begin{verbatim}
 #include <stdlib.h>
@@ -4151,7 +4151,7 @@ int CCTK_FCALL CCTK_FNAME(CopyStrings)(TWO_FORTSTRING_ARG)
   int retval;
 
   /* Allocate and create C strings with \0 at end. */
-  /* This makes variable declarations so must be before
+  /* This makes variable declarations, so it must be before
      any executable statements. */
 
   TWO_FORTSTRING_CREATE(arg1,arg2)
@@ -4170,17 +4170,17 @@ int CCTK_FCALL CCTK_FNAME(CopyStrings)(TWO_FORTSTRING_ARG)
 
 \end{verbatim}
 
-Note that in the example above two new variables, pointers to the
+Note that in the example above, two new variables, pointers to the
 Fortran strings, were created.  These are just pointers and
 \emph{should not be freed}.  The example also illustrates the
-automatically-created variables (e.g.\ \texttt{cctk\_strlen1}
+automatically-created variables, e.g.\ \texttt{cctk\_strlen1},
 which hold the sizes of original Fortran strings.
 When writing to a string its length should never be exceeded.
 
-\subsection{Calling Fortran routines from C}
+\subsection{Calling Fortran Routines from C}
 \label{sec:caforofr}
 
-To call a utility Fortran routine from C use
+To call a utility Fortran routine from C, use
 \begin{alltt}
 void CCTK_FCALL CCTK_FNAME(<\var{Fortran routine name}>)(<\var{argument list}>)
 \end{alltt}
@@ -4188,36 +4188,35 @@ void CCTK_FCALL CCTK_FNAME(<\var{Fortran routine name}>)(<\var{argument list}>)
 Note that Fortran expects all arguments (apart from strings) to be
 pointers, so any non-array data should be passed by address.
 
-Currently we have no support for calling Fortran routines which expect
-strings from C.
+Currently, we have no support for calling Fortran routines which expect
+strings from C. However, passing routines is supported when you use function aliasing, see Section \ref{sec:function_aliasing}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Function aliasing}
 \label{sec:function_aliasing}
 
-As well as calling functions in a different language, Cactus offers a
-mechanism for calling a function in a different thorn where you need
-not know which thorn is actually providing the function, nor what
+Like calling functions in a different language, Cactus offers a
+mechanism for calling a function in a different thorn where you don 't need
+to know which thorn is actually providing the function, nor what
 language the function is provided in. The idea of \textit{function
 aliasing} is similar to that of thorns; the routine that calls a
-function should not need to know anything about it except that the
+function should not need to know anything about it, except that the
 function exists.
 
-Function aliasing is quite restrictive because of the problems
+Function aliasing is quite restrictive, because of the problems
 involved in inter-language calling, as seen in the previous
-section. Function aliasing is also comparatively inefficient and
+section. Function aliasing is also comparatively inefficient, and
 should not be used in a part of your code where efficiency is
 important.
 
-Function aliasing is language neutral, however the syntax is strongly
-based on C.  The API documented here describes the current code,
-however it is temporary.  In the future the function aliasing
-declarations will go into a new \texttt{functions.ccl} file, and will
+Function aliasing is language-neutral, however, the syntax is strongly
+based on C. In the future, the function aliasing
+declarations may go into a new \texttt{functions.ccl} file, and will
 have a format more similar to that of variable group and parameter
 declarations.
 
-\subsection{Using an aliased function}
+\subsection{Using an Aliased Function}
 
 To use an aliased function you must first declare it in your 
 \texttt{interface.ccl} file. Declare the prototype as, for example,
@@ -4247,11 +4246,11 @@ Functions which are required by some thorn (which doesn't provide it itself)
 are checked at startup to be provided by some other thorn.
 
 
-\subsection{Providing a function}
+\subsection{Providing a Function}
 
 To provide an aliased function you must again add the prototype to
 your \texttt{interface.ccl} file. A statement containing the name of the
-providing function and the language it is provided in must also be
+providing function and the language it is provided in, must also be
 given. For example,
 \begin{verbatim}
 CCTK_REAL FUNCTION SumStuff(CCTK_REAL IN x, CCTK_REAL IN y)
@@ -4259,14 +4258,14 @@ PROVIDES FUNCTION SumStuff WITH AddItUp LANGUAGE C
 \end{verbatim}
 The appropriate function must then be provided somewhere in this
 thorn. Multiple thorns providing the same function can be compiled into the
-same configuration; however only one providing thorn may be activated at
-runtime otherwise an error message is printed and the run is aborted.
+same configuration; however, only one providing thorn may be activated at
+runtime, otherwise, an error message is printed and the run is aborted.
 
 It is necessary to specify the language of the providing function; no
 default will be assumed.
 
 
-\subsection{Conventions and restrictions}
+\subsection{Conventions and Restrictions}
 
 Various restrictions are necessary to make function aliasing
 work. These are
@@ -4279,24 +4278,24 @@ work. These are
     CCTK\_FPOINTER}, or an array or pointer type \texttt{CCTK\_INT ARRAY,
     CCTK\_REAL ARRAY, CCTK\_COMPLEX ARRAY, \texttt{CCTK\_POINTER ARRAY}}.%%%
 \footnote{%%%
-         Unfortunately, neither \texttt{CCTK\_FPOINTER ARRAY}
+         Unfortunately, neither \texttt{CCTK\_FPOINTER ARRAY},
          nor \texttt{CCTK\_STRING ARRAY} will work.
          }%%%
   {}  The scalar types are assumed to be not
   modifiable. Any changes made to a scalar argument by a providing
   function may be silently lost, or may not; it is dependent on the
   language of the providing and calling function. If you wish to
-  modify an argument then it must have intent \texttt{OUT} or \texttt{INOUT}
+  modify an argument, then it must have intent \texttt{OUT} or \texttt{INOUT}
   (and hence must be either a \texttt{CCTK\_INT}, a
   \texttt{CCTK\_REAL}, or a \texttt{CCTK\_COMPLEX},
   or an array of one of these types).
-\item The name of both the aliased and providing function are
+\item The name of both, the aliased and providing function, are
   restricted. They must follow the standard C semantics (start with a
   letter, contain only letters, numbers or underscores). Additionally,
   they must be mixed case (that is, contain at least one uppercase and
   one lowercase letter). The names of the aliased and providing
   functions must be distinct.
-\item If an argument is a function pointer then the syntax looks like
+\item If an argument is a function pointer, then the syntax looks like
 \begin{verbatim}
 CCTK_REAL Integrate(CCTK_REAL CCTK_FPOINTER  func(CCTK_REAL IN x), \
                     CCTK_REAL IN xmin, CCTK_REAL IN xmax)
@@ -4315,7 +4314,7 @@ CCTK_REAL Integrate(CCTK_REAL CCTK_FPOINTER  func(CCTK_REAL IN x), \
 \subsection{Examples}
 
 \begin{itemize}
-\item A C function is provided that adds together two real numbers. The {\tt
+\item A C function is provided to add together two real numbers. The {\tt
     interface.ccl} should read
 \begin{verbatim}
     CCTK_REAL FUNCTION SumStuff(CCTK_REAL IN x, CCTK_REAL IN y)
@@ -4323,7 +4322,7 @@ CCTK_REAL Integrate(CCTK_REAL CCTK_FPOINTER  func(CCTK_REAL IN x), \
     USES FUNCTION SumStuff
 \end{verbatim}
 
-\item A Fortran function is provided that inverts a real number. The {\tt
+\item A Fortran function is provided to invert a real number. The {\tt
     interface.ccl} should read
 \begin{verbatim}
     SUBROUTINE Invert(CCTK_REAL INOUT x)
@@ -4333,7 +4332,7 @@ CCTK_REAL Integrate(CCTK_REAL CCTK_FPOINTER  func(CCTK_REAL IN x), \
 \noindent Note that \texttt{SUBROUTINE} has the same meaning as \texttt{void
   FUNCTION}.
 
-\item A Fortran function is provided that integrates any function over
+\item A Fortran function is provided to integrate any function over
   an interval. The \texttt{interface.ccl} should read
 \begin{verbatim}
     CCTK_REAL Integrate(CCTK_REAL CCTK_FPOINTER  func(CCTK_REAL IN x), \
@@ -4344,29 +4343,29 @@ CCTK_REAL Integrate(CCTK_REAL CCTK_FPOINTER  func(CCTK_REAL IN x), \
 
 \end{itemize}
 
-\subsection{Testing aliased functions}
+\subsection{Testing Aliased Functions}
 
 The calling thorn does not know if an aliased function is even
 provided by another thorn. Calling an aliased function that has not
-been provided will lead to a level 0 warning message, stopping the
+been provided, will lead to a level 0 warning message, stopping the
 code. In order to check if a function has been provided by some thorn,
 use the \texttt{CCTK\_IsFunctionAliased} function described in the
 function reference section.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Naming conventions}
+\section{Naming Conventions}
 
 \begin{itemize}
 
 \item{} Thorn names must not start with the word ``Cactus'' (in
         any case).
 \item{} Arrangements will be ignored if their names start with a
-        hash mark `\texttt{\#}' or dot `\texttt{.}'
-        or end in a tilde `\texttt{\~{}}', \texttt{.bak} or \texttt{.BAK}.
+        hash mark `\texttt{\#}' or dot `\texttt{.}',
+        or end with a tilde `\texttt{\~{}}', \texttt{.bak} or \texttt{.BAK}.
 \item{} Thorns will be ignored if they are called doc or start with a
-        hash mark `\texttt{\#}' or dot `\texttt{.}'
-        or end in a tilde `\texttt{\~{}}', \texttt{.bak} or \texttt{.BAK}.
+        hash mark `\texttt{\#}' or dot `\texttt{.}',
+        or end with a tilde `\texttt{\~{}}', \texttt{.bak} or \texttt{.BAK}.
 \item{} Routine names have to be unique among all thorns.
 
 \end{itemize}
@@ -4376,7 +4375,7 @@ function reference section.
 \section{General Naming Conventions}
 
 The following naming conventions are followed by the flesh and the
-supported Cactus arrangements. They are not compulsory, but if followed
+supported Cactus arrangements. They are not compulsory, but if followed, will
 allow for a homogeneous code.
 
 \begin{itemize}
@@ -4419,13 +4418,13 @@ Data Type & Size (bytes) & Variable Type & Fortran Equivalent\\
 \end{center}
 
 The availability of these types, and the corresponding
-C data types are platform-dependent. For each fixed-size data type there exists
-a corresponding preprocessor macro {\t HAVE\_<data type>} which should be used
+C data types, are platform-dependent. For each fixed-size data type, there exists
+a corresponding preprocessor macro {\t HAVE\_<data type>}, which should be used
 to check whether the given CCTK data type is supported, e.g.\
 
 \begin{verbatim}
-  /* declare variable with extended-precision complex data type if available
-     otherwise with default CCTK precision */
+  /* declare variable with extended-precision complex data type if available,
+     otherwise, with default CCTK precision */
   #ifdef HAVE_CCTK_COMPLEX32
   CCTK_COMPLEX32 var;
   #else
@@ -4433,12 +4432,12 @@ to check whether the given CCTK data type is supported, e.g.\
   #endif
 \end{verbatim}
 
-In addition Cactus provides three generic numeric data types which map onto
+In addition, Cactus provides three generic numeric data types which map onto
 the compilers' native data types used to represent integer, real, and complex
 values. The size for these generic types can be chosen at configuration time
-(see \ref{subsec:Compilation-Available_Options}). This is to allow the code to
+(see Section \ref{subsec:Compilation-Available_Options}). This is to allow the code to
 be run easily at different precisions. Note that the effectiveness of running
-the code at a lower or higher precision depends crucially on all thorns being
+the code, at a lower or higher precision, depends crucially on all thorns being
 used making consistent use of the these generic data types:
 
 \begin{center}
@@ -4457,12 +4456,12 @@ Data Type          & Variable Type & Configuration Option\\
 These variable types must be used by thorn writers to declare variables
  in the thorn interface files, and may be used to declare
 variables in the thorn routines. Note that variable declarations in
-thorns should obviously match with definitions in the interface files
+thorns should obviously match the definitions in the interface files
 where appropriate.
 
-Also provided, are a set of macros which
-are interpreted by the preprocessor at compile time to signify which
-data size is being used:
+A set of macros, which
+are interpreted by the preprocessor at compile time, to signify which
+data size is being used, are also provided:
 
 \begin{center}
 \begin{tabular}{|l|l|}
@@ -4484,8 +4483,7 @@ Data Type & {\t \#define}\\
 \end{center}
 
 Cactus also provides generic data and function pointers, which can
-be used from either C or Fortran (these may not work yet for thorn interface
-files):
+be used from either C or Fortran:
 
 \begin{center}
 \begin{tabular}{|l|l|l|}
@@ -4516,21 +4514,20 @@ Cactus provides the data types \texttt{CCTK\_POINTER} and
 \texttt{CCTK\_POINTER\_TO\_CONST} for use in Fortran code to declare a
 pointer passed from C.  For example, the variable \texttt{cctkGH} is
 of the type \texttt{CCTK\_POINTER}.  The data type
-\texttt{CCTK\_STRING} is in Fortran also an opaque type, corresponding
+\texttt{CCTK\_STRING} is, in Fortran, also an opaque type; it corresponds
 to a C pointer, and one has to use the function
 \texttt{CCTK\_FortranString} to convert it to a Fortran string, or the
 \texttt{CCTK\_Equals} to compare it to a Fortran String.
 
-Since the data types \texttt{integer} in Fortran and \texttt{int} in C
-may be different,%
-\footnote{This is only a theoretical possibility, in practice they
-  have to be the same type for Cactus to work at all.}%
-many routines that can be called from both C and Fortran take
+Since the data types, \texttt{integer} in Fortran and \texttt{int} in C,
+may be different\footnote{This is only a theoretical possibility, in practice, they
+  have to be the same type for Cactus to work at all.}, 
+many routines that can be called from both, C and Fortran, take
 arguments of the type \texttt{CCTK\_INT}.  This type can be different
 from the type \texttt{integer}.  Fortran does not convert routine
-arguments automatically, and it is therefore necessary to pay
+arguments automatically, and it is, therefore, necessary to pay
 attention to the exact argument types that a routine expects, and to
-convert between \texttt{integer} and \texttt{CCTK\_INT} accordingly.
+convert between \texttt{integer} and \texttt{CCTK\_INT}, accordingly.
 Currently, most flesh functions take \texttt{integer} arguments, while
 all aliased functions take \texttt{CCTK\_INT} arguments.
 
@@ -4538,16 +4535,16 @@ all aliased functions take \texttt{CCTK\_INT} arguments.
   NOTE: If you make errors in passing Fortran arguments, and if there
   are no interfaces (``prototypes'') available for the routines that
   are called, then the compiler cannot detect these errors.  Be
-  careful.  When you write Fortran code yourself, consider placing
+  careful, when you write Fortran code yourself, consider placing
   routines in modules, which implicitly define interfaces for all
   contained routines.
 \end{quote}
 
 There are two convenient ways to convert between these types.  An easy
-way is to define parameters or to declare variables of the desired
+way, is to define parameters or to declare variables of the desired
 type, assign a value to these parameters or variables, and then pass
 the parameter or value.  This makes for very readable code, since the
-name of the paramter or variable serves as additional documentation:
+name of the parameter or variable serves as additional documentation:
 
 \begin{verbatim}
 CCTK_INT, parameter : jtwo = 2
@@ -4562,9 +4559,8 @@ syncvars(2) = vindex_kxx
 call CCTK_SyncGroupsI (cctkGH, jtwo, syncvars)
 \end{verbatim}
 
-(You have probably seen the strange Fortran convention where people
-introduce constants named \texttt{zero} or \texttt{two}.  This is the
-reason for this --- it is a convenient way to make sure that the
+(You have probably seen the strange Fortran convention, where people
+introduce constants named \texttt{zero} or \texttt{two}---it is a convenient way to make sure that the
 constant has the correct type.)
 
 Another possibility are explicit type conversions.  They can rather
@@ -4585,7 +4581,7 @@ call CCTK_VarIndex (syncvars(2), "ADMBase::kxx")
 call CCTK_SyncGroupsI (cctkGH, int(2,jk), int(syncvars,jk))
 \end{verbatim}
 
-Fortran distinguishen between different integer \emph{kinds}.  These
+Fortran distinguishes between different integer \emph{kinds}.  These
 kinds are what is different between \texttt{integer} and
 \texttt{CCTK\_INT}.  The expression \texttt{int(EXPR,KIND)} converts
 \texttt{EXPR} to an integer of kind \texttt{KIND}.  Above, we use the
@@ -4601,7 +4597,7 @@ variables are read, not when they are written to.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Telling the make system what to do}
+\chapter{Telling the Make system What to Do}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
