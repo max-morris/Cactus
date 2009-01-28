@@ -2884,7 +2884,7 @@ int CCTK_FortranString (char const * c_string,
 \begin{verbatim}
 #include "cctk.h"
 subroutine CCTK_FortranString (string_length, c_string, fortran_string)
-   integer               string_length
+   CCTK_INT              string_length
    CCTK_POINTER_TO_CONST c_string
    character*(*)         fortran_string
 end subroutine
@@ -2954,9 +2954,9 @@ c *** this is sample Fortran code in this same thorn ***
         DECLARE_CCTK_ARGUMENTS
         DECLARE_CCTK_PARAMETERS
 
-        integer :: string_length
-        integer :: status
-        integer :: table_handle
+        CCTK_INT :: string_length
+        integer  :: status
+        integer  :: table_handle
 
         integer, parameter:: max_string_length = 500
         character*max_string_length :: our_parameters_fstring
