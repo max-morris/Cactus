@@ -23,7 +23,7 @@
  \item{} The cGH structure --- what it is and how to use it
  \item{} Extending the cGH structure
  \item{} Querying group and variable information
- \item{} Providing an IO layer
+ \item{} Providing an I/O layer
  \item{} Providing a communication layer
  \item{} Providing a reduction operator
  \item{} Providing an interpolation operator
@@ -35,24 +35,24 @@
 
 \section{Overloading and Registration}
 
-The Flesh defines a core API which guarantees the presence of a set of
-functions.  Although the Flesh guarantees the presence of these functions,
-they can be provided by thorns.  Thorns do this either by the \textit{overloading}
+The flesh defines a core API which guarantees the presence of a set of
+functions.  Although the flesh guarantees the presence of these functions,
+they can be provided by thorns.  Thorns do this by either the \textit{overloading}
 or the \textit{registration} of functions.
 
 \subsection{Overloading}
 
 Some functions can only be provided by one thorn.  The first thorn to
 \textit{overload} this function succeeds, and any later attempt to overload
-the function fails.  For each overloadable function there is a function
+the function fails.  For each overloadable function, there is a function
 with a name something like {\tt CCTK\_Overload...} which is passed the
 function pointer.
 
 \subsection{Registration}
 
 Some functions may be provided by several thorns.  The thorns \textit{register}
-their function with the Flesh, and when the Flesh-provided function is called,
-the Flesh calls all the registered functions.
+their function with the flesh, and when the flesh-provided function is called,
+the flesh calls all the registered functions.
 
 \section{GH Extensions}
 
@@ -61,10 +61,10 @@ that is required to be associated with a particular GH by a thorn.
 
 Each GH extension is given a unique handle.
 
-\section{IO Methods}
+\section{I/O Methods}
 
-An IO method is a distinct way to output data.  Each IO method has a unique name,
-and the Flesh-provided IO functions operate on all registered IO methods.
+An I/O method is a distinct way to output data.  Each I/O method has a unique name,
+and the flesh-provided I/O functions operate on all registered I/O methods.
 
 \chapter{GH Extensions}
 
@@ -114,7 +114,7 @@ the schedule tree.
    \hline
   \end{tabular}
 
-\chapter{Overloadable and Registerable Functions in IO}
+\chapter{Overloadable and Registerable Functions in I/O}
 
  \begin{tabular}{|l|l|}
    \hline {\bf Function} & {\bf Default}   \\
@@ -125,20 +125,20 @@ the schedule tree.
 
 \chapter{Drivers}
 
-The Flesh knows nothing about memory allocation for grid variables, or about how
-to communicate data when synchronisation is called for.  It knows nothing about
+The flesh does not know about memory allocation for grid variables, about how
+to communicate data when synchronisation is called for, or about
 multiple patches or adaptive mesh refinement.  All this is the job of a driver.
 
 This chapter describes how to add a driver to your code.
 
 \section{Anatomy}
 
-A driver consists of a Startup routine which creates a GH extension and
+A driver consists of a Startup routine which creates a GH extension, 
 registers its associated functions, and overloads the communication functions.
-It may optionally register interpolation, reduction, and IO methods.
+It may optionally register interpolation, reduction, and I/O methods.
 
 A driver may also overload the default Initialisation and Evolution routines,
-although a simple unigrid evolver is supplied in the Flesh.
+although a simple unigrid evolver is supplied in the flesh.
 
 \section{Startup}
 
@@ -177,14 +177,14 @@ describe in general, but one simple example might be
 
 struct SimpleExtension
 {
-  /* The data assocatiated with each variable */
+  /* The data associated with each variable */
   /* data[var][timelevel][ijk]                */
   void ***data
 } ;
 
 \end{verbatim}
 
-with a {\tt SetupGH} routine like.
+with a {\tt SetupGH} routine like
 
 \begin{verbatim}
 
@@ -220,16 +220,16 @@ struct SimpleExtension *SimpleSetupGH(tFleshConfig *config, int conv_level, cGH 
 
 \end{verbatim}
 
-Basically all this example is doing is preparing a data array for use.  The
-function can query the Flesh for information on every variable.  Note that
+Basically, what this example is doing is preparing a data array for use.  The
+function can query the flesh for information on every variable.  Note that
 scalars should always have memory actually assigned to them.
 
-An {\tt InitGH} function isn't strictly necessary, and in this case it could
+An {\tt InitGH} function isn't strictly necessary, and in this case, it could
 just be a dummy function.
 
-The {\tt ScheduleTraverseGH} function needs to fill out the cGH data and
+The {\tt ScheduleTraverseGH} function needs to fill out the cGH data, and
 then call {\tt CCTK\_ScheduleTraverse} to have the functions scheduled at
-that point executed on the grid.
+that point executed on the grid
 
 \begin{verbatim}
 
@@ -342,7 +342,7 @@ int SimpleCallFunction(void *function,
 The return code of the function signifies whether or not the function
 synchronised the groups in this functions synchronisation list of not.
 
-The Flesh will synchronise them if the function returns false.
+The flesh will synchronise them if the function returns false.
 
 Providing this function is probably the easiest way to do multi-patch or
 AMR drivers.
@@ -399,7 +399,7 @@ size of the grid function or array group in a particular direction.
 
 \subsection{En/Disable Group Comm}
 
-These are the communication analogues to the storage functions.  Basically
+These are the communication analogues to the storage functions.  Basically,
 they flag that communication is to be done on that group or not, and may
 initialise data structures for the communication.
 
@@ -407,27 +407,27 @@ initialise data structures for the communication.
 \chapter{I/O Methods}
 \label{chap:io_methods}
 %
-The Flesh by itself does not provide output for grid variables or other data.
-Instead it provides a mechanism for thorns to register their own
+The flesh by itself does not provide output for grid variables or other data.
+Instead, it provides a mechanism for thorns to register their own
 routines as I/O methods, and to invoke these I/O methods by either the
-Flesh scheduler or by other thorn routines.
+flesh scheduler or by other thorn routines.
 
-This chapter explains how to implement I/O your own methods and register
-them with the Flesh.
+This chapter explains how to implement your own I/O methods and register
+them with the flesh.
 %
 \section{I/O Method Registration}
 %
-All I/O methods have to be registered with the Flesh before they can be used.
+All I/O methods have to be registered with the flesh before they can be used.
 
-The Flesh I/O registration API provides a routine {\t CCTK\_RegisterIOMethod()}
+The flesh I/O registration API provides a routine {\t CCTK\_RegisterIOMethod()}
 to create a handle for a new I/O method which is identified by its name
 (this name must be unique for all I/O methods).
 With such a handle, a thorn can then register a set of functions (using the
-{\t CCTK\_RegisterIOMethod*()} routines from the Flesh) for doing
+{\t CCTK\_RegisterIOMethod*()} routines from the flesh) for doing
 periodic, triggered, and/or unconditional output.
 
-The following example shows how a thorn would register an I/O method
-{\tt SimpleIO} with routines to provide all these different types of output.
+The following example shows how a thorn would register an I/O method,
+{\tt SimpleIO}, with routines to provide all these different types of output.
 %
 \begin{verbatim}
   void SimpleIO_Startup (void)
@@ -448,9 +448,9 @@ The following example shows how a thorn would register an I/O method
 %
 \section{Periodic Output of Grid Variables}
 %
-The Flesh scheduler will automatically call {\t CCTK\_OutputGH()} at every
+The flesh scheduler will automatically call {\t CCTK\_OutputGH()} at every
 iteration after the {\tt CCTK\_ANALYSIS} time bin. This function loops over all
-I/O methods and calls their routines registered as {\t OutputGH()} (see also
+I/O methods and calls their routines registered as {\t OutputGH()} (see also Section
 \ref{subsec:schedule_ccl}).
 %
 \begin{alltt}
@@ -458,10 +458,10 @@ I/O methods and calls their routines registered as {\t OutputGH()} (see also
 \end{alltt}
 %
 The {\t OutputGH()} routine itself should loop over all variables living on the
-\texttt{\var{GH}} grid hierarchy, and do all necessary output if requested
+\texttt{GH} grid hierarchy, and do all necessary output if requested
 (this is usually determined by I/O parameter settings).
 
-As its return code it should pass back the number of variables which were output
+As its return code, it should pass back the number of variables which were output
 at the current iteration, or zero if no output was done by this I/O method.
 %
 %
@@ -470,12 +470,12 @@ at the current iteration, or zero if no output was done by this I/O method.
 Besides the periodic output at every so many iterations using {\t OutputGH()},
 analysis and output of grid variables can also be done via triggers. For this,
 a {\t TimeToOutput()} routine is registered with an I/O method.
-This routine will be called by the Flesh scheduler at every iteration before
+This routine will be called by the flesh scheduler at every iteration before
 {\tt CCTK\_ANALYSIS} with the triggering variable(s) as defined in the schedule
-block for all {\tt CCTK\_ANALYSIS} routines (see \ref{scheduling:schedule_block}).
+block for all {\tt CCTK\_ANALYSIS} routines (see Section \ref{scheduling:schedule_block}).
 
 If the {\t TimeToOutput()} routine decides that it is now time to do output, the
-Flesh scheduler will invoke the corresponding analysis routine and also request
+flesh scheduler will invoke the corresponding analysis routine and also request
 output of the triggering variable(s) using {\t TriggerOutput()}.
 %
 \begin{alltt}
@@ -496,9 +496,9 @@ otherwise.
 \section{Unconditional Output of Grid Variables}
 
 An I/O method's {\t OutputVarAs()} routine is supposed to do output for a
-specific grid variable if ever possible. It will be invoked by the Flesh I/O API
+specific grid variable if ever possible. It will be invoked by the flesh I/O API
 routines {\t CCTK\_OutputVar*()} for unconditional, non-triggered output of
-grid variables (see also \ref{sec:io}).
+grid variables (see also Section \ref{sec:io}).
 
 A function registered as an \texttt{OutputVarAs()} routine has the following
 prototype:
@@ -523,8 +523,8 @@ was done successfully, or a negative error code otherwise.
 \label{chap:cp_recovery_methods}
 
 Like for I/O methods, checkpointing/recovery functionality must be implemented
-by thorns. The Flesh only provides specific time bins at which the scheduler
-will call thorns' routines in order to perform checkpointing and/or recovery.
+by thorns. The flesh only provides specific time bins at which the scheduler
+will call thorns' routines, in order to perform checkpointing and/or recovery.
 
 This chapter explains how to implement checkpointing and recovery methods
 in your thorn.  For further information, see the documentation for thorn
@@ -536,19 +536,19 @@ Thorns register their checkpointing routines at {\t CCTK\_CPINITIAL} and/or
 {\t CCTK\_CHECKPOINT} and/or {\t CCTK\_TERMINATE}. These time bins are
 scheduled right after all initial data has been set up, after every
 evolution timestep, and after the last time step of a simulation,
-respectively. (See \ref{subsec:schedule_ccl} for a description of all timebins).
+respectively. (See Section \ref{subsec:schedule_ccl} for a description of all timebins).
 Depending on
 parameter settings, the checkpoint routines decide whether to write an initial
 data checkpoint, and when to write an evolution checkpoint.
 
-Each checkpoint routine should save all information to persistent storage which
+Each checkpoint routine should save all information to persistent storage, which
 is necessary to restart the simulation at a later time from exactly the same
 state. Such information would include
 %
 \begin{itemize}
   \item the current settings of all parameters
   \item the contents of all grid variables which have global storage assigned
-    and are not tagged with {\tt checkpoint="no"} (see also section \ref{subsec:Appendix.interface-variables} on page \pageref{subsec:Appendix.interface-variables} for a list of possible tags)\\
+    and are not tagged with {\tt checkpoint="no"} (see also Section \ref{subsec:Appendix.interface-variables} on page \pageref{subsec:Appendix.interface-variables} for a list of possible tags)\\
     Note that grid variables should be synced before writing them to disk.
   \item other relevant information such as the current iteration number and
     physical time, the number of processors, etc.
@@ -557,7 +557,7 @@ state. Such information would include
 
 \section{Recovery Invocation}
 
-Recovering from a checkpoint is a two-phase operation for which the Flesh
+Recovering from a checkpoint is a two-phase operation for which the flesh
 provides distinct timebins for recovery routines to be scheduled at:
 %
 \begin{Lentry}
@@ -566,33 +566,33 @@ provides distinct timebins for recovery routines to be scheduled at:
     settings, the recovery routines should decide whether recovery was
     requested, and if so, restore all parameters from the checkpoint file and
     overwrite those which aren't steerable.\\
-    The Flesh loops over all registered recovery routines to find out
-    whether recovery was requested. Each recovery routine should therefore
+    The flesh loops over all registered recovery routines to find out
+    whether recovery was requested. Each recovery routine should, therefore,
     return a positive integer value for successful parameter recovery (causing
     a shortcut of the loop over all registered recovery routines),
     zero for no recovery, or a negative value to flag an error.\\
-    If recovery was requested but no routine could successfully recover
-    parameters, the Flesh will abort the run with an error message.
-    If no routine recovered any parameters, i.e., if all parameter
+    If recovery was requested, but no routine could successfully recover
+    parameters, the flesh will abort the run with an error message.
+    If no routine recovered any parameters, i.e. if all parameter
     recovery routines returned zero, then this indicates that this run
     is not a recovery run.\\
     If parameter recovery was performed successfully, the scheduler will set the
-    {\tt recovered} flag which --- in combination with the setting of the {\tt
-    Cactus::recovery\_mode} parameter --- decides whether any thorn routine
+    {\tt recovered} flag which---in combination with the setting of the {\tt
+    Cactus::recovery\_mode} parameter---decides whether any thorn routine
     scheduled for {\t CCTK\_INITIAL} and {\t CCTK\_POSTINITIAL} will be called.
-    The default is to not execute these initial time bins during recovery
+    The default is to not execute these initial time bins during recovery, 
     because the initial data will be set up from the checkpoint file during the
     following {\t CCTK\_RECOVER\_VARIABLES} time bin.
   \item[{\t CCTK\_RECOVER\_VARIABLES}]
     Recovery routines scheduled for this time bin are responsible for restoring
     the contents of all grid variables with storage assigned from the
     checkpoint.\\
-    Depending on the setting of {\tt Cactus::recovery\_mode} they should also
+    Depending on the setting of {\tt Cactus::recovery\_mode}, they should also
     decide how to treat errors in recovering individual grid variables. Strict
     recovery (which is the default) requires all variables to be restored
-    successfully (and will stop the code if not) whereas a relaxed mode
-    could e.g. allow for grid variables which are not found in the checkpoint
-    file to be gracefully ignored during recovery.
+    successfully (and will stop the code if not), whereas a relaxed mode
+    could, e.g. allow for grid variables, which are not found in the checkpoint
+    file, to be gracefully ignored during recovery.
 \end{Lentry}
 
 
@@ -600,12 +600,12 @@ provides distinct timebins for recovery routines to be scheduled at:
 \chapter{Clocks for Timing}
 \label{chap:clocks}
 
-To add a Cactus clock you need to write several functions to provide the
+To add a Cactus clock, you need to write several functions to provide the
 timer functionality (see Section \ref{sec:timers}), and then register these
-functions with the Flesh as a named clock.
+functions with the flesh as a named clock.
 
 The function pointers are placed in function pointer fields of a 
-\texttt{cClockFuncs} sturcture.  The fields of this structure are are:
+\texttt{cClockFuncs} structure.  The fields of this structure are are:
 
 \begin{Lentry}
 
@@ -663,7 +663,7 @@ of two calls to the timer, in seconds.  For example, it could reflect
 that the clock saves the time value internally as an integer value 
 representing milliseconds.
 
-To name and register the clock with the Flesh, call the function
+To name and register the clock with the flesh, call the function
 \begin{alltt}
 	CCTK_ClockRegister( "\var{my_clock_name}", &\var{clock_func} ).
 \end{alltt}

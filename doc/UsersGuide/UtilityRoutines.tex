@@ -32,7 +32,7 @@ general overview of programming with these utility routines.
 \section{Motivation}
 
 Cactus functions may need to pass information through a generic
-interface.  In the past we have used various ad hoc means to do this,
+interface.  In the past, we have used various ad hoc means to do this,
 and we often had trouble passing "extra" information that wasn't
 anticipated in the original design.  For example, for periodic output
 of grid variables,
@@ -75,7 +75,7 @@ character `{\tt /}' reserved for future expansion.%%%
 	 }%%%
 
 Values are 1-dimensional arrays of any of the usual Cactus data types
-described in section~\ref{sect-ThornWriting/DataTypes}.
+described in Section~\ref{sect-ThornWriting/DataTypes}.
 A string can be stored by treating it as a 1-dimensional array of
 \verb|CCTK_CHAR| (there's an example of this below).
 
@@ -144,9 +144,9 @@ Util_TableGetInt(handle, &two_value, "two");    /* sets two_value = 2 */
 Util_TableGetReal(handle, &pi_value, "pi");     /* sets pi_value = 3.14 */
 \end{verbatim}
 
-Actually, you shouldn't write code like this --- in the real world
+Actually, you shouldn't write code like this---in the real world
 errors sometimes happen, and it's much better to catch them close to
-their point of occurrence rather than silently produce garbage results
+their point of occurrence, rather than silently produce garbage results
 or crash your program.  So, the \emph{right} thing to do is to always
 check for errors.  To allow this, all the table routines return a status,
 which is zero or positive for a successful return, but negative if
@@ -200,8 +200,7 @@ also store 1-dimensional arrays of numbers (or characters or pointers).%%%
 	 you pass in, so it's somewhat inefficient to store a large array
 	 (e.g.~a grid function) this way.  If this is a problem, consider
 	 storing a \texttt{CCTK\_POINTER} (pointing to the array) in the table
-	 instead.  (Of course, this requires that you ensure that the pointed-to
-	 data is still valid whenever that \texttt{CCTK\_POINTER} is used.)
+	 instead.  (Of course, this requires that you ensure that the array still exists whenever that \texttt{CCTK\_POINTER} is used.)
 	 }%%%
 
 For example (continuing the previous example):
@@ -223,7 +222,7 @@ As you can see, a table entry remembers the length of any array
 value that has been stored in it.%%%
 \footnote{%%%
 	 In fact, actually \emph{all} table values are
-	 arrays --- setting or getting a single value is
+	 arrays---setting or getting a single value is
 	 just the special case where the array length is 1.
 	 }%%%
 {}
@@ -279,7 +278,7 @@ There are also convenience routines for the common case of setting
 values in a table based on a string.
 
 For example, the following code sets up exactly the same table as the
-example in section \ref{Tables_Simple_Example}:
+example in Section \ref{Tables_Simple_Example}:
 
 \begin{verbatim}
 #include <util_Table.h>
@@ -300,7 +299,7 @@ case insensitive flag set (to match Cactus parameter file semantics),
 then (assuming no errors occurred) calls \verb|Util_TableSetFromString()|
 to set values in the table.
 
-For example the following code sets up a table (with the case insensitive flag
+For example, the following code sets up a table (with the case insensitive flag
 set) with four entries: an integer number ({\tt two}), a real number ({\tt
 pi}), a string ({\tt buffer}), and an integer array with three elements ({\tt
 array}):
@@ -319,8 +318,8 @@ if (handle < 0)
 Note that this code passes a single string to
 \verb|Util_TableCreateFromString()|%%%
 \footnote{C automatically concatenates
-adjacent character string constants separated only by whitespace.}
-{} which then gets parsed into key/value pairs, with the key separated from its
+adjacent character string constants separated only by whitespace.}, 
+which then gets parsed into key/value pairs, with the key separated from its
 corresponding value by an equals sign.
 
 Values for numbers are converted into integers ({\tt CCTK\_INT}) if possible
@@ -336,10 +335,10 @@ of the same type (either all integer or all real).
 \section{Table Iterators}
 \label{sect-UtilityRoutines/tables/table-iterators}
 
-In the examples up to now, the code which wanted to get values from
-the table knew what the keys were.  It's also useful to be able to
+In the examples up to now, the code, which wanted to get values from
+the table, knew what the keys were.  It's also useful to be able to
 write generic code which can operate on a table without knowing the
-keys.  ``Table iterators'' (``iterators'' for short) are used for this.
+keys.  ``Table iterators'' (``iterators'', for short) are used for this.
 
 An iterator is an abstraction of a pointer to a particular table entry.
 Iterators are analogous to the \verb|DIR *| pointers used by the POSIX
@@ -348,10 +347,10 @@ functions, to Perl hash tables' \verb|each()|, \verb|keys()|,
 and \verb|values()|, and to the C++ Standard Template Library's
 forward iterators.
 
-At any time the entries in a table may be considered to be in some
+At any time, the entries in a table may be considered to be in some
 arbitrary (implementation-defined) order; an iterator may be used to
 walk through some or all of the table entries in this order.  This
-order is guaranteed to remain unchanged for any given table so long
+order is guaranteed to remain unchanged for any given table, so long
 as no changes are made to that table, \ie{} so long as no
 \verb|Util_TableSet*()|, \verb|Util_TableSet*Array()|,
 \verb|Util_TableSetGeneric()|, \verb|Util_TableSetGenericArray()|,
@@ -382,24 +381,25 @@ using an iterator to print out all the entries in a table.
 
 \section{Multithreading and Multiprocessor Issues}
 
-{\bf At the moment, the table functions are \emph{not} thread-safe
-in a multithreaded environment!}  However, this should change in
-the not-too-distant future: then all the table functions will default
-to being thread-safe.  That is, user code will be able call these
-functions concurrently from multiple threads, with the table functions
-automatically doing any necessary locking.%%%
-\footnote{%%%
-	 For the implementation, this means that we will need a
-	 reader/writer lock for each table and for each iterator:
-	 any number of threads will be able to concurrently read
-	 the data structure, but any write will require exclusive
-	 access.
-	 }%%%
-{}  (We may add a flags-word bit to suppress this for maximum
-performance if you know you won't be making concurrent calls from
-multiple threads.)
+At the moment, the table functions are \emph{not} thread-safe
+in a multithreaded environment. 
+%% However, this should change in
+%%the not-too-distant future: then all the table functions will default
+%to being thread-safe.  That is, user code will be able call these
+%%functions concurrently from multiple threads, with the table functions
+%%automatically doing any necessary locking.%%%
+%%\footnote{%%%
+%	 For the implementation, this means that we will need a
+%	 reader/writer lock for each table and for each iterator:
+%	 any number of threads will be able to concurrently read
+%	 the data structure, but any write will require exclusive
+%	 access.
+%	 }%%%
+%{}  (We may add a flags-word bit to suppress this for maximum
+%performance if you know you won't be making concurrent calls from
+%multiple threads.)
 
-Note that tables and iterators will still be process-wide, i.e. all
+Note that tables and iterators are process-wide, i.e. all
 threads see the same tables and iterators (think of them as like the
 Unix current working directory, with the various routines which modify
 the table or change iterators acting like a Unix \verb|chdir()| system
@@ -411,18 +411,16 @@ In a multiprocessor environment, tables are always processor-local.
 
 \section{Metadata about All Tables}
 
-We have decided that tables do not \emph{themselves} have names or other
-attributes.  However, at some time in the future we may add some special
+Tables do not \emph{themselves} have names or other
+attributes.  However, we may add some special
 ``system tables'' to be used by Cactus itself to store this sort of
-information for those cases where it's needed.
-
-For example, at some time in the future we may add support for a
+information for those cases where it's needed. For example, we may add support for a
 ``checkpoint me'' bit in a table's flags word, so that if you want a
 table to be checkpointed, you just need to set this bit.
-In this case the table will probably get a system generated name in
+In this case, the table will probably get a system generated name in
 the checkpoint dump file.  But if you want the table to have some
 other name in the dump file, then you need to tell the checkpointing
-code that by setting an appropriate entry in a checkpoint table.
+code that, by setting an appropriate entry in a checkpoint table.
 (You would find the checkpoint table by looking in a special
 ``master system table'' that records handles of other interesting tables.)
 
