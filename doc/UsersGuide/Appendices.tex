@@ -34,7 +34,7 @@ Cactus Users' Guide and the Cactus Reference Manual.
   some software component to programmers who use the component. 
   An API usually consists of subroutine/function calls, but may also include
   structure definitions and definition of constant values.
-  The Cactus Reference Manual documents most of the Cactus Flesh APIs.
+  The Cactus Reference Manual documents most of the Cactus flesh APIs.
 \item[arrangement]
   A collection of thorns, stored in a subdirectory of the Cactus
   \verb|arrangements| directory.%  See Section~\ref{sec:arrangements}.
@@ -47,10 +47,11 @@ Cactus Users' Guide and the Cactus Reference Manual.
   e.g.\ Dirichlet conditions or von Neumann conditions.
   (See also \textit{symmetry zone}, \textit{ghost zone}.)
 \item[Cactus]
-  A green fleshy plant with lots of thorns, usually inflicting pain if
-  touched.
+Distinctive and unusual plant, which is adapted to extremely arid and hot environments, showing a wide range of anatomical and physiological features which conserve water. Cacti stems have expanded into green succulent structures containing the chlorophyll necessary for life and growth, while the leaves have become the spines for which cacti are so well known.\footnote{%%%
+http://en.wikipedia.org/wiki/Cactus
+       }%%%
 \item[CCTK]
-  \textit{Cactus Computational Tool Kit} (The Cactus Flesh and computational
+  \textit{Cactus Computational Tool Kit} (The Cactus flesh and computational
   thorns).
 \item[CCL]
   The \textit{Cactus Configuration Language}, this is the language that
@@ -89,7 +90,7 @@ Cactus Users' Guide and the Cactus Reference Manual.
 \item[CST]
   The \textit{Cactus Specification Tool}, which is the set of Perl
   scripts which parse the thorns' \texttt{.ccl} files and generates the
-  code that binds the thorn source files with the Flesh.
+  code that binds the thorn source files with the flesh.
 \item[CVS]
   The \textit{Concurrent Versions System} is the favoured code
   distribution system for Cactus.
@@ -107,18 +108,18 @@ Cactus Users' Guide and the Cactus Reference Manual.
 \item[evolution]
   An iteration interpreted as a step through time.  Also, a particular Cactus
   schedule bin for executing routines when evolution occurs.
-\item[Flesh]
+\item[flesh]
   The Cactus routines which hold the thorns together, allowing them to 
   communicate and scheduling things to happen with them. This is what you
   get if you check out Cactus from our CVS repository.
 \item[friend] Interfaces that are \textit{friends} share their collective
   set of protected grid variables.
-  See Section~\ref{sec:Appendix.interface}. %~\ref{subsec:interface_ccl}.
+  See Section~\ref{sec:Appendix.interface}. %%~\ref{subsec:interface_ccl}.
 \item[function aliasing]
   The process of referring to a function to be provided by an interface
   independently of which thorn actually contains the function, or what
   language the function is written in.  The function is called an
-  \textit{alias function}.%  See Section~\ref{sec:function_aliasing},
+  \textit{alias function}.%%  See Section~\ref{sec:function_aliasing},
   \ref{subsec:Appendix.interface.function_aliasing}.
 \item[GA]
   Shorthand for a \textit{grid array}.
@@ -161,7 +162,7 @@ Cactus Users' Guide and the Cactus Reference Manual.
   A \textit{grid variable} with index zero,
   \textit{i.e.} just a number on each processor.
 \item[grid variable]
-  A variable which is passed through the Flesh interface, either between 
+  A variable which is passed through the flesh interface, either between 
   thorns or between routines of the same thorn.
   This implies the variable is related to the computational grid as opposed
   to being an internal variable of the thorn or one of its routines. 
@@ -269,7 +270,7 @@ Cactus Users' Guide and the Cactus Reference Manual.
   A variable that controls the run time behaviour of the Cactus executable.
   Parameters have default values which can be set in a
   \textit{parameter file}.% (See Chapter~\ref{chap:Cactus_parameters}).
-  The Flesh has parameters; thorn parameters are made available to the rest
+  The flesh has parameters; thorn parameters are made available to the rest
   of Cactus by describing them in the thorn's 
   {\tt param.ccl} file (See Appendix~\ref{sec:Appendix.param}).
 \item[parameter file]
@@ -290,9 +291,9 @@ Cactus Users' Guide and the Cactus Reference Manual.
   is the process of producing values for the variables on a proper subset of
   points from the grid.
 \item[scheduler]
-  The part of the Cactus Flesh that determines the order and circumstances
+  The part of the Cactus flesh that determines the order and circumstances
   in which to execute Cactus routines.  Thorn functions and schedule groups 
-  are registered with the Flesh via the thorn's {\tt schedule.ccl} file to
+  are registered with the flesh via the thorn's {\tt schedule.ccl} file to
   be executed in a certain schedule bin, before or after another function 
   or group executes, and so forth.
   See section~\ref{sec:Appendix.schedule}.
@@ -352,7 +353,7 @@ Cactus Users' Guide and the Cactus Reference Manual.
   A ThornList for each Cactus configuration lies in the configuration
   subdirectory of the Cactus {\tt configs} directory.
 \item[time bin]
-  A time interval in the duration of a Cactus run wherein the Flesh 
+  A time interval in the duration of a Cactus run wherein the flesh 
   runs specified routines.  See \textit{scheduler}, \textit{schedule bin}.
 \item[time level]
 \item[timer]
@@ -371,7 +372,7 @@ Cactus Users' Guide and the Cactus Reference Manual.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Configuration file syntax}
+\chapter{Configuration File Syntax}
 \label{sec:Appendix.ccl}
 
 \section{General Concepts}
@@ -509,7 +510,7 @@ for function names. Currently the only supported values of
 \texttt{<\var{providing\_language}>} are \verb|C| and \verb|Fortran|.
 
 
-\subsection{Variable blocks}
+\subsection{Variable Blocks}
 \label{subsec:Appendix.interface-variables}
 The thorn's variables are collected into groups. This is not only
 for convenience, but for collecting like variables together.
@@ -623,7 +624,7 @@ range of the parameter separated by optional
 parameter.%  (For a more extensive discussion of Cactus parameters see Chapter
 %\ref{chap:Cactus_parameters}.)
 
-\subsection{Parameter data scoping items}
+\subsection{Parameter Data Scoping Items}
 
 \begin{alltt}
 <\var{access}>:
@@ -646,7 +647,7 @@ on this line.)
 \end{Lentry}
 
 
-\subsection{Parameter object specification items}
+\subsection{Parameter Object Specification Items}
 \label{subsec:Appendix.param.specification_items}
 
 \begin{alltt}
@@ -774,7 +775,7 @@ beginning of a line followed by \var{<default value>} on that same line.
   default parameters may not be changed after the parameter file has
   been read, or on restarting from checkpoint.  This option relaxes
   this restriction, specifying that the parameter may be changed at
-  recovery time from a parameter file or at any time using the Flesh
+  recovery time from a parameter file or at any time using the flesh
   routine {\tt CCTK\_ParameterSet} --- see the Reference Guide.
 
   The value {\tt RECOVERY} is used in checkpoint/recovery situations,
@@ -1055,7 +1056,7 @@ this capability has a given detection script which may be used to
 configure it (e.g. running an autoconf script or detecting an external
 library's location).  The script should output configuration
 information on its standard output --- the syntax is described below
-in section \ref{sec:Appendix.configuration.ccl.configscript}.  The
+in Section \ref{sec:Appendix.configuration.ccl.configscript}.  The
 script may also indicate the failure to detect a capability by
 returning a non-zero exit code;  this will stop the build after the
 CST stage.
@@ -1173,11 +1174,11 @@ No other lines should be output by the script.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Schedule bins}
+\chapter{Schedule Bins}
 \label{sec:Appendix.schedule_bins}
 
 Using the {\tt schedule.ccl} files, thorn functions can be scheduled to run 
-in the different timebins which are executed by the Cactus Flesh. This chapter
+in the different timebins which are executed by the Cactus flesh. This chapter
 describes these standard timebins, and shows the flow of program execution
 through them.
 
@@ -1244,7 +1245,7 @@ value.  All later routines are ignored.  Schedule clauses \texttt{BEFORE},
 \begin{Lentry}
 
 \item[{\tt CCTK\_RECOVER\_PARAMETERS}]
-        Used by thorns with relevant IO methods as the point 
+        Used by thorns with relevant I/O methods as the point 
         to read parameters when recovering from checkpoint files.
         Grid variables are not available in this timebin.  Scheduling
 	in this timebin is special (see above).
@@ -1313,7 +1314,7 @@ value.  All later routines are ignored.  Schedule clauses \texttt{BEFORE},
         when recovering from a checkpoint file.
 
 \item[{\tt CCTK\_RECOVER\_VARIABLES}]
-        Used by thorns with relevant IO methods as the point 
+        Used by thorns with relevant I/O methods as the point 
         to read in all the grid variables when recovering from 
         checkpoint files.
         
@@ -1322,11 +1323,11 @@ value.  All later routines are ignored.  Schedule clauses \texttt{BEFORE},
         to modify grid variables after recovery.
 
 \item[{\tt CCTK\_CPINITIAL}]
-        Used by thorns with relevant IO methods as the point to checkpoint
+        Used by thorns with relevant I/O methods as the point to checkpoint
         initial data if required.
 
 \item[{\tt CCTK\_CHECKPOINT}]
-        Used by thorns with relevant IO methods as the point to checkpoint
+        Used by thorns with relevant I/O methods as the point to checkpoint
         data during the iterative loop when required.
 
 \item[{\tt CCTK\_PREREGRID}]
@@ -1396,11 +1397,11 @@ value.  All later routines are ignored.  Schedule clauses \texttt{BEFORE},
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Flesh parameters}
+\chapter{Flesh Parameters}
 
-The Flesh parameters are defined in the file {\tt src/param.ccl}.
+The flesh parameters are defined in the file {\tt src/param.ccl}.
 
-\section{Private parameters}
+\section{Private Parameters}
 
 \begin{Lentry}
 
@@ -1456,7 +1457,7 @@ messages. [{\tt basic}]
 
 \end{Lentry}
 
-\section{Restricted parameters}
+\section{Restricted Parameters}
 
 \begin{Lentry}
 
@@ -1557,10 +1558,10 @@ files among multiple  authors. CVS can be obtained from
 
 A CVS \textit{repository} located on a \textit{server} may consist of an arbitrary
 number of \textit{modules}, which can be checked out (that is downloaded)
-independently. The Cactus Flesh and the Cactus
+independently. The Cactus flesh and the Cactus
 arrangements are organized as modules, their CVS \textit{server} is {\tt cvs.cactuscode.org}.
 
-\section{Essential CVS commands}
+\section{Essential CVS Commands}
 
 \begin{Lentry}
 \item[{\bf cvs login}]
@@ -1811,7 +1812,7 @@ directory \textit{BMod}, and you want to add \textit{CMod} inside \textit{BMod},
 
 \end{description}
 
-\section{Checking out Flesh and thorns with CVS}
+\section{Checking Out Flesh and Thorns with CVS}
 
 \begin{Lentry}
 \item[{\bf Login}] Prior to any CVS operation, you need to log into the Cactus
@@ -1896,7 +1897,7 @@ Emacs if you add either of the following lines to your {\tt .emacs} file:\\
 {\tt (setq tag-table-alist '(("CACTUS\_HOME" . "CACTUS\_HOME/TAGS")))}\\
 where {\tt CACTUS\_HOME} is your Cactus directory.\\
 
-You can now easily navigate your Cactus Flesh and Toolkits by searching for
+You can now easily navigate your Cactus flesh and Toolkits by searching for
 functions or ``tags'':
 \begin{enumerate}
 \item \textbf{ Alt.} will find a tag
