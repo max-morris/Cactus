@@ -1,7 +1,5 @@
-# make (defaults to ThornGuide.ps)
+# make (defaults to ThornGuide.pdf)
 # make ThornGuide.tex
-# make ThornGuide.dvi
-# make ThornGuide.ps
 # make ThornGuide.pdf
 # make THORNS="CactusWave/IDScalarWave,CactusWave/WaveToyF77" ARRANGEMENTS="CactusBase,CactusPUGHIO"
 
@@ -33,46 +31,31 @@ ifeq ($(strip $(MASTER_FILE)), )
    MASTER_FILE=ThornGuide
 endif
 
-IMAGE_FILE=$(CCTK_HOME)/doc/UsersGuide/bincactus2.eps
+IMAGE_FILE=$(CCTK_HOME)/doc/UsersGuide/bincactus2.pdf
 
 
 -include make.thornlist
 
 .PHONY: default
 
-default : $(MASTER_FILE).ps
+default : $(MASTER_FILE).pdf
 
-$(MASTER_FILE).ps: $(MASTER_FILE).dvi 
-	@echo "  Converting $< to PostScript ...."
-	dvips -f $< 2> LOG_DVIPS_MSGS | $(CCTK_HOME)/lib/sbin/FixPageNumbersInPostscript.pl > $@ 
-	if ! test -e "$@"; then                                    \
-	   echo "  Cannot find $@, an error must have occured."; \
-	fi
-
-$(MASTER_FILE).dvi: $(MASTER_FILE).tex
+$(MASTER_FILE).pdf: $(MASTER_FILE).tex
 	@echo "  LaTeXing $<...."
 	# Fall through any latex errors so as to print sensible error message
-	-latex --interaction errorstopmode $< < /dev/null 2>&1 > LOG_LATEX_FULL_MSGS
-	-latex $< < /dev/null 2>&1 > LOG_LATEX_FULL_MSGS
-	-latex $< < /dev/null 2>&1 | tee LOG_LATEX_FULL_MSGS | grep -v Underfull | grep -v Overfull | grep -v OT1 > LOG_LATEX_MSGS
+	-pdflatex --interaction errorstopmode $< < /dev/null 2>&1 > LOG_LATEX_FULL_MSGS
+	-pdflatex $< < /dev/null 2>&1 > LOG_LATEX_FULL_MSGS
+	-pdflatex $< < /dev/null 2>&1 | tee LOG_LATEX_FULL_MSGS | grep -v Underfull | grep -v Overfull | grep -v OT1 > LOG_LATEX_MSGS
 	if test -e "$@"; then                                    \
-	   if grep "^\! " "LOG_LATEX_FULL_MSGS"; then            \
+	   if grep "^\! " "LOG_LATEX_FULL_MSGS" | grep -v "destination with the same identifier"; then            \
 	     echo "  Problem in $<.  See $(DOCBUILDDIR)/LOG_LATEX_* .";  \
 	     exit 1;                                             \
-	   elif grep "^LaTeX Warning:" "LOG_LATEX_FULL_MSGS"; then         \
+	   elif grep "^LaTeX Warning:" "LOG_LATEX_FULL_MSGS" | grep -v "destination with the same identifier"; then         \
 	     echo "  Warnings in $<.  See $(DOCBUILDDIR)/LOG_LATEX_* ."; \
 	     exit 0;                                             \
 	   fi;                                                    \
 	else                                                     \
 	   echo "  Cannot find $@, an error must have occured."; \
-	fi
-
-$(MASTER_FILE).pdf: $(MASTER_FILE).dvi
-	@echo "  Running dvipdf on $<...."
-	-dvipdf $< < /dev/null 2>&1 > LOG_DVIPDF_MSGS
-	if test ! -e "$@"; then                                    \
-	  echo "  Problem in $<.  See doc/ThornGuide/build/LOG_DVIPDF_MSGS.";  \
-	  exit 1; \
 	fi
 
 $(MASTER_FILE).tex:  $(foreach thorn, $(THORN_DEPENDENCIES), $(thorn)/param.ccl $(thorn)/interface.ccl $(thorn)/schedule.ccl) $(THORNLIST)
@@ -86,7 +69,7 @@ $(MASTER_FILE).tex:  $(foreach thorn, $(THORN_DEPENDENCIES), $(thorn)/param.ccl 
 	$(PERL) -s $(CCTK_HOME)/lib/sbin/SchedLatex.pl -cctk_home=$(CCTK_HOME) -directory=$(ARRANGEMENTS_DIR) -thornlist=$(THORNLIST) -outdir=./ -section > LOG_SCHEDLATEX_MSGS 2>&1
 	@echo "  Creating $@...."
 	$(PERL) -s $(CCTK_HOME)/lib/sbin/ThornGuide.pl -cctk_home=$(CCTK_HOME) -directory=$(ARRANGEMENTS_DIR) -thornlist=$(THORNLIST) -outdir=./ -outfile=$(MASTER_FILE).tex -tocdepth=$(TOCDEPTH) > LOG_THORNGUIDE_MSGS 2>&1
-	if test -e $(IMAGE_FILE) && test ! -e "bincactus2.eps"; then \
+	if test -e $(IMAGE_FILE) && test ! -e "bincactus2.pdf"; then \
 	   cp $(IMAGE_FILE) .;                                       \
 	fi
 
