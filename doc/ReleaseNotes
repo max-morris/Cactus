@@ -1,5 +1,5 @@
 Cactus Release Notices
-CVS Version: $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/ReleaseNotes,v 1.7 2009-02-03 01:47:55 schnetter Exp $
+CVS Version: $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/doc/ReleaseNotes,v 1.8 2009-02-03 01:58:56 schnetter Exp $
 
 Cactus 4.0 Release Dates:
   Beta 16  2 February 2009
@@ -21,6 +21,7 @@ Cactus 4.0 Release Dates:
 
 These notices can also be found on the Cactus web pages at
 <http://www.cactuscode.org/Releases>.
+
 
 ==============================================================================
 ==============================================================================
@@ -181,6 +182,25 @@ TEST MACHINES NOTES
 
  * Intel IA32 (Linux 2.6.9-55.0.9.EL_lustre.1.6.4custom)
 
+     o abe.ncsa.uiuc.edu with MPI
+       (MPI: mvapich2-0.9.8p2patched, compiled with Intel, and with ofed-1.2)
+       (Intel icc/icpc 10.1.008 / ifort 10.1.008)
+
+      - not compiling:
+        CactusElliptic/EllPETSc     (PETSc not installed)
+        CactusExternal/FFTWlib      (FFTW not installed)
+        CactusExternal/LORENE       (LORENE not installed)
+        CactusExternal/PETSc        (PETSc not installed)
+        CactusExternal/SDF          (SDF not installed)
+        CactusPUGHIO/IOStreamedHDF5 (installed HDF5 does not suppport streaming)
+
+      - testsuites failing:
+        test_ADM_2 (from ADM)
+        test_axibrill_nostagger (from IDAxiBrillBH)
+        teuktest4 (from PsiKadelia)
+        arrays (from TestArrays)
+        arrays0 (from TestArrays)
+
      o eric.loni.org with MPI (mvapich2-1.02 compiled with Intel C++ 10.1)
        (Intel icc/icpc v10.1.008 / ifort v10.1.008)
        All other LONI and LSU Linux clusters are similar, i.e.,
@@ -190,6 +210,25 @@ TEST MACHINES NOTES
       - not compiling:
         CactusExternal/SDF          (no SDF installed)
         TAT/TATPETSc                (not compatible with PETSc installed)
+
+      - testsuites failing:
+        test_ADM_2 (from ADM)
+        test_axibrill_nostagger (from IDAxiBrillBH)
+        teuktest4 (from PsiKadelia)
+        arrays (from TestArrays)
+        arrays0 (from TestArrays)
+        test_waveell (from IDScalarWaveElliptic)
+
+     o lonestar.tacc.utexas.edu with MPI (MPI: MVAPICH/1.0.1)
+       (Intel icc/icpc 10.1 / ifort 10.1)
+
+      - not compiling:
+        CactusElliptic/EllPETSc     (PETSc not installed)
+        CactusExternal/FFTWlib      (FFTW not installed)
+        CactusExternal/LORENE       (LORENE not installed)
+        CactusExternal/PETSc        (PETSc not installed)
+        CactusExternal/SDF          (SDF not installed)
+        CactusPUGHIO/IOStreamedHDF5 (installed HDF5 does not suppport streaming)
 
       - testsuites failing:
         test_ADM_2 (from ADM)
