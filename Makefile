@@ -19,7 +19,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.178 2009-01-26 23:27:22 schnetter Exp $
+#   @version $Id: Makefile,v 1.179 2009-02-03 00:21:09 schnetter Exp $
 # @@*/
 
 ##################################################################################
@@ -1009,7 +1009,7 @@ UsersGuide:
 	@echo $(DIVIDER)
 	@echo Creating user documentation UsersGuide.pdf
 	cd doc/UsersGuide;                          \
-	echo "  Running pdflates....";              \
+	echo "  Running pdflatex....";              \
 	pdflatex  -interaction=nonstopmode UsersGuide.tex > LATEX_MESSAGES 2>&1; \
 	pdflatex  -interaction=nonstopmode UsersGuide.tex > LATEX_MESSAGES 2>&1; \
 	pdflatex  -interaction=nonstopmode UsersGuide.tex > LATEX_MESSAGES 2>&1; \
