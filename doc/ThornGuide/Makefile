@@ -47,10 +47,10 @@ $(MASTER_FILE).pdf: $(MASTER_FILE).tex
 	-pdflatex $< < /dev/null 2>&1 > LOG_LATEX_FULL_MSGS
 	-pdflatex $< < /dev/null 2>&1 | tee LOG_LATEX_FULL_MSGS | grep -v Underfull | grep -v Overfull | grep -v OT1 > LOG_LATEX_MSGS
 	if test -e "$@"; then                                    \
-	   if grep "^\! " "LOG_LATEX_FULL_MSGS" | grep -v "destination with the same identifier"; then            \
+	   if grep "^\! " "LOG_LATEX_FULL_MSGS" | grep -v "destination with the same identifier" | grep -v "You have requested package" ; then            \
 	     echo "  Problem in $<.  See $(DOCBUILDDIR)/LOG_LATEX_* .";  \
 	     exit 1;                                             \
-	   elif grep "^LaTeX Warning:" "LOG_LATEX_FULL_MSGS" | grep -v "destination with the same identifier"; then         \
+	   elif grep "^LaTeX Warning:" "LOG_LATEX_FULL_MSGS" | grep -v "destination with the same identifier" | grep -v "You have requested package" ; then         \
 	     echo "  Warnings in $<.  See $(DOCBUILDDIR)/LOG_LATEX_* ."; \
 	     exit 0;                                             \
 	   fi;                                                    \

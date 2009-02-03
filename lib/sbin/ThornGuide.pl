@@ -48,7 +48,10 @@ $cctk_home  .= '/' if (($cctk_home !~ /\/$/) && (defined $cctk_home));
 # set up the sbin dir, tacking cctk_home on the front
 my $sbin_dir = "${cctk_home}lib/sbin";
 
-my $cactus_style_file = "../../../doc/latex/cactus";
+# has to be absolute path because the ThornGuide can be build in different
+# directory depths (doc/ThornGuide/build and configs/X/dox/build)
+#my $cactus_style_file = "../../../doc/latex/cactus";
+my $cactus_style_file = "${cctk_home}doc/latex/cactus";
 ##############
 # REQUIRE(S) #
 ##############
