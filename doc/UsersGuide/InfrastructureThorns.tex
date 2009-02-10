@@ -8,15 +8,14 @@
 %   @version   $Header$
 % @@*/
 
-\begin{cactuspart}{Infrastructure Thorn Writer's Guide}{$RCSfile$}{$Revision$}
-\label{part:Infrastructure}
 \renewcommand{\thepage}{\Alph{part}\arabic{page}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Introduction}
+\chapter{Infrastructure Thorns}
+\label{chap:infrastructure}
 
 \begin{itemize}
  \item{} Concepts and terminology (Overloading and registration of functions)
@@ -30,17 +29,17 @@
  \item{} Overloadable functions
 \end{itemize}
 
-\chapter{Concepts and Terminology}
+\section{Concepts and Terminology}
 \label{chap:cote}
 
-\section{Overloading and Registration}
+\subsection{Overloading and Registration}
 
 The flesh defines a core API which guarantees the presence of a set of
 functions.  Although the flesh guarantees the presence of these functions,
 they can be provided by thorns.  Thorns do this by either the \textit{overloading}
 or the \textit{registration} of functions.
 
-\subsection{Overloading}
+\subsubsection{Overloading}
 
 Some functions can only be provided by one thorn.  The first thorn to
 \textit{overload} this function succeeds, and any later attempt to overload
@@ -48,25 +47,25 @@ the function fails.  For each overloadable function, there is a function
 with a name something like {\tt CCTK\_Overload...} which is passed the
 function pointer.
 
-\subsection{Registration}
+\subsubsection{Registration}
 
 Some functions may be provided by several thorns.  The thorns \textit{register}
 their function with the flesh, and when the flesh-provided function is called,
 the flesh calls all the registered functions.
 
-\section{GH Extensions}
+\subsection{GH Extensions}
 
 A GH extension is a way to associate data with each cGH.  This data should be data
 that is required to be associated with a particular GH by a thorn.
 
 Each GH extension is given a unique handle.
 
-\section{I/O Methods}
+\subsection{I/O Methods}
 
 An I/O method is a distinct way to output data.  Each I/O method has a unique name,
 and the flesh-provided I/O functions operate on all registered I/O methods.
 
-\chapter{GH Extensions}
+\section{GH Extensions}
 
 A GH extension is created by calling {\tt CCTK\_RegisterGHExtension}, with the
 name of the extension.  This returns a unique handle that identifies the extension.
@@ -87,7 +86,7 @@ should initialise the data on the cGH and the call {\tt CCTK\_ScheduleTraverse} 
 the schedule tree.
 \end{Lentry}
 
-\chapter{Overloadable and Registerable Functions in Main}
+\section{Overloadable and Registerable Functions in Main}
 
  \begin{tabular}{|l|l|}
    \hline  {\bf Function} & {\bf Default} \\
@@ -97,7 +96,7 @@ the schedule tree.
    \hline
  \end{tabular}
 
-\chapter{Overloadable and Registerable Functions in Comm}
+\section{Overloadable and Registerable Functions in Comm}
 
   \begin{tabular}{|l|l|}
    \hline {\bf Function} & {\bf Default}  \\
@@ -114,7 +113,7 @@ the schedule tree.
    \hline
   \end{tabular}
 
-\chapter{Overloadable and Registerable Functions in I/O}
+\section{Overloadable and Registerable Functions in I/O}
 
  \begin{tabular}{|l|l|}
    \hline {\bf Function} & {\bf Default}   \\
@@ -123,7 +122,7 @@ the schedule tree.
    \hline
  \end{tabular}
 
-\chapter{Drivers}
+\section{Drivers}
 
 The flesh does not know about memory allocation for grid variables, about how
 to communicate data when synchronisation is called for, or about
@@ -131,7 +130,7 @@ multiple patches or adaptive mesh refinement.  All this is the job of a driver.
 
 This chapter describes how to add a driver to your code.
 
-\section{Anatomy}
+\subsection{Anatomy}
 
 A driver consists of a Startup routine which creates a GH extension, 
 registers its associated functions, and overloads the communication functions.
@@ -140,7 +139,7 @@ It may optionally register interpolation, reduction, and I/O methods.
 A driver may also overload the default Initialisation and Evolution routines,
 although a simple unigrid evolver is supplied in the flesh.
 
-\section{Startup}
+\subsection{Startup}
 
 A driver consists of a GH extension, and the following overloaded
 functions.
@@ -166,7 +165,7 @@ The overloadable function {\tt CCTK\_SyncGroup} is deprecated, a driver should
 instead provide a routine to overload the more general function
 {\tt CCTK\_SyncGroupsByDirI}.
 
-\section{The GH Extension}
+\subsection{The GH Extension}
 
 The GH extension is where the driver stores all its grid-dependent information.
 This is stuff like any data associated with a grid variable (e.g.\ storage and
@@ -347,7 +346,7 @@ The flesh will synchronise them if the function returns false.
 Providing this function is probably the easiest way to do multi-patch or
 AMR drivers.
 
-\section{Memory Functions}
+\subsection{Memory Functions}
 
 These consist of
 \begin{enumerate}
@@ -357,7 +356,7 @@ These consist of
 \item{} {\tt CCTK\_ArrayGroupSizeB}
 \end{enumerate}
 
-\subsection{En/Disable Group Storage}
+\subsubsection{En/Disable Group Storage}
 
 These are responsible for switching the memory for all variables
 in a group on or off.  They should return the former state, e.g.\
@@ -397,14 +396,14 @@ The {\tt QueryGroupStorage} function basically returns true or false if
 there is storage for the group, and the {\tt ArrayGroupSize} returns the
 size of the grid function or array group in a particular direction.
 
-\subsection{En/Disable Group Comm}
+\subsubsection{En/Disable Group Comm}
 
 These are the communication analogues to the storage functions.  Basically,
 they flag that communication is to be done on that group or not, and may
 initialise data structures for the communication.
 
 
-\chapter{I/O Methods}
+\section{I/O Methods}
 \label{chap:io_methods}
 %
 The flesh by itself does not provide output for grid variables or other data.
@@ -415,7 +414,7 @@ flesh scheduler or by other thorn routines.
 This chapter explains how to implement your own I/O methods and register
 them with the flesh.
 %
-\section{I/O Method Registration}
+\subsection{I/O Method Registration}
 %
 All I/O methods have to be registered with the flesh before they can be used.
 
@@ -446,7 +445,7 @@ The following example shows how a thorn would register an I/O method,
 \end{verbatim}
 %
 %
-\section{Periodic Output of Grid Variables}
+\subsection{Periodic Output of Grid Variables}
 %
 The flesh scheduler will automatically call {\t CCTK\_OutputGH()} at every
 iteration after the {\tt CCTK\_ANALYSIS} time bin. This function loops over all
@@ -465,7 +464,7 @@ As its return code, it should pass back the number of variables which were outpu
 at the current iteration, or zero if no output was done by this I/O method.
 %
 %
-\section{Triggered Output of Grid Variables}
+\subsection{Triggered Output of Grid Variables}
 %
 Besides the periodic output at every so many iterations using {\t OutputGH()},
 analysis and output of grid variables can also be done via triggers. For this,
@@ -493,7 +492,7 @@ otherwise.
 \texttt{\var{varindex}}, and a negative value in case of an error.
 %
 %
-\section{Unconditional Output of Grid Variables}
+\subsection{Unconditional Output of Grid Variables}
 
 An I/O method's {\t OutputVarAs()} routine is supposed to do output for a
 specific grid variable if ever possible. It will be invoked by the flesh I/O API
@@ -519,7 +518,7 @@ was done successfully, or a negative error code otherwise.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Checkpointing/Recovery Methods}
+\section{Checkpointing/Recovery Methods}
 \label{chap:cp_recovery_methods}
 
 Like for I/O methods, checkpointing/recovery functionality must be implemented
@@ -530,7 +529,7 @@ This chapter explains how to implement checkpointing and recovery methods
 in your thorn.  For further information, see the documentation for thorn
 \texttt{CactusBase/IOUtil}.
 
-\section{Checkpointing Invocation}
+\subsection{Checkpointing Invocation}
 
 Thorns register their checkpointing routines at {\t CCTK\_CPINITIAL} and/or
 {\t CCTK\_CHECKPOINT} and/or {\t CCTK\_TERMINATE}. These time bins are
@@ -555,7 +554,7 @@ state. Such information would include
 \end{itemize}
 
 
-\section{Recovery Invocation}
+\subsection{Recovery Invocation}
 
 Recovering from a checkpoint is a two-phase operation for which the flesh
 provides distinct timebins for recovery routines to be scheduled at:
@@ -597,7 +596,7 @@ provides distinct timebins for recovery routines to be scheduled at:
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Clocks for Timing}
+\section{Clocks for Timing}
 \label{chap:clocks}
 
 To add a Cactus clock, you need to write several functions to provide the

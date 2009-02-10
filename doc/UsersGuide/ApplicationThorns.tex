@@ -16,15 +16,15 @@
 %   @endhistory
 % @@*/
 
-\begin{cactuspart}{Application Thorn Writing}{$RCSfile$}{$Revision$}
-\label{part:ThornWriters}
+\begin{cactuspart}{Thorn Writing}
 \renewcommand{\thepage}{\Alph{part}\arabic{page}}
+\label{part:ThornWriting}
+
+\chapter{Application thorns}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\chapter{Overview}
 
 This chapter goes into the nitty-gritty of writing a thorn.
 It introduces key concepts for thorns, then goes on to give
@@ -37,12 +37,12 @@ you may use to gain extra functionality.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Thorn Concepts}
+\section{Thorn Concepts}
 \label{chap:thorn_concepts}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Thorns}
+\subsection{Thorns}
 
 A thorn is the basic working module within Cactus.  All user supplied
 code goes into thorns, which are, by and large, independent of each other.
@@ -63,7 +63,7 @@ ignored.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Arrangements}
+\subsection{Arrangements}
 \label{sec:arrangements}
 
 Thorns are grouped into \textit{arrangements}.  This is a logical grouping of
@@ -86,7 +86,7 @@ belonging to the arrangement.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Implementations}
+\subsection{Implementations}
 
 \label{sec:implementations}
 
@@ -116,12 +116,12 @@ the other thorns.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Anatomy of a Thorn}
+\section{Anatomy of a Thorn}
 \label{chap:thorn_anatomy}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Thorns}
+\subsection{Thorns}
 
 A thorn consists of a subdirectory of an arrangement containing four
 administrative files:
@@ -152,7 +152,7 @@ Thorns can also contain
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Creating a Thorn}
+\subsection{Creating a Thorn}
 
 
 To simplify the creation of a thorn, a \texttt{make} target {\tt
@@ -167,7 +167,7 @@ pick one from the list of available arrangements that are shown.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Configuring your Thorn}
+\subsection{Configuring your Thorn}
 
 The interaction of a thorn with the flesh and other thorns is controlled
 by certain configuration files.
@@ -195,7 +195,7 @@ configuration options of this thorn.
 
 \end{Lentry}
 
-\subsection{General Syntax of CCL Files}
+\subsubsection{General Syntax of CCL Files}
 
 \textit{Cactus Configuration Language} (CCL) files are simple text files
 used to define configuration information for a thorn.  CCL files are
@@ -205,7 +205,7 @@ non-blank character of a line in a CCL file is a backslash
 `\texttt{$\backslash$}', the
 following line is treated as a continuation of the current line.
 
-\subsection{The \texttt{interface.ccl} File}
+\subsubsection{The \texttt{interface.ccl} File}
 \label{subsec:interface_ccl}
 
 The \texttt{interface.ccl} file is used to declare
@@ -300,7 +300,7 @@ changes the access level for any group defined in the file from that point on.
 
 All variables seen by any one thorn must have distinct names.
 
-\subsection{The \texttt{param.ccl} File}
+\subsubsection{The \texttt{param.ccl} File}
 \label{subsec:param_ccl}
 
 Users control the operation of thorns via parameters given in a file
@@ -438,7 +438,7 @@ Note that you must compile at least one thorn which implements \texttt{einstein}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{The \texttt{schedule.ccl} File}
+\subsubsection{The \texttt{schedule.ccl} File}
 \label{subsec:schedule_ccl}
 By default, no routine of a thorn will be run.  The \texttt{schedule.ccl}
 file defines those that should be run, and when and under which
@@ -619,7 +619,7 @@ schedule WaveBinary AT evol AFTER WaveToy_Evolution
 } "Provide binary source during evolution"
 \end{verbatim}
 
-\subsubsection{Storage Outside of Schedule Blocks}
+\paragraph{Storage Outside of Schedule Blocks}
 The keyword \texttt{STORAGE} can also be used outside of the schedule
 blocks to indicate that storage for these groups should be switched on
 at the start of the run. Note that the storage is only allocated in
@@ -631,7 +631,7 @@ timelevels to activate storage for.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{The \texttt{configuration.ccl}}
+\subsubsection{The \texttt{configuration.ccl}}
 \label{subsec:configuration_ccl}
 
 [{\bf NOTE:} the \texttt{configuration.ccl} is a new feature, and not all the
@@ -725,7 +725,7 @@ Appendix \ref{sec:Appendix.configuration.ccl.configscript}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Naming Conventions for Source Files}
+\subsection{Naming Conventions for Source Files}
 \label{nacofosofi}
 
 The make system uses file extensions to designate coding language,
@@ -776,7 +776,7 @@ however.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Adding Source Files}
+\subsection{Adding Source Files}
 
 By default, the CCTK looks in the \texttt{src} directory of the thorn for source
 files.
@@ -786,7 +786,7 @@ There are two ways in which to specify the sources.  The easiest is to use the
 may instead put a \texttt{Makefile} in the \texttt{src} directory and do everything
 yourself.
 
-\subsection{\texttt{make.code.defn} based thorn building}
+\subsubsection{\texttt{make.code.defn} based thorn building}
 \label{sec:mabathbu}
 
 This is the standard way to compile your thorn's source files.
@@ -810,7 +810,7 @@ for files in that directory, can contain additional make rules and dependencies
 for files in that directory.  See the GNU Make documentation for complete details of the
 syntax.
 
-\subsection{\texttt{Makefile} based thorn building}
+\subsubsection{\texttt{Makefile} based thorn building}
 
 This method gives you the ultimate responsibility.
 The only requirement is that
@@ -839,7 +839,7 @@ files should end up if they need to be seen by other thorns.
 and has a working directory of
 \texttt{<\var{config}>/build/<\var{thorn\_name}>} .
 
-\subsection{Other makefile variables}
+\subsubsection{Other makefile variables}
 
 \begin{itemize}
 \item \texttt{CPP}: The C preprocessor which is used to preprocess C
@@ -869,7 +869,7 @@ and has a working directory of
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Cactus Variables}
+\section{Cactus Variables}
 \label{chap:cactus_variables}
 
 A \textit{grid variable} is a Cactus program variable passed among thorns,
@@ -918,7 +918,7 @@ Currently, the names of groups and variables must be distinct.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Data Type}
+\subsection{Data Type}
 
 Cactus supports integer, real, complex and character variable types, in
 various different sizes.  (Sizes in the following refer to the number of
@@ -945,7 +945,7 @@ quickly with a lower accuracy.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Group Types}
+\subsection{Group Types}
 \label{sec:cactus_variables-groups}
 
 Groups can be either \textit{scalars}, \textit{grid functions} (GFs), or
@@ -975,7 +975,7 @@ quicker methods available for GFs.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Timelevels}
+\subsection{Timelevels}
 
 These are best introduced by an example using finite differencing.
 Consider the 1-D wave equation
@@ -1032,7 +1032,7 @@ values at the previous timelevels do need to be explicitly filled out.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Size and Distrib}
+\subsection{Size and Distrib}
 
 A Cactus grid function or array has a size set at runtime by parameters.
 This size can either be the global size of the array across all processors
@@ -1044,7 +1044,7 @@ responsible for assigning the size on each processor.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Ghost Zones}
+\subsection{Ghost Zones}
 \label{sec:ghost_size}
 
 Cactus is based upon a \textit{distributed computing} paradigm.  That is,
@@ -1101,7 +1101,7 @@ ghostzones as your stencil size requires.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Staggering}
+\subsection{Staggering}
 \label{sec:staggering}
 
 The staggering of a grid function or array describes the \emph{physical}
@@ -1160,12 +1160,12 @@ points (arrows) are accessed by the same indices.}
 \label{fig:stagger1}
 \end{figure}
 
-\section{Information about Grid Variables}
+\subsection{Information about Grid Variables}
 
 The flesh holds a database with information related to grid variables, and
 provides a set of querying APIs.
 
-\subsection{Group Information}
+\subsubsection{Group Information}
 
 Fundamental information about grid functions (e.g.\ local grid size and
 location, number of ghostzones) is passed through the argument list of
@@ -1210,7 +1210,7 @@ the information is requested using a group name (\texttt{GN}) or index
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Cactus Parameters}
+\section{Cactus Parameters}
 \label{chap:Cactus_parameters}
 
 Parameters are the means by which the user specifies the runtime behaviour of
@@ -1247,7 +1247,7 @@ each thorn using the Cactus command line options \texttt{-o} and \texttt{-O}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Types and Ranges}
+\subsection{Types and Ranges}
 \label{sec:Parameters.Types_and_Ranges}
 
 Parameters can be of these types:
@@ -1266,7 +1266,7 @@ Each parameter can be validated against a set of allowed
 The nature
 of the range is determined by the type of parameter, as follows:
 
-\subsection{Int}
+\subsubsection{Int}
 
 The range specification is of the form
 
@@ -1285,7 +1285,7 @@ means the value must be an odd number between one and twenty-one
 A missing end of range (or a `\texttt{*}') indicates negative or positive
 infinity, and the default stride is one.
 
-\subsection{Real}
+\subsubsection{Real}
 
 The range specification is of the form
 \begin{alltt}
@@ -1305,16 +1305,16 @@ double, then C will typecast appropriately.  If you \emph{really} want to
 specify a single precision floating constant, or a long double
 constant, append the number with {\t f} or {\t l} respectively.)
 
-\subsection{Keyword}
+\subsubsection{Keyword}
 
 The range specification consists of a string, which will be matched in
 a case insensitive manner.
 
-\subsection{Boolean}
+\subsubsection{Boolean}
 
 There is no range specification for this type of parameter.
 
-\subsection{String}
+\subsubsection{String}
 
 The range is a POSIX regular expression.  On some machines you may be
 able to use extended regular expressions, but this is not guaranteed
@@ -1322,7 +1322,7 @@ to be portable.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Scope}
+\subsection{Scope}
 \label{sec:Cactus_parameters.scope}
 
 Parameters can be \texttt{GLOBAL}, \texttt{RESTRICTED}, or \texttt{PRIVATE}.
@@ -1331,7 +1331,7 @@ are visible to any thorn which chooses to \texttt{USE} or \texttt{EXTEND}
 it.  A private parameter is only visible to the thorn which declares
 it.
 
-\section{Steerable}
+\subsection{Steerable}
 \label{sec:Cactus_parameters.steerable}
 A parameter can be changed dynamically if it is specified to be
 \textit{steerable} (see
@@ -1343,7 +1343,7 @@ of this function).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Scheduling}
+\section{Scheduling}
 \label{chap:scheduling}
 
 Cactus contains a rule-based scheduling system, which determines which
@@ -1385,7 +1385,7 @@ Each schedule item is scheduled either \texttt{AT} a particular
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Schedule Bins}
+\subsection{Schedule Bins}
 \label{scheduling:schedule_bins}
 
 These are the main times at which scheduled functions are run, from
@@ -1403,7 +1403,7 @@ in the \texttt{schedule.ccl} file.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Groups}
+\subsection{Groups}
 \label{scheduling:groups}
 
 If the optional \texttt{GROUP} specifier is used, the item is a schedule
@@ -1414,7 +1414,7 @@ AT} the main schedule bins.  (That is, groups may be nested.)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Schedule Options}
+\subsection{Schedule Options}
 \label{scheduling:schedule_options}
 The options define various characteristics of the schedule item.
 
@@ -1476,7 +1476,7 @@ scheduler will abort with a fatal error.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{The Schedule Block}
+\subsection{The Schedule Block}
 \label{scheduling:schedule_block}
 
 The schedule block specifies further details of the scheduled function
@@ -1506,7 +1506,7 @@ given in Appendix~\ref{app:allopts}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{How Cactus Calls Scheduled Functions}
+\subsection{How Cactus Calls Scheduled Functions}
 \label{scheduling:calling_scheduled_functions}
 
 For each scheduled function called, the flesh performs a variety of jobs
@@ -1536,11 +1536,11 @@ returned to the original state.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Writing a Thorn}
+\section{Writing a Thorn}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Thorn Programming Languages}
+\subsection{Thorn Programming Languages}
 
 When you start writing a new thorn, the first decision to make is
 which programming language to use. The source code in Cactus thorns
@@ -1569,7 +1569,7 @@ use machine dependent extensions.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{What the Flesh Provides}
+\subsection{What the Flesh Provides}
 
 The flesh provides for thorns:
 \begin{Lentry}
@@ -1588,7 +1588,7 @@ The flesh provides for thorns:
 \end{Lentry}
 
 
-\subsection{Fortran Routines}
+\subsubsection{Fortran Routines}
 
 Any source file using Cactus infrastructure should include
 the header file \texttt{cctk.h} using the line
@@ -1599,7 +1599,7 @@ the header file \texttt{cctk.h} using the line
 header file---most Cactus files are run through a C preprocessor
 before compilation.)
 
-\subsubsection{Variables}
+\paragraph{Variables}
 
 Any routine using Cactus argument lists (for example, all routines called from
 the scheduler at time bins between {\t CCTK\_STARTUP} and {\t CCTK\_SHUTDOWN})
@@ -1630,7 +1630,7 @@ Note that you cannot use Cactus argument lists in routines scheduled at the
 no grid hierarchy exists.
 
 
-\subsubsection{Parameters}
+\paragraph{Parameters}
 
 All parameters defined in a thorn's \texttt{param.ccl} and all \texttt{global}
 parameters, appear as local variables of the corresponding \texttt{CCTK} data type
@@ -1674,7 +1674,7 @@ a Fortran string. Instead, the following is needed:
 
 
 
-\subsubsection{Fortran Example}
+\paragraph{Fortran Example}
 
 The Fortran routine, \verb|MyFRoutine|, is scheduled in the {\tt
 schedule.ccl} file, doesn't use Cactus parameters, and calls another
@@ -1717,7 +1717,7 @@ c     Main code goes here
 
 \end{verbatim}
 
-\subsubsection{Cactus Fortran Functions}
+\paragraph{Cactus Fortran Functions}
 
 Cactus Fortran functions, for example, \texttt{CCTK\_MyProc} and {\tt
 CCTK\_Equals}, can all be declared by adding the statement
@@ -1735,7 +1735,7 @@ DECLARE_CCTK_FUNCTIONS
 to a module or a subroutine after the \texttt{implicit none}
 statement, but before any executable code.
 
-\subsubsection{Fortran Modules}
+\paragraph{Fortran Modules}
 
 Fortran modules should be placed into source files that have the same
 name as the module, followed by the corresponding file name suffix.  A
@@ -1754,7 +1754,7 @@ MyModule.F90}, then add the line:
 MyRoutine.F90.o:         MyModule.F90.o
 \end{verbatim}
 
-\subsubsection{The \texttt{MOD} function}
+\paragraph{The \texttt{MOD} function}
 
 The intrinsic function \texttt{MOD} in Fortran takes two integer
 arguments, which should both be of the same type. This means
@@ -1768,7 +1768,7 @@ MOD(cctk_iteration,INT(MyParameter))
 \end{verbatim}
 
 
-\subsection{C Routines}
+\subsubsection{C Routines}
 
 Any source file using Cactus infrastructure should include
 the header file \texttt{cctk.h} using the line
@@ -1776,7 +1776,7 @@ the header file \texttt{cctk.h} using the line
 #include "cctk.h"
 \end{verbatim}
 
-\subsubsection{Variables}
+\paragraph{Variables}
 
 Any routine using Cactus argument lists (for example, all routines called from
 the scheduler at time bins between {\t CCTK\_STARTUP} and {\t CCTK\_SHUTDOWN}),
@@ -1808,7 +1808,7 @@ Note that you cannot use Cactus argument lists in routines scheduled at the
 no grid hierarchy exists.
 
 
-\subsubsection{Parameters}
+\paragraph{Parameters}
 
 All parameters defined in a thorn's \texttt{param.ccl} and all \texttt{global}
 parameters, appear as local variables of the corresponding \texttt{CCTK} data type
@@ -1827,7 +1827,7 @@ the top of the file the header
 The parameters should be declared as the last statement in the declaration part
 of the routine using them with the macro \texttt{DECLARE\_CCTK\_PARAMETERS}.
 
-\subsubsection{Example}
+\paragraph{Example}
 
 The C routine \verb|MyCRoutine| is scheduled in the \texttt{schedule.ccl} file,
 and uses Cactus parameters. The source file should look like
@@ -1845,7 +1845,7 @@ void MyCRoutine(CCTK_ARGUMENTS)
 }
 \end{verbatim}
 
-\subsubsection{Complex variables}
+\paragraph{Complex variables}
 
 Cactus supports complex grid variables, and since there is no
 complex data type in C, Cactus provides a number
@@ -1858,7 +1858,7 @@ functionality available in Fortran. These functions are \texttt{CCTK\_Cmplx},
 See the Reference Manual for more details.
 
 
-\subsubsection{Specifically for C Programmers}
+\paragraph{Specifically for C Programmers}
 
 Grid functions are held in memory as 1-dimensional C arrays. These are laid
 out in memory as in Fortran. This means that the first index should
@@ -1888,7 +1888,7 @@ Here, \verb|CCTK_GFINDEX3D(cctkGH,i,j,k)| expands to
 ((i) + cctkGH->cctk_lsh[0]*((j)+cctkGH->cctk_lsh[1]*(k)))
 \end{verbatim}
 
-\subsection{Cactus Variables}
+\subsubsection{Cactus Variables}
 \label{sec:cactus_variables_c}
 
 The Cactus variables which are passed through the macro
@@ -2039,7 +2039,7 @@ int i,j,k;
 \label{fig-global-xyz-coords}
 \end{figure}
 
-\subsection{Cactus Data Types}
+\subsubsection{Cactus Data Types}
 
 To provide portability across platforms, the Cactus grid variables and parameters are defined and
 declared using Cactus data types. The most important of
@@ -2057,7 +2057,7 @@ declarations.
 
 \end{Lentry}
 
-\subsubsection{Example}
+\paragraph{Example}
 
 In the following example, \verb|MyScalar| is a grid scalar which
 is declared in the \texttt{interface.ccl} as \texttt{CCTK\_REAL}.
@@ -2081,10 +2081,10 @@ Declaring \texttt{local\_var} to have a non-Cactus data type, e.g.\
 described in Section~\ref{sec:datyansi}, could give problems for
 different architectures or configurations.
 
-\subsection{Staggering}
+\subsubsection{Staggering}
 \label{sec:st}
 
-\subsubsection{Indexing, ghostzones, etc.}
+\paragraph{Indexing, ghostzones, etc.}
 Note that staggering does not make any changes to the indexing of a
 grid function: the black solid circles in diagram \ref{fig:stagger2} and their
 associated staggered grid functions (connected by arrows) have the same index!
@@ -2104,7 +2104,7 @@ Note that the number of center staggered gridpoints (fat crosses)
 corresponds to the number of default gridpoints on all processors but
 the last one. (The same is true for full staggered gridpoints).
 
-\subsubsection{Staggertypes}
+\paragraph{Staggertypes}
 The string specifying the staggering is encoded in a number called
 the \textit{staggerindex}. With the 3 supported staggerings, the string
 is converted into a base 3 number. Several routines exist to extract the
@@ -2225,7 +2225,7 @@ staggerindex.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Parallelisation}
+\subsection{Parallelisation}
 \label{sec:parallelisation}
 
 The flesh itself does not actually set up grid variables. This
@@ -2240,7 +2240,7 @@ for the application thorn writer. A more detailed description
 of these interfaces with their arguments, is given in the Reference Manual.
 A complete description of the
 routines that a driver thorn must provide, will be provided in the
-Infrastructure Thorn Writers Guide (Part \ref{part:Infrastructure}). The standard driver thorn is
+Infrastructure Thorn Writers Guide (Part \ref{chap:infrastructure}). The standard driver thorn is
 currently \texttt{PUGH} in the \texttt{CactusPUGH} package, which
 is a parallel unigrid driver.
 
@@ -2259,11 +2259,11 @@ is a parallel unigrid driver.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Cactus Application Interfaces}
+\section{Cactus Application Interfaces}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Coordinates}
+\subsection{Coordinates}
 \label{sec:CactusAPI.coordinates}
 
 The flesh provides utility routines for registering and querying
@@ -2293,7 +2293,7 @@ an associated integer known as a \textit{handle}. Passing a handle instead
 of the name string may be necessary for calling C routines from Fortran.
 
 
-\subsection{Registering Coordinates and Coordinate Properties}
+\subsubsection{Registering Coordinates and Coordinate Properties}
 
 \textbf{The APIs described in this section are deprecated, and will
 probably be phased out fairly soon.
@@ -2375,7 +2375,7 @@ ierr = CCTK_CoordRegisterPhysIndex(cctkGH, loweri, upperi, -1, "y", "cart3d");
 
 \end{Lentry}
 
-\subsection{Using Coordinates}
+\subsubsection{Using Coordinates}
 
 \textbf{The APIs described in this section are deprecated, and will
 probably be phased out fairly soon.
@@ -2556,7 +2556,7 @@ should usually be the case.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{I/O}
+\subsection{I/O}
 \label{sec:io}
 
 To allow flexible I/O, the flesh itself does not provide any output
@@ -2618,7 +2618,7 @@ name of the variable for the purpose of constructing a filename.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Interpolation Operators}
+\subsection{Interpolation Operators}
 \label{sec:inop}
 
 The flesh does not provide interpolation routines by itself. Instead,
@@ -2712,7 +2712,7 @@ name.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Reduction Operators}
+\subsection{Reduction Operators}
 \label{sec:reop}
 
 A reduction operation can be defined as an operation on variables
@@ -3133,11 +3133,11 @@ the reduction call is made.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Completing a Thorn}
+\section{Completing a Thorn}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Commenting Source Code}
+\subsection{Commenting Source Code}
 
 Note that since most source files (see Section~\ref{nacofosofi} for
 exceptions) pass through a C preprocessor, C style comments can be
@@ -3151,7 +3151,7 @@ source code.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Providing Runtime Information}
+\subsection{Providing Runtime Information}
 \label{sec:prrutiin}
 
 To write from thorns to standard output (i.e. the screen)
@@ -3217,8 +3217,8 @@ Note that
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Error Handling, Warnings and Code Termination}
-\sectionmark{Error handling, ...}
+\subsection{Error Handling, Warnings and Code Termination}
+\subsectionmark{Error handling, ...}
 \label{sec:erhawancote}
 The Cactus function \texttt{CCTK\_VWarn()}, and its accompanying
 \texttt{CCTK\_WARN} macro, should be used to issue warning messages
@@ -3375,7 +3375,7 @@ CCTK_InfoCallbackRegister(void *data, cctk_infofunc my_infofunc);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Adding Documentation}
+\subsection{Adding Documentation}
 \label{sec:Adding_documentation}
 
 Documentation is a vital part of your thorn, helping to ensure its
@@ -3385,13 +3385,13 @@ to a thorn (ideally in the \texttt{doc} directory), there are two
 standard places for adding thorn documentation, a \texttt{README} and a
 \texttt{doc/documentation.tex} file for including in Thorn Guides.
 
-\subsection{\texttt{README}}
+\subsubsection{\texttt{README}}
 
 The \texttt{README}, in the top level of a thorn, should contain brief
 and essential details about the thorn, such as the authors, any
 copyright details, and a synopsis of what the thorn does.
 
-\subsection{Contribution to Thorn Guide}
+\subsubsection{Contribution to Thorn Guide}
 
 The LaTeX file, \texttt{doc/documentation.tex}, is included in Thorn Guides
 built by the Cactus make system. (e.g.\ by \texttt{gmake
@@ -3504,7 +3504,7 @@ and
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Adding a Test Suite}
+\subsection{Adding a Test Suite}
 \label{sec:adding_test_suite}
 
 To add a test suite to your thorn, devise a series of parameter
@@ -3581,7 +3581,7 @@ and a relative tolerance of $10^{-12}$ when running all other tests.
 
 For details on running the test suites, see Section~\ref{sec:testing}.
 
-\subsection{Best Practices for Test Suites}
+\subsubsection{Best Practices for Test Suites}
 
 When writing a test suite, there are a few things you should keep in
 mind:
@@ -3622,14 +3622,14 @@ mind:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Advanced Thorn Writing}
+\section{Advanced Thorn Writing}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Using Cactus Timers}
+\subsection{Using Cactus Timers}
 \label{sec:timers}
 
-\subsection{What are Timers?}
+\subsubsection{What are Timers?}
 
 %The standard timing information available during a simulation was
 %described in Section~\ref{????}.
@@ -3661,7 +3661,7 @@ Setting the flesh parameter \texttt{cactus::cctk\_timer\_output = "full"}
 will cause some summary timing information to be printed at the end of a run. 
 Some other thorns have their own timer printing parameters as well.
 
-\subsection{Timing Calls}
+\subsubsection{Timing Calls}
 
 Many of the timing calls come in two versions, one whose name ends with 
 the letter \texttt{I}, and one without.  The calls whose names end with the 
@@ -3746,7 +3746,7 @@ from the {\t cTimerVal} pointer argument.
 
 \end{Lentry}
 
-\subsection{How to Insert Timers in your Code}
+\subsubsection{How to Insert Timers in your Code}
 
 The function prototypes and structure definitions are contained in the
 include file \texttt{cctk\_Timers.h}, which is included in the standard
@@ -3813,7 +3813,7 @@ this structure.  After using the structure, you should destroy it.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Include Files}
+\subsection{Include Files}
 \label{sec:includefiles}
 
 Cactus provides a mechanism for thorns to add code to
@@ -3843,7 +3843,7 @@ to this include file, declares in its own \texttt{interface.ccl}
 INCLUDE [SOURCE|HEADER]: <\var{file_to_include}> in <\var{file_name}>
 \end{alltt}
 
-\subsubsection{Example}
+\paragraph{Example}
 
 As an example of this in practice, for the case of Fortran code,
 consider a thorn A, which
@@ -3888,7 +3888,7 @@ the declaration \texttt{DECLARE\_CCTK\_FUNCTIONS}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Memory Tracing}
+\subsection{Memory Tracing}
 \label{sec:metr}
 
 Cactus provides a mechanism for overriding the standard C memory
@@ -3899,7 +3899,7 @@ to provide an understanding of the memory consumption between two
 instances, and to track down possible memory leaks. This feature is
 available in C only.
 
-\subsection{Activating Memory Tracing}
+\subsubsection{Activating Memory Tracing}
 \label{sec:acmetr}
 
 Memory tracing has to be activated at configure time. The standard
@@ -3925,7 +3925,7 @@ The new configuration \texttt{bigbuild} is configured with all debugging
 features turned on. The already existing configuration \texttt{bigbuild}
 is reconfigured with memory tracing only.
 
-\subsection{Using Memory Tracing}
+\subsubsection{Using Memory Tracing}
 \label{sec:usmetr}
 
 You can  request Cactus to store the memory consumption at a certain
@@ -3999,10 +3999,10 @@ CCTK_MemTicketDelete(t2);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section[Calls to different language]{Calls between Different Programming Languages}
+\subsection[Calls to different language]{Calls between Different Programming Languages}
 %\pagestyle{empty}
 
-\subsection{Calling C Routines from Fortran}
+\subsubsection{Calling C Routines from Fortran}
 \label{sec:cacrofr}
 
 To make the following C routine,
@@ -4051,7 +4051,7 @@ void CCTK_FCALL CCTK_FNAME(MyCRoutine)(CCTK_INT *arg1,
 }
 \end{verbatim}
 
-\subsection{String Arguments from Fortran}
+\subsubsection{String Arguments from Fortran}
 
 Fortran passes string arguments in a special, compiler-dependent, way.
 To facilitate this, the CCTK provides a set of macros to enable the
@@ -4177,7 +4177,7 @@ automatically-created variables, e.g.\ \texttt{cctk\_strlen1},
 which hold the sizes of original Fortran strings.
 When writing to a string its length should never be exceeded.
 
-\subsection{Calling Fortran Routines from C}
+\subsubsection{Calling Fortran Routines from C}
 \label{sec:caforofr}
 
 To call a utility Fortran routine from C, use
@@ -4193,7 +4193,7 @@ strings from C. However, passing routines is supported when you use function ali
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Function aliasing}
+\subsection{Function aliasing}
 \label{sec:function_aliasing}
 
 Like calling functions in a different language, Cactus offers a
@@ -4216,7 +4216,7 @@ declarations may go into a new \texttt{functions.ccl} file, and will
 have a format more similar to that of variable group and parameter
 declarations.
 
-\subsection{Using an Aliased Function}
+\subsubsection{Using an Aliased Function}
 
 To use an aliased function you must first declare it in your 
 \texttt{interface.ccl} file. Declare the prototype as, for example,
@@ -4246,7 +4246,7 @@ Functions which are required by some thorn (which doesn't provide it itself)
 are checked at startup to be provided by some other thorn.
 
 
-\subsection{Providing a Function}
+\subsubsection{Providing a Function}
 
 To provide an aliased function you must again add the prototype to
 your \texttt{interface.ccl} file. A statement containing the name of the
@@ -4265,7 +4265,7 @@ It is necessary to specify the language of the providing function; no
 default will be assumed.
 
 
-\subsection{Conventions and Restrictions}
+\subsubsection{Conventions and Restrictions}
 
 Various restrictions are necessary to make function aliasing
 work. These are
@@ -4311,7 +4311,7 @@ CCTK_REAL Integrate(CCTK_REAL CCTK_FPOINTER  func(CCTK_REAL IN x), \
 \end{itemize}
 
 
-\subsection{Examples}
+\subsubsection{Examples}
 
 \begin{itemize}
 \item A C function is provided to add together two real numbers. The {\tt
@@ -4343,7 +4343,7 @@ CCTK_REAL Integrate(CCTK_REAL CCTK_FPOINTER  func(CCTK_REAL IN x), \
 
 \end{itemize}
 
-\subsection{Testing Aliased Functions}
+\subsubsection{Testing Aliased Functions}
 
 The calling thorn does not know if an aliased function is even
 provided by another thorn. Calling an aliased function that has not
@@ -4354,7 +4354,7 @@ function reference section.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Naming Conventions}
+\subsection{Naming Conventions}
 
 \begin{itemize}
 
@@ -4372,7 +4372,7 @@ function reference section.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{General Naming Conventions}
+\subsection{General Naming Conventions}
 
 The following naming conventions are followed by the flesh and the
 supported Cactus arrangements. They are not compulsory, but if followed, will
@@ -4391,7 +4391,7 @@ allow for a homogeneous code.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Data Types and Sizes}
+\subsection{Data Types and Sizes}
 \label{sect-ThornWriting/DataTypes}
 \label{sec:datyansi}
 
@@ -4508,7 +4508,7 @@ be used from either C or Fortran:
 \end{center}
 
 
-\subsection{Fortran Thorn Writers}
+\subsubsection{Fortran Thorn Writers}
 
 Cactus provides the data types \texttt{CCTK\_POINTER} and
 \texttt{CCTK\_POINTER\_TO\_CONST} for use in Fortran code to declare a
@@ -4597,26 +4597,25 @@ variables are read, not when they are written to.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Telling the Make system What to Do}
+\section{Telling the Make system What to Do}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Basic Recipe}
+\subsection{Basic Recipe}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Make Concepts}
+\subsection{Make Concepts}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{The Four Files}
+\subsection{The Four Files}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{How your code is built}
+\subsection{How your code is built}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\end{cactuspart}
