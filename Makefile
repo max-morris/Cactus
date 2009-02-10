@@ -19,7 +19,7 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.181 2009-02-03 03:19:19 schnetter Exp $
+#   @version $Id: Makefile,v 1.182 2009-02-10 22:53:25 schnetter Exp $
 # @@*/
 
 ################################################################################
@@ -64,8 +64,12 @@ endif
 export TPARFLAGS FPARFLAGS
 
 # Directory for configuration options
+# Set THORNLIST_DIR to "." if it is not set already, and if THORNLIST
+# does not contain an absolute patch (starting with a slash)
 ifeq ($(strip $(THORNLIST_DIR)), )
+ifeq ($(shell echo $(THORNLIST) | grep '^/'), )
 THORNLIST_DIR = "."
+endif
 endif
 
 # End of parallel make stuff
