@@ -102,7 +102,7 @@ void CCTKi_CactusBanner (void)
   Util_CurrentTime (DATALENGTH, buffer);
   printf (" (%s)\n", buffer);
   Util_GetHostName (buffer, DATALENGTH);
-  printf ("Run host:          %s\n", buffer);
+  printf ("Run host:          %s (pid=%d)\n", buffer, (int) getpid());
   if (getcwd (buffer, DATALENGTH))
   {
     printf ("Working directory: %s\n", buffer);
