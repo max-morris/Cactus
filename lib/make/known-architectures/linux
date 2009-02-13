@@ -67,7 +67,7 @@ else
       if test "`/opt/absoft/bin/f95 -V foo.f 2>&1 | grep Absoft`" ; then
         LINUX_F90_COMP=absoft
       else
-        echo "Unknown Linux f90 compiler '$LINUX_F90_COMP'."
+        echo "Unknown Linux f90 compiler '$F90'."
         echo 'Please add appropriate information to'
         echo "  $srcdir/known-architectures/linux"
         echo 'and send the updated file to CactusMaint'
@@ -347,7 +347,7 @@ else
       : ${LIBS='m'}
       ;;
     *)
-      echo "Unknown Linux f90 compiler '$LINUX_F90_COMP'."
+      echo "Unknown Linux f90 compiler '$F90'."
       echo 'Please add appropriate information to'
       echo "  $srcdir/known-architectures/linux-gnu"
       echo 'and send the updated file to CactusMaint'
