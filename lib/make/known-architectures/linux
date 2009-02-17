@@ -403,7 +403,7 @@ else
        icc_opt=''
      fi
      if test $icc_version -ge 8; then
-       icc_c99='-std=gnu99'
+       icc_c99='-std=c99 -U__STRICT_ANSI__'
      else
        icc_c99='-c99'
      fi
