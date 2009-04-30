@@ -46,6 +46,15 @@ CCTK_FILEVERSION(main_ScheduleInterface_c);
 typedef enum {sched_none, sched_group, sched_function} iSchedType;
 typedef enum {schedpoint_misc, schedpoint_analysis} iSchedPoint;
 
+/* Timer data for a routine in a given schedule bin */
+typedef struct t_timer
+{
+  struct t_timer *next;
+  int timer_handle;
+  char *schedule_bin;
+  int has_been_output;
+} t_timer;
+
 typedef struct
 {
   /* Static data */
@@ -66,8 +75,7 @@ typedef struct
   int *comm_groups;
 
   /* Timer data */
-
-  int timer_handle;
+  t_timer *timers;
 
   /* Dynamic data */
   int *CommOnEntry;
@@ -82,6 +90,8 @@ typedef struct
 {
   cGH *GH;
   iSchedPoint schedpoint;
+  const char *schedule_bin;
+  unsigned int n_functions;
 
   cTimerData *info;
   cTimerData *total_time;
@@ -182,6 +192,9 @@ static void CCTKi_SchedulePrintTimerInfo(cTimerData *info,
                                          FILE *file);
 static void CCTKi_SchedulePrintTimerHeaders(cTimerData *info,
                                             FILE *file);
+static int CCTKi_ScheduleResetTimerOutputFlag(void *function,
+                                              t_attribute *attribute,
+                                              t_sched_data *data);
 static void PrintDelimiterLine (char delimiter,
                                 const cTimerData *timer,
                                 FILE *file);
@@ -1090,6 +1103,7 @@ int CCTK_SchedulePrintTimesToFile(const char *where, FILE *file)
   }
 
   data.GH = NULL;
+  data.schedule_bin = where;
   data.schedpoint = schedpoint_misc;
   data.print_headers = 1;
   data.file = file;
@@ -1259,7 +1273,8 @@ static int ScheduleTraverse(const char *where,
 
   data.GH = (cGH *)GH;
   data.CallFunction = CallFunction ? CallFunction : CCTK_CallFunction;
-  data.schedpoint = CCTK_Equals(where, "CCTK_ANALYSIS") ?
+  data.schedule_bin = where;
+  data.schedpoint = CCTK_Equals(data.schedule_bin, "CCTK_ANALYSIS") ?
                     schedpoint_analysis : schedpoint_misc;
   calling_function = CCTKi_ScheduleCallFunction;
 
@@ -1358,7 +1373,6 @@ static t_attribute *CreateAttribute(const char *where,
                                     const int *timelevels,
                                     va_list *ap)
 {
-  static int timernum = 0;
   char *timername;
   t_attribute *this;
   int i;
@@ -1442,27 +1456,7 @@ static t_attribute *CreateAttribute(const char *where,
       this->FunctionData.n_TriggerGroups = n_trigger_groups;
       this->FunctionData.n_SyncGroups = n_sync_groups;
 
-      /* Add a timer to the item */
-      timername = malloc (strlen (thorn) + strlen (name) +
-                          strlen (where) + 100);
-      if (!timername)
-      {
-        CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                    "Could not allocate memory for timer");
-        this->timer_handle = -1;
-      }
-      else
-      {
-        sprintf (timername, "[%04d] %s: %s in %s",
-                 timernum++, thorn, name, where);
-        this->timer_handle = CCTK_TimerCreate(timername);
-        if (this->timer_handle < 0)
-        {
-          CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                      "Could not create timer with name '%s'", timername);
-        }
-        free (timername);
-      }
+      this->timers = NULL;
     }
     else
     {
@@ -1955,6 +1949,7 @@ static int SchedulePrint(const char *where)
   t_sched_data data;
 
   data.GH = NULL;
+  data.schedule_bin = where;
   data.schedpoint = schedpoint_misc;
 
   if(where)
@@ -2014,14 +2009,22 @@ static int SchedulePrintTimes(const char *where, t_sched_data *data)
 
   if(where)
   {
+    data->schedule_bin = where;
     memset (data->total_time->vals, 0,
             data->total_time->n_vals * sizeof (data->total_time->vals[0]));
 
     retcode = CCTKi_DoScheduleTraverse(where, NULL, NULL, NULL, NULL,
+       (int (*)(void *, void *, void *)) CCTKi_ScheduleResetTimerOutputFlag,
+       NULL);
+
+    data->n_functions = 0;
+    retcode = CCTKi_DoScheduleTraverse(where, NULL, NULL, NULL, NULL,
        (int (*)(void *, void *, void *)) CCTKi_SchedulePrintTimesFunction,
        (void *)data);
 
-    if (retcode >= 0)
+    /* print total time for this schedule bin
+       if any routines have been called in it */
+    if (retcode >= 0 && data->n_functions > 0)
     {
       for (i = 0; i < data->total_time->n_vals; i++)
       {
@@ -2671,9 +2674,62 @@ static int CCTKi_ScheduleCallFunction(void *function,
                                       t_attribute *attribute,
                                       t_sched_data *data)
 {
-  if (attribute->timer_handle >= 0)
+  /* find the timer for this function and this schedule bin */
+  t_timer *timer = attribute->timers;
+  while (timer && strcmp(timer->schedule_bin, data->schedule_bin))
   {
-    CCTK_TimerStartI(attribute->timer_handle);
+    timer = timer->next;
+  }
+
+  /* create the timer if it doesn't exist yet */
+  if (! timer)
+  {
+    /* build a unique name for this timer */
+    const char *thorn = attribute->FunctionData.thorn;
+    const char *name = attribute->FunctionData.routine;
+    const char *where = data->schedule_bin;
+    char *timername = malloc (strlen (thorn) + strlen (name) +
+                              strlen (where) + 20);
+    if (! timername)
+    {
+      CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                  "Could not allocate memory for timer name");
+    }
+    else
+    {
+      static int timernum = 0;
+      sprintf (timername, "[%04d] %s: %s in %s", timernum++, thorn, name,where);
+      const int timer_handle = CCTK_TimerCreate(timername);
+      if (timer_handle < 0)
+      {
+        CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                    "Could not create timer with name '%s'", timername);
+      }
+      else
+      {
+        timer = malloc (sizeof (*timer));
+        if (! timer)
+        {
+          CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                      "Could not allocate memory for timer with name '%s'",
+                      timername);
+          CCTK_TimerDestroy (timername);
+        }
+        else
+        {
+          timer->timer_handle = timer_handle;
+          timer->schedule_bin = strdup (where);
+          timer->next = attribute->timers;
+          attribute->timers = timer;
+        }
+      }
+      free (timername);
+    }
+  }
+
+  if (timer)
+  {
+    CCTK_TimerStartI(timer->timer_handle);
   }
 
   /* Use whatever has been chosen as the calling function for this
@@ -2681,9 +2737,9 @@ static int CCTKi_ScheduleCallFunction(void *function,
    */
   attribute->synchronised = data->CallFunction(function, &(attribute->FunctionData), data->GH);
 
-  if (attribute->timer_handle >= 0)
+  if (timer)
   {
-    CCTK_TimerStopI(attribute->timer_handle);
+    CCTK_TimerStopI(timer->timer_handle);
   }
 
   return 1;
@@ -2730,9 +2786,16 @@ static int CCTKi_SchedulePrintTimesFunction(void *function,
   /* prevent compiler warnings about unused parameters */
   function = function;
 
-  if (attribute->timer_handle >= 0)
+  /* find the timer for this function and this schedule bin */
+  t_timer *timer = attribute->timers;
+  while (timer && strcmp(timer->schedule_bin, data->schedule_bin))
   {
-    CCTK_TimerI(attribute->timer_handle, data->info);
+    timer = timer->next;
+  }
+  if (timer && ! timer->has_been_output)
+  {
+    timer->has_been_output = 1;
+    CCTK_TimerI(timer->timer_handle, data->info);
 
     if(data->print_headers)
     {
@@ -2745,10 +2808,7 @@ static int CCTKi_SchedulePrintTimesFunction(void *function,
                                  attribute->FunctionData.thorn,
                                  attribute->description,
                                  data->file);
-  }
-  else
-  {
-    data->total_time->n_vals = 0;
+    data->n_functions++;
   }
 
   return 1;
@@ -2836,6 +2896,26 @@ static void CCTKi_SchedulePrintTimerHeaders (cTimerData *timer, FILE *file)
   fprintf (file, "\n");
 
   PrintDelimiterLine ('=', timer, file);
+}
+
+
+static int CCTKi_ScheduleResetTimerOutputFlag(void *function,
+                                              t_attribute *attribute,
+                                              t_sched_data *data)
+{
+  /* prevent compiler warnings about unused parameters */
+  function = function;
+  data = data;
+
+  /* find the timer for this function and this schedule bin */
+  t_timer *timer = attribute->timers;
+  while (timer)
+  {
+    timer->has_been_output = 0;
+    timer = timer->next;
+  }
+
+  return 1;
 }
 
 
