@@ -188,9 +188,13 @@ sub ParseConfigurationCCL
     }
     elsif($line =~ m/^\s*REQUIRES\s+THORNS\s*:\s*(.*)/i)
     {
-      my $temp = $1;
-      $temp =~ s/\b$thorn\b//i;
-      $cfg->{"\U$thorn\E REQUIRES THORNS"} .= $temp;
+      my $newlist = $1;
+      $newlist =~ s/\b$thorn\b//i;
+      $newlist =~ s/,/ /g;
+      my $oldlist = $cfg->{"\U$thorn\E REQUIRES THORNS"};
+      my $list = $oldlist . ' ' . $newlist;
+      $list = join (' ', sort split (' ', $list));
+      $cfg->{"\U$thorn\E REQUIRES THORNS"} = $list;
 #      if ($cfg->{"\U$thorn\E REQUIRES THORNS"})
 #      {
 #        &CST_error (3, '\'Requires Thorns\' will not be supported in release beta-14' .
