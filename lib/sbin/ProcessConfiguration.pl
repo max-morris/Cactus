@@ -120,22 +120,70 @@ sub ProcessConfiguration
 
   # Ok, can now run the configuration scripts.
 
-  foreach $thorn (sort keys %thorns)
+  my %thorns_todo = ();
+  map { $thorns_todo{"\U$_\E"} = 1; } sort keys %thorns;
+  my %requirements_done = ();
+
+#  print "DEBUG: Processing thorn provisions:\n";
+  while (keys %thorns_todo)
   {
-    foreach $provides (split(' ',$config_database->{"\U$thorn\E PROVIDES"}))
+#    print "DEBUG:    Thorns left to do: " . scalar(%thorns_todo) . "\n";
+#    map { print "DEBUG:       - $_\n"; } sort keys %thorns_todo;
+    my $made_progress = 0;
+    THORN: foreach $thorn (sort keys %thorns_todo)
     {
-      my $script = $config_database->{"\U$thorn\E PROVIDES \U$provides\E SCRIPT"};
-      my $lang   = $config_database->{"\U$thorn\E PROVIDES \U$provides\E LANG"};
+#      print "DEBUG:       Checking thorn $thorn\n";
+      my @provides_list = split(' ',$config_database->{"\U$thorn\E PROVIDES"});
+#      print "DEBUG:          Provides: @provides_list\n";
+      my @requires_list = split(' ',$config_database->{"\U$thorn\E REQUIRES"});
+#      print "DEBUG:          Requires: @requires_list\n";
 
-      if ($script)
+      my %need = ();
+      map { $need{"\U$_\E"} = 1; } @requires_list;
+      map { delete $need{"\U$_\E"}; } @provides_list;
+      map { next THORN unless exists $requirements_done{"\U$_\E"}; } keys %need;
+
+#      print "DEBUG:       Processing thorn $thorn\n";
+      foreach my $provides (@provides_list)
       {
-        print "Running configuration script '$script'\n";
+#        print "DEBUG:          Processing provision $provides\n";
+        my $script = $config_database->{"\U$thorn\E PROVIDES \U$provides\E SCRIPT"};
+        my $lang   = $config_database->{"\U$thorn\E PROVIDES \U$provides\E LANG"};
 
-        &ParseConfigScript($config_dir, $provides, $lang, $script,
-                           $thorn, $config_database);
-        print "\n";
+        if ($script)
+        {
+#          print "DEBUG: Running configuration script '$script'\n";
+  
+          &ParseConfigScript($config_dir, $provides, $lang, $script,
+                             $thorn, $config_database);
+#          print "DEBUG: \n";
+        }
+
+        # Add make definitions to the environment, so that they are
+        # available to the following scripts
+        my $config = $config_database->{"\U$thorn $provides\E MAKE_DEFINITION"};
+        my %options = $config =~ /^\s*(\w+)\s*=(.*)$/mg;
+        foreach my $option (keys %options)
+        {
+          my $value = $options{$option};
+          $value =~ s/^\s*//;
+          $value =~ s/\s*$//;
+#          print "DEBUG: Thorn $thorn, providing $provides, setting \$ENV{$option}=\"$value\"\n";
+          $ENV{$option} = $value;
+        }
+
+        $requirements_done{"\U$provides\E"} = 1;
       }
+
+      delete $thorns_todo{"\U$thorn\E"};
+      $made_progress = 1;
     }
+#    if (! $made_progress)
+#    {
+#      print "DEBUG:    Provided requirements: " . scalar($requirements_done) . "\n";
+#      map { print "DEBUG:       - $_\n"; } sort keys %requirements_done;
+#    }
+    die unless $made_progress;
   }
 }
 
