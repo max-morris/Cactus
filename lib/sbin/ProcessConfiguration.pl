@@ -124,12 +124,13 @@ sub ProcessConfiguration
   map { $thorns_todo{"\U$_\E"} = 1; } sort keys %thorns;
   my %requirements_done = ();
 
+  my $made_progress = 1;
 #  print "DEBUG: Processing thorn provisions:\n";
-  while (keys %thorns_todo)
+  while (keys %thorns_todo and $made_progress)
   {
 #    print "DEBUG:    Thorns left to do: " . scalar(%thorns_todo) . "\n";
 #    map { print "DEBUG:       - $_\n"; } sort keys %thorns_todo;
-    my $made_progress = 0;
+    $made_progress = 0;
     THORN: foreach $thorn (sort keys %thorns_todo)
     {
 #      print "DEBUG:       Checking thorn $thorn\n";
@@ -183,7 +184,7 @@ sub ProcessConfiguration
 #      print "DEBUG:    Provided requirements: " . scalar($requirements_done) . "\n";
 #      map { print "DEBUG:       - $_\n"; } sort keys %requirements_done;
 #    }
-    die unless $made_progress;
+#    die unless $made_progress;
   }
 }
 
