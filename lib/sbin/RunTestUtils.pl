@@ -1241,7 +1241,7 @@ sub ReportOnTest
 
   # Different lines in files
   push (@log, '') if (@log);
-  foreach $file (split(' ',$testdata->{"$thorn $test DATAFILES"}))
+  foreach $file (sort(split(' ',$testdata->{"$thorn $test DATAFILES"})))
   {
     my $key = "$thorn $test $file";
     next unless ($rundata->{"$key NFAILWEAK"} > 0);
