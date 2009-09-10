@@ -39,4 +39,8 @@ CCTK_WriteLine make.extra.defn 'LIBS         += $(MPI_LIBS)'
 CCTK_WriteLine make.extra.defn 'LIBDIRS      += $(MPI_LIB_DIRS)'
 CCTK_WriteLine make.extra.defn 'SYS_INC_DIRS += $(MPI_INC_DIRS)'
 
+else
+
+echo 'Configuring without MPI'
+
 fi
