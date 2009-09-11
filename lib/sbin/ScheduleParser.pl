@@ -560,30 +560,6 @@ sub ParseScheduleStatement
 }
 
 #/*@@
-#  @routine    print_schedule_database
-#  @date       Thu Sep 16 19:13:05 1999
-#  @author     Tom Goodale
-#  @desc
-#  Prints out a schedule database.
-#  @enddesc
-#  @calls
-#  @calledby
-#  @history
-#
-#  @endhistory
-#@@*/
-sub print_schedule_database
-{
-  my(%schedule_database) = @_;
-  my($field);
-
-  foreach $field ( sort keys %schedule_database )
-  {
-    print "$field has value $schedule_database{$field}\n";
-  }
-}
-
-#/*@@
 #  @routine    PrintScheduleStatistics
 #  @date       Sun Sep 19 13:07:08 1999
 #  @author     Tom Goodale

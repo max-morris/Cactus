@@ -347,15 +347,4 @@ sub ParseOptionalBlock
   return ($optional, $define, $line_number);
 }
 
-sub print_configuration_database
-{
-  my($database) = @_;
-  my($field);
-
-  foreach $field ( sort keys %$database )
-  {
-    print "$field has value $database->{$field}\n";
-  }
-}
-
 1;

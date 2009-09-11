@@ -1180,32 +1180,6 @@ sub parse_interface_ccl
   }
 }
 
-
-sub print_interface_database
-{
-  my(%database) = @_;
-  my($field);
-
-  foreach $field ( sort keys %database )
-  {
-    print "$field has value $database{$field}\n";
-  }
-}
-
-sub save_interface_database
-{
-  my(%database) = @_;
-  my($field);
-
-  open SAVE_INTERFACE_DATABASE, ">interface_database";
-  foreach $field ( sort keys %database )
-  {
-    print SAVE_INTERFACE_DATABASE "$field has value $database{$field}\n";
-  }
-  close SAVE_INTERFACE_DATABASE;
-}
-
-
 #/*@@
 #  @routine    PrintInterfaceStatistics
 #  @date       Sun Sep 19 13:03:23 1999

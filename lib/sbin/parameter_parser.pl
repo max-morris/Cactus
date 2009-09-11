@@ -13,8 +13,6 @@
 
 #%parameter_database = create_parameter_database(%implementations);
 
-#&print_parameter_database(%parameter_database);
-
 #/*@@
 #  @routine    create_parameter_database
 #  @date       Wed Sep 16 11:45:18 1998
@@ -510,26 +508,6 @@ sub parse_param_ccl
 
   return %parameter_db;
 }
-
-#/*@@
-#  @routine    print_parameter_database
-#  @date       Wed Sep 16 14:58:52 1998
-#  @author     Tom Goodale
-#  @desc
-#  Prints out a parameter database.
-#  @enddesc
-#@@*/
-sub print_parameter_database
-{
-  my(%parameter_database) = @_;
-  my($field);
-
-  foreach $field ( sort keys %parameter_database )
-  {
-    print "$field has value $parameter_database{$field}\n";
-  }
-}
-
 
 #/*@@
 #  @routine    PrintParameterStatistics

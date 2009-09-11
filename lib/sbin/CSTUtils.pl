@@ -846,4 +846,32 @@ sub recurse_deps
   return "";
 }
 
+sub print_database
+{
+  my($type, %database) = @_;
+  my($field);
+  print "$type database dump:\n";
+
+  foreach $field ( sort keys %database )
+  {
+    print "$field has value $database{$field}\n";
+  }
+}
+
+sub save_database
+{
+  my($type, %database) = @_;
+  my($field);
+
+  if ($type !~ /[a-zA-Z.]+/) {
+    die "first parameter of save_database contains forbidden characters";
+  }
+  open SAVE_DATABASE, ">$type_database";
+  foreach $field ( sort keys %database )
+  {
+    print SAVE_DATABASE "$field has value $database{$field}\n";
+  }
+  close SAVE_DATABASE;
+}
+
 1;
