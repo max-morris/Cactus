@@ -6,7 +6,7 @@
 #  @desc
 #             Parses the the configuration files for thorns.
 #  @enddesc
-#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.79 2009-09-11 16:07:35 knarf Exp $
+#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.80 2009-09-11 16:20:00 knarf Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -100,8 +100,8 @@ print "Parsing interface files...\n";
 %interface_database = &create_interface_database(scalar(keys %system_database), %system_database, %source_thorns);
 
 #$debug_interface = 1;
-&print_database("interface", %interface_database) if($debug_interface);
-&save_database("interface", %interface_database) if ($debug_interface);
+&print_database("interface", \%interface_database) if($debug_interface);
+&save_database("interface", \%interface_database) if($debug_interface);
 
 # Parse the parameter.ccl files
 print "Parsing parameter files...\n";
@@ -124,13 +124,13 @@ print "Checking consistency...\n";
 $err_msg = &CheckCrossConsistency(\%interface_database,\%parameter_database);
 
 #$debug_interface = 1;
-&print_database("interface", %interface_database) if($debug_interface);
+&print_database("interface", \%interface_database) if($debug_interface);
 
 #$debug_parameters=1;
-&print_database("parameter", %parameter_database ) if($debug_parameters);
+&print_database("parameter", \%parameter_database ) if($debug_parameters);
 
 #$debug_schedule = 1;
-&print_database("schedule", %schedule_database) if($debug_schedule);
+&print_database("schedule", \%schedule_database) if($debug_schedule);
 
 # Create all the bindings
 print "Creating Thorn-Flesh bindings...\n";
