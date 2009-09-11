@@ -6,7 +6,7 @@
 #  @desc
 #             Parses the the configuration files for thorns.
 #  @enddesc
-#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.80 2009-09-11 16:20:00 knarf Exp $
+#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.81 2009-09-11 22:15:48 knarf Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -128,6 +128,7 @@ $err_msg = &CheckCrossConsistency(\%interface_database,\%parameter_database);
 
 #$debug_parameters=1;
 &print_database("parameter", \%parameter_database ) if($debug_parameters);
+&save_database("parameter", \%parameter_database) if($debug_parameters);
 
 #$debug_schedule = 1;
 &print_database("schedule", \%schedule_database) if($debug_schedule);
