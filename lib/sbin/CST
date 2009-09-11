@@ -6,7 +6,7 @@
 #  @desc
 #             Parses the the configuration files for thorns.
 #  @enddesc
-#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.77 2007-04-18 18:10:55 schnetter Exp $
+#  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.78 2009-09-11 14:36:10 knarf Exp $
 #@@*/
 
 # Global parameter to track the number of errors from the CST
@@ -100,6 +100,7 @@ print "Parsing interface files...\n";
 
 #$debug_interface = 1;
 &print_interface_database(%interface_database) if($debug_interface);
+&save_interface_database(%interface_database) if ($debug_interface);
 
 # Parse the parameter.ccl files
 print "Parsing parameter files...\n";
