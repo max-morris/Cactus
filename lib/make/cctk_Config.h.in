@@ -162,37 +162,86 @@
 #ifndef __cplusplus
 
 /* Define to empty if the 'inline' keyword does not work. */
+#undef HAVE_CCTK_C_INLINE
 #undef inline
+
+/* Define to 'static' if the 'static inline' keyword combination does
+   not work. */
+#undef CCTK_C_STATIC_INLINE
+#define CCTK_STATIC_INLINE CCTK_C_STATIC_INLINE
 
 /* Define to empty if the 'const' keyword does not work. */
 #undef const
 
 /* Define to empty if the 'restrict' keyword does not work. */
+#undef HAVE_CCTK_C_RESTRICT
 #undef CCTK_C_RESTRICT
 #ifdef CCTK_C_RESTRICT
-#define restrict CCTK_C_RESTRICT
+#  define restrict CCTK_C_RESTRICT
 #endif
 
 /* Allow the use of CCTK_RESTRICT as a qualifier always. */
 #ifdef CCTK_C_RESTRICT
-#define CCTK_RESTRICT CCTK_C_RESTRICT
+#  define CCTK_RESTRICT CCTK_C_RESTRICT
 #else
-#define CCTK_RESTRICT restrict
+#  define CCTK_RESTRICT restrict
 #endif
 
-/* Some C compilers (e.g. c99 ones) define bool */
+/* Some C compilers (e.g. C99 ones) define bool */
 #undef HAVE_CCTK_C_BOOL
 
 /* deprecated in beta15 */
 #ifdef HAVE_CCTK_C_BOOL
-#define CCTK_HAVE_C_BOOL
+#  define CCTK_HAVE_C_BOOL
 #endif
+
+#undef HAVE_CCTK_C__PRAGMA
 
 /* Since this is non-standard leave commented out for the moment */
 #if 0
 #ifndef HAVE_CCTK_C_BOOL
 typedef enum {false, true} bool;
-#endif /* HAVE_CCTK_CXX_BOOL */
+#endif /* HAVE_CCTK_C_BOOL */
+#endif
+
+/* Whether __attribute__((const)) exists. */
+#undef HAVE_CCTK_C_ATTRIBUTE_CONST
+#ifdef HAVE_CCTK_C_ATTRIBUTE_CONST
+#  define CCTK_ATTRIBUTE_CONST __attribute__((__const__))
+#else
+#  define CCTK_ATTRIBUTE_CONST
+#endif
+
+/* Whether __attribute__((pure)) exists. */
+#undef HAVE_CCTK_C_ATTRIBUTE_PURE
+#ifdef HAVE_CCTK_C_ATTRIBUTE_PURE
+#  define CCTK_ATTRIBUTE_PURE __attribute__((__pure__))
+#else
+#  define CCTK_ATTRIBUTE_PURE
+#endif
+
+/* Whether __attribute__((unused)) exists. */
+#undef HAVE_CCTK_C_ATTRIBUTE_UNUSED
+#ifdef HAVE_CCTK_C_ATTRIBUTE_UNUSED
+#  define CCTK_ATTRIBUTE_UNUSED __attribute__((__unused__))
+#else
+#  define CCTK_ATTRIBUTE_UNUSED
+#endif
+
+/* Whether __attribute__((cold)) exists. */
+#undef HAVE_CCTK_C_ATTRIBUTE_COLD
+#ifdef HAVE_CCTK_C_ATTRIBUTE_COLD
+#  define CCTK_ATTRIBUTE_COLD __attribute__((__cold__))
+#else
+#  define CCTK_ATTRIBUTE_COLD
+#endif
+
+/* Whether __attribute__((hot)) exists. */
+#undef HAVE_CCTK_C_ATTRIBUTE_HOT
+#ifdef HAVE_CCTK_C_ATTRIBUTE_HOT
+#  define CCTK_ATTRIBUTE_HOT __attribute__((__hot__))
+#else
+#  define CCTK_ATTRIBUTE_HOT
 #endif
 
 #endif /* ! defined __cplusplus */
@@ -203,32 +252,87 @@ typedef enum {false, true} bool;
 /****************************************************************************/
 #ifdef __cplusplus
 
-/* Some C++ compilers don't have bool ! */
+#define CCTK_STATIC_INLINE static inline
+
+/* Some C++ compilers don't have bool */
 #undef HAVE_CCTK_CXX_BOOL
 
 #ifndef HAVE_CCTK_CXX_BOOL
 typedef enum {false, true} bool;
 #else
-/* deprecated in beta15 */
-#define CCTK_HAVE_CXX_BOOL
+  /* deprecated in beta15 */
+#  define CCTK_HAVE_CXX_BOOL
+#endif
+
+/* Whether __attribute__((const)) exists. */
+#undef HAVE_CCTK_CXX_ATTRIBUTE_CONST
+#ifdef HAVE_CCTK_CXX_ATTRIBUTE_CONST
+#  define CCTK_ATTRIBUTE_CONST __attribute__((__const__))
+#else
+#  define CCTK_ATTRIBUTE_CONST
+#endif
+#undef HAVE_CCTK_CXX_MEMBER_ATTRIBUTE_CONST
+#ifdef HAVE_CCTK_CXX_MEMBER_ATTRIBUTE_CONST
+#  define CCTK_MEMBER_ATTRIBUTE_CONST __attribute__((__const__))
+#else
+#  define CCTK_MEMBER_ATTRIBUTE_CONST
+#endif
+
+/* Whether __attribute__((pure)) exists. */
+#undef HAVE_CCTK_CXX_ATTRIBUTE_PURE
+#ifdef HAVE_CCTK_CXX_ATTRIBUTE_PURE
+#  define CCTK_ATTRIBUTE_PURE __attribute__((__pure__))
+#else
+#  define CCTK_ATTRIBUTE_PURE
+#endif
+#undef HAVE_CCTK_CXX_MEMBER_ATTRIBUTE_PURE
+#ifdef HAVE_CCTK_CXX_MEMBER_ATTRIBUTE_PURE
+#  define CCTK_MEMBER_ATTRIBUTE_PURE __attribute__((__pure__))
+#else
+#  define CCTK_MEMBER_ATTRIBUTE_PURE
+#endif
+
+/* Whether __attribute__((unused)) exists. */
+#undef HAVE_CCTK_CXX_ATTRIBUTE_UNUSED
+#ifdef HAVE_CCTK_CXX_ATTRIBUTE_UNUSED
+#  define CCTK_ATTRIBUTE_UNUSED __attribute__((__unused__))
+#else
+#  define CCTK_ATTRIBUTE_UNUSED
+#endif
+
+/* Whether __attribute__((cold)) exists. */
+#undef HAVE_CCTK_CXX_ATTRIBUTE_COLD
+#ifdef HAVE_CCTK_CXX_ATTRIBUTE_COLD
+#  define CCTK_ATTRIBUTE_COLD __attribute__((__cold__))
+#else
+#  define CCTK_ATTRIBUTE_COLD
+#endif
+
+/* Whether __attribute__((hot)) exists. */
+#undef HAVE_CCTK_CXX_ATTRIBUTE_HOT
+#ifdef HAVE_CCTK_CXX_ATTRIBUTE_HOT
+#  define CCTK_ATTRIBUTE_HOT __attribute__((__hot__))
+#else
+#  define CCTK_ATTRIBUTE_HOT
 #endif
 
 /* Some C++ compilers recognise the restrict keyword */
+#undef HAVE_CCTK_CXX_RESTRICT
 #undef CCTK_CXX_RESTRICT
 
 /* Since this is non-standard leave commented out for the moment */
 #if 0
 /* Define to empty if the keyword does not work. */
 #ifdef CCTK_CXX_RESTRICT
-#define restrict CCTK_CXX_RESTRICT
+#  define restrict CCTK_CXX_RESTRICT
 #endif
 #endif
 
 /* Allow the use of CCTK_RESTRICT as a qualifier always. */
 #ifdef CCTK_CXX_RESTRICT
-#define CCTK_RESTRICT CCTK_CXX_RESTRICT
+#  define CCTK_RESTRICT CCTK_CXX_RESTRICT
 #else
-#define CCTK_RESTRICT restrict
+#  define CCTK_RESTRICT restrict
 #endif
 
 #endif /* __cplusplus */

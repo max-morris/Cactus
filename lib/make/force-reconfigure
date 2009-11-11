@@ -5,7 +5,7 @@
 #   @desc
 #            Timestamp file for forcing reconfiguring configurations
 #   @enddesc
-#   @version $Id: force-reconfigure,v 1.13 2008-04-09 04:03:23 schnetter Exp $
+#   @version $Id: force-reconfigure,v 1.14 2009-11-11 22:25:55 schnetter Exp $
 # @@*/
 
 31 Mar 2004: created
@@ -20,3 +20,5 @@
 19 Jul 2006: detect presence of real*16 in Fortran correctly
 26 May 2007: check for <malloc.h>, mallinfo, mallopt, and M_MMAP_THRESHOLD
 25 Jan 2008: check for system-dependent timing functions
+11 Nov 2009: Detect whether _Pragma is available
+11 Nov 2009: Add CCTK_ATTRIBUTE_* macros and friends

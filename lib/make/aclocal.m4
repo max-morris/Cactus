@@ -381,13 +381,15 @@ for ac_kw in restrict __restrict__ __restrict; do
 double * $ac_kw foo;
 void bar (void * $ac_kw arr[]);
 struct tux { char * $ac_kw arr[3]; };
+void func (void * arr[$ac_kw]);
 ], [cctk_cv_c_restrict=$ac_kw; break])
 done
 ])
 case "$cctk_cv_c_restrict" in
   restrict | yes) ;;
   no) AC_DEFINE(CCTK_C_RESTRICT, ) ;;
-  *)  AC_DEFINE_UNQUOTED(CCTK_C_RESTRICT, $cctk_cv_c_restrict) ;;
+  *)  AC_DEFINE_UNQUOTED(CCTK_C_RESTRICT, $cctk_cv_c_restrict)
+      AC_DEFINE(HAVE_CCTK_C_RESTRICT, 1) ;;
 esac
 ])
 
@@ -408,7 +410,8 @@ AC_LANG_RESTORE
 case "$cctk_cv_cxx_restrict" in
   restrict | yes) ;;
   no) AC_DEFINE(CCTK_CXX_RESTRICT, ) ;;
-  *)  AC_DEFINE_UNQUOTED(CCTK_CXX_RESTRICT, $cctk_cv_cxx_restrict) ;;
+  *)  AC_DEFINE_UNQUOTED(CCTK_CXX_RESTRICT, $cctk_cv_cxx_restrict)
+      AC_DEFINE(HAVE_CCTK_CXX_RESTRICT, 1) ;;
 esac
 ])
 
@@ -427,8 +430,8 @@ AC_DEFUN(CCTK_CHECK_C_INLINE,
 [AC_CACHE_CHECK([for C inline], cctk_cv_c_inline,
 [cctk_cv_c_inline=no
 for ac_kw in inline __inline__ __inline '__inline__ __attribute__((__gnu_inline__))'; do
-dnl  AC_TRY_COMPILE(, [} $ac_kw foo() {], [cctk_cv_c_inline=$ac_kw; break])
-  CCTK_TRY_LINK_2(, [foo();], [} $ac_kw foo() {], [cctk_cv_c_inline=$ac_kw; break])
+dnl  AC_TRY_COMPILE(, [} $ac_kw int foo() {], [cctk_cv_c_inline=$ac_kw; break])
+  CCTK_TRY_LINK_2(, [foo();], [;} $ac_kw foo() {], [cctk_cv_c_inline=$ac_kw; break])
 done
 ])
 case "$cctk_cv_c_inline" in
@@ -439,13 +442,31 @@ case "$cctk_cv_c_inline" in
 esac
 ])
 
+dnl Define the macro STATIC_INLINE to the keywords that the compiler needs
+dnl to obtain what is obtained by "static inline" in the C99 standard.  If
+dnl the compiler does not support the "inline" keyword, define the macro
+dnl to "static".
+AC_DEFUN(CCTK_CHECK_C_STATIC_INLINE,
+[AC_CACHE_CHECK([for C static inline], cctk_cv_c_static_inline,
+[cctk_cv_c_static_inline=no
+for ac_kw in 'static inline' 'static __inline__' 'static __inline' 'static __inline__ __attribute__((__gnu_inline__))'; do
+dnl  AC_TRY_COMPILE(, [} $ac_kw int foo() {], [cctk_cv_c_inline=$ac_kw; break])
+  CCTK_TRY_LINK_2(, [;} $ac_kw ifoo(){} foo(){ifoo();], [;} $ac_kw ifoo(){} foo2(){ifoo();], [cctk_cv_c_static_inline=$ac_kw; break])
+done
+])
+case "$cctk_cv_c_static_inline" in
+  no) AC_DEFINE(CCTK_C_STATIC_INLINE, static) ;;
+  *)  AC_DEFINE_UNQUOTED(CCTK_C_STATIC_INLINE, $cctk_cv_c_static_inline) ;;
+esac
+])
+
 AC_DEFUN(CCTK_C_BOOL,
 [AC_CACHE_CHECK([for C bool], cctk_cv_have_c_bool,
 [cctk_cv_have_c_bool=no
 AC_TRY_COMPILE(, bool foo;, cctk_cv_have_c_bool=yes, cctk_cv_have_c_bool=no)
 ])
 if test "$cctk_cv_have_c_bool" = "yes" ; then
-   AC_DEFINE(HAVE_CCTK_C_BOOL)
+   AC_DEFINE(HAVE_CCTK_C_BOOL, 1)
 fi
 ])
 
@@ -458,7 +479,19 @@ AC_TRY_COMPILE(, bool foo;, cctk_cv_have_cxx_bool=yes, cctk_cv_have_cxx_bool=no)
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_bool" = "yes" ; then
-   AC_DEFINE(HAVE_CCTK_CXX_BOOL)
+   AC_DEFINE(HAVE_CCTK_CXX_BOOL, 1)
+fi
+])
+
+dnl Do nothing if the compiler accepts the _Pragma keyword.
+dnl Otherwise define _Pragma to be empty.
+AC_DEFUN(CCTK_C__PRAGMA,
+[AC_CACHE_CHECK([for C _Pragma], cctk_cv_have_c__Pragma,
+[cctk_cv_have_c__Pragma=no
+AC_TRY_COMPILE(, int x; _Pragma ("omp barrier") x=0;, cctk_cv_have_c__Pragma=yes, cctk_cv_have_c__Pragma=no)
+])
+if test "$cctk_cv_have_c__Pragma" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_C__PRAGMA)
 fi
 ])
 
@@ -569,5 +602,156 @@ AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_fortran_complex32" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_FORTRAN_COMPLEX32)
+fi
+])
+
+
+
+AC_DEFUN(CCTK_C_ATTRIBUTE_CONST,
+[AC_CACHE_CHECK([for C function __attribute__((__const__))], cctk_cv_have_c_attribute_const,
+[cctk_cv_have_c_attribute_const=no
+AC_TRY_COMPILE(, double foo (double) __attribute__((__const__));, cctk_cv_have_c_attribute_const=yes, cctk_cv_have_c_attribute_const=no)
+])
+if test "$cctk_cv_have_c_attribute_const" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_CONST)
+fi
+])
+
+AC_DEFUN(CCTK_CXX_ATTRIBUTE_CONST,
+[AC_CACHE_CHECK([for CXX function __attribute__((__const__))], cctk_cv_have_cxx_attribute_const,
+[cctk_cv_have_cxx_attribute_const=no
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(, double foo (double) __attribute__((__const__));, cctk_cv_have_cxx_attribute_const=yes, cctk_cv_have_cxx_attribute_const=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_cxx_attribute_const" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_CXX_ATTRIBUTE_CONST)
+fi
+])
+
+AC_DEFUN(CCTK_CXX_MEMBER_ATTRIBUTE_CONST,
+[AC_CACHE_CHECK([for CXX member function __attribute__((__const__))], cctk_cv_have_cxx_member_attribute_const,
+[cctk_cv_have_cxx_member_attribute_const=no
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(, struct { double foo (double) __attribute__((__const__)); };, cctk_cv_have_cxx_member_attribute_const=yes, cctk_cv_have_cxx_member_attribute_const=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_cxx_member_attribute_const" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_CXX_MEMBER_ATTRIBUTE_CONST)
+fi
+])
+
+
+
+AC_DEFUN(CCTK_C_ATTRIBUTE_PURE,
+[AC_CACHE_CHECK([for C function __attribute__((__pure__))], cctk_cv_have_c_attribute_pure,
+[cctk_cv_have_c_attribute_pure=no
+AC_TRY_COMPILE(, double foo (double) __attribute__((__pure__));, cctk_cv_have_c_attribute_pure=yes, cctk_cv_have_c_attribute_pure=no)
+])
+if test "$cctk_cv_have_c_attribute_pure" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_PURE)
+fi
+])
+
+AC_DEFUN(CCTK_CXX_ATTRIBUTE_PURE,
+[AC_CACHE_CHECK([for CXX function __attribute__((__pure__))], cctk_cv_have_cxx_attribute_pure,
+[cctk_cv_have_cxx_attribute_pure=no
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(, double foo (double) __attribute__((__pure__));, cctk_cv_have_cxx_attribute_pure=yes, cctk_cv_have_cxx_attribute_pure=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_cxx_attribute_pure" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_CXX_ATTRIBUTE_PURE)
+fi
+])
+
+AC_DEFUN(CCTK_CXX_MEMBER_ATTRIBUTE_PURE,
+[AC_CACHE_CHECK([for CXX member function __attribute__((__pure__))], cctk_cv_have_cxx_member_attribute_pure,
+[cctk_cv_have_cxx_member_attribute_pure=no
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(, struct { double foo (double) __attribute__((__pure__)); };, cctk_cv_have_cxx_member_attribute_pure=yes, cctk_cv_have_cxx_member_attribute_pure=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_cxx_member_attribute_pure" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_CXX_MEMBER_ATTRIBUTE_PURE)
+fi
+])
+
+
+
+AC_DEFUN(CCTK_C_ATTRIBUTE_UNUSED,
+[AC_CACHE_CHECK([for C __attribute__((__unused__))], cctk_cv_have_c_attribute_unused,
+[cctk_cv_have_c_attribute_unused=no
+AC_TRY_COMPILE(, double * foo __attribute__((__unused__));, cctk_cv_have_c_attribute_unused=yes, cctk_cv_have_c_attribute_unused=no)
+])
+if test "$cctk_cv_have_c_attribute_unused" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_UNUSED)
+fi
+])
+
+AC_DEFUN(CCTK_CXX_ATTRIBUTE_UNUSED,
+[AC_CACHE_CHECK([for CXX __attribute__((__unused__))], cctk_cv_have_cxx_attribute_unused,
+[cctk_cv_have_cxx_attribute_unused=no
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(, double * foo __attribute__((__unused__));, cctk_cv_have_cxx_attribute_unused=yes, cctk_cv_have_cxx_attribute_unused=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_cxx_attribute_unused" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_CXX_ATTRIBUTE_UNUSED)
+fi
+])
+
+
+
+AC_DEFUN(CCTK_C_ATTRIBUTE_COLD,
+[AC_CACHE_CHECK([for C __attribute__((__cold__))], cctk_cv_have_c_attribute_cold,
+[cctk_cv_have_c_attribute_cold=no
+AC_TRY_COMPILE(, double * foo __attribute__((__cold__));, cctk_cv_have_c_attribute_cold=yes, cctk_cv_have_c_attribute_cold=no)
+])
+if test "$cctk_cv_have_c_attribute_cold" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_COLD)
+fi
+])
+
+AC_DEFUN(CCTK_CXX_ATTRIBUTE_COLD,
+[AC_CACHE_CHECK([for CXX __attribute__((__cold__))], cctk_cv_have_cxx_attribute_cold,
+[cctk_cv_have_cxx_attribute_cold=no
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(, double * foo __attribute__((__cold__));, cctk_cv_have_cxx_attribute_cold=yes, cctk_cv_have_cxx_attribute_cold=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_cxx_attribute_cold" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_CXX_ATTRIBUTE_COLD)
+fi
+])
+
+
+
+AC_DEFUN(CCTK_C_ATTRIBUTE_HOT,
+[AC_CACHE_CHECK([for C __attribute__((__hot__))], cctk_cv_have_c_attribute_hot,
+[cctk_cv_have_c_attribute_hot=no
+AC_TRY_COMPILE(, double * foo __attribute__((__hot__));, cctk_cv_have_c_attribute_hot=yes, cctk_cv_have_c_attribute_hot=no)
+])
+if test "$cctk_cv_have_c_attribute_hot" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_HOT)
+fi
+])
+
+AC_DEFUN(CCTK_CXX_ATTRIBUTE_HOT,
+[AC_CACHE_CHECK([for CXX __attribute__((__hot__))], cctk_cv_have_cxx_attribute_hot,
+[cctk_cv_have_cxx_attribute_hot=no
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(, double * foo __attribute__((__hot__));, cctk_cv_have_cxx_attribute_hot=yes, cctk_cv_have_cxx_attribute_hot=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_cxx_attribute_hot" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_CXX_ATTRIBUTE_HOT)
 fi
 ])

@@ -752,6 +752,7 @@ fi
 AC_C_CONST
 #AC_C_INLINE
 CCTK_CHECK_C_INLINE
+CCTK_CHECK_C_STATIC_INLINE
 
 CCTK_CHECK_C_RESTRICT
 CCTK_CHECK_CXX_RESTRICT
@@ -759,6 +760,33 @@ CCTK_CHECK_CXX_RESTRICT
 CCTK_C_BOOL
 CCTK_CXX_BOOL
 
+CCTK_C__PRAGMA
+
+# NOTE: Erik Schnetter, 2009-06-22: These lead to wrong code on
+# Ranger.  Don't know whether this is a problem with the compiler or
+# with how the function annotations are used here.
+#
+## Find out whether the C compiler supports __attribute__((const))
+#CCTK_C_ATTRIBUTE_CONST
+#CCTK_CXX_ATTRIBUTE_CONST
+#CCTK_CXX_MEMBER_ATTRIBUTE_CONST
+#
+## Find out whether the C compiler supports __attribute__((pure))
+#CCTK_C_ATTRIBUTE_PURE
+#CCTK_CXX_ATTRIBUTE_PURE
+#CCTK_CXX_MEMBER_ATTRIBUTE_PURE
+#
+## Find out whether the C compiler supports __attribute__((unused))
+#CCTK_C_ATTRIBUTE_UNUSED
+#CCTK_CXX_ATTRIBUTE_UNUSED
+#
+## Find out whether the C compiler supports __attribute__((cold))
+#CCTK_C_ATTRIBUTE_COLD
+#CCTK_CXX_ATTRIBUTE_COLD
+#
+## Find out whether the C compiler supports __attribute__((hot))
+#CCTK_C_ATTRIBUTE_HOT
+#CCTK_CXX_ATTRIBUTE_HOT
 CCTK_FORTRAN_REAL4
 CCTK_FORTRAN_REAL8
 CCTK_FORTRAN_REAL16
