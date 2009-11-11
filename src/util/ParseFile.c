@@ -363,7 +363,7 @@ static char *ParseDefines(char *buffer, unsigned long *buffersize)
   /* define name */
   char define[1024];
   /* Position in define name */
-  char defpos = 0;
+  size_t defpos = 0;
   /* Current position in buffer */
   size_t pos = 0;
   /* Character at current position */
