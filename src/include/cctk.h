@@ -28,6 +28,7 @@
 
 #include "cctk_Faces.h"
 #include "cctk_Interp.h"
+#include "cctk_Loop.h"
 #include "cctk_WarnLevel.h"
 
 #define CCTK_PRINTSEPARATOR\
@@ -142,6 +143,7 @@ cctk_convfac,cctk_nghostzones,cctk_iteration,cctkGH
 #include "cctk_Interp.h"
 #include "cctk_IO.h"
 #include "cctk_IOMethods.h"
+#include "cctk_Loop.h"
 #include "cctk_Main.h"
 #include "cctk_Malloc.h"
 #include "cctk_Misc.h"
