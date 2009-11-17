@@ -122,12 +122,6 @@ foreach $thorn (sort keys %info)
     print "Ignoring $thorn - no CVS or .svn directory\n";
     next;
   }
-  if ( -d "$arrangement_dir/$thorn/CVS" &&
-       -d "$arrangement_dir/$thorn/.svn" )
-  {
-    print "Ignoring $thorn - both CVS and .svn directory\n";
-    next;
-  }
 
   chdir ("$arrangement_dir/$thorn") ||
     die "Cannot change to thorn directory '$arrangement_dir/$thorn'\n";
