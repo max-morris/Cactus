@@ -163,14 +163,16 @@ while (<STDIN>)
     }
     if (! $found)
     {
-      print STDERR "$srcfile:$line: Warning: While tracing module dependencies: Source file for module \"$name\" not found\n";
-      if (@otherdirs)
-      {
-        print STDERR "   Searched in thorn directory and in [" . join(', ', @otherdirs) . "]\n";
-      }
-      else
-      {
-        print STDERR "   Searched in thorn directory only.\n";
+      if ("\L$name" ne "omp_lib") {
+        print STDERR "$srcfile:$line: Warning: While tracing module dependencies: Source file for module \"$name\" not found\n";
+        if (@otherdirs)
+        {
+          print STDERR "   Searched in thorn directory and in [" . join(', ', @otherdirs) . "]\n";
+        }
+        else
+        {
+          print STDERR "   Searched in thorn directory only.\n";
+        }
       }
     }
   }
