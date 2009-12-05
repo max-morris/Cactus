@@ -827,7 +827,18 @@ fi
 
 
 dnl Checks for availability of pthreads library.
-if test "X$PTHREADS" = 'Xyes'; then
+PTHREADS_MODE='no'
+if test -n "$PTHREADS" ; then
+  changequote({, })
+  PTHREADS=`echo $PTHREADS | tr '[:upper:]' '[:lower:]'`
+  changequote([, ])
+  if test "$PTHREADS" != 'yes' -a "$PTHREADS" != 'no' ; then
+    AC_ERROR(Didn't recognize setting of PTHREADS=\"$PTHREADS\" (should be either \"yes\" or \"no\"))
+  fi
+  PTHREADS_MODE=$PTHREADS
+fi
+
+if test "$PTHREADS_MODE" = 'yes'; then
   PTHREAD_LIBS=
   CCTK_CHECK_LIB(c_r, main,[PTHREAD_LIBS="c_r" LIBS="$LIBS c_r"],,)
   CCTK_CHECK_LIB(pthread,

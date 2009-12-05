@@ -5423,10 +5423,10 @@ cat > conftest.$ac_ext <<EOF
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
     builtin and then its argument prototype would still apply.  */
-char sgTUSz;
+char 8TPi5R;
 
 int main() {
-ApDLGd
+0KsgbP
 ; return 0; }
 EOF
 if { (eval echo configure:5433: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
@@ -5504,10 +5504,21 @@ else
 fi
 
 
-if test "X$PTHREADS" = 'Xyes'; then
+PTHREADS_MODE='no'
+if test -n "$PTHREADS" ; then
+  
+  PTHREADS=`echo $PTHREADS | tr '[:upper:]' '[:lower:]'`
+  
+  if test "$PTHREADS" != 'yes' -a "$PTHREADS" != 'no' ; then
+    { echo "configure: error: Didn't recognize setting of PTHREADS=\"$PTHREADS\" (should be either \"yes\" or \"no\")" 1>&2; exit 1; }
+  fi
+  PTHREADS_MODE=$PTHREADS
+fi
+
+if test "$PTHREADS_MODE" = 'yes'; then
   PTHREAD_LIBS=
   echo $ac_n "checking for main in library c_r""... $ac_c" 1>&6
-echo "configure:5511: checking for main in library c_r" >&5
+echo "configure:5522: checking for main in library c_r" >&5
 ac_lib_var=`echo c_r'_'main | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -5516,14 +5527,14 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="c_r  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 5520 "configure"
+#line 5531 "configure"
 #include "confdefs.h"
 
 int main() {
 main()
 ; return 0; }
 EOF
-if { (eval echo configure:5527: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:5538: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
@@ -5544,7 +5555,7 @@ else
 fi
 
   echo $ac_n "checking for main in library pthread""... $ac_c" 1>&6
-echo "configure:5548: checking for main in library pthread" >&5
+echo "configure:5559: checking for main in library pthread" >&5
 ac_lib_var=`echo pthread'_'main | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -5553,14 +5564,14 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="pthread  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 5557 "configure"
+#line 5568 "configure"
 #include "confdefs.h"
 
 int main() {
 main()
 ; return 0; }
 EOF
-if { (eval echo configure:5564: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:5575: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
@@ -5579,7 +5590,7 @@ if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
 else
   echo "$ac_t""no" 1>&6
 echo $ac_n "checking for main in library pthreads""... $ac_c" 1>&6
-echo "configure:5583: checking for main in library pthreads" >&5
+echo "configure:5594: checking for main in library pthreads" >&5
 ac_lib_var=`echo pthreads'_'main | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -5588,14 +5599,14 @@ else
 ac_save_LIBS="$LIBS"
 LIBS="pthreads  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 5592 "configure"
+#line 5603 "configure"
 #include "confdefs.h"
 
 int main() {
 main()
 ; return 0; }
 EOF
-if { (eval echo configure:5599: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:5610: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
@@ -6061,7 +6072,7 @@ if test "x$CCTK_NEED_X" = 'xyes' ; then
 # Uses ac_ vars as temps to allow command line to override cache and checks.
 # --without-x overrides everything else, but does not touch the cache.
 echo $ac_n "checking for X""... $ac_c" 1>&6
-echo "configure:6065: checking for X" >&5
+echo "configure:6076: checking for X" >&5
 
 # Check whether --with-x or --without-x was given.
 if test "${with_x+set}" = set; then
@@ -6123,12 +6134,12 @@ if test "$ac_x_includes" = NO; then
 
   # First, try using that file with no special directory specified.
 cat > conftest.$ac_ext <<EOF
-#line 6127 "configure"
+#line 6138 "configure"
 #include "confdefs.h"
 #include <$x_direct_test_include>
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:6132: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:6143: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   rm -rf conftest*
@@ -6197,14 +6208,14 @@ if test "$ac_x_libraries" = NO; then
   ac_save_LIBS="$LIBS"
   LIBS="-l$x_direct_test_library $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 6201 "configure"
+#line 6212 "configure"
 #include "confdefs.h"
 
 int main() {
 ${x_direct_test_function}()
 ; return 0; }
 EOF
-if { (eval echo configure:6208: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:6219: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   LIBS="$ac_save_LIBS"
 # We can link X programs with no special library path.
