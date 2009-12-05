@@ -81,21 +81,6 @@ static void bold_stderr (BOLDING on)
   fprintf (stderr, "%s", val);
 }
 
-static void print_bold_stderr (int do_bold, const char *fmt, ...)
-{
-  va_list args;
-
-  if (do_bold)
-    bold_stderr (ON);
-
-  va_start (args, fmt);
-  vfprintf (stderr, fmt, args);
-  va_end (args);
-
-  if (do_bold)
-    bold_stderr (OFF);
-}
-
 /* maximum buffer length to hold the hostname */
 #define MAXNAMELEN 255
 
@@ -276,10 +261,10 @@ int CCTK_VInfo (const char *thorn, const char *format, ...)
   /* Start generating message only if the infocallback list is not NULL */
   if(infocallbacks)
   { 
-    va_start(ap,format);
-
     /* one way to get the final string size */
+    va_start(ap,format);
     msg_size = Util_vsnprintf(NULL, 0, format, ap);
+    va_end(ap);
 
     /* Empty string is ok */
     if(msg_size >= 0)
@@ -378,11 +363,11 @@ int CCTK_VInfo (const char *thorn, const char *format, ...)
   /*
    * print the INFO message itself
    */
-  va_start (ap, format);
   fprintf (stdout, "INFO (%s): ", thorn);
+  va_start (ap, format);
   vfprintf (stdout, format, ap);
-  fprintf (stdout, "\n");
   va_end (ap);
+  fprintf (stdout, "\n");
 
   return 0;
 }
@@ -510,7 +495,7 @@ int CCTK_VWarn (int level,
   CCTK_INT cctk_full_warnings, highlight_warning_messages;
   int param_type;
   int myproc;
-  va_list ap, aq;
+  va_list ap;
 
   /* Necessary for wrapping up the final message */
 
@@ -523,6 +508,7 @@ int CCTK_VWarn (int level,
   {
     va_start(ap,format);
     msg_size = Util_vsnprintf(NULL, 0, format, ap);
+    va_end(ap);
 
     /* Empty string is ok */
     if(msg_size >= 0)
@@ -563,13 +549,6 @@ int CCTK_VWarn (int level,
     highlight_warning_messages =
       ! highlight_warning_messages_ptr || *highlight_warning_messages_ptr;
 
-    va_start (ap, format);
-#ifdef HAVE_VA_COPY
-    va_copy (aq, ap);
-#else
-    memcpy (&aq, &ap, sizeof (ap));
-#endif
-
     /* print to stderr if necessary */
     if (level <= warning_level)
     {
@@ -598,7 +577,9 @@ int CCTK_VWarn (int level,
       }
 
       fprintf (stderr, " ");
+      va_start (ap, format);
       vfprintf (stderr, format, ap);
+      va_end (ap);
       fprintf (stderr, "\n");
 
     }
@@ -631,13 +612,12 @@ int CCTK_VWarn (int level,
       }
 
       fprintf (stdout, " ");
-      vfprintf (stdout, format, aq);
+      va_start (ap, format);
+      vfprintf (stdout, format, ap);
+      va_end (ap);
       fprintf (stdout, "\n");
 
     }
-
-    va_end (aq);
-    va_end (ap);
 
   }
 
@@ -696,29 +676,7 @@ int CCTK_ParameterLevel (void)
 @@*/
 int CCTK_ParamWarn (const char *thorn, const char *message)
 {
-  const CCTK_INT *cctk_strong_param_check_ptr, *highlight_warning_messages_ptr;
-  CCTK_INT cctk_strong_param_check, highlight_warning_messages;
-  int param_type;
-
-  cctk_strong_param_check_ptr =
-    CCTK_ParameterGet ("cctk_strong_param_check", "Cactus", &param_type);
-  /* Default to yes */
-  cctk_strong_param_check =
-    cctk_strong_param_check_ptr && *cctk_strong_param_check_ptr;
-
-  highlight_warning_messages_ptr =
-    CCTK_ParameterGet ("highlight_warning_messages", "Cactus", &param_type);
-  /* Default to no */
-  highlight_warning_messages =
-    ! highlight_warning_messages_ptr || *highlight_warning_messages_ptr;
-
-  print_bold_stderr ( highlight_warning_messages, "PARAM %s (%s): %s",
-             cctk_strong_param_check ? "ERROR" : "WARNING", thorn, message);
-  fprintf (stderr, "\n");
-
-  param_errors++;
-
-  return (0);
+  return (CCTK_VParamWarn (thorn, "%s", message));
 }
 
 void CCTK_FCALL CCTK_FNAME (CCTK_ParamWarn)
@@ -783,13 +741,43 @@ int CCTK_VParamWarn (const char *thorn,
   highlight_warning_messages =
     ! highlight_warning_messages_ptr || *highlight_warning_messages_ptr;
 
-  print_bold_stderr ( highlight_warning_messages, "PARAM %s (%s): ",
-             cctk_strong_param_check ? "ERROR" : "WARNING", thorn);
+  /* print to stderr */
+  if (highlight_warning_messages)
+  {
+    bold_stderr (ON);
+  }
+
+  fprintf (stderr, "PARAMETER %s (%s): ",
+           cctk_strong_param_check ? "ERROR" : "WARNING", thorn);
 
   va_start (ap, format);
   vfprintf (stderr, format, ap);
-  fprintf (stderr, "\n");
   va_end (ap);
+  fprintf (stderr, "\n");
+
+  if (highlight_warning_messages)
+  {
+    bold_stderr (OFF);
+  }
+
+  /* print to stdout */
+  if (highlight_warning_messages)
+  {
+    bold_stdout (ON);
+  }
+
+  fprintf (stdout, "PARAMETER %s (%s): ",
+           cctk_strong_param_check ? "ERROR" : "WARNING", thorn);
+
+  va_start (ap, format);
+  vfprintf (stdout, format, ap);
+  va_end (ap);
+  fprintf (stdout, "\n");
+
+  if (highlight_warning_messages)
+  {
+    bold_stdout (OFF);
+  }
 
   param_errors++;
 
