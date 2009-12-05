@@ -5,7 +5,7 @@
 #   @author    John Shalf
 #   @desc
 #              known-architectures file for Cray XT4 running Compute Node Linux (CNL)
-#   @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/xt4-cray-linux,v 1.1 2007-10-26 04:08:38 jshalf Exp $
+#   @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/xt4-cray-linux,v 1.2 2009-12-05 00:16:43 schnetter Exp $
 # @@*/
 
 
@@ -79,7 +79,7 @@ else
   LINUX_G77_USES_LIBG2C=
 
   if test "$LINUX_F90_COMP" = 'gnu77' -o "$LINUX_F90_COMP" = 'pacific' ; then
-    touch foo.f
+    : > foo.f
     if test -n "`$F77 -v 2>&1 foo.f | grep collect | grep g2c`" ; then
       LINUX_G77_USES_LIBG2C=yes:w
 

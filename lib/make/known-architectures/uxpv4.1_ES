@@ -29,10 +29,10 @@ else
   : ${CXX_DEPEND='echo'}
   : ${F_DEPEND='echo'}
   : ${F77_DEPEND='echo'}
-  : ${C_DEPEND_OUT='> /dev/null; touch $@'}
-  : ${CXX_DEPEND_OUT='> /dev/null; touch $@'}
-  : ${F_DEPEND_OUT='> /dev/null; touch $@'}
-  : ${F77_DEPEND_OUT='> /dev/null; touch $@'}
+  : ${C_DEPEND_OUT='> /dev/null; : > $@'}
+  : ${CXX_DEPEND_OUT='> /dev/null; : > $@'}
+  : ${F_DEPEND_OUT='> /dev/null; : > $@'}
+  : ${F77_DEPEND_OUT='> /dev/null; : > $@'}
 
   # '-Am' is needed to compile with modules
   # '-X9' is needed to compile *.F files as fortran 90 code
