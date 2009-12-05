@@ -477,12 +477,20 @@ int Util_StrCmpi (const char *string1, const char *string2)
 int Util_StrMemCmpi (const char *string1, const char *string2, size_t length2)
 {
   int retval;
+  size_t last2;
 
+
+  /* Fortran speciality: ignore trailing blanks */
+  last2 = length2;
+  while (last2 > 0 && string2[last2-1] == ' ')
+  {
+    last2--;
+  }
 
   do
   {
-    retval = tolower (*string1) - (length2 ? tolower (*string2) : '\0');
-  } while (! retval && *string1++ && (string2++, length2--));
+    retval = tolower (*string1) - (last2 ? tolower (*string2) : '\0');
+  } while (! retval && *string1++ && (string2++, last2--));
 
   return (retval);
 }
