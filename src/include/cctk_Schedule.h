@@ -26,13 +26,16 @@ typedef struct
   cFunctionType type;
 
   int n_SyncGroups;
-
   int *SyncGroups;
 
   /* Option Flags */
 
   int meta;
+  int meta_early;
+  int meta_late;
   int global;
+  int global_early;
+  int global_late;
   int level;
   int singlemap;
   int local;

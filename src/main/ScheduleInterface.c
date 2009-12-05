@@ -1373,7 +1373,6 @@ static t_attribute *CreateAttribute(const char *where,
                                     const int *timelevels,
                                     va_list *ap)
 {
-  char *timername;
   t_attribute *this;
   int i;
 
@@ -1707,7 +1706,11 @@ static int ParseOptionList(int n_items,
 static int InitialiseOptionList(t_attribute *attribute)
 {
   attribute->FunctionData.meta = 0;
+  attribute->FunctionData.meta_early = 0;
+  attribute->FunctionData.meta_late = 0;
   attribute->FunctionData.global = 0;
+  attribute->FunctionData.global_early = 0;
+  attribute->FunctionData.global_late = 0;
   attribute->FunctionData.level = 0;
   attribute->FunctionData.singlemap = 0;
   attribute->FunctionData.local = 0;
@@ -1753,9 +1756,25 @@ static int ParseOption(t_attribute *attribute,
   {
     attribute->FunctionData.meta = 1;
   }
+  else if(CCTK_Equals(option, "META-EARLY"))
+  {
+    attribute->FunctionData.meta_early = 1;
+  }
+  else if(CCTK_Equals(option, "META-LATE"))
+  {
+    attribute->FunctionData.meta_late = 1;
+  }
   else if(CCTK_Equals(option, "GLOBAL"))
   {
     attribute->FunctionData.global = 1;
+  }
+  else if(CCTK_Equals(option, "GLOBAL-EARLY"))
+  {
+    attribute->FunctionData.global_early = 1;
+  }
+  else if(CCTK_Equals(option, "GLOBAL-LATE"))
+  {
+    attribute->FunctionData.global_late = 1;
   }
   else if(CCTK_Equals(option, "LEVEL"))
   {
@@ -2307,15 +2326,74 @@ static int CCTKi_SchedulePrintFunction(void *function,
                                        t_attribute *attribute,
                                        t_sched_data *data)
 {
+  const char* mode;
+  const char* loop_mode;
   /* prevent compiler warnings about unused parameters */
   function = function;
   data = data;
+
+  if (attribute->FunctionData.meta ||
+      attribute->FunctionData.meta_early ||
+      attribute->FunctionData.meta_late)
+  {
+    mode = "[meta] ";
+  }
+  else if (attribute->FunctionData.global ||
+           attribute->FunctionData.global_early ||
+           attribute->FunctionData.global_late)
+  {
+    mode = "[global] ";
+  }
+  else if (attribute->FunctionData.level)
+  {
+    mode = "[level] ";
+  }
+  else if (attribute->FunctionData.singlemap)
+  {
+    mode = "[singlemap] ";
+  }
+  else if (attribute->FunctionData.local)
+  {
+    mode = "[local] ";
+  }
+  else
+  {
+    mode = "";
+  }
+
+  if (attribute->FunctionData.loop_meta)
+  {
+    loop_mode = "[loop-meta] ";
+  }
+  else if (attribute->FunctionData.loop_global)
+  {
+    loop_mode = "[loop-global] ";
+  }
+  else if (attribute->FunctionData.loop_level)
+  {
+    loop_mode = "[loop-level] ";
+  }
+  else if (attribute->FunctionData.loop_singlemap)
+  {
+    loop_mode = "[loop-singlemap] ";
+  }
+  else if (attribute->FunctionData.loop_local)
+  {
+    loop_mode = "[loop-local] ";
+  }
+  else
+  {
+    loop_mode = "";
+  }
 
   if (indent_level > 0)
   {
     printf ("%*s", indent_level, " ");
   }
-  printf("%s: %s\n", attribute->FunctionData.thorn, attribute->description);
+  printf("%s::%s: %s%s%s\n",
+         attribute->FunctionData.thorn, attribute->FunctionData.routine,
+         mode, loop_mode,
+         attribute->description);
 
   return 1;
 }
