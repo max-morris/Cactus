@@ -57,7 +57,7 @@ export LDFLAGS     = @LDFLAGS@
 export ARFLAGS     = @ARFLAGS@
 export RANLIBFLAGS = @RANLIBFLAGS@
 
-export # Debug flags
+# Debug flags
 export C_DEBUG_FLAGS   = @C_DEBUG_FLAGS@
 export CXX_DEBUG_FLAGS = @CXX_DEBUG_FLAGS@
 export F90_DEBUG_FLAGS = @F90_DEBUG_FLAGS@
