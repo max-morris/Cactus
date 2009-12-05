@@ -547,7 +547,7 @@ const char *CCTK_IOMethodImplementation (int handle)
 
 
  /*@@
-   @routine    CCTK_IOMethod
+   @routine    CCTK_IOMethodName
    @date       Thu Dec 27 2001
    @author     Gabrielle Allen
    @desc
@@ -561,16 +561,44 @@ const char *CCTK_IOMethodImplementation (int handle)
 
    @returntype const char *
    @returndesc
-               IO Method
+               Name of this I/O method
    @endreturndesc
 @@*/
-const char *CCTK_IOMethod (int handle)
+const char *CCTK_IOMethodName (int handle)
 {
   struct IOMethod *method;
 
   method = (struct IOMethod *) Util_GetHandledData (IOMethods, handle);
 
   return (method ? method->name : NULL);
+}
+
+
+ /*@@
+   @routine    CCTK_IOMethod
+   @date       2008-09-05
+   @author     Erik Schnetter
+   @desc
+               Provide the IO Method
+   @enddesc
+   @var        handle
+   @vdesc      handle of I/O method
+   @vtype      int
+   @vio        in
+   @endvar
+
+   @returntype const struct IOMethod *
+   @returndesc
+               IO method descriptor
+   @endreturndesc
+@@*/
+const struct IOMethod *CCTK_IOMethod (int handle)
+{
+  const struct IOMethod *method;
+
+  method = (const struct IOMethod *) Util_GetHandledData (IOMethods, handle);
+
+  return method;
 }
 
 

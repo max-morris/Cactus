@@ -41,7 +41,9 @@ int CCTK_RegisterIOMethodOutputVarAs (int handle,
 
 const char *CCTK_IOMethodImplementation (int handle);
 
-const char *CCTK_IOMethod (int handle);
+const char *CCTK_IOMethodName (int handle);
+
+const struct IOMethod *CCTK_IOMethod (int handle);
 
 int CCTK_NumIOMethods (void);
 
