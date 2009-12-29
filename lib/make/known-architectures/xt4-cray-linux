@@ -5,7 +5,7 @@
 #   @author    John Shalf
 #   @desc
 #              known-architectures file for Cray XT4 running Compute Node Linux (CNL)
-#   @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/xt4-cray-linux,v 1.2 2009-12-05 00:16:43 schnetter Exp $
+#   @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/xt4-cray-linux,v 1.3 2009-12-29 21:50:28 schnetter Exp $
 # @@*/
 
 
@@ -14,9 +14,9 @@ echo "  Forcing MPI to NATIVE."
 MPI='NATIVE'
 
 if test -n "$MPI" ; then
-   NATIVE_MPI_LIBS=' '
-   NATIVE_MPI_LIB_DIRS=' '
-   NATIVE_MPI_INC_DIRS=' '
+  : ${NATIVE_MPI_LIBS=' '}
+  : ${NATIVE_MPI_LIB_DIRS=' '}
+  : ${NATIVE_MPI_INC_DIRS=' '}
 fi
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
@@ -175,10 +175,11 @@ else
   case `basename $CC` in
     # GNU
     pgcc | cc)
+      : ${CC='cc'}
       : ${CFLAGS='-DCRAY_XT'}
       : ${C_OPTIMISE_FLAGS='-fastsse -O3 -Mvect=assoc'}
       : ${C_WARN_FLAGS='-Minfo -Mneginfo'}
-      : ${CC='cc'}
+      : ${C_DEPEND='$(CC) $(CPPFLAGS) $(CFLAGS) -E -M'}
       CC_VERSION="`$CC -V 2>&1 | grep -i pgcc | head -n1`"
       ;;
     pathcc)
@@ -200,6 +201,7 @@ else
       : ${CXXFLAGS='--no_using_std -DCRAY_XT'}
       : ${CXX_OPTIMISE_FLAGS='-fastsse -O3 -Mvect=assoc'}
       : ${CXX_WARN_FLAGS='-Minfo -Mneginfo'}
+      : ${CXX_DEPEND='$(CXX) $(CPPFLAGS) $(CXXFLAGS) -E -M'}
       if test `basename $LD` = 'pgCC'; then
         : ${LDFLAGS='-Wl,--allow-multiple-definition'}
       fi
