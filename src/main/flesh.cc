@@ -68,7 +68,7 @@ int main(int argc, char **argv)
   if (cctki_onlyprintschedule)
   {
     printf ("--------------------------------------------------------------------------------\n");
-    printf ("Stopping now because the option '-S' was given.\n");
+    printf ("Stopping now because the option '-S' ('--print-schedule') was given.\n");
     printf ("--------------------------------------------------------------------------------\n");
     printf ("Done.\n");
   }
