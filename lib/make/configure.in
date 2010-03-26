@@ -404,9 +404,15 @@ unset LIBS
 KNOWN_LDFLAGS="$LDFLAGS"
 unset LDFLAGS
 
+AC_SUBST(LIBDIR_PREFIX)
 : ${LIBDIR_PREFIX='-L'}
 : ${LIBDIR_SUFFIX=''}
 
+AC_SUBST(RUNDIR_PREFIX)
+: ${RUNDIR_PREFIX='-Wl,-rpath,'}
+: ${RUNDIR_SUFFIX=''}
+
+AC_SUBST(LIBLINK_PREFIX)
 : ${LIBLINK_PREFIX='-l'}
 : ${LIBLINK_SUFFIX=''}
 
@@ -1157,7 +1163,7 @@ AC_SUBST(SYS_INC_DIRS)
 # Add -L and -l prefixes, but only for file names;
 # allow arbitrary options in between
 AC_SUBST(GENERAL_LIBRARIES)
-: ${GENERAL_LIBRARIES='$(patsubst -L-%,-%,$(LIBDIRS:%=-L%)) $(patsubst -l-%,-%,$(LIBS:%=-l%))'}
+: ${GENERAL_LIBRARIES='$(patsubst $(LIBDIR_PREFIX)-%,-%,$(LIBDIRS:%=$(LIBDIR_PREFIX)%)) $(patsubst $(RUNDIR_PREFIX)-%,-%,$(LIBDIRS:%=$(RUNDIR_PREFIX)%)) $(patsubst $(LIBLINK_PREFIX)-%,-%,$(LIBS:%=$(LIBLINK_PREFIX)%))'}
 
 
 # Do we need to make sure Perl makes a backup when editting in place ?
