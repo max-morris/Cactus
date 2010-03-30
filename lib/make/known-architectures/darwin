@@ -6,7 +6,7 @@
 #   @desc
 #            Known architecture stuff for MacOS X (Darwin)
 #   @enddesc
-#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.20 2008-01-25 15:02:14 schnetter Exp $
+#   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.21 2010-03-30 16:16:50 schnetter Exp $
 # @@*/
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
@@ -70,19 +70,14 @@ else
   fi
 
   if test "$MAC_C_COMP" = "gcc" ; then
-    C_DEPEND='$(CC) -M $(CPPFLAGS)'
-    CXX_DEPEND='$(CXX) -M $(CPPFLAGS)'
-  # The following does pick up the wrong gcc.
-  #elif test -e '/usr/lib/gcc/darwin/3.3' ; then
-  #  # This is dangerous -- it could pick up the wrong gcc
-  #  C_DEPEND='gcc -M -no-cpp-precomp $(CPPFLAGS)'
-  #  CXX_DEPEND='g++ -E -M $(CPPFLAGS)'
+    : ${C_DEPEND='$(CC) -M -MP $(CPPFLAGS)'}
+    : ${CXX_DEPEND='$(CXX) -M -MP $(CPPFLAGS)'}
   elif test "$MAC_C_COMP" = "intel" ; then
-    C_DEPEND='$(CC) -M $(CPPFLAGS)'
-    CXX_DEPEND='$(CXX) -M $(CPPFLAGS)'
+    : ${C_DEPEND='$(CC) -M $(CPPFLAGS)'}
+    : ${CXX_DEPEND='$(CXX) -M $(CPPFLAGS)'}
   else
-    C_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'
-    CXX_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'
+    : ${C_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'}
+    : ${CXX_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'}
   fi
 
   # Determine which Fortran 90 compiler is in use
@@ -153,6 +148,7 @@ else
       CC_VERSION="`$CC --version 2>&1 | head -n 1`"
       # : ${CFLAGS="-no-cpp-precomp -mlongcall"}
       # : ${CFLAGS="-mlongcall"}
+      : ${CFLAGS=-std=gnu99}
       ;;
     intel)
       CC_VERSION="`$CC --version 2>&1 | head -n 1`"
@@ -176,6 +172,7 @@ else
       CXX_VERSION="`$CXX --version 2>&1 | head -n 1`"
       # : ${CXXFLAGS="-no-cpp-precomp -mlongcall"}
       # : ${CXXFLAGS="-mlongcall"}
+      : ${CXXFLAGS= -std=gnu++0x}
       ;;
     intel)
       CXX_VERSION="`$CXX --version 2>&1 | head -n 1`"
@@ -212,7 +209,7 @@ else
       ;;
     absoft77)
       : ${LIBS='fio f77math m'}
-      F90FLAGS='-f'
+      : ${F90FLAGS='-f'}
       # Test if it is a version of the absoft compiler which has the library 
       # in a custom place.
       if test -n "$ABSOFT" ; then
@@ -226,6 +223,8 @@ else
     gcc)
       F77_VERSION="`$F77 --version 2>&1 | head -n 1`"
       F90_VERSION="`$F90 --version 2>&1 | head -n 1`"
+      : ${F77_DEPEND='$(FPP) -M -MP $(FPPFLAGS)'}
+      : ${F_DEPEND='$(FPP) -M -MP $(FPPFLAGS)'}
       # : ${F77FLAGS='-mlongcall'}
       # : ${F90FLAGS='-mlongcall'}
       : ${LIBS='gfortran'}
@@ -235,7 +234,7 @@ else
       : ${LIBS='xlf90 xlfmath m'}
 
       if test -z "$LIBDIRS" ; then
-	  LIBDIRS="`which $F90 | sed 's,/bin/.*,/lib,'`"
+        : ${LIBDIRS="`which $F90 | sed 's,/bin/.*,/lib,'`"}
       fi
 #      : ${LIBDIRS='/opt/ibmcmp/lib'}
 #      : ${ARFLAGS='-rucs'}
