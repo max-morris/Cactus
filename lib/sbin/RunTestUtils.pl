@@ -1507,7 +1507,7 @@ sub ViewResults
       $count = 1;
       &debug_indent;
       my $filesmissing = $rundata->{"$thorn $test FILEMISSING"};
-      foreach $file (split(" ",$testdata->{"$thorn $test DATAFILES"}))
+      foreach $file (sort split(" ",$testdata->{"$thorn $test DATAFILES"}))
       {
         &debug_print("considering file '$file'");
         if ($rundata->{"$thorn $test $file NFAILSTRONG"}
