@@ -700,7 +700,7 @@ sub WriteFullResults
 
   $tested = 0;
   $nottested = "";
-  foreach $thorn (split(" ",$testdata->{"THORNS"}))
+  foreach $thorn (sort split(" ",$testdata->{"THORNS"}))
   {
     $num = scalar(split(" ",$testdata->{"$thorn RUNNABLE"}));
     if ($num > 0)
@@ -716,13 +716,13 @@ sub WriteFullResults
 
   print "\n";
   print "  Details:\n\n";
-  foreach $thorn (split(" ",$testdata->{"THORNS"}))
+  foreach $thorn (sort split(" ",$testdata->{"THORNS"}))
   {
     $num = scalar(split(" ",$testdata->{"$thorn RUNNABLE"}));
     if ($num > 0)
     {
       print "    $thorn:\n";
-      foreach $test (split(" ",$testdata->{"$thorn RUNNABLE"}))
+      foreach $test (sort split(" ",$testdata->{"$thorn RUNNABLE"}))
       {
     print "      $test\n";
       }
@@ -737,14 +737,14 @@ sub WriteFullResults
   }
 
   $unknown = 0;
-  foreach $thorn (split(" ",$testdata->{"RUNNABLETHORNS"}))
+  foreach $thorn (sort split(" ",$testdata->{"RUNNABLETHORNS"}))
   {
     if ($testdata->{"$thorn RUNNABLE"} !~ m:^\s*$:)
     {
-      foreach $test (split(" ",$testdata->{"$thorn RUNNABLE"}))
+      foreach $test (sort split(" ",$testdata->{"$thorn RUNNABLE"}))
       {
         $gotthorn = 0;
-        if ($testdata->{"$thorn $test UNKNOWNFILES"})
+        if ($testdata->{sort "$thorn $test UNKNOWNFILES"})
         {
           if (!$unknown)
           {
@@ -769,11 +769,11 @@ sub WriteFullResults
   push (@summary, "  Run details for configuration $config_data->{'CONFIG'}");
   push (@summary, '');
 
-  foreach $thorn (split(" ",$testdata->{"RUNNABLETHORNS"}))
+  foreach $thorn (sort split(" ",$testdata->{"RUNNABLETHORNS"}))
   {
     if ($testdata->{"$thorn RUNNABLE"} !~ m:^\s*$:)
     {
-      foreach $test (split(' ',$testdata->{"$thorn RUNNABLE"}))
+      foreach $test (sort split(' ',$testdata->{"$thorn RUNNABLE"}))
       {
         push (@summary, "      $thorn: $test");
         push (@summary, "         $rundata->{\"$thorn $test SUMMARY\"}");
@@ -808,9 +808,9 @@ sub WriteFullResults
     push (@summary, '');
     push (@summary, '  Tests failed:');
     push (@summary, '');
-    foreach $thorn (split(' ',$testdata->{'THORNS'}))
+    foreach $thorn (sort split(' ',$testdata->{'THORNS'}))
     {
-      foreach $file (split(' ',$rundata->{"$thorn FAILED"}))
+      foreach $file (sort split(' ',$rundata->{"$thorn FAILED"}))
       {
         push (@summary, "    $file (from $thorn)");
       }
