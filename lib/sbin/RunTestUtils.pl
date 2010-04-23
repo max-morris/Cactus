@@ -642,9 +642,9 @@ sub WriteFullResults
 
   $message = "  Tests missed for lack of thorns:\n";
   $missingtests = 0;
-  foreach $thorn (split(' ',$testdata->{'THORNS'}))
+  foreach $thorn (sort split(' ',$testdata->{'THORNS'}))
   {
-    foreach $parfile (split(' ',$testdata->{"$thorn TESTS"}))
+    foreach $parfile (sort split(' ',$testdata->{"$thorn TESTS"}))
     {
       my $missing = $testdata->{"$thorn $parfile MISSING"};
       next unless ($missing);
@@ -659,9 +659,9 @@ sub WriteFullResults
   # Different number of processors required
   $message = "  Tests missed for different number of processors required:\n";
   $missingtests = 0;
-  foreach $thorn (split(' ',$testdata->{'THORNS'}))
+  foreach $thorn (sort split(' ',$testdata->{'THORNS'}))
   {
-    foreach $parfile (split(' ',$testdata->{"$thorn TESTS"}))
+    foreach $parfile (sort split(' ',$testdata->{"$thorn TESTS"}))
     {
       my $nprocs = $testdata->{"$thorn $parfile NPROCS"};
       next unless ($nprocs);
@@ -678,9 +678,9 @@ sub WriteFullResults
   $message =  "  Tests with different number of test files:\n\n";
 
   $extratests = 0;
-  foreach $thorn (split(" ",$testdata->{"RUNNABLETHORNS"}))
+  foreach $thorn (sort split(" ",$testdata->{"RUNNABLETHORNS"}))
   {
-    foreach $parfile (split(" ",$testdata->{"$thorn RUNNABLE"}))
+    foreach $parfile (sort split(" ",$testdata->{"$thorn RUNNABLE"}))
     {
       if ($rundata->{"$thorn $parfile NFILEEXTRA"}>0)
       {
