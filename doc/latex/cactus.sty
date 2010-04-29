@@ -2,16 +2,16 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \NeedsTeXFormat{LaTeX2e}
 
-\def\CA@styledate{\CA@getcvsdate $Date$}
-\def\CA@styleversion{\CA@getcvsversion $Revision$}
+\def\CA@styledate{\CA@getsvndate $Date$}
+\def\CA@styleversion{\CA@getsvnversion $Revision$}
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\def\CA@getcvsdate    $#1:#2/#3/#4 #5:#6:#7${#2/#3/#4}
-\def\CA@getcvsversion $#1:#2${#2}
+\def\CA@getsvndate    $#1:#2-#3-#4 #5:#6:#7${#2/#3/#4}
+\def\CA@getsvnversion $#1:#2${#2}
 
 \IfFileExists{../interface.ccl} % Is this the documentation.tex for a thorn?
 {
