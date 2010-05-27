@@ -112,7 +112,7 @@ print "Parsing schedule files...\n";
 %schedule_database = &create_schedule_database(%source_thorns);
 
 # Run any configuration scripts.
-print "Running any thorn-privided configuration scripts...\n";
+print "Running any thorn-provided configuration scripts...\n";
 
 &ProcessConfiguration($config_dir, $configuration_database,\%thorns,"$top/config-info");
 
