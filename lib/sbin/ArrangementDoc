@@ -14,8 +14,8 @@ for arr in `cd arrangements; echo *`; do
             if test -e arrangements/$arr/doc/documentation.tex; then
                 echo "  Processing arrangement $arr..."
                 
-                mkdir doc/ArrangementDoc 2> /dev/null
-                mkdir doc/ArrangementDoc/$arr 2> /dev/null
+                mkdir -p doc/ArrangementDoc
+                mkdir -p doc/ArrangementDoc/$arr
                 (
                     cd doc/ArrangementDoc/$arr
                     rm -f documentation.tex documentation.pdf

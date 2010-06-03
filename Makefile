@@ -19,7 +19,6 @@
 #
 #
 #   @enddesc
-#   @version $Id: Makefile,v 1.182 2009-02-10 22:53:25 schnetter Exp $
 # @@*/
 
 ################################################################################
@@ -385,34 +384,51 @@ endif
 	@echo These are activated by \'$(MAKE) \<thorn-name\>-\<option\>\' or
 	@echo   \'$(MAKE) \<arrangement-name\>-\<option\>\' respectively.
 	@echo Valid options are
-	@echo "  -ThornDoc        - produce the documentation for the thorn"
-	@echo "                     in doc/ThornDoc/<arrangement>/<thorn-name>/."
-	@echo "  -ArrangementDoc  - produce documentation for the arrangement"
-	@echo "                     in doc/ArrangementDoc/<arrangement-name>/."
+	@echo "  -ThornDoc           - produce the documentation for the thorn"
+	@echo "                        in doc/ThornDoc/<arrangement>/<thorn-name>/."
+	@echo "  -ThornDocHTML       - produce the documentation for the thorn in HTML format"
+	@echo "                        in doc/ThornDoc/<arrangement>/<thorn-name>/."
+	@echo "  -ArrangementDoc     - produce documentation for the arrangement"
+	@echo "                        in doc/ArrangementDoc/<arrangement-name>/."
+	@echo "  -ArrangementDocHTML - produce documentation for the arrangement in HTML format"
+	@echo "                        in doc/ArrangementDoc/<arrangement-name>/."
 	@echo $(DIVIDER)
 	@echo $(MAKE) also knows the following targets
 	@echo
-	@echo "  checkout         - checkout public arrangements/thorns."
-	@echo "  cvsdiff          - show differences between installed Cactus and"
-	@echo "                     version in CVS repository."
-	@echo "  cvsstatus        - report on status of Cactus (when installed from CVS)."
-	@echo "  update           - update flesh and arrangements from CVS and/or SVN."
-	@echo "  default          - create a new configuration with a default name."
-	@echo "  distclean        - delete all existing configurations."
-	@echo "  downsize         - remove non-essential files."
-	@echo "  MaintGuide       - create maintainers manual, MaintGuide.pdf."
-	@echo "  newthorn         - create a new thorn."
-	@echo "  TAGS             - create an emacs TAGS file."
-	@echo "  tags             - create a vi TAGS file."
-	@echo "  thorninfo        - give information about all available thorns."
-	@echo "  UsersGuide       - create users manual doc/UsersGuide.pdf."
-	@echo "  ReferenceManual  - create reference manual doc/ReferenceManual.pdf."
-	@echo "  ThornGuide       - create the thorn manual doc/ThornGuide.pdf."
-	@echo "  ThornDoc         - create documentation for all thorns in doc/ThornDoc."
-	@echo "  ArrangementDoc   - create documentation for all arrangements"
-	@echo "                     in doc/ArrangementDoc."
-	@echo "  AllDoc           - build all documentation."
-	@echo "  <anything else>  - prompt to create a configuration with that name."
+	@echo "  checkout            - checkout public arrangements/thorns."
+	@echo "  cvsdiff             - show differences between installed Cactus and"
+	@echo "                        version in CVS repository."
+	@echo "  cvsstatus           - report on status of Cactus (when installed from CVS)."
+	@echo "  update              - update flesh and arrangements from CVS and/or SVN."
+	@echo "  default             - create a new configuration with a default name."
+	@echo "  distclean           - delete all existing configurations."
+	@echo "  downsize            - remove non-essential files."
+	@echo "  newthorn            - create a new thorn."
+	@echo "  TAGS                - create an emacs TAGS file."
+	@echo "  tags                - create a vi TAGS file."
+	@echo "  thorninfo           - give information about all available thorns."
+	@echo "  MaintGuide          - create maintainers manual."
+	@echo "  MaintGuideHTML      - create maintainers manual in HTML format in"
+	@echo "                        doc/HTML/MaintGuide."
+	@echo "  UsersGuide          - create users manual doc/UsersGuide.pdf."
+	@echo "  UsersGuideHTML      - create users manual in HTML format in"
+	@echo "                        doc/HTML/UsersGuide/."
+	@echo "  ReferenceManual     - create reference manual doc/ReferenceManual.pdf."
+	@echo "  ReferenceManualHTML - create reference manual in HTML format in"
+	@echo "                        doc/HTML/ReferenceManual/."
+	@echo "  ThornGuide          - create the thorn manual doc/ThornGuide.pdf."
+	@echo "  ThornGuideHTML      - create the thorn manual in HTML format in"
+	@echo "                        doc/HTML/ThornGuide/."
+	@echo "  ThornDoc            - create documentation for all thorns in doc/ThornDoc."
+	@echo "  ThornDocHTML        - create documentation for all thorns in HTML format"
+	@echo "                        in doc/ThornHTML."
+	@echo "  ArrangementDoc      - create documentation for all arrangements"
+	@echo "                        in doc/ArrangementDoc."
+	@echo "  ArrangementDocHTML  - create documentation for all arrangements in HTML format"
+	@echo "                        format in doc/ArrangementHTML."
+	@echo "  AllDoc              - build all documentation."
+	@echo "  AllDocHTML          - build all documentation in HTML format."
+	@echo "  <anything else>     - prompt to create a configuration with that name."
 	@echo $(DIVIDER)
 
 
@@ -1003,6 +1019,10 @@ endif
 .PHONY: AllDoc
 AllDoc: UsersGuide ReferenceManual MaintGuide ThornDoc ArrangementDoc
 
+# Make all HTML documentation
+.PHONY: AllDocHTML
+AllDocHTML: UsersGuideHTML ReferenceManualHTML MaintGuideHTML ThornDocHTML ArrangementDocHTML
+
 # Make the Users Guide
 
 .PHONY: UsersGuide.pdf
@@ -1023,8 +1043,38 @@ UsersGuide:
 	elif grep "^LaTeX Warning:" "LATEX_MESSAGES"; then                  \
 	  echo "  For more information see doc/UsersGuide/LATEX_MESSAGES."; \
 	fi;                                                                 \
-	cp UsersGuide.pdf $(CCTK_HOME)/doc/UsersGuide.pdf 
+	mv UsersGuide.pdf $(CCTK_HOME)/doc/UsersGuide.pdf 
 	@echo "  UsersGuide.pdf created in doc directory."
+	@echo "  Done."
+	@echo $(DIVIDER)
+
+.PHONY: UsersGuideHTML
+
+doc/UsersGuide/bincactus2.ps: doc/UsersGuide/bincactus2.pdf
+	pdf2ps doc/UsersGuide/bincactus2.pdf doc/UsersGuide/bincactus2.ps
+
+UsersGuideHTML: doc/UsersGuide/bincactus2.ps
+	@echo $(DIVIDER)
+	@echo "Creating user documentation (HTML)"
+	cd doc/UsersGuide;                         \
+	$(CCTK_HOME)/lib/sbin/ConvertFigures;      \
+	echo "  Running htlatex....";              \
+	htlatex UsersGuide.tex "html,2,fn-in" "" "" -interaction=nonstopmode > LATEX_MESSAGES 2>&1; \
+	if [ $$? -ne 0 ]; then                                                \
+	  echo "  Problem executing htlatex. See doc/UsersGuide/LATEX_MESSAGES."; \
+		exit 1;                                                           \
+	fi;                                                                 \
+	if grep "^\! " "LATEX_MESSAGES"; then                               \
+	  echo "  Problem in $<.  See doc/UsersGuide/LATEX_MESSAGES.";      \
+	  exit 1;                                                           \
+	elif grep "^LaTeX Warning:" "LATEX_MESSAGES"; then                  \
+	  echo "  For more information see doc/UsersGuide/LATEX_MESSAGES."; \
+	fi;                                                                 \
+  mkdir -p $(CCTK_HOME)/doc/HTML/UsersGuide;            \
+	cp UsersGuide*.png $(CCTK_HOME)/doc/HTML/UsersGuide/; \
+	cp UsersGuide*.html $(CCTK_HOME)/doc/HTML/UsersGuide/; \
+	cp UsersGuide.css $(CCTK_HOME)/doc/HTML/UsersGuide/
+	@echo "  Users Guide (HTML) created in doc/HTML/UsersGuide directory."
 	@echo "  Done."
 	@echo $(DIVIDER)
 
@@ -1048,8 +1098,34 @@ ReferenceManual:
 	elif grep "^LaTeX Warning:" "LATEX_MESSAGES"; then    \
 	  echo "  For more information see doc/ReferenceManual/LATEX_MESSAGES."; \
 	fi;                                         \
-	cp ReferenceManual.pdf $(CCTK_HOME)/doc/ReferenceManual.pdf
+	mv ReferenceManual.pdf $(CCTK_HOME)/doc/ReferenceManual.pdf
 	@echo "  ReferenceManual.pdf created in doc directory."
+	@echo "  Done."
+	@echo $(DIVIDER)
+
+.PHONY: ReferenceManualHTML
+ReferenceManualHTML:
+	@echo $(DIVIDER)
+	@echo "Creating user reference manual (HTML)"
+	cd doc/ReferenceManual;                    \
+	$(CCTK_HOME)/lib/sbin/ConvertFigures;      \
+	echo "  Running htlatex....";              \
+	htlatex ReferenceManual.tex "html,2,fn-in" "" "" -interaction=nonstopmode  > LATEX_MESSAGES 2>&1; \
+	if [ $$? -ne 0 ]; then                                                \
+	  echo "  Problem executing htlatex. See doc/UsersGuide/LATEX_MESSAGES."; \
+		exit 1;                                                           \
+	fi;                                                                 \
+	if grep "^\! " "LATEX_MESSAGES"; then                            \
+	  echo "  Problem in $<.  See doc/ReferenceManual/LATEX_MESSAGES."; \
+	  exit 1;                                                           \
+	elif grep "^LaTeX Warning:" "LATEX_MESSAGES"; then    \
+	  echo "  For more information see doc/ReferenceManual/LATEX_MESSAGES."; \
+	fi;                                         \
+	mkdir -p $(CCTK_HOME)/doc/HTML/ReferenceManual;                \
+	cp ReferenceManual*.png $(CCTK_HOME)/doc/HTML/ReferenceManual; \
+	cp ReferenceManual*.html $(CCTK_HOME)/doc/HTML/ReferenceManual; \
+	cp ReferenceManual.css  $(CCTK_HOME)/doc/HTML/ReferenceManual
+	@echo "  HTML ReferenceManual created in doc/HTML/ReferenceManual directory."
 	@echo "  Done."
 	@echo $(DIVIDER)
 
@@ -1073,8 +1149,34 @@ MaintGuide:
 	elif grep "^LaTeX Warning:" "LATEX_MESSAGES"; then                  \
 	  echo "  For more information see doc/MaintGuide/LATEX_MESSAGES."; \
 	fi;                                                                 \
-	cp MaintGuide.pdf $(CCTK_HOME)/doc/MaintGuide.pdf
+	mv MaintGuide.pdf $(CCTK_HOME)/doc/MaintGuide.pdf
 	@echo "  MaintGuide.pdf created in doc directory."
+	@echo "  Done."
+	@echo $(DIVIDER)
+
+.PHONY: MaintGuideHTML
+MaintGuideHTML:
+	@echo $(DIVIDER)
+	@echo "Creating maintainers documentation (HTML)"
+	cd doc/MaintGuide;                          \
+	$(CCTK_HOME)/lib/sbin/ConvertFigures;             \
+	echo "  Running htlatex....";              \
+	htlatex MaintGuide.tex "html,2,fn-in" "" "" -interaction=nonstopmode  > LATEX_MESSAGES 2>&1; \
+	if [ $$? -ne 0 ]; then                                                \
+	  echo "  Problem executing htlatex. See doc/UsersGuide/LATEX_MESSAGES."; \
+		exit 1;                                                           \
+	fi;                                                                 \
+	if grep "^\! " "LATEX_MESSAGES"; then                               \
+	  echo "  Problem in $<.  See doc/MaintGuide/LATEX_MESSAGES.";      \
+	  exit 1;                                                           \
+	elif grep "^LaTeX Warning:" "LATEX_MESSAGES"; then                  \
+	  echo "  For more information see doc/MaintGuide/LATEX_MESSAGES."; \
+	fi;                                                                 \
+	mkdir -p $(CCTK_HOME)/doc/HTML/MaintGuide;                          \
+	cp MaintGuide*.png $(CCTK_HOME)/doc/HTML/MaintGuide;                \
+	cp MaintGuide*.html $(CCTK_HOME)/doc/HTML/MaintGuide;                \
+	cp MaintGuide.css  $(CCTK_HOME)/doc/HTML/MaintGuide
+	@echo "  Maintainers Guide (HTML) created in doc/HTML/MaintGuide directory."
 	@echo "  Done."
 	@echo $(DIVIDER)
 
@@ -1092,7 +1194,7 @@ ThornGuide:
 	rm -rf $(THORNBUILD);
 	mkdir $(THORNBUILD);
 	cd $(THORNBUILD); \
-	$(MAKE) -f $(DOCDIR)/ThornGuide/Makefile DOCBUILDDIR=doc/ThornGuide/build
+	$(MAKE) -f $(DOCDIR)/ThornGuide/Makefile DOCBUILDDIR=$(THORNBUILD)
 	if test -e "$(THORNBUILD)/ThornGuide.pdf"; then \
 	  mv "$(THORNBUILD)/ThornGuide.pdf" $(DOCDIR)/ThornGuide.pdf; \
 	  echo "  ThornGuide.pdf created in doc directory."; \
@@ -1100,17 +1202,22 @@ ThornGuide:
 	fi
 	@echo $(DIVIDER)
 
-.PHONY: ThornGuide.pdf
-ThornGuide.pdf:
+.PHONY: ThornGuideHTML
+
+ThornGuideHTML: doc/UsersGuide/bincactus2.ps
 	@echo $(DIVIDER)
-	@echo Creating thorn documentation ThornGuide.pdf
+	@echo "Creating thorn documentation ThornGuide (HTML)"
 	rm -rf $(THORNBUILD);
 	mkdir $(THORNBUILD);
 	cd $(THORNBUILD); \
-	$(MAKE) -f $(DOCDIR)/ThornGuide/Makefile ThornGuide.pdf
-	if test -e "$(THORNBUILD)/ThornGuide.pdf"; then \
-	  mv "$(THORNBUILD)/ThornGuide.pdf" $(DOCDIR)/ThornGuide.pdf;  \
-	  echo "  ThornGuide.pdf created in doc directory."; \
+	$(CCTK_HOME)/lib/sbin/ConvertFigures;             \
+	$(MAKE) ThornGuideHTML -f $(DOCDIR)/ThornGuide/Makefile DOCBUILDDIR=doc/ThornGuide/build MASTER_FILE=ThornGuide
+	if test -e "$(THORNBUILD)/ThornGuide.html"; then \
+	  mkdir -p "$(DOCDIR)/HTML/ThornGuide"; \
+	  mv "$(THORNBUILD)/ThornGuide"*".png" $(DOCDIR)/HTML/ThornGuide; \
+	  mv "$(THORNBUILD)/ThornGuide"*".html" $(DOCDIR)/HTML/ThornGuide; \
+	  mv "$(THORNBUILD)/ThornGuide.css" $(DOCDIR)/HTML/ThornGuide; \
+	  echo "  Thorn Guide (HTML) created in doc/HTML/ThornGuide directory."; \
 	  echo "  Done."; \
 	fi
 	@echo $(DIVIDER)
@@ -1169,6 +1276,24 @@ ThornDoc:
 ArrangementDoc:
 	@echo "$(DIVIDER)"
 	@lib/sbin/ArrangementDoc
+	@echo $(DIVIDER)
+
+.PHONY: ThornDocHTML
+%-ThornDocHTML: doc/UsersGuide/bincactus2.ps
+	@echo "$(DIVIDER)"
+	@lib/sbin/ThornDocHTML $(@:%-ThornDocHTML=%)
+	@echo $(DIVIDER)
+ThornDocHTML: doc/UsersGuide/bincactus2.ps
+	@echo "$(DIVIDER)"
+	@lib/sbin/ThornDocHTML
+	@echo $(DIVIDER)
+%-ArrangementDocHTML: doc/UsersGuide/bincactus2.ps
+	@echo "$(DIVIDER)"
+	@lib/sbin/ArrangementDocHTML $(@:%-ArrangementDocHTML=%)
+	@echo $(DIVIDER)
+ArrangementDocHTML: doc/UsersGuide/bincactus2.ps
+	@echo "$(DIVIDER)"
+	@lib/sbin/ArrangementDocHTML
 	@echo $(DIVIDER)
 
 ###############################################################################

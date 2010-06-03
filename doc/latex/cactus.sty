@@ -125,137 +125,6 @@
    \begin{entry}}
   {\end{entry}}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newenvironment{CCTKroutine}{\newpage}{}
-\newenvironment{CCTKsyn}{\noindent\begin{tabular}{@{}p{3cm}cp{11cm}}&&\\{\bf Synopsis} \hfill&&\\}{\end{tabular}}
-% The above needs to be fixed -- sometimes it runs off the page (e.g. with cctk_complex arguments...)
-\newenvironment{CCTKpar}{\noindent\begin{tabular}{@{}p{3cm}cp{11cm}}&&\\{\bf Parameters} \hfill&&\\}{\end{tabular}}
-\newcommand{\CCTKname}[1]{\noindent{\t #1}\hrule}
-\newcommand{\CCTKdesc}[1]{\vskip .3cm \noindent #1}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Define some saveboxes to hold data
-\newsavebox{\cctkbox}
-\newsavebox{\cctkcargbox}
-\newsavebox{\cctkfargbox}
-\newsavebox{\cctkfargdefs}
-\newsavebox{\cctkcsepbox}
-\newsavebox{\cctkfsepbox}
-\newsavebox{\cctkfdefssep}
-\newsavebox{\cctkcprefix}
-\newsavebox{\cctkfprefix}
-\newsavebox{\cctkparambox}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\newenvironment{CCTKFunc}[2]
-        {\sbox{\cctkbox}{#1}
-         \newpage
-         \noindent{\t #1}\hrule 
-         \vskip .3cm \noindent #2\\
-%Clear the saveboxes - this may not be neccessary
-         \sbox{\cctkcargbox}{}
-         \sbox{\cctkfargbox}{}
-         \sbox{\cctkfargdefs}{}
-         \sbox{\cctkcsepbox}{}
-         \sbox{\cctkfsepbox}{}
-         \sbox{\cctkfdefssep}{}
-         \sbox{\cctkcprefix}{}
-         \sbox{\cctkfprefix}{}
-%A command to add an argument - takes ctype, ftype, name
-         \newcommand{\argument}[3]
-         {\sbox{\cctkcargbox}{\usebox{\cctkcargbox}\usebox{\cctkcsepbox} ##1 ##3} 
-          \sbox{\cctkcsepbox}{,}
-          \sbox{\cctkfargbox}{\usebox{\cctkfargbox}\usebox{\cctkfsepbox} ##3} 
-          \sbox{\cctkfsepbox}{,}
-          \sbox{\cctkfargdefs}{\noindent{}\vbox{\noindent\usebox{\cctkfargdefs}\noindent\usebox{\cctkfdefssep}\noindent {}  ##2 ##3}}
-          \sbox{\cctkfdefssep}{\\}
-         }
-%Use this command if it is a subroutine, same args as \argument
-         \newcommand{\subroutine}[3]
-         {\sbox{\cctkcprefix}{##1 ##3 =}
-          \sbox{\cctkfprefix}{call}
-          \sbox{\cctkfargbox}{##3\usebox{\cctkfsepbox} \usebox{\cctkfargbox}} 
-          \sbox{\cctkfsepbox}{,}
-          \sbox{\cctkfargdefs}{\noindent{}\vbox{\noindent ##2 ##3 \usebox{\cctkfdefssep}\noindent{}\usebox{\cctkfargdefs}}}
-          \sbox{\cctkfdefssep}{\\}
-         }
-
-%Use this command if it is a function, same args as \argument
-         \newcommand{\function}[3]
-         {\sbox{\cctkcprefix}{##1 ##3 =}
-          \sbox{\cctkfprefix}{##3 = }
-          \sbox{\cctkfargdefs}{\noindent{}\vbox{\noindent ##2 ##3 \usebox{\cctkfdefssep}\noindent{}\usebox{\cctkfargdefs}}}
-          \sbox{\cctkfdefssep}{\\}
-         }
-
-%Use this to display the arguments
-         \newcommand{\showargs}
-         {\noindent
-          \begin{tabular}{@{}p{3cm}cp{11cm}}&&\\
-{\bf Synopsis} \hfill&&\\ 
-\hfill {\bf C} && {\t \usebox{\cctkcprefix} \usebox{\cctkbox}(\usebox{\cctkcargbox})}\\
-\hfill {\bf Fortran} && 
-{\t \usebox{\cctkfprefix} \usebox{\cctkbox}(\usebox{\cctkfargbox} ) }\\
-&&\noindent\usebox{\cctkfargdefs}
-\end{tabular}\\
-}
-
-%Use this to display the C arguments
-         \newcommand{\showcargs}
-         {\noindent
-          \begin{tabular}{@{}p{3cm}cp{11cm}}&&\\
-{\bf Synopsis} \hfill&&\\ 
-\hfill {\bf C} && {\t \usebox{\cctkcprefix} \usebox{\cctkbox}(\usebox{\cctkcargbox})}\\
-\end{tabular}\\
-}
-
-
-%Environment for describing parameters
-          \newenvironment{params}{
-             \noindent\begin{tabular}{@{}p{3cm}cp{11cm}}&&\\{\bf Parameters} \hfill&&\\}{\end{tabular}\\}
-%Command to describe a parameter, takes name and description
-          \newcommand{\parameter}[2]{
-\\
-\hfill {\t ##1} &-&##2
-\\
-}
-%Environment for discussion
-    \newenvironment{discussion}
-    {\noindent
-     \begin{tabular}{@{}p{14cm}}
-     \\{\bf Discussion} \hfill\\
-    }
-    {
-     \end{tabular}\\
-    }
-%Environment for examples
-    \newenvironment{examples}
-    {\noindent
-     \begin{tabular}{@{}p{14cm}}
-     \\{\bf Examples} \hfill\\
-    }
-    {
-     \end{tabular}\\\\
-    }
-
-%Environment for describing errors
-     \newenvironment{errorcodes}
-    {\noindent
-     \begin{tabular}{@{}p{6cm}cp{10cm}}&&\\
-     {\bf Errors} \hfill&&\\}
-    {\end{tabular}\\}
-%Command to describe an errorcode, takes name and description
-          \newcommand{\errorcode}[2]{
-\\
-\hfill {\t ##1} &-&##2
-\\
-}
-
-}% end of \begin{CCTKFunc} expansion
-{}% \end{CCTKFunc} expansion
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -376,6 +245,7 @@
 % - There are often unwanted one-horizontal-space indentations at
 %   the start of items; I don't know how to get rid of these. :(
 %   
+\ifx \HCode\Undef
 \newenvironment{FunctionDescription}[1]
 {
 \newpage
@@ -478,20 +348,125 @@
                \begin{FunctionDescriptionEntry}
 	       }%%%
                {\end{FunctionDescriptionEntry}}
+\newenvironment{ExampleDescription}{\item }{}
 \newenvironment{Example}[1]{\item[\bf{##1}]}{}
 %
 }%%%	% end of \begin{FunctionDescription} expansion
 {%%%
 }%%%	% \end{FunctionDescription} expansion is empty
 
+\else
+% If using tex4ht, we have a different, simpler style
+\newenvironment{FunctionDescription}[1]
+{
+\Css{ div.functiondescription {
+  background-color: \#f6f6f6;
+  border: 1px solid \#e6e6e6;
+  color: black;
+  padding: 4px 10px;
+}
+}
+\Css{ div.functiondescriptioncontent {
+  padding: 0px 10px;
+}
+}
+\Css{ div.codecontent {
+  float: left;
+  background-color: \#f6f6f6;
+  -moz-border-radius: 7px;
+  border-radius: 7px;
+  border: 1px solid \#e6e6e6;
+  color: black;
+  padding: 0 10px 0 10px;
+}
+}
+\Css{ div.codetype {
+  float: left;
+  -moz-border-radius: 7px;
+  border-radius: 7px;
+  padding: 0 10px;
+  margin: -5px 0 5px 0;
+  background-color: white;
+  border: 1px solid \#e6e6e6;
+}
+}
 
+\HCode{<div class="functiondescription">}
+{\bf #1}
+\HCode{</div>}
+\HCode{<div class="functiondescriptioncontent">}
+
+%
+% We define all the subenvironments inside the main one, so they won't
+% interfere with any conflicting global definitions.
+%
+\newenvironment{FunctionDescriptionEntry}
+	       {\renewcommand{\makelabel}{\Lentrylabel}}{}
+\newenvironment{FunctionDescriptionWideEntry}
+	       {\renewcommand{\makelabel}{\Lentrylabel}}{}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\newenvironment{SynopsisSection}
+	       {\par{\bf Synopsis}\begin{FunctionDescriptionEntry}}%%%
+         {\end{FunctionDescriptionEntry}}
+\newenvironment{Synopsis}[1]
+         {\par
+          \HCode{<div class="codecontent">}
+          \HCode{<div class="codetype">}##1\HCode{</div>}
+         }
+         {\HCode{</div><br style="clear: both;"/>}}
+
+\newenvironment{ResultSection}
+	       {\par{\bf Result}\par\begin{FunctionDescriptionEntry}}%%%
+         {\end{FunctionDescriptionEntry}}
+
+\newenvironment{ResultNote}{}{}
+\newenvironment{Result}[1]{{\tt ##1} }{\HCode{<br/>}}
+%
+\newenvironment{ParameterSection}
+	       {\par{\bf Parameters}\par\begin{FunctionDescriptionEntry}}%%%
+         {\end{FunctionDescriptionEntry}}
+\newenvironment{Parameter}[1]{{\tt ##1} }{\HCode{<br/>}}
+%
+\newenvironment{Discussion}%%%
+               {\par{\bf Discussion}\par\begin{FunctionDescriptionEntry}}%%%
+               {\end{FunctionDescriptionEntry}}
+%
+\newenvironment{SeeAlsoSection}
+	       {\par{\bf See Also}\par\begin{FunctionDescriptionWideEntry}}%%%
+         {\end{FunctionDescriptionWideEntry}}
+         
+\newenvironment{SeeAlso}[1]{{\tt ##1} }{\HCode{<br/>}}
+\newenvironment{SeeAlso2}[2]{{\tt ##1} \rm{[\pageref{##2}]}}{\HCode{<br/>}}
+%
+\newenvironment{ErrorSection}
+	       {\par{\bf Errors}\par\begin{FunctionDescriptionWideEntry}}%%%
+         {\end{FunctionDescriptionWideEntry}}
+\newenvironment{Error}[1]{{\tt ##1} }{\HCode{<br/>}}
+%
+\newenvironment{ExampleSection}
+	       {\par{\bf Examples}\par\begin{FunctionDescriptionEntry}}%%%
+         {\end{FunctionDescriptionEntry}}
+\newenvironment{Example}[1]
+         {\par
+          \HCode{<div class="codecontent">}
+          \HCode{<div class="codetype">}##1\HCode{</div>}
+         }
+         {\HCode{</div><br style="clear: both;"/>}}
+\newenvironment{ExampleDescription}{}{}
+%
+}%%%	% end of \begin{FunctionDescription} expansion
+{%%%
+\HCode{</div>}}%%%	% \end{FunctionDescription}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Takes three arguments - the name of the document, the revision, and
 % the date.
 % Additionally ther eis an optional first argument with the version number
-
+\ifx \HCode\Undef
 \newcommand{\cactustitlepage}[4][4.0]
 {
 \thispagestyle{empty}
@@ -517,6 +492,18 @@
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{10pt}
 }
+
+\else
+
+\newcommand{\cactustitlepage}[4][4.0]
+{
+\begin{center}
+{\Huge Cactus #1\\[5mm] #2}\par
+\includegraphics[width=3cm]{bincactus2}\par
+{ #3 \\ #4}
+\end{center}
+}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

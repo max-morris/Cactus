@@ -1247,22 +1247,27 @@ but many are not yet documented.
 %%%%%
 
 % CommOverloadables.c
-\begin{CCTKFunc}{CCTK\_Barrier}{Synchronizes all processors at a given execution point}
+\begin{FunctionDescription}{CCTK\_Barrier}{Synchronizes all processors at a given execution point}
 \label{CCTK-Barrier}
-\subroutine{int}{integer}{istat}
-\argument{cGH *}{CCTK\_POINTER}{cctkGH}
-\showargs
-\begin{params}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\parameter{istat}{return code}
-\end{params}
-\begin{discussion}
-\end{discussion}
 This routine synchronizes all processors in a parallel job at a given point of
 execution. No processor will continue execution until all other processors
 have called \code{CCTK\_Barrier}. Note that this is a collective operation --
 it must be called by all processors otherwise the code will hang.
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+int istat = CCTK_Barrier(int cGH, const cGH *cctkGH)
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+subroutine CCTK_Barrier(cGH, cctkGH)
+   integer       cGH
+   CCTK_Pointer  cctkGH
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\end{FunctionDescription}
 
 
 %%%%%
@@ -1275,18 +1280,18 @@ it must be called by all processors otherwise the code will hang.
 Registers a named timer clock with the Flesh.
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-\begin{alltt}
-int err = CCTK\_ClockRegister(\var{name}, \var{functions})
-\end{alltt}
+\begin{verbatim}
+int err = CCTK_ClockRegister(name, functions)
+\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ParameterSection}
-\begin{Parameter}{const char * \var{name}}
+\begin{Parameter}{const char * name}
 The name the clock will be given
 \end{Parameter}
 
-\begin{Parameter}{const cClockFuncs * \var{functions}}
+\begin{Parameter}{const cClockFuncs * functions}
 The structure holding the function pointers that define the clock
 \end{Parameter}
 \end{ParameterSection}
@@ -1304,314 +1309,398 @@ A negative return value indicates an error.
 \end{FunctionDescription}
 
 
-\begin{CCTKFunc}{CCTK\_Cmplx}{Turns two real numbers into a complex number}
+\begin{FunctionDescription}{CCTK\_Cmplx}{Turns two real numbers into a complex number}
 \label{CCTK-Cmplx}
-\subroutine{CCTK\_COMPLEX}{}{cmpno}
-\argument{CCTK\_REAL}{}{realpart}
-\argument{CCTK\_REAL}{}{imagpart}
-\showcargs
-\begin{params}
-\parameter{cmpno}{The complex number}
-\parameter{realpart}{The real part of the complex number}
-\parameter{imagpart}{The imaginary part of the complex number}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t cmpno = CCTK\_Cmplx(re,im)};
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}CCTK_COMPLEX cmpno = CCTK_Cmplx( CCTK_REAL realpart, CCTK_REAL imagpart)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{cmpno}
+The complex number
+\end{Parameter}
+\begin{Parameter}{realpart}
+The real part of the complex number
+\end{Parameter}
+\begin{Parameter}{imagpart}
+The imaginary part of the complex number
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+cmpno = CCTK_Cmplx(re,im);
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
-\begin{CCTKFunc}{CCTK\_CmplxAbs}{Absolute value of a complex number}
+\begin{FunctionDescription}{CCTK\_CmplxAbs}{Absolute value of a complex number}
 \label{CCTK-CmplxAbs}
-\subroutine{CCTK\_COMPLEX}{}{absval}
-\argument{CCTK\_COMPLEX}{}{inval}
-\showcargs
-\begin{params}
-\parameter{absval}{The computed absolute value}
-\parameter{realpart}{The complex number who absolute value is to be returned}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t absval = CCTK\_CmplxAbs(inval)};
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}CCTK_COMPLEX absval = CCTK_CmplxAbs( CCTK_COMPLEX inval)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{absval}
+The computed absolute value
+\end{Parameter}
+\begin{Parameter}{realpart}
+The complex number who absolute value is to be returned
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+absval = CCTK_CmplxAbs(inval);
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
-\begin{CCTKFunc}{CCTK\_CmplxAdd}{Sum of two complex numbers}
+\begin{FunctionDescription}{CCTK\_CmplxAdd}{Sum of two complex numbers}
 \label{CCTK-CmplxAdd}
-\subroutine{CCTK\_COMPLEX}{}{addval}
-\argument{CCTK\_COMPLEX}{}{inval1}
-\argument{CCTK\_COMPLEX}{}{inval2}
-\showcargs
-\begin{params}
-\parameter{addval}{The computed added value}
-\parameter{inval1}{The first complex number to be summed}
-\parameter{inval2}{The second complex number to be summed}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t addval = CCTK\_CmplxAdd(inval1,inval2)};
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}CCTK_COMPLEX addval = CCTK_CmplxAdd( CCTK_COMPLEX inval1, CCTK_COMPLEX inval2)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{addval}
+The computed added value
+\end{Parameter}
+\begin{Parameter}{inval1}
+The first complex number to be summed
+\end{Parameter}
+\begin{Parameter}{inval2}
+The second complex number to be summed
+\end{Parameter}
+\end{ParameterSection}
 
-\begin{CCTKFunc}{CCTK\_CmplxConjg}{Complex conjugate of a complex number}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+addval = CCTK_CmplxAdd(inval1,inval2);
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
+
+\begin{FunctionDescription}{CCTK\_CmplxConjg}{Complex conjugate of a complex number}
 \label{CCTK-CmplxConjg}
-\subroutine{CCTK\_COMPLEX}{}{conjgval}
-\argument{CCTK\_COMPLEX}{}{inval}
-\showcargs
-\begin{params}
-\parameter{conjval}{The computed conjugate}
-\parameter{inval}{The complex number to be conjugated}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t conjgval = CCTK\_CmplxConjg(inval)};
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}CCTK_COMPLEX conjgval = CCTK_CmplxConjg( CCTK_COMPLEX inval)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{conjval}
+The computed conjugate
+\end{Parameter}
+\begin{Parameter}{inval}
+The complex number to be conjugated
+\end{Parameter}
+\end{ParameterSection}
 
-\begin{CCTKFunc}{CCTK\_CmplxCos}{Cosine of a complex number}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+conjgval = CCTK_CmplxConjg(inval);
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
+
+\begin{FunctionDescription}{CCTK\_CmplxCos}{Cosine of a complex number}
 \label{CCTK-CmplxCos}
-\subroutine{CCTK\_COMPLEX}{}{cosval}
-\argument{CCTK\_COMPLEX}{}{inval}
-\showcargs
-\begin{params}
-\parameter{cosval}{The computed cosine}
-\parameter{inval}{The complex number to be cosined}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}CCTK_COMPLEX cosval = CCTK_CmplxCos( CCTK_COMPLEX inval)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{cosval}
+The computed cosine
+\end{Parameter}
+\begin{Parameter}{inval}
+The complex number to be cosined
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 {\bf NOT YET AVAILABLE}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t cosval = CCTK\_CmplxCos(inval)};
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+cosval = CCTK_CmplxCos(inval);
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
-\begin{CCTKFunc}{CCTK\_CmplxDiv}{Division of two complex numbers}
+\begin{FunctionDescription}{CCTK\_CmplxDiv}{Division of two complex numbers}
 \label{CCTK-CmplxDiv}
-\subroutine{CCTK\_COMPLEX}{}{divval}
-\argument{CCTK\_COMPLEX}{}{inval1}
-\argument{CCTK\_COMPLEX}{}{inval2}
-\showcargs
-\begin{params}
-\parameter{divval}{The divided value}
-\parameter{inval1}{The enumerator}
-\parameter{inval1}{The denominator}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t divval = CCTK\_CmplxDiv(inval1,inval2)};
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}CCTK_COMPLEX divval = CCTK_CmplxDiv( CCTK_COMPLEX inval1, CCTK_COMPLEX inval2)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{divval}
+The divided value
+\end{Parameter}
+\begin{Parameter}{inval1}
+The enumerator
+\end{Parameter}
+\begin{Parameter}{inval1}
+The denominator
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+divval = CCTK_CmplxDiv(inval1,inval2);
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
-\begin{CCTKFunc}{CCTK\_CmplxExp}{Exponent of a complex number}
+\begin{FunctionDescription}{CCTK\_CmplxExp}{Exponent of a complex number}
 \label{CCTK-CmplxExp}
-\subroutine{CCTK\_COMPLEX}{}{expval}
-\argument{CCTK\_COMPLEX}{}{inval}
-\showcargs
-\begin{params}
-\parameter{expval}{The computed exponent}
-\parameter{inval}{The complex number to be exponented}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}CCTK_COMPLEX expval = CCTK_CmplxExp( CCTK_COMPLEX inval)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{expval}
+The computed exponent
+\end{Parameter}
+\begin{Parameter}{inval}
+The complex number to be exponented
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 {\bf NOT YET AVAILABLE}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t expval = CCTK\_CmplxExp(inval)};
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+expval = CCTK_CmplxExp(inval);
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
-\begin{CCTKFunc}{CCTK\_CmplxImag}{Imaginary part of a complex number}
+\begin{FunctionDescription}{CCTK\_CmplxImag}{Imaginary part of a complex number}
 \label{CCTK-CmplxImag}
-\subroutine{CCTK\_REAL}{}{imval}
-\argument{CCTK\_COMPLEX}{}{inval}
-\showcargs
-\begin{params}
-\parameter{imval}{The imaginary part}
-\parameter{inval}{The complex number}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}CCTK_REAL imval = CCTK_CmplxImag( CCTK_COMPLEX inval)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{imval}
+The imaginary part
+\end{Parameter}
+\begin{Parameter}{inval}
+The complex number
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 The imaginary part of a complex number $z=a+bi$ is $b$.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t imval = CCTK\_CmplxImag(inval)};
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+imval = CCTK_CmplxImag(inval);
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
-\begin{CCTKFunc}{CCTK\_CmplxLog}{Logarithm of a complex number}
+\begin{FunctionDescription}{CCTK\_CmplxLog}{Logarithm of a complex number}
 \label{CCTK-CmplxLog}
-\subroutine{CCTK\_COMPLEX}{}{logval}
-\argument{CCTK\_COMPLEX}{}{inval}
-\showcargs
-\begin{params}
-\parameter{logval}{The computed logarithm}
-\parameter{inval}{The complex number}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}CCTK_COMPLEX logval = CCTK_CmplxLog( CCTK_COMPLEX inval)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{logval}
+The computed logarithm
+\end{Parameter}
+\begin{Parameter}{inval}
+The complex number
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 {\bf NOT YET AVAILABLE}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t logval = CCTK\_CmplxLog(inval)};
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+logval = CCTK_CmplxLog(inval);
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
-\begin{CCTKFunc}{CCTK\_CmplxMul}{Multiplication of two complex numbers}
+\begin{FunctionDescription}{CCTK\_CmplxMul}{Multiplication of two complex numbers}
 \label{CCTK-CmplxMul}
-\subroutine{CCTK\_COMPLEX}{}{mulval}
-\argument{CCTK\_COMPLEX}{}{inval1}
-\argument{CCTK\_COMPLEX}{}{inval2}
-\showcargs
-\begin{params}
-\parameter{mulval}{The product}
-\parameter{inval1}{First complex number to be multiplied}
-\parameter{inval2}{Second complex number to be multiplied}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}CCTK_COMPLEX mulval = CCTK_CmplxMul( CCTK_COMPLEX inval1, CCTK_COMPLEX inval2)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{mulval}
+The product
+\end{Parameter}
+\begin{Parameter}{inval1}
+First complex number to be multiplied
+\end{Parameter}
+\begin{Parameter}{inval2}
+Second complex number to be multiplied
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 The product of two complex numbers $z_1=a_1+b_1 i$ and $z_2=a_2+b_2 i$ is
 $z=(a_1 a_2 - b_1 b_2) + (a_1 b_2 + a_2 b_1)i$.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t mulval = CCTK\_CmplxMul(inval1,inval2)};
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+mulval = CCTK_CmplxMul(inval1,inval2);
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
 
-\begin{CCTKFunc}{CCTK\_CmplxReal}{Real part of a complex number}
+\begin{FunctionDescription}{CCTK\_CmplxReal}{Real part of a complex number}
 \label{CCTK-CmplxReal}
-\subroutine{CCTK\_REAL}{}{reval}
-\argument{CCTK\_COMPLEX}{}{inval}
-\showcargs
-\begin{params}
-\parameter{reval}{The real part}
-\parameter{inval}{The complex number}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}CCTK_REAL reval = CCTK_CmplxReal( CCTK_COMPLEX inval)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{reval}
+The real part
+\end{Parameter}
+\begin{Parameter}{inval}
+The complex number
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 The real part of a complex number $z=a+bi$ is $a$.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t reval = CCTK\_CmplxReal(inval)};
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+reval = CCTK_CmplxReal(inval);
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
-\begin{CCTKFunc}{CCTK\_CmplxSin}{Sine of a complex number}
+\begin{FunctionDescription}{CCTK\_CmplxSin}{Sine of a complex number}
 \label{CCTK-CmplxSin}
-\subroutine{CCTK\_COMPLEX}{}{sinval}
-\argument{CCTK\_COMPLEX}{}{inval}
-\showcargs
-\begin{params}
-\parameter{sinval}{The computed sine}
-\parameter{inval}{The complex number to be Sined}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}CCTK_COMPLEX sinval = CCTK_CmplxSin( CCTK_COMPLEX inval)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{sinval}
+The computed sine
+\end{Parameter}
+\begin{Parameter}{inval}
+The complex number to be Sined
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 {\bf NOT YET AVAILABLE}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t sinval = CCTK\_CmplxSin(inval)};
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+sinval = CCTK_CmplxSin(inval);
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
-\begin{CCTKFunc}{CCTK\_CmplxSqrt}{Square root of a complex number}
+\begin{FunctionDescription}{CCTK\_CmplxSqrt}{Square root of a complex number}
 \label{CCTK-CmplxSqrt}
-\subroutine{CCTK\_COMPLEX}{}{sqrtval}
-\argument{CCTK\_COMPLEX}{}{inval}
-\showcargs
-\begin{params}
-\parameter{expval}{The computed square root}
-\parameter{inval}{The complex number to be square rooted}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}CCTK_COMPLEX sqrtval = CCTK_CmplxSqrt( CCTK_COMPLEX inval)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{expval}
+The computed square root
+\end{Parameter}
+\begin{Parameter}{inval}
+The complex number to be square rooted
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 {\bf NOT YET AVAILABLE}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t sqrtval = CCTK\_CmplxSqrt(inval)};
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+sqrtval = CCTK_CmplxSqrt(inval);
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
-\begin{CCTKFunc}{CCTK\_CmplxSub}{Subtraction of two complex numbers}
+\begin{FunctionDescription}{CCTK\_CmplxSub}{Subtraction of two complex numbers}
 \label{CCTK-CmplxSub}
-\subroutine{CCTK\_COMPLEX}{}{subval}
-\argument{CCTK\_COMPLEX}{}{inval1}
-\argument{CCTK\_COMPLEX}{}{inval2}
-\showcargs
-\begin{params}
-\parameter{addval}{The computed subtracted value}
-\parameter{inval1}{The complex number to be subtracted from}
-\parameter{inval2}{The complex number to subtract}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}CCTK_COMPLEX subval = CCTK_CmplxSub( CCTK_COMPLEX inval1, CCTK_COMPLEX inval2)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{addval}
+The computed subtracted value
+\end{Parameter}
+\begin{Parameter}{inval1}
+The complex number to be subtracted from
+\end{Parameter}
+\begin{Parameter}{inval2}
+The complex number to subtract
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 If $z_1=a_1 + b_1 i$ and $z_2 = a_2+ b_2 i$ then
 $$
 z_1-z_2 = (a_1-a_2)+ (b_1 - b_2)i
 $$
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t subval = CCTK\_CmplxSub(inval1,inval2)};
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+subval = CCTK_CmplxSub(inval1,inval2);
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
 % datestamp.c
@@ -1643,7 +1732,6 @@ formatted string containing the date stamp
   Returns a formatted string containing the datetime stamp when Cactus was compiled
 \end{SeeAlso2}
 \end{SeeAlsoSection}
-
 \end{FunctionDescription}
 
 
@@ -1680,7 +1768,6 @@ machine-processable format as defined in ISO 8601 chapter 5.4.
   Returns a formatted string containing the time stamp when Cactus was compiled
 \end{SeeAlso2}
 \end{SeeAlsoSection}
-
 \end{FunctionDescription}
 
 \begin{FunctionDescription}{CCTK\_CompileTime}
@@ -1711,7 +1798,6 @@ formatted string containing the time stamp
   Returns a formatted string containing the datetime stamp when Cactus was compiled
 \end{SeeAlso2}
 \end{SeeAlsoSection}
-
 \end{FunctionDescription}
 
 
@@ -1793,7 +1879,7 @@ Error.
 
 
 % cctk_ActiveThorns.c
-%Entering a function description for CCTK\_CompiledThorn
+%Entering a function description for CCTK_CompiledThorn
 \begin{FunctionDescription}{CCTK\_CompiledThorn}
 \label{CCTK-CompiledThorn}
 Return the name of the compiled thorn with given index.
@@ -1869,7 +1955,7 @@ Error.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{CCTKFunc}{CCTK\_CoordDir}%%%
+\begin{FunctionDescription}{CCTK\_CoordDir}%%%
 {Give the direction for a given coordinate.
 
 \textbf{All the \texttt{CCTK\_Coord*} APIs are deprecated,
@@ -1878,33 +1964,49 @@ New code should use the APIs provided by the \texttt{CoordBase} thorn
 instead (this lives in the \texttt{CactusBase} arrangement).}
 }
 \label{CCTK-CoordDir}
-\subroutine{int}{integer}{dir}
-\argument{const char *}{character*(*)}{coordname}
-\argument{const char *}{character*(*)}{systemname}
-\showargs
-\begin{params}
-\parameter{dir}{The direction of the coordinate}
-\parameter{coordname}{The name assigned to this coordinate}
-\parameter{systemname}{The name of the coordinate system}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int dir = CCTK_CoordDir( const char * coordname, const char * systemname)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_CoordDir(dir , coordname, systemname )
+
+integer dir
+character*(*) coordname
+character*(*) systemname \end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{dir}
+The direction of the coordinate
+\end{Parameter}
+\begin{Parameter}{coordname}
+The name assigned to this coordinate
+\end{Parameter}
+\begin{Parameter}{systemname}
+The name of the coordinate system
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 The coordinate name is independent of the grid function name.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t direction = CCTK\_CoordDir("xdir","cart3d")};
-\\
-\hfill {\bf Fortran} && {\t call  CCTK\_COORDDIR(direction,"radius","spher3d")}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+direction = CCTK_CoordDir("xdir","cart3d");
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call  CCTK_COORDDIR(direction,"radius","spher3d")
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{CCTKFunc}{CCTK\_CoordIndex}%%%
+\begin{FunctionDescription}{CCTK\_CoordIndex}%%%
 {Give the grid variable index for a given coordinate.
 
 \textbf{All the \texttt{CCTK\_Coord*} APIs are deprecated,
@@ -1913,41 +2015,56 @@ New code should use the APIs provided by the \texttt{CoordBase} thorn
 instead (this lives in the \texttt{CactusBase} arrangement).}
 }
 \label{CCTK-CoordIndex}
-\subroutine{int}{integer}{index}
-\argument{int}{integer}{direction}
-\argument{const char *}{character*(*)}{coordname}
-\argument{const char *}{character*(*)}{systemname}
-\showargs
-\begin{params}
-\parameter{index}{The coordinates associated grid variable index}
-\parameter{direction}{The direction of the coordinate in this coordinate system}
-\parameter{coordname}{The name assigned to this coordinate}
-\parameter{systemname}{The coordinate system for this coordinate}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int index = CCTK_CoordIndex( int direction, const char * coordname, const char * systemname)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_CoordIndex(index , direction, coordname, systemname )
+
+integer index
+integer direction
+character*(*) coordname
+character*(*) systemname\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{index}
+The coordinates associated grid variable index
+\end{Parameter}
+\begin{Parameter}{direction}
+The direction of the coordinate in this coordinate system
+\end{Parameter}
+\begin{Parameter}{coordname}
+The name assigned to this coordinate
+\end{Parameter}
+\begin{Parameter}{systemname}
+The coordinate system for this coordinate
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 The coordinate name is independent of the grid variable name.
 To find the index, the coordinate system name must be given, and either
 the coordinate direction or the coordinate name. The coordinate name
 will be used if the coordinate direction is given as less than or equal to zero, otherwise the coordinate name will be used.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_CoordIndex(-1,"xdir","cart3d")};
-\\
-\hfill {\bf Fortran} && one = 1
-\\
-&& {\t call  CCTK\_COORDINDEX(index,one,"radius","spher2d")}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+index = CCTK_CoordIndex(-1,"xdir","cart3d");
+\end{verbatim}
+\end{Example}
+\begin{Example}{C}
+\begin{verbatim}call  CCTK_COORDINDEX(index,one,"radius","spher2d")
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Coord.c
-\begin{CCTKFunc}{CCTK\_CoordRange}%%%
+\begin{FunctionDescription}{CCTK\_CoordRange}%%%
 {Return the global upper and lower bounds for a given coordinate.
 
 \textbf{All the \texttt{CCTK\_Coord*} APIs are deprecated,
@@ -1956,47 +2073,71 @@ New code should use the APIs provided by the \texttt{CoordBase} thorn
 instead (this lives in the \texttt{CactusBase} arrangement).}
 }
 \label{CCTK-CoordRange}
-\subroutine{int}{integer}{ierr}
-\argument{const cGH *}{CCTK\_POINTER}{cctkGH}
-\argument{CCTK\_REAL *}{CCTK\_REAL}{lower}
-\argument{CCTK\_REAL *}{CCTK\_REAL}{upper}
-\argument{int}{integer}{direction}
-\argument{const char *}{character*(*)}{coordname}
-\argument{const char *}{character*(*)}{systemname}
-\showargs
-\begin{params}
-\parameter{ierr}{Error code}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\parameter{lower}{Global lower bound of the coordinate (POINTER in C)}
-\parameter{upper}{Global upper bound of the coordinate (POINTER in C)}
-\parameter{direction}{Direction of coordinate in coordinate system}
-\parameter{coordname}{Coordinate name}
-\parameter{systemname}{Coordinate system name}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int ierr = CCTK_CoordRange( const cGH * cctkGH, CCTK_REAL * lower, CCTK_REAL * upper, int direction, const char * coordname, const char * systemname)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_CoordRange(ierr , cctkGH, lower, upper, direction, coordname, systemname )
+
+integer ierr
+CCTK_POINTER cctkGH
+CCTK_REAL lower
+CCTK_REAL upper
+integer direction
+character*(*) coordname
+character*(*) systemname \end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{ierr}
+Error code
+\end{Parameter}
+\begin{Parameter}{cctkGH}
+pointer to CCTK grid hierarchy
+\end{Parameter}
+\begin{Parameter}{lower}
+Global lower bound of the coordinate (POINTER in C)
+\end{Parameter}
+\begin{Parameter}{upper}
+Global upper bound of the coordinate (POINTER in C)
+\end{Parameter}
+\begin{Parameter}{direction}
+Direction of coordinate in coordinate system
+\end{Parameter}
+\begin{Parameter}{coordname}
+Coordinate name
+\end{Parameter}
+\begin{Parameter}{systemname}
+Coordinate system name
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 The coordinate name is independent of the grid function name.
 The coordinate range is registered by \code{CCTK\_CoordRegisterRange}.
 To find the range, the coordinate system name must be given, and either
 the coordinate direction or the coordinate name. The coordinate direction
 will be used if is given as a positive value, otherwise the coordinate
 name will be used.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t ierr = CCTK\_CoordRange(cctkGH, \&xmin, \&xmax, -1, "xdir", "mysystem");}
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_COORDRANGE(ierr, cctkGH, Rmin, Rmax, -1, "radius", "sphersystem")}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+ierr = CCTK_CoordRange(cctkGH, &xmin, &xmax, -1, "xdir", "mysystem");
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call CCTK_COORDRANGE(ierr, cctkGH, Rmin, Rmax, -1, "radius", "sphersystem")
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Coord.c
-\begin{CCTKFunc}{CCTK\_CoordRegisterData}%%%
+\begin{FunctionDescription}{CCTK\_CoordRegisterData}%%%
 {Define a coordinate in a given coordinate system.
 
 \textbf{All the \texttt{CCTK\_Coord*} APIs are deprecated,
@@ -2005,41 +2146,60 @@ New code should use the APIs provided by the \texttt{CoordBase} thorn
 instead (this lives in the \texttt{CactusBase} arrangement).}
 }
 \label{CCTK-CoordRegisterData}
-\subroutine{int}{integer}{ierr}
-\argument{int}{integer}{direction}
-\argument{const char *}{character*(*)}{gvname}
-\argument{const char *}{character*(*)}{coordname}
-\argument{const char *}{character*(*)}{systemname}
-\showargs
-\begin{params}
-\parameter{ierr}{Error code}
-\parameter{direction}{Direction of coordinate in coordinate system}
-\parameter{gvname}{Name of grid variable associated with coordinate}
-\parameter{coordname}{Name of this coordinate}
-\parameter{systemname}{Name of this coordinate system}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int ierr = CCTK_CoordRegisterData( int direction, const char * gvname, const char * coordname, const char * systemname)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_CoordRegisterData(ierr , direction, gvname, coordname, systemname )
+
+integer ierr
+integer direction
+character*(*) gvname
+character*(*) coordname
+character*(*) systemname \end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{ierr}
+Error code
+\end{Parameter}
+\begin{Parameter}{direction}
+Direction of coordinate in coordinate system
+\end{Parameter}
+\begin{Parameter}{gvname}
+Name of grid variable associated with coordinate
+\end{Parameter}
+\begin{Parameter}{coordname}
+Name of this coordinate
+\end{Parameter}
+\begin{Parameter}{systemname}
+Name of this coordinate system
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 There must already be a coordinate system registered,
 using \code{CCTK\_CoordRegisterSystem}.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t ierr = CCTK\_CoordRegisterData(1,"coordthorn::myx","x2d","cart2d")};
-\\
-\hfill {\bf Fortran} && two = 2
-\\
-&&{\t call CCTK\_COORDREGISTERDATA(ierr,two,"coordthorn::mytheta","spher3d")}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+ierr = CCTK_CoordRegisterData(1,"coordthorn::myx","x2d","cart2d");
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+two = 2
+call CCTK_COORDREGISTERDATA(ierr,two,"coordthorn::mytheta","spher3d")
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Coord.c
-\begin{CCTKFunc}{CCTK\_CoordRegisterRange}%%%
+\begin{FunctionDescription}{CCTK\_CoordRegisterRange}%%%
 {Assign the global maximum and minimum
 values of a coordinate on a given grid hierachy.
 
@@ -2049,52 +2209,73 @@ New code should use the APIs provided by the \texttt{CoordBase} thorn
 instead (this lives in the \texttt{CactusBase} arrangement).}
 }
 \label{CCTK-CoordRegisterRange}
-\subroutine{int}{integer}{ierr}
-\argument{const cGH *}{CCTK\_POINTER}{cctkGH}
-\argument{CCTK\_REAL}{CCTK\_REAL}{min}
-\argument{CCTK\_REAL}{CCTK\_REAL}{max}
-\argument{int}{integer}{direction}
-\argument{const char *}{character*(*)}{coordname}
-\argument{const char *}{character*(*)}{systemname}
-\showargs
-\begin{params}
-\parameter{ierr}{Error code}
-\parameter{dimension}{Pointer to CCTK grid hierachy}
-\parameter{min}{Global minimum of coordinate}
-\parameter{max}{Global maximum of coordinate}
-\parameter{direction}{Direction of coordinate in coordinate system}
-\parameter{coordname}{Name of coordinate in coordinate system}
-\parameter{systemname}{Name of this coordinate system}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int ierr = CCTK_CoordRegisterRange( const cGH * cctkGH, CCTK_REAL min, CCTK_REAL max, int direction, const char * coordname, const char * systemname)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_CoordRegisterRange(ierr , cctkGH, min, max, direction, coordname, systemname )
+
+integer ierr
+CCTK_POINTER cctkGH
+CCTK_REAL min
+CCTK_REAL max
+integer direction
+character*(*) coordname
+character*(*) systemname \end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{ierr}
+Error code
+\end{Parameter}
+\begin{Parameter}{dimension}
+Pointer to CCTK grid hierachy
+\end{Parameter}
+\begin{Parameter}{min}
+Global minimum of coordinate
+\end{Parameter}
+\begin{Parameter}{max}
+Global maximum of coordinate
+\end{Parameter}
+\begin{Parameter}{direction}
+Direction of coordinate in coordinate system
+\end{Parameter}
+\begin{Parameter}{coordname}
+Name of coordinate in coordinate system
+\end{Parameter}
+\begin{Parameter}{systemname}
+Name of this coordinate system
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 There must already
 be a coordinate registered with the given name, with
 \code{CCTK\_CoordRegisterData}.
 The coordinate range
 can be accessed by \code{CCTK\_CoordRange}.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t ierr = CCTK\_CoordRegisterRange(cctkGH,-1.0,1.0,1,"x2d","cart2d")};
-\\
-\hfill {\bf Fortran} && min = 0
-\\
-&& max = 3.1415d0/2.0d0
-\\
-&& two = 2
-\\
-&&{\t call CCTK\_COORDREGISTERRANGE(ierr,min,max,two,"coordthorn::mytheta","spher3d")}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+ierr = CCTK_CoordRegisterRange(cctkGH,-1.0,1.0,1,"x2d","cart2d");
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+min = 0
+max = 3.1415d0/2.0d0
+two = 2
+call CCTK_COORDREGISTERRANGE(ierr,min,max,two,"coordthorn::mytheta","spher3d")
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Coord.c
-\begin{CCTKFunc}{CCTK\_CoordRegisterSystem}%%%
+\begin{FunctionDescription}{CCTK\_CoordRegisterSystem}%%%
 {Assigns a coordinate system with a chosen name and dimension.
 
 \textbf{All the \texttt{CCTK\_Coord*} APIs are deprecated,
@@ -2103,34 +2284,48 @@ New code should use the APIs provided by the \texttt{CoordBase} thorn
 instead (this lives in the \texttt{CactusBase} arrangement).}
 }
 \label{CCTK-CoordRegisterSystem}
-\subroutine{int}{integer}{ierr}
-\argument{int}{integer}{dimension}
-\argument{const char *}{character*(*)}{systemname}
-\showargs
-\begin{params}
-\parameter{ierr}{Error code}
-\parameter{dimension}{Dimension of coordinate system}
-\parameter{systemname}{Unique name assigned to coordinate system}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t ierr = CCTK\_CoordRegisterSystem(3,"cart3d")};
-\\
-\hfill {\bf Fortran} && three = 3
-\\
-&&{\t call CCTK\_COORDREGISTERSYSTEM(ierr,three,"sphersystem")}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int ierr = CCTK_CoordRegisterSystem( int dimension, const char * systemname)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_CoordRegisterSystem(ierr , dimension, systemname )
+
+integer ierr
+integer dimension
+character*(*) systemname \end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{ierr}
+Error code
+\end{Parameter}
+\begin{Parameter}{dimension}
+Dimension of coordinate system
+\end{Parameter}
+\begin{Parameter}{systemname}
+Unique name assigned to coordinate system
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+ierr = CCTK_CoordRegisterSystem(3,"cart3d");
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+three = 3
+call CCTK_COORDREGISTERSYSTEM(ierr,three,"sphersystem")
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{CCTKFunc}{CCTK\_CoordSystemDim}%%%
+\begin{FunctionDescription}{CCTK\_CoordSystemDim}%%%
 {Give the dimension for a given coordinate system.
 
 \textbf{All the \texttt{CCTK\_Coord*} APIs are deprecated,
@@ -2139,31 +2334,44 @@ New code should use the APIs provided by the \texttt{CoordBase} thorn
 instead (this lives in the \texttt{CactusBase} arrangement).}
 }
 \label{CCTK-CoordDim}
-\subroutine{int}{integer}{dim}
-\argument{const char *}{character*(*)}{systemname}
-\showargs
-\begin{params}
-\parameter{dim}{The dimension of the coordinate system}
-\parameter{systemname}{The name of the coordinate system}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t dim = CCTK\_CoordSystemDim("cart3d")};
-\\
-\hfill {\bf Fortran} && {\t call  CCTK\_COORDSYSTEMDIM(dim,"spher3d")}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int dim = CCTK_CoordSystemDim( const char * systemname)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_CoordSystemDim(dim , systemname )
+
+integer dim
+character*(*) systemname \end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{dim}
+The dimension of the coordinate system
+\end{Parameter}
+\begin{Parameter}{systemname}
+The name of the coordinate system
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+dim = CCTK_CoordSystemDim("cart3d");
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call  CCTK_COORDSYSTEMDIM(dim,"spher3d")
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Coord.c
-\begin{CCTKFunc}{CCTK\_CoordSystemHandle}%%%
+\begin{FunctionDescription}{CCTK\_CoordSystemHandle}%%%
 {Returns the handle associated with a registered coordinate system.
 
 \textbf{All the \texttt{CCTK\_Coord*} APIs are deprecated,
@@ -2172,34 +2380,49 @@ New code should use the APIs provided by the \texttt{CoordBase} thorn
 instead (this lives in the \texttt{CactusBase} arrangement).}
 }
 \label{CCTK-CoordSystemHandle}
-\subroutine{int}{integer}{handle}
-\argument{const char *}{character*(*)}{systemname}
-\showargs
-\begin{params}
-\parameter{handle}{The coordinate system handle}
-\parameter{systemname}{Name of the coordinate system}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t handle =  CCTK\_CoordSystemHandle("my coordinate system");}
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_CoordSystemHandle(handle,"my coordinate system")}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\begin{tabular}{l}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int handle = CCTK_CoordSystemHandle( const char * systemname)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_CoordSystemHandle(handle , systemname )
+
+integer handle
+character*(*) systemname \end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{handle}
+The coordinate system handle
+\end{Parameter}
+\begin{Parameter}{systemname}
+Name of the coordinate system
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+handle =  CCTK_CoordSystemHandle("my coordinate system");
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call CCTK_CoordSystemHandle(handle,"my coordinate system")
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\begin{ErrorSection}
+\begin{Error}{negative}
 A negative return code indicates an invalid coordinate system name.
-\end{tabular}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Error}
+\end{ErrorSection}
+\end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Coord.c
-\begin{CCTKFunc}{CCTK\_CoordSystemName}%%%
+\begin{FunctionDescription}{CCTK\_CoordSystemName}%%%
 {Returns the name of a registered coordinate system.
 
 \textbf{All the \texttt{CCTK\_Coord*} APIs are deprecated,
@@ -2208,45 +2431,64 @@ New code should use the APIs provided by the \texttt{CoordBase} thorn
 instead (this lives in the \texttt{CactusBase} arrangement).}
 }
 \label{CCTK-CoordSystemName}
-\subroutine{const char *}{integer}{systemname}
-\argument{int}{integer}{handle}
-\showcargs
-\begin{params}
-\parameter{handle}{The coordinate system handle}
-\parameter{systemname}{The coordinate system name}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}const char * systemname = CCTK_CoordSystemName(  int handle)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{handle}
+The coordinate system handle
+\end{Parameter}
+\begin{Parameter}{systemname}
+The coordinate system name
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 No Fortran routine exists at the moment.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t systemname = CCTK\_CoordSystemName(handle);}
-\\
-\hfill         && {\t handle =  CCTK\_CoordSystemHandle(systemname);}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\begin{tabular}{l}
-A NULL pointer is returned if an invalid handle was given.
-\end{tabular}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+systemname = CCTK_CoordSystemName(handle);
+handle =  CCTK_CoordSystemHandle(systemname);
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\begin{ErrorSection}
+\begin{Error}{NULL}A NULL pointer is returned if an invalid handle was given.\end{Error}
+\end{ErrorSection}
+\end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Coord.c
-\begin{CCTKFunc}{CCTK\_CreateDirectory}{Create a directory with required permissions}
+\begin{FunctionDescription}{CCTK\_CreateDirectory}{Create a directory with required permissions}
 \label{CCTK-CreateDirectory}
-\subroutine{int}{integer}{ierr}
-\argument{int}{integer}{mode}
-\argument{const char *}{character*(*)}{pathname}
-\showargs
-\begin{params}
-\parameter{ierr}{Error code}
-\parameter{mode}{Permission mode for new directory as an octal number}
-\parameter{pathname}{Directory to create}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int ierr = CCTK_CreateDirectory( int mode, const char * pathname)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_CreateDirectory(ierr , mode, pathname )
+
+integer ierr
+integer mode
+character*(*) pathname \end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{ierr}
+Error code
+\end{Parameter}
+\begin{Parameter}{mode}
+Permission mode for new directory as an octal number
+\end{Parameter}
+\begin{Parameter}{pathname}
+Directory to create
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 To create a directory readable by everyone, but writeable only by the
 user running the code, the permission mode would be 0755.
 Alternatively, a permission mode of 0777 gives everyone unlimited
@@ -2257,25 +2499,27 @@ Note that
 (partly for historical reasons and partly for Fortran~77 compatability)
 the order of the arguments is the opposite of that of the usual Unix
 \code{mkdir(2)} system call.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t ierr = CCTK\_CreateDirectory(0755, "Results/New") };
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_CREATEDIRECTORY(ierr,0755, "Results/New")}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\begin{tabular}{ll}
-1 & Directory already exists\\
-0 & Directory successfully created\\
--1 & Memory allocation failed\\
--2 & Failed to create directory\\
--3 & Some component of \code{pathname} already exists but is not a directory\\
-\end{tabular}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+ierr = CCTK_CreateDirectory(0755, "Results/New");
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call CCTK_CREATEDIRECTORY(ierr,0755, "Results/New")
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\begin{ErrorSection}
+\begin{Error}{1}Directory already exists\end{Error}
+\begin{Error}{0}Directory successfully created\end{Error}
+\begin{Error}{-1}Memory allocation failed\end{Error}
+\begin{Error}{-2}Failed to create directory\end{Error}
+\begin{Error}{-3}Some component of \code{pathname} already exists but is not a directory\end{Error}
+\end{ErrorSection}
+\end{FunctionDescription}
 
 
 %%%%%
@@ -2284,57 +2528,62 @@ the order of the arguments is the opposite of that of the usual Unix
 
 
 % Groups.c
-\begin{CCTKFunc}{CCTK\_DecomposeName}{Given the full name of a variable/group, separates the name returning both the implementation and the variable/group}
+\begin{FunctionDescription}{CCTK\_DecomposeName}{Given the full name of a variable/group, separates the name returning both the implementation and the variable/group}
 \label{CCTK-DecomposeName}
-\subroutine{int}{integer}{istat}
-\argument{const char *}{}{fullname}
-\argument{char **}{}{imp}
-\argument{char **}{}{name}
-\showcargs
-\begin{params}
-\parameter{istat}{Status flag returned by routine}
-\parameter{fullname}{The full name of the group/variable}
-\parameter{imp}{The implementation name}
-\parameter{name}{The group/variable name}
-\end{params}
-\begin{discussion}
-\fbox{The implementation name and the group/variable name must be
-explicitly freed after they have been used.}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int istat = CCTK_DecomposeName( const char * fullname, char ** imp, char ** name)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{istat}
+Status flag returned by routine
+\end{Parameter}
+\begin{Parameter}{fullname}
+The full name of the group/variable
+\end{Parameter}
+\begin{Parameter}{imp}
+The implementation name
+\end{Parameter}
+\begin{Parameter}{name}
+The group/variable name
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
+The implementation name and the group/variable name must be
+explicitly freed after they have been used.
 
 No Fortran routine exists at the moment.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t istat = CCTK\_DecomposeName("evolve::scalars",imp,name)}\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+istat = CCTK_DecomposeName("evolve::scalars",imp,name)
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
 % CommOverloadables.c
-\begin{CCTKFunc}{CCTK\_DisableGroupComm}{Turn communications off for a group of grid variables}
+\begin{FunctionDescription}{CCTK\_DisableGroupComm}{Turn communications off for a group of grid variables}
 \label{CCTK-DisableGroupComm}
-\subroutine{int}{integer}{istat}
-\argument{cGH *}{CCTK\_POINTER}{cctkGH}
-\argument{const char *}{character*(*)}{group}
-\showcargs
-\begin{params}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int istat = CCTK_DisableGroupComm( cGH * cctkGH, const char * group)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{cctkGH}
+pointer to CCTK grid hierarchy
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 Turning off communications means that ghost zones will not be
 communicated during a call to \code{CCTK\_SyncGroup}. By default
 communications are all off.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\end{FunctionDescription}
 
 \begin{FunctionDescription}{CCTK\_DisableGroupCommI}
 \label{CCTK-DisableGroupCommI}
@@ -2382,35 +2631,29 @@ Turn communications on for a group of grid variables.
 
 %\begin{ErrorSection}
 %\end{ErrorSection}
-
 \end{FunctionDescription}
 
 % CommOverloadables.c
-\begin{CCTKFunc}{CCTK\_DisableGroupStorage}{Free the storage associated with a group of grid variables}
+\begin{FunctionDescription}{CCTK\_DisableGroupStorage}{Free the storage associated with a group of grid variables}
 \label{CCTK-DisableGroupStorage}
-\subroutine{int}{integer}{istat}
-\argument{cGH *}{CCTK\_POINTER}{cctkGH}
-\argument{const char *}{character*(*)}{group}
-\showcargs
-\begin{params}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int istat = CCTK_DisableGroupStorage( cGH * cctkGH, const char * group)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{cctkGH}
+pointer to CCTK grid hierarchy
+\end{Parameter}
+\end{ParameterSection}
+\end{FunctionDescription}
 
 \begin{FunctionDescription}{CCTK\_DisableGroupStorageI}
 \label{CCTK-DisableGroupStorageI}
 Deallocates memory for a group based upon its index
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-int  CCTK\_DisableGroupStorageI(const cGH *GH, int group);
+\begin{verbatim}int  CCTK_DisableGroupStorageI(const cGH *GH, int group);\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
@@ -2446,28 +2689,25 @@ This default function checks for the presence of the newer GroupStorageDecrease 
 %%%%%
 
 % CommOverloadables.c
-\begin{CCTKFunc}{CCTK\_EnableGroupComm}{Turn communications on for a group of grid variables}
+\begin{FunctionDescription}{CCTK\_EnableGroupComm}{Turn communications on for a group of grid variables}
 \label{CCTK-EnableGroupComm}
-\subroutine{int}{integer}{istat}
-\argument{cGH *}{CCTK\_POINTER}{cctkGH}
-\argument{const char *}{character*(*)}{group}
-\showcargs
-\begin{params}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int istat = CCTK_EnableGroupComm( cGH * cctkGH, const char * group)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{cctkGH}
+pointer to CCTK grid hierarchy
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 Grid variables with communication enabled will have their ghost zones communicated during a call
 to \code{CCTK\_SyncGroup}. In general, this function does not need to be used, since communication
 is automatically enabled for grid variables who have assigned storage via the \code{schedule.ccl}
 file.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\end{FunctionDescription}
 
 \begin{FunctionDescription}{CCTK\_EnableGroupCommI}
 \label{CCTK-EnableGroupCommI}
@@ -2591,7 +2831,7 @@ the Cactus scheduler via a thorn's \code{schedule.ccl} file.
 %\end{ErrorSection}
 \end{FunctionDescription}
 
-%Entering a function description for CCTK\_Equals
+%Entering a function description for CCTK_Equals
 \begin{FunctionDescription}{CCTK\_Equals}
 \label{CCTK-Equals}
 Checks a STRING or KEYWORD parameter for equality with a given string
@@ -2705,21 +2945,33 @@ end subroutine MyThorn_some_function
 \end{FunctionDescription}
 
 % CommOverloadables.c
-\begin{CCTKFunc}{CCTK\_Exit}{Exit the code cleanly}
+\begin{FunctionDescription}{CCTK\_Exit}{Exit the code cleanly}
 \label{CCTK-Exit}
-\subroutine{int}{integer}{istat}
-\argument{cGH *}{CCTK\_POINTER}{cctkGH}
-\argument{int}{integer}{value}
-\showargs
-\begin{params}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\parameter{value}{the return code to abort with}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int istat = CCTK_Exit( cGH * cctkGH, int value)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_Exit(istat , cctkGH, value )
+
+integer istat
+CCTK_POINTER cctkGH
+integer value \end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{cctkGH}
+pointer to CCTK grid hierarchy
+\end{Parameter}
+\begin{Parameter}{value}
+the return code to abort with
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 This routine causes an immediate, regular termination of Cactus.
 It never returns to the caller.
-\end{discussion}
-\end{CCTKFunc}
+\end{Discussion}
+\end{FunctionDescription}
 
 
 
@@ -2731,7 +2983,7 @@ It never returns to the caller.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Groups.c
-%Entering a function description for CCTK\_FirstVarIndex
+%Entering a function description for CCTK_FirstVarIndex
 \begin{FunctionDescription}{CCTK\_FirstVarIndex}
 \label{CCTK-FirstVarIndex}
 Given a group name, returns the first variable index in the group.
@@ -2754,13 +3006,13 @@ int first_varindex = CCTK_FirstVarIndex(const char* group_name);
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{first\_varindex \rm ($\ge$ 0)}
+\begin{Result}{first\_varindex ($\ge$ 0)}
 The first variable index in the group.
 \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
-\begin{Parameter}{group\_name \rm ($\ne$ {\t NULL} in C)}
+\begin{Parameter}{group\_name ($\ne$ {\t NULL} in C)}
 For C, this is a non-{\t NULL} pointer to the character-string name
 of the group.  For Fortran, this is the character-string name of the
 group.  In both cases this should be of the form
@@ -2788,20 +3040,19 @@ Get ``dynamic'' information about a group.
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
-\begin{Error}{\rm -1}
+\begin{Error}{-1}
 Group name is invalid.
 \end{Error}
-\begin{Error}{\rm -2}
+\begin{Error}{-2}
 Group has no members.
 \end{Error}
 \end{ErrorSection}
-
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Groups.c
-%Entering a function description for CCTK\_FirstVarIndexI
+%Entering a function description for CCTK_FirstVarIndexI
 \begin{FunctionDescription}{CCTK\_FirstVarIndexI}
 \label{CCTK-FirstVarIndexI}
 Given a group index, returns the first variable index in the group.
@@ -2823,13 +3074,13 @@ int first_varindex = CCTK_FirstVarIndexI(int group_index)
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{first\_varindex \rm ($\ge$ 0)}
+\begin{Result}{first\_varindex ($\ge$ 0)}
 The first variable index in the group.
 \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
-\begin{Parameter}{group\_index \rm ($\ge$ 0)}
+\begin{Parameter}{group\_index ($\ge$ 0)}
 The group index, e.g. as returned by {\t CCTK\_GroupIndex()}.
 \end{Parameter}
 \end{ParameterSection}
@@ -2854,19 +3105,18 @@ Get ``dynamic'' information about a group.
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
-\begin{Error}{\rm -1}
+\begin{Error}{-1}
 Group index is invalid.
 \end{Error}
-\begin{Error}{\rm -2}
+\begin{Error}{-2}
 Group has no members.
 \end{Error}
 \end{ErrorSection}
-
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%Entering a function description for CCTK\_FortranString
+%Entering a function description for CCTK_FortranString
 \begin{FunctionDescription}{CCTK\_FortranString}
 \label{CCTK-FortranString}
 Copy the contents of a C string into a Fortran string variable
@@ -2991,33 +3241,38 @@ c
 
 
 
-\begin{CCTKFunc}{CCTK\_FullName}{Given a variable index, returns the full name of the variable}
+\begin{FunctionDescription}{CCTK\_FullName}{Given a variable index, returns the full name of the variable}
 \label{CCTK-FullName}
-\subroutine{char *}{integer}{fullname}
-\argument{int}{integer}{index}
-\showcargs
-\begin{params}
-\parameter{implementation}{The full variable name}
-\parameter{index}{The variable index}
-\end{params}
-\begin{discussion}
-\fbox{The full variable name must be explicitly freed after it has been used.}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}char * fullname = CCTK_FullName( int index)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{implementation}
+The full variable name
+\end{Parameter}
+\begin{Parameter}{index}
+The variable index
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
+The full variable name must be explicitly freed after it has been used.
 
 No Fortran routine exists at the moment. The full variable name is in
 the form \code{<implementation>::<variable>}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_VarIndex("evolve::phi");}\\
-               && {\t name = CCTK\_FullName(index);}\\
-               && {\t printf ("Variable name: \%s", name);}\\
-               && {\t free (name);}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+index = CCTK_VarIndex("evolve::phi");
+name = CCTK_FullName(index);
+printf ("Variable name: %s", name);
+free (name);
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
 
@@ -3034,14 +3289,14 @@ corresponding to a timer clock returns a pointer to a string that is
 the name of the clock
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-\begin{alltt}
-const char * CCTK\_GetClockName(\var{val})
-\end{alltt}
+\begin{verbatim}
+const char * CCTK_GetClockName(val)
+\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ParameterSection}
-\begin{Parameter}{const cTimerVal * \var{val}}
+\begin{Parameter}{const cTimerVal * val}
 timer clock value pointer
 \end{Parameter}
 \end{ParameterSection}
@@ -3061,14 +3316,14 @@ the clock in seconds.
 
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-\begin{alltt}
-double CCTK\_GetClockResolution(\var{val})
-\end{alltt}
+\begin{verbatim}
+double CCTK_GetClockResolution(val)
+\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ParameterSection}
-\begin{Parameter}{const cTimerVal * \var{val}}
+\begin{Parameter}{const cTimerVal * val}
 timer clock value pointer
 \end{Parameter}
 \end{ParameterSection}
@@ -3080,7 +3335,6 @@ In practice, it is sometimes far smaller than it should be.  Often it just
 represents the smallest value representable due to how the information is
 stored internally.
 \end{Discussion}
-
 \end{FunctionDescription}
 
 
@@ -3094,14 +3348,14 @@ by the requested clock.
 
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-\begin{alltt}
-double CCTK\_GetClockSeconds(\var{val})
-\end{alltt}
+\begin{verbatim}
+double CCTK_GetClockSeconds(val)
+\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ParameterSection}
-\begin{Parameter}{const cTimerVal * \var{val}}
+\begin{Parameter}{const cTimerVal * val}
 timer clock value pointer
 \end{Parameter}
 \end{ParameterSection}
@@ -3121,18 +3375,18 @@ in the given {\tt cTimerData} structure,
 returns a pointer to the {\tt cTimerVal} structure holding the clock's value.
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-\begin{alltt}
-const cTimerVal * CCTK\_GetClockValue(\var{name}, \var{info})
-\end{alltt}
+\begin{verbatim}
+const cTimerVal * CCTK_GetClockValue(name, info)
+\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ParameterSection}
-\begin{Parameter} {const char * \var{name}}
+\begin{Parameter} {const char * name}
 Name of clock
 \end{Parameter}
 
-\begin{Parameter} {const cTimerData * \var{info}}
+\begin{Parameter} {const cTimerData * info}
 Timer information structure containing clock.
 \end{Parameter}
 \end{ParameterSection}
@@ -3156,18 +3410,18 @@ in the given {\tt cTimerData} structure,
 returns a pointer to the {\tt cTimerVal} structure holding the clock's value.
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-\begin{alltt}
-const cTimerVal * CCTK\_GetClockValue(\var{index}, \var{info})
-\end{alltt}
+\begin{verbatim}
+const cTimerVal * CCTK_GetClockValue(index, info)
+\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ParameterSection}
-\begin{Parameter} {int \var{index}}
+\begin{Parameter} {int index}
 Index of clock
 \end{Parameter}
 
-\begin{Parameter} {const cTimerData * \var{info}}
+\begin{Parameter} {const cTimerData * info}
 Timer information structure containing clock.
 \end{Parameter}
 \end{ParameterSection}
@@ -3184,54 +3438,75 @@ A null return value indicates an error.
 
 
 % cctk_GHExtensions.h
-\begin{CCTKFunc}{CCTK\_GHExtension}{Get the pointer to a registered extension to the Cactus GH structure}
+\begin{FunctionDescription}{CCTK\_GHExtension}{Get the pointer to a registered extension to the Cactus GH structure}
 \label{CCTK-GHExtension}
-\subroutine{void *}{CCTK\_POINTER}{extension}
-\argument{const GH *}{CCTK\_POINTER}{cctkGH}
-\argument{const char *}{character*(*)}{name}
-\showcargs
-\begin{params}
-\parameter{extension}{The pointer to the GH extension}
-\parameter{cctkGH}{The pointer to the CCTK grid hierarchy}
-\parameter{name}{The name of the GH extension}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}void * extension = CCTK_GHExtension( const GH * cctkGH, const char * name)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{extension}
+The pointer to the GH extension
+\end{Parameter}
+\begin{Parameter}{cctkGH}
+The pointer to the CCTK grid hierarchy
+\end{Parameter}
+\begin{Parameter}{name}
+The name of the GH extension
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 No Fortran routine exists at the moment.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t void *extension = CCTK\_GHExtension(GH, "myExtension");}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-NULL    & A NULL pointer is returned if an invalid extension name was given.
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+void *extension = CCTK_GHExtension(GH, "myExtension");
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\begin{ErrorSection}
+\begin{Error}{NULL}A NULL pointer is returned if an invalid extension name was given.\end{Error}
+\end{ErrorSection}
+\end{FunctionDescription}
 
 % cctk_GHExtensions.h
-\begin{CCTKFunc}{CCTK\_GHExtensionHandle}{Get the handle associated with a extension to the Cactus GH structure}
+\begin{FunctionDescription}{CCTK\_GHExtensionHandle}{Get the handle associated with a extension to the Cactus GH structure}
 \label{CCTK-GHExtensionHandle}
-\subroutine{int}{integer}{handle}
-\argument{const char *}{character*(*)}{name}
-\showargs
-\begin{params}
-\parameter{handle}{The GH extension handle}
-\parameter{group}{The name of the GH extension}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t handle =  CCTK\_GHExtension("myExtension") ;}
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_GHExtension(handle,"myExtension")}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int handle = CCTK_GHExtensionHandle( const char * name)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_GHExtensionHandle(handle , name )
+
+integer handle
+character*(*) name\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{handle}
+The GH extension handle
+\end{Parameter}
+\begin{Parameter}{group}
+The name of the GH extension
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+handle =  CCTK_GHExtension("myExtension") ;
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call CCTK_GHExtension(handle,"myExtension")
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
 
@@ -3283,7 +3558,7 @@ The number of grid array reduction operators registered
 
 
 % GroupsOnGH.h
-%Entering a function description for CCTK\_GroupbboxGI, CCTK\_GroupbboxGN
+%Entering a function description for CCTK_GroupbboxGI, CCTK_GroupbboxGN
 \begin{FunctionDescription}{CCTK\_GroupbboxGI, CCTK\_GroupbboxGN}
 \label{CCTK-GroupbboxGI}
 \label{CCTK-GroupbboxGN}
@@ -3322,11 +3597,11 @@ character*(*) groupname
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm 0} success \end{Result}
-\begin{Result}{\rm -1} incorrect dimension supplied \end{Result}
-\begin{Result}{\rm -2} data not available from driver \end{Result}
-\begin{Result}{\rm -3} called on a scalar group \end{Result}
-\begin{Result}{\rm -4} invalid group index \end{Result}
+\begin{Result}{0} success \end{Result}
+\begin{Result}{-1} incorrect dimension supplied \end{Result}
+\begin{Result}{-2} data not available from driver \end{Result}
+\begin{Result}{-3} called on a scalar group \end{Result}
+\begin{Result}{-4} invalid group index \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
@@ -3347,11 +3622,10 @@ The bounding box for a given group is returned in a user-supplied array buffer.
 Returns the lower bounds for a given variable.
 \end{SeeAlso}
 \end{SeeAlsoSection}
-
 \end{FunctionDescription}
 
 
-%Entering a function description for CCTK\_GroupbboxVI, CCTK\_GroupbboxVN
+%Entering a function description for CCTK_GroupbboxVI, CCTK_GroupbboxVN
 \begin{FunctionDescription}{CCTK\_GroupbboxVI, CCTK\_GroupbboxVN}
 \label{CCTK-GroupbboxVI}
 \label{CCTK-GroupbboxVN}
@@ -3390,11 +3664,11 @@ character*(*) varname
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm 0} success \end{Result}
-\begin{Result}{\rm -1} incorrect dimension supplied \end{Result}
-\begin{Result}{\rm -2} data not available from driver \end{Result}
-\begin{Result}{\rm -3} called on a scalar group \end{Result}
-\begin{Result}{\rm -4} invalid variable index \end{Result}
+\begin{Result}{0} success \end{Result}
+\begin{Result}{-1} incorrect dimension supplied \end{Result}
+\begin{Result}{-2} data not available from driver \end{Result}
+\begin{Result}{-3} called on a scalar group \end{Result}
+\begin{Result}{-4} invalid variable index \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
@@ -3415,7 +3689,6 @@ The bounding box for a given variable is returned in a user-supplied array buffe
 Returns the upper bounds for a given group.
 \end{SeeAlso}
 \end{SeeAlsoSection}
-
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3518,10 +3791,10 @@ Gets a group type index for a given variable index.
 \end{SeeAlsoSection}
 
 \begin{ErrorSection}
-\begin{Error}{\rm -1}
+\begin{Error}{-1}
 {\t group\_index} is invalid.
 \end{Error}
-\begin{Error}{\rm -2}
+\begin{Error}{-2}
 {\t group\_data\_buffer} is {\t NULL}.
 \end{Error}
 \end{ErrorSection}
@@ -3552,7 +3825,6 @@ printf("this group's arrays are %-dimensional and have %d time levels\n",
 \end{verbatim}
 \end{Example}
 \end{ExampleSection}
-
 \end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3578,8 +3850,8 @@ call CCTK_GroupDimFromVarI(dim, varindex)
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm positive} the dimension of the group\end{Result}
-\begin{Result}{\rm -1} invalid variable index \end{Result}
+\begin{Result}{positive} the dimension of the group\end{Result}
+\begin{Result}{-1} invalid variable index \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
@@ -3595,7 +3867,6 @@ The dimension of all variables in a group associcated with the given variable is
 Returns the dimension for a given group
 \end{SeeAlso}
 \end{SeeAlsoSection}
-
 \end{FunctionDescription}
 
 %Entering a function description for CCTK\_GroupDimI
@@ -3619,8 +3890,8 @@ call CCTK_GroupDimI(dim, groupindex)
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm positive} the dimension of the group\end{Result}
-\begin{Result}{\rm -1} invalid group index \end{Result}
+\begin{Result}{positive} the dimension of the group\end{Result}
+\begin{Result}{-1} invalid group index \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
@@ -3636,7 +3907,6 @@ The dimension of variables in the given group is returned.
 Returns the dimension for a group given by a member variable index
 \end{SeeAlso}
 \end{SeeAlsoSection}
-
 \end{FunctionDescription}
 
 
@@ -3720,8 +3990,8 @@ CCTK_INT **ghostsizes = CCTK_GroupGhostsizesI(int groupindex);
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm non-NULL} a pointer to the ghost size array\end{Result}
-\begin{Result}{\rm NULL} invalid group index \end{Result}
+\begin{Result}{non-NULL} a pointer to the ghost size array\end{Result}
+\begin{Result}{NULL} invalid group index \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
@@ -3740,7 +4010,6 @@ Returns the dimension for a group.
 Returns the size arrays for a group.
 \end{SeeAlso}
 \end{SeeAlsoSection}
-
 \end{FunctionDescription}
 
 %Entering a function description for CCTK\_GroupgshGI, CCTK\_GroupgshGN
@@ -3782,11 +4051,11 @@ character*(*) groupname
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm 0} success \end{Result}
-\begin{Result}{\rm -1} incorrect dimension supplied \end{Result}
-\begin{Result}{\rm -2} data not available from driver \end{Result}
-\begin{Result}{\rm -3} called on a scalar group \end{Result}
-\begin{Result}{\rm -4} invalid group name \end{Result}
+\begin{Result}{0} success \end{Result}
+\begin{Result}{-1} incorrect dimension supplied \end{Result}
+\begin{Result}{-2} data not available from driver \end{Result}
+\begin{Result}{-3} called on a scalar group \end{Result}
+\begin{Result}{-4} invalid group name \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
@@ -3812,7 +4081,6 @@ Returns the local size for a given group.
 Returns the local size for a given variable.
 \end{SeeAlso}
 \end{SeeAlsoSection}
-
 \end{FunctionDescription}
 
 
@@ -3855,11 +4123,11 @@ chararacter*(*) varname
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm 0} success \end{Result}
-\begin{Result}{\rm -1} incorrect dimension supplied \end{Result}
-\begin{Result}{\rm -2} data not available from driver \end{Result}
-\begin{Result}{\rm -3} called on a scalar group \end{Result}
-\begin{Result}{\rm -4} invalid variable index \end{Result}
+\begin{Result}{0} success \end{Result}
+\begin{Result}{-1} incorrect dimension supplied \end{Result}
+\begin{Result}{-2} data not available from driver \end{Result}
+\begin{Result}{-3} called on a scalar group \end{Result}
+\begin{Result}{-4} invalid variable index \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
@@ -3886,90 +4154,128 @@ Returns the local size for a given group.
 Returns the local size for a given variable.
 \end{SeeAlso}
 \end{SeeAlsoSection}
-
 \end{FunctionDescription}
 
 
 % Groups.c
-\begin{CCTKFunc}{CCTK\_GroupIndex}{Get the index number for a group name}
+\begin{FunctionDescription}{CCTK\_GroupIndex}{Get the index number for a group name}
 \label{CCTK-GroupIndex}
-\subroutine{int}{integer}{index}
-\argument{const char *}{character*(*)}{groupname}
-\showargs
-\begin{params}
-\parameter{groupname}{The name of the group}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int index = CCTK_GroupIndex( const char * groupname)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_GroupIndex(index , groupname )
+
+integer index
+character*(*) groupname\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{groupname}
+The name of the group
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 The group name should be the given in its fully qualified form, that is \code{<implementation>::<group>} for a public or protected group, and \code{<thornname>::<group>} for a private group.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_GroupIndex("evolve::scalars") };
-\\
-\hfill {\bf Fortran} && call {\t CCTK\_GroupIndex(index,"evolve::scalars")}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+index = CCTK_GroupIndex("evolve::scalars");
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call CCTK_GroupIndex(index,"evolve::scalars")
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
 
 % Groups.c
-\begin{CCTKFunc}{CCTK\_GroupIndexFromVar}{Given a variable name, returns the index of the associated group}
+\begin{FunctionDescription}{CCTK\_GroupIndexFromVar}{Given a variable name, returns the index of the associated group}
 \label{CCTK-GroupIndexFromVar}
-\subroutine{int}{integer}{groupindex}
-\argument{const char *}{character*(*)}{name}
-\showargs
-\begin{params}
-\parameter{groupindex}{The index of the group}
-\parameter{name}{The full name of the variable}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int groupindex = CCTK_GroupIndexFromVar( const char * name)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_GroupIndexFromVar(groupindex , name )
+
+integer groupindex
+character*(*) name \end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{groupindex}
+The index of the group
+\end{Parameter}
+\begin{Parameter}{name}
+The full name of the variable
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 The variable name should be in the form \code{<implementation>::<variable>}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t groupindex = CCTK\_GroupIndexFromVar("evolve::phi") ;}
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_GROUPINDEXFROMVAR(groupindex,"evolve::phi")}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+groupindex = CCTK_GroupIndexFromVar("evolve::phi") ;
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call CCTK_GROUPINDEXFROMVAR(groupindex,"evolve::phi")
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
 % Groups.c
-\begin{CCTKFunc}{CCTK\_GroupIndexFromVarI}{Given a variable index, returns the index of the associated group}
+\begin{FunctionDescription}{CCTK\_GroupIndexFromVarI}{Given a variable index, returns the index of the associated group}
 \label{CCTK-GroupIndexFromVarI}
-\subroutine{int}{integer}{groupindex}
-\argument{int}{integer}{varindex}
-\showargs
-\begin{params}
-\parameter{groupindex}{The index of the group}
-\parameter{varindex}{The index of the variable}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_VarIndex("evolve::phi");} \\
-               && {\t groupindex = CCTK\_GroupIndexFromVarI(index) ;}
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_VARINDEX("evolve::phi")}\\
-                     &&call {\t CCTK\_GROUPINDEXFROMVARI(groupindex,index)}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int groupindex = CCTK_GroupIndexFromVarI( int varindex)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_GroupIndexFromVarI(groupindex , varindex )
+
+integer groupindex
+integer varindex \end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{groupindex}
+The index of the group
+\end{Parameter}
+\begin{Parameter}{varindex}
+The index of the variable
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+index = CCTK_VarIndex("evolve::phi");
+groupindex = CCTK_GroupIndexFromVarI(index);
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call CCTK_VARINDEX("evolve::phi")
+CCTK_GROUPINDEXFROMVARI(groupindex,index)
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
-%Entering a function description for CCTK\_GrouplbndGI, CCTK\_GrouplbndGN
+%Entering a function description for CCTK_GrouplbndGI, CCTK_GrouplbndGN
 \begin{FunctionDescription}{CCTK\_GrouplbndGI, CCTK\_GrouplbndGN}
 \label{CCTK-GrouplbndGI}
 \label{CCTK-GrouplbndGN}
@@ -4008,11 +4314,11 @@ character*(*) groupname
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm 0} success \end{Result}
-\begin{Result}{\rm -1} incorrect dimension supplied \end{Result}
-\begin{Result}{\rm -2} data not available from driver \end{Result}
-\begin{Result}{\rm -3} called on a scalar group \end{Result}
-\begin{Result}{\rm -4} invalid group index \end{Result}
+\begin{Result}{0} success \end{Result}
+\begin{Result}{-1} incorrect dimension supplied \end{Result}
+\begin{Result}{-2} data not available from driver \end{Result}
+\begin{Result}{-3} called on a scalar group \end{Result}
+\begin{Result}{-4} invalid group index \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
@@ -4039,7 +4345,6 @@ Returns the upper bounds for a given group.
 Returns the upper bounds for a given variable.
 \end{SeeAlso}
 \end{SeeAlsoSection}
-
 \end{FunctionDescription}
 
 
@@ -4082,11 +4387,11 @@ character*(*) varname
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm 0} success \end{Result}
-\begin{Result}{\rm -1} incorrect dimension supplied \end{Result}
-\begin{Result}{\rm -2} data not available from driver \end{Result}
-\begin{Result}{\rm -3} called on a scalar group \end{Result}
-\begin{Result}{\rm -4} invalid variable index \end{Result}
+\begin{Result}{0} success \end{Result}
+\begin{Result}{-1} incorrect dimension supplied \end{Result}
+\begin{Result}{-2} data not available from driver \end{Result}
+\begin{Result}{-3} called on a scalar group \end{Result}
+\begin{Result}{-4} invalid variable index \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
@@ -4113,7 +4418,6 @@ Returns the upper bounds for a given group.
 Returns the upper bounds for a given variable.
 \end{SeeAlso}
 \end{SeeAlsoSection}
-
 \end{FunctionDescription}
 
 
@@ -4156,11 +4460,11 @@ character*(*) groupname
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm 0} success \end{Result}
-\begin{Result}{\rm -1} incorrect dimension supplied \end{Result}
-\begin{Result}{\rm -2} data not available from driver \end{Result}
-\begin{Result}{\rm -3} called on a scalar group \end{Result}
-\begin{Result}{\rm -4} invalid group name \end{Result}
+\begin{Result}{0} success \end{Result}
+\begin{Result}{-1} incorrect dimension supplied \end{Result}
+\begin{Result}{-2} data not available from driver \end{Result}
+\begin{Result}{-3} called on a scalar group \end{Result}
+\begin{Result}{-4} invalid group name \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
@@ -4186,7 +4490,6 @@ Returns the local size for a given group.
 Returns the local size for a given variable.
 \end{SeeAlso}
 \end{SeeAlsoSection}
-
 \end{FunctionDescription}
 
 
@@ -4229,11 +4532,11 @@ character*(*) varname
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm 0} success \end{Result}
-\begin{Result}{\rm -1} incorrect dimension supplied \end{Result}
-\begin{Result}{\rm -2} data not available from driver \end{Result}
-\begin{Result}{\rm -3} called on a scalar group \end{Result}
-\begin{Result}{\rm -4} invalid variable index \end{Result}
+\begin{Result}{0} success \end{Result}
+\begin{Result}{-1} incorrect dimension supplied \end{Result}
+\begin{Result}{-2} data not available from driver \end{Result}
+\begin{Result}{-3} called on a scalar group \end{Result}
+\begin{Result}{-4} invalid variable index \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
@@ -4260,65 +4563,73 @@ Returns the global size for a given variable.
 Returns the local size for a given group.
 \end{SeeAlso}
 \end{SeeAlsoSection}
-
 \end{FunctionDescription}
 
 
 % Groups.c
-\begin{CCTKFunc}{CCTK\_GroupName}{Given a group index, returns the group name}
+\begin{FunctionDescription}{CCTK\_GroupName}{Given a group index, returns the group name}
 \label{CCTK-GroupName}
-\subroutine{char *}{integer}{name}
-\argument{int}{integer}{index}
-\showcargs
-\begin{params}
-\parameter{name}{The group name}
-\parameter{index}{The group index}
-\end{params}
-\begin{discussion}
-\fbox{The group name must be explicitly freed after it has been used.}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}char * name = CCTK_GroupName( int index)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{name}
+The group name
+\end{Parameter}
+\begin{Parameter}{index}
+The group index
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
+The group name must be explicitly freed after it has been used.
 
 No Fortran routine exists at the moment.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_GroupIndex("evolve::scalars");}\\
-               && {\t name = CCTK\_GroupName(index);}\\
-               && {\t printf ("Group name: \%s", name);}\\
-               && {\t free (name);}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+index = CCTK_GroupIndex("evolve::scalars");
+name = CCTK_GroupName(index);
+printf ("Group name: %s", name);
+free (name);
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
 % Groups.c
-\begin{CCTKFunc}{CCTK\_GroupNameFromVarI}{Given a variable index, return the name of the associated group}
+\begin{FunctionDescription}{CCTK\_GroupNameFromVarI}{Given a variable index, return the name of the associated group}
 \label{CCTK-GroupNameFromVarI}
-\subroutine{char *}{character*(*)}{group}
-\argument{int}{integer}{varindex}
-\showcargs
-\begin{params}
-\parameter{group}{The name of the group}
-\parameter{varindex}{The index of the variable}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_VarIndex("evolve::phi");} \\
-               && {\t group = CCTK\_GroupNameFromVarI(index) ;}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}char * group = CCTK_GroupNameFromVarI( int varindex)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{group}
+The name of the group
+\end{Parameter}
+\begin{Parameter}{varindex}
+The index of the variable
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+index = CCTK_VarIndex("evolve::phi");
+group = CCTK_GroupNameFromVarI(index) ;
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
 
-%Entering a function description for CCTK\_GroupnghostzonesGI, CCTK\_GroupnghostzonesGN
+%Entering a function description for CCTK_GroupnghostzonesGI, CCTK\_GroupnghostzonesGN
 \begin{FunctionDescription}{CCTK\_GroupnghostzonesGI, CCTK\_GroupnghostzonesGN}
 \label{CCTK-GroupnghostzonesGI}
 \label{CCTK-GroupnghostzonesGN}
@@ -4356,10 +4667,10 @@ character*(*) groupname
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm 0} success \end{Result}
-\begin{Result}{\rm -1} incorrect dimension supplied \end{Result}
-\begin{Result}{\rm -2} data not available from driver \end{Result}
-\begin{Result}{\rm -3} called on a scalar group \end{Result}
+\begin{Result}{0} success \end{Result}
+\begin{Result}{-1} incorrect dimension supplied \end{Result}
+\begin{Result}{-2} data not available from driver \end{Result}
+\begin{Result}{-3} called on a scalar group \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
@@ -4380,7 +4691,6 @@ The number of ghostzones in each dimension for a given group is returned in a us
 Returns the number of ghostzones for a given variable.
 \end{SeeAlso}
 \end{SeeAlsoSection}
-
 \end{FunctionDescription}
 
 
@@ -4423,10 +4733,10 @@ character*(*) varname
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm 0} success \end{Result}
-\begin{Result}{\rm -1} incorrect dimension supplied \end{Result}
-\begin{Result}{\rm -2} data not available from driver \end{Result}
-\begin{Result}{\rm -3} called on a scalar group \end{Result}
+\begin{Result}{0} success \end{Result}
+\begin{Result}{-1} incorrect dimension supplied \end{Result}
+\begin{Result}{-2} data not available from driver \end{Result}
+\begin{Result}{-3} called on a scalar group \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
@@ -4447,7 +4757,6 @@ The number of ghostzones in each dimension for a given variable is returned in a
 Returns the number of ghostzones for a given group.
 \end{SeeAlso}
 \end{SeeAlsoSection}
-
 \end{FunctionDescription}
 
 
@@ -4467,8 +4776,8 @@ CCTK_INT **ghostsizes = CCTK_GroupSizesI(int groupindex);
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm non-NULL} a pointer to the size array\end{Result}
-\begin{Result}{\rm NULL} invalid group index \end{Result}
+\begin{Result}{non-NULL} a pointer to the size array\end{Result}
+\begin{Result}{NULL} invalid group index \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
@@ -4487,7 +4796,6 @@ Returns the dimension for a group.
 Returns the size arrays for a group.
 \end{SeeAlso}
 \end{SeeAlsoSection}
-
 \end{FunctionDescription}
 
 
@@ -4497,7 +4805,7 @@ Decrease the number of timelevels allocated for the given variable
 groups.
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-int numTL = CactusDefaultGroupStorageDecrease (const cGH *GH, int n\_groups, const int *groups, const int *timelevels, int *status);
+\begin{verbatim}int numTL = CactusDefaultGroupStorageDecrease (const cGH *GH, int n_groups, const int *groups, const int *timelevels, int *status);\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
@@ -4557,7 +4865,7 @@ list of group indices to allocate storage for
 Increases the number of timelevels allocated for the given variable groups.
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-int numTL = CactusDefaultGroupStorageIncrease (const cGH *GH, int n\_groups, const int *groups, const int *timelevels, int *status);
+\begin{verbatim}int numTL = CactusDefaultGroupStorageIncrease (const cGH *GH, int n_groups, const int *groups, const int *timelevels, int *status);\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
@@ -4665,7 +4973,6 @@ information during a Cactus run).
 no group exists with the specified name
 \end{Error}
 \end{ErrorSection}
-
 \end{FunctionDescription}
 
 
@@ -4732,42 +5039,55 @@ a specified variable index.
 no group exists with the specified name
 \end{Error}
 \end{ErrorSection}
-
 \end{FunctionDescription}
 
 
 
 % Groups.c
-\begin{CCTKFunc}{CCTK\_GroupTypeFromVarI}{Provides a group's group type
+\begin{FunctionDescription}{CCTK\_GroupTypeFromVarI}{Provides a group's group type
                index given a variable index}
 \label{CCTK-GroupTypeFromVarI}
-\subroutine{int}{integer}{type}
-\argument{int}{integer}{index}
-\showargs
-\begin{params}
-\parameter{type}{The group's group type index}
-\parameter{group}{The variable index}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int type = CCTK_GroupTypeFromVarI( int index)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_GroupTypeFromVarI(type , index )
+
+integer type
+integer index\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{type}
+The group's group type index
+\end{Parameter}
+\begin{Parameter}{group}
+The variable index
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
   The group's group type index indicates the type of variables in the
   group.  Either scalars, grid functions or arrays.  The group type
   can be checked with the Cactus provided macros for
   \code{CCTK\_SCALAR}, \code{CCTK\_GF}, \code{CCTK\_ARRAY}.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_GroupIndex("evolve::scalars")}\\
-               &&{\t array = (CCTK\_ARRAY == CCTK\_GroupTypeFromVarI(index)) ;}
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_GROUPTYPEFROMVARI(type,3)}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+index = CCTK_GroupIndex("evolve::scalars")
+array = (CCTK_ARRAY == CCTK_GroupTypeFromVarI(index));
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call CCTK_GROUPTYPEFROMVARI(type,3)
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
-%Entering a function description for CCTK\_GroupTypeI}{
+%Entering a function description for CCTK_GroupTypeI}{
 \begin{FunctionDescription}{CCTK\_GroupTypeI}{}
 \label{CCTK-GroupTypeI}
 Provides a group's group type index given a group index
@@ -4811,7 +5131,7 @@ This function takes a variable index rather than a group index as its argument.
 \end{FunctionDescription}
 
 
-%Entering a function description for CCTK\_GroupubndGI, CCTK\_GroupubndGN
+%Entering a function description for CCTK_GroupubndGI, CCTK_GroupubndGN
 \begin{FunctionDescription}{CCTK\_GroupubndGI, CCTK\_GroupubndGN}
 \label{CCTK-GroupubndGI}
 \label{CCTK-GroupubndGN}
@@ -4850,11 +5170,11 @@ character*(*) groupname
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm 0} success \end{Result}
-\begin{Result}{\rm -1} incorrect dimension supplied \end{Result}
-\begin{Result}{\rm -2} data not available from driver \end{Result}
-\begin{Result}{\rm -3} called on a scalar group \end{Result}
-\begin{Result}{\rm -4} invalid group index \end{Result}
+\begin{Result}{0} success \end{Result}
+\begin{Result}{-1} incorrect dimension supplied \end{Result}
+\begin{Result}{-2} data not available from driver \end{Result}
+\begin{Result}{-3} called on a scalar group \end{Result}
+\begin{Result}{-4} invalid group index \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
@@ -4881,7 +5201,6 @@ Returns the lower bounds for a given variable.
 Returns the upper bounds for a given variable.
 \end{SeeAlso}
 \end{SeeAlsoSection}
-
 \end{FunctionDescription}
 
 
@@ -4924,11 +5243,11 @@ character*(*) varname
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm 0} success \end{Result}
-\begin{Result}{\rm -1} incorrect dimension supplied \end{Result}
-\begin{Result}{\rm -2} data not available from driver \end{Result}
-\begin{Result}{\rm -3} called on a scalar group \end{Result}
-\begin{Result}{\rm -4} invalid variable index \end{Result}
+\begin{Result}{0} success \end{Result}
+\begin{Result}{-1} incorrect dimension supplied \end{Result}
+\begin{Result}{-2} data not available from driver \end{Result}
+\begin{Result}{-3} called on a scalar group \end{Result}
+\begin{Result}{-4} invalid variable index \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
@@ -4955,7 +5274,6 @@ Returns the lower bounds for a given variable.
 Returns the upper bounds for a given group.
 \end{SeeAlso}
 \end{SeeAlsoSection}
-
 \end{FunctionDescription}
 
 
@@ -4969,28 +5287,33 @@ Returns the upper bounds for a given group.
 
 
 % Groups.c
-\begin{CCTKFunc}{CCTK\_ImpFromVarI}{Given a variable index, returns the implementation name}
+\begin{FunctionDescription}{CCTK\_ImpFromVarI}{Given a variable index, returns the implementation name}
 \label{CCTK-ImpFromVarI}
-\subroutine{char *}{integer}{implementation}
-\argument{int}{integer}{index}
-\showcargs
-\begin{params}
-\parameter{implementation}{The implementation name}
-\parameter{index}{The variable index}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}char * implementation = CCTK_ImpFromVarI( int index)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{implementation}
+The implementation name
+\end{Parameter}
+\begin{Parameter}{index}
+The variable index
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 No Fortran routine exists at the moment
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_VarIndex("evolve::phi");}\\
-               &&{\t implementation = CCTK\_ImpFromVarI(index);}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+index = CCTK_VarIndex("evolve::phi");
+implementation = CCTK_ImpFromVarI(index);
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
 
@@ -5491,8 +5814,8 @@ CCTK_POINTER output_arrays(N_output_arrays)
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm 0} success \end{Result}
-\begin{Result}{$< 0$} indicates an error condition (see {\bf Errors}) \end{Result}
+\begin{Result}{0} success \end{Result}
+\begin{Result}{< 0} indicates an error condition (see {\bf Errors}) \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
@@ -5734,9 +6057,11 @@ this function may also return any error codes returned by the
 \end{ErrorSection}
 
 \begin{ExampleSection}
-\begin{Example}{C}
+\begin{ExampleDescription}
 Here's a simple example to do quartic 3-D interpolation of a real
 and a complex grid array, at 1000 interpolation points:
+\end{ExampleDescription}
+\begin{Example}{C}
 \begin{verbatim}
 #include "cctk.h"
 #include "util_Table.h"
@@ -5803,31 +6128,46 @@ if (CCTK_InterpGridArrays(GH, N_DIMS,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Interp.c
-\begin{CCTKFunc}{CCTK\_InterpHandle}{Return the handle for a given interpolation operator}
+\begin{FunctionDescription}{CCTK\_InterpHandle}{Return the handle for a given interpolation operator}
 \label{CCTK-InterpHandle}
-\subroutine{int}{integer}{handle}
-\argument{const char *}{character*(*)}{operator}
-\showargs
-\begin{params}
-\parameter{handle}{Handle for the interpolation operator}
-\parameter{operator}{Name of interpolation operator}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t handle =  CCTK\_InterpHandle("my interpolation operator");}
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_InterpHandle(handle,"my interpolation operator")}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\begin{tabular}{l}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int handle = CCTK_InterpHandle( const char * operator)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_InterpHandle(handle , operator )
+
+integer handle
+character*(*) operator\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{handle}
+Handle for the interpolation operator
+\end{Parameter}
+\begin{Parameter}{operator}
+Name of interpolation operator
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+handle =  CCTK_InterpHandle("my interpolation operator");
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call CCTK_InterpHandle(handle,"my interpolation operator")
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\begin{ErrorSection}
+\begin{Error}{negative}
 A negative value is returned for invalid/unregistered interpolation operator names.
-\end{tabular}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Error}
+\end{ErrorSection}
+\end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -5873,7 +6213,7 @@ A negative value is returned for invalid/unregistered interpolation operator nam
 %notyet \end{SynopsisSection}
 %notyet
 %notyet \begin{ResultSection}
-%notyet \begin{Result}{\rm 0}
+%notyet \begin{Result}{0}
 %notyet success
 %notyet \end{Result}
 %notyet \end{ResultSection}
@@ -6064,6 +6404,7 @@ A negative value is returned for invalid/unregistered interpolation operator nam
 %notyet
 %notyet \begin{ExampleSection}
 %notyet \begin{Example}{C}
+%notyet \begin{verbatim}
 %notyet Here's a simple example of interpolating a \code{CCTK\_REAL} and a
 %notyet \code{CCTK\_COMPLEX} $10 \times 20$ 2-D array, at 5 interpolation points,
 %notyet using cubic interpolation.
@@ -6127,6 +6468,7 @@ A negative value is returned for invalid/unregistered interpolation operator nam
 %notyet                                   output_array_type_codes,
 %notyet                                   output_arrays) < 0)
 %notyet         CCTK_WARN(CCTK_WARN_ABORT, "error return from interpolator!");
+%notyet \end{verbatim}
 %notyet \end{verbatim}
 %notyet \end{Example}
 %notyet \end{ExampleSection}
@@ -6201,7 +6543,7 @@ CCTK_POINTER output_arrays(N_output_arrays)
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm 0}
+\begin{Result}{0}
 success
 \end{Result}
 \end{ResultSection}
@@ -6387,8 +6729,9 @@ this function may also return any error codes returned by the
 \end{ErrorSection}
 
 \begin{ExampleSection}
-\begin{Example}{C}
+\begin{ExampleDescription}
 Here's a simple example of interpolating a \code{CCTK\_REAL} and a
+\end{ExampleDescription}
 \code{CCTK\_COMPLEX} $10 \times 20$ 2-D array, at 5 interpolation points,
 using cubic interpolation.
 
@@ -6400,6 +6743,7 @@ assignment statements.  In \Cplusplus, there's no restriction on
 initializer values, so we could declare the arrays \code{const} and
 initialize them as part of their declarations.
 
+\begin{Example}{C}
 \begin{verbatim}
 #define N_DIMS   2
 #define N_INTERP_POINTS   5
@@ -6512,7 +6856,7 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet \end{SynopsisSection}
 %notyet
 %notyet \begin{ResultSection}
-%notyet \begin{Result}{\rm 0}
+%notyet \begin{Result}{0}
 %notyet success
 %notyet \end{Result}
 %notyet \end{ResultSection}
@@ -6709,6 +7053,7 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet
 %notyet \begin{ExampleSection}
 %notyet \begin{Example}{C}
+%notyet \begin{verbatim}
 %notyet Here's a simple example of interpolating a \code{CCTK\_REAL} and a
 %notyet \code{CCTK\_COMPLEX} $10 \times 20$ 2-D array, at 5 interpolation points,
 %notyet using cubic interpolation.
@@ -6776,6 +7121,7 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet                               output_array_type_codes,
 %notyet                               output_arrays) < 0)
 %notyet         CCTK_WARN(CCTK_WARN_ABORT, "error return from interpolator!");
+%notyet \end{verbatim}
 %notyet \end{verbatim}
 %notyet \end{Example}
 %notyet \end{ExampleSection}
@@ -6892,33 +7238,57 @@ CCTK_InterpRegisterOpLocalUniform(AEILocalInterp_InterpLocalUniform,
 % CCTK\_InterpRegisterOpLocalWarped here
 
 % lib/sbin/CreateFunctionBindings.pl
-\begin{CCTKFunc}{CCTK\_IsFunctionAliased}{Reports whether an aliased function has been provided}
+\begin{FunctionDescription}{CCTK\_IsFunctionAliased}{Reports whether an aliased function has been provided}
 \label{CCTK-IsFunctionAliased}
-\subroutine{int}{integer}{istat}
-\argument{const char *}{character*(*)}{functionname}
-\showargs
-\begin{params}
-\parameter{istat}{the return status}
-\parameter{functionname}{the name of the function to check}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int istat = CCTK_IsFunctionAliased( const char * functionname)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_IsFunctionAliased(istat , functionname )
+
+integer istat
+character*(*) functionname\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{istat}
+the return status
+\end{Parameter}
+\begin{Parameter}{functionname}
+the name of the function to check
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 This function returns a non-zero value if the function given by
 \code{functionname} is provided by any active thorn, and zero
 otherwise.
-\end{discussion}
-\end{CCTKFunc}
+\end{Discussion}
+\end{FunctionDescription}
 
 % ActiveThorns.c
-\begin{CCTKFunc}{CCTK\_IsImplementationActive}{Reports whether an implementation was activated in a parameter file}
+\begin{FunctionDescription}{CCTK\_IsImplementationActive}{Reports whether an implementation was activated in a parameter file}
 \label{CCTK-IsImplementationActive}
-\function{int}{integer}{istat}
-\argument{const char *}{character*(*)}{implementationname}
-\showargs
-\begin{params}
-\parameter{istat}{the return status}
-\parameter{implementationname}{the name of the implementation to check}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int istat = CCTK_IsImplementationActive( const char * implementationname)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}istat = CCTK_IsImplementationActive( implementationname )
+
+integer istat
+character*(*) implementationname \end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{istat}
+the return status
+\end{Parameter}
+\begin{Parameter}{implementationname}
+the name of the implementation to check
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 This function returns a non-zero value if the implementation given by
 \code{implementationname} was activated in a parameter file, and zero
 otherwise.
@@ -6934,21 +7304,33 @@ See also
 \code{CCTK\_NumCompiledImplementations} [\pageref{CCTK-NumCompiledImplementations}],
 \code{CCTK\_NumCompiledThorns} [\pageref{CCTK-NumCompiledThorns}],
 \code{CCTK\_ThornImplementation} [\pageref{CCTK-ThornImplementation}].
-\end{discussion}
-\end{CCTKFunc}
+\end{Discussion}
+\end{FunctionDescription}
 
 % ActiveThorns.c
-\begin{CCTKFunc}{CCTK\_IsImplementationCompiled}{Reports whether an
+\begin{FunctionDescription}{CCTK\_IsImplementationCompiled}{Reports whether an
 implementation was compiled into the configuration}
 \label{CCTK-IsImplementationCompiled}
-\function{int}{integer}{istat}
-\argument{const char *}{character*(*)}{implementationname}
-\showargs
-\begin{params}
-\parameter{istat}{the return status}
-\parameter{implementationname}{the name of the implementation to check}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int istat = CCTK_IsImplementationCompiled(  const char * implementationname)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}istat = CCTK_IsImplementationCompiled( implementationname )
+
+integer istat
+character*(*) implementationname\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{istat}
+the return status
+\end{Parameter}
+\begin{Parameter}{implementationname}
+the name of the implementation to check
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 This function returns a non-zero value if the implementation given by
 \code{implementationname} was compiled into the configuration, and zero
 otherwise.
@@ -6965,8 +7347,8 @@ See also
 \code{CCTK\_NumCompiledImplementations} [\pageref{CCTK-NumCompiledImplementations}],
 \code{CCTK\_NumCompiledThorns} [\pageref{CCTK-NumCompiledThorns}],
 \code{CCTK\_ThornImplementation} [\pageref{CCTK-ThornImplementation}].
-\end{discussion}
-\end{CCTKFunc}
+\end{Discussion}
+\end{FunctionDescription}
 
 % ActiveThorns.c
 %Entering a function description for CCTK\_IsThornActive
@@ -7028,21 +7410,33 @@ thorn is active in the current Cactus run.
 \end{FunctionDescription}
 
 % ActiveThorns.c
-\begin{CCTKFunc}{CCTK\_IsThornCompiled}{Reports whether a thorn was activated in a parameter file}
+\begin{FunctionDescription}{CCTK\_IsThornCompiled}{Reports whether a thorn was activated in a parameter file}
 \label{CCTK-IsThornCompiled}
-\function{int}{integer}{istat}
-\argument{const char *}{character*(*)}{thornname}
-\showargs
-\begin{params}
-\parameter{istat}{the return status}
-\parameter{thorname}{the name of the thorn to check}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int istat = CCTK_IsThornCompiled( const char * thornname)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}istat = CCTK_IsThornCompiled(  thornname )
+
+integer istat
+character*(*) thornname\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{istat}
+the return status
+\end{Parameter}
+\begin{Parameter}{thorname}
+the name of the thorn to check
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 This function returns a non-zero value if the implementation given by
 \code{thornname} was compiled into the configuration, and zero
 otherwise.
-\end{discussion}
-\end{CCTKFunc}
+\end{Discussion}
+\end{FunctionDescription}
 
 
 %%%%%
@@ -7234,104 +7628,155 @@ The number of local reduction operators registered
 
 
 % Groups.c
-\begin{CCTKFunc}{CCTK\_MaxDim}{Get the maximum dimension of any grid variable }
+\begin{FunctionDescription}{CCTK\_MaxDim}{Get the maximum dimension of any grid variable }
 \label{CCTK-MaxDim}
-\subroutine{int}{integer}{dim}
-\showargs
-\begin{params}
-\parameter{dim}{The maximum dimension}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int dim = CCTK_MaxDim()\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_MaxDim(dim )
+
+integer dim\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{dim}
+The maximum dimension
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 Note that the maximum dimension will depend only on the active thorn list,
 and not the compiled thorn list.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t dim = CCTK\_MaxDim() };
-\\
-\hfill {\bf Fortran} && {\t call  CCTK\_MaxDim(dim)}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+dim = CCTK_MaxDim()
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call  CCTK_MaxDim(dim)
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
-\begin{CCTKFunc}{CCTK\_MaxGFDim}{Get the maximum dimension of all grid
+\begin{FunctionDescription}{CCTK\_MaxGFDim}{Get the maximum dimension of all grid
     functions }
 \label{CCTK-MaxGFDim}
-\subroutine{int}{integer}{dim}
-\showargs
-\begin{params}
-\parameter{dim}{The maximum dimension of all grid functions}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int dim = CCTK_MaxGFDim()\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_MaxGFDim(dim )
+
+integer dim\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{dim}
+The maximum dimension of all grid functions
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 Note that the maximum dimension will depend only on the active thorn list,
 and not the compiled thorn list.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t dim = CCTK\_MaxGFDim() };
-\\
-\hfill {\bf Fortran} && {\t call  CCTK\_MaxGFDim(dim)}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+dim = CCTK_MaxGFDim();
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call  CCTK_MaxGFDim(dim)}
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
 
-\begin{CCTKFunc}{CCTK\_MaxTimeLevels}{Gives the number of timelevels for a group}
+\begin{FunctionDescription}{CCTK\_MaxTimeLevels}{Gives the number of timelevels for a group}
 \label{CCTK-MaxTimeLevels}
-\subroutine{int}{integer}{numlevels}
-\argument{const char *}{character*(*)}{name}
-\showargs
-\begin{params}
-\parameter{name}{The full group name}
-\parameter{numlevels}{The number of timelevels}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int numlevels = CCTK_MaxTimeLevels( const char * name)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_MaxTimeLevels(numlevels , name )
+
+integer numlevels
+character*(*) name\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{name}
+The full group name
+\end{Parameter}
+\begin{Parameter}{numlevels}
+The number of timelevels
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 The group name should be in the form \code{<implementation>::<group>}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t numlevels = CCTK\_MaxTimeLevels("evolve::phivars") ;}
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_MAXTIMELEVELS(numlevels,"evolve::phivars")}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+numlevels = CCTK_MaxTimeLevels("evolve::phivars");
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call CCTK_MAXTIMELEVELS(numlevels,"evolve::phivars")
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 % Groups.c
-\begin{CCTKFunc}{CCTK\_MaxTimeLevelsGI}{Gives the number of timelevels for a group}
+\begin{FunctionDescription}{CCTK\_MaxTimeLevelsGI}{Gives the number of timelevels for a group}
 \label{CCTK-MaxTimeLevelsGI}
-\subroutine{int}{integer}{numlevels}
-\argument{int}{integer}{index}
-\showargs
-\begin{params}
-\parameter{numlevels}{The number of timelevels}
-\parameter{index}{The group index}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_GroupIndex("evolve::phivars")}\\
-               &&{\t numlevels = CCTK\_MaxTimeLevelsGI(index) ;}
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_MAXTIMELEVELSGI(numlevels,3)}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int numlevels = CCTK_MaxTimeLevelsGI( int index)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_MaxTimeLevelsGI(numlevels , index )
+
+integer numlevels
+integer index\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{numlevels}
+The number of timelevels
+\end{Parameter}
+\begin{Parameter}{index}
+The group index
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+index = CCTK_GroupIndex("evolve::phivars")
+numlevels = CCTK_MaxTimeLevelsGI(index);
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call CCTK_MAXTIMELEVELSGI(numlevels,3)}
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
 % Groups.c
@@ -7340,7 +7785,7 @@ The group name should be in the form \code{<implementation>::<group>}
 Gives the number of timelevels for a group
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-int retval = CCTK\_MaxTimeLevelsGN(const char *group);
+\begin{verbatim}int retval = CCTK_MaxTimeLevelsGN(const char *group);\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
@@ -7364,64 +7809,95 @@ This function and its relatives return the maximum number of timelevels that the
 
 
 % Groups.c
-\begin{CCTKFunc}{CCTK\_MaxTimeLevelsVI}{Gives the number of timelevels for a variable}
+\begin{FunctionDescription}{CCTK\_MaxTimeLevelsVI}{Gives the number of timelevels for a variable}
 \label{CCTK-MaxTimeLevelsVI}
-\subroutine{int}{integer}{numlevels}
-\argument{int}{integer}{index}
-\showargs
-\begin{params}
-\parameter{numlevels}{The number of timelevels}
-\parameter{index}{The variable index}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_VarIndex("evolve::phi")}\\
-               &&{\t numlevels = CCTK\_MaxTimeLevelsVI(index) ;}
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_MAXTIMELEVELSVI(numlevels,3)}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int numlevels = CCTK_MaxTimeLevelsVI( int index)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_MaxTimeLevelsVI(numlevels , index )
 
-\begin{CCTKFunc}{CCTK\_MaxTimeLevelsVN}{Gives the number of timelevels for a variable}
+integer numlevels
+integer index\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{numlevels}
+The number of timelevels
+\end{Parameter}
+\begin{Parameter}{index}
+The variable index
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+index = CCTK_VarIndex("evolve::phi")
+numlevels = CCTK_MaxTimeLevelsVI(index);
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call CCTK_MAXTIMELEVELSVI(numlevels,3)
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
+
+\begin{FunctionDescription}{CCTK\_MaxTimeLevelsVN}{Gives the number of timelevels for a variable}
 \label{CCTK-MaxTimeLevelsVN}
-\subroutine{int}{integer}{numlevels}
-\argument{const char *}{character*(*)}{name}
-\showargs
-\begin{params}
-\parameter{name}{The full variable name}
-\parameter{numlevels}{The number of timelevels}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int numlevels = CCTK_MaxTimeLevelsVN( const char * name)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_MaxTimeLevelsVN(numlevels , name )
+
+integer numlevels
+character*(*) name\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{name}
+The full variable name
+\end{Parameter}
+\begin{Parameter}{numlevels}
+The number of timelevels
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 The variable name should be in the form \code{<implementation>::<variable>}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t numlevels = CCTK\_MaxTimeLevelsVN("evolve::phi") ;}
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_MAXTIMELEVELSVN(numlevels,"evolve::phi")}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+numlevels = CCTK_MaxTimeLevelsVN("evolve::phi")
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call CCTK_MAXTIMELEVELSVN(numlevels,"evolve::phi")
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 % CommOverloadables.c
-\begin{CCTKFunc}{CCTK\_MyProc}{Returns the number of the local processor for a parallel run}
+\begin{FunctionDescription}{CCTK\_MyProc}{Returns the number of the local processor for a parallel run}
 \label{CCTK-MyProc}
-\function{int}{integer}{myproc}
-\argument{const cGH *}{CCTK\_POINTER}{cctkGH}
-\showargs
-\begin{params}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int myproc = CCTK_MyProc( const cGH * cctkGH)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{cctkGH}
+pointer to CCTK grid hierarchy
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 For a single processor run this call will return zero. For multiprocessor
 runs, this call will return 0 $\leq$ myproc $<$ \code{CCTK\_nProcs(cctkGH)}.
 
@@ -7430,14 +7906,8 @@ Current drivers (PUGH, Carpet) handle this case correctly
 (i.e.\ \code{CCTK\_MyProc(NULL)} returns a correct result), but only
 a ``best effort'' is guaranteed for future drivers (or future revisions
 of current drivers).
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\end{FunctionDescription}
 
 
 
@@ -7448,15 +7918,25 @@ of current drivers).
 
 
 % CommOverloadables.c
-\begin{CCTKFunc}{CCTK\_nProcs}{Returns the number of processors being used for a parallel run}
+\begin{FunctionDescription}{CCTK\_nProcs}{Returns the number of processors being used for a parallel run}
 \label{CCTK-nProcs}
-\function{int}{integer}{nprocs}
-\argument{const cGH *}{CCTK\_POINTER}{cctkGH}
-\showargs
-\begin{params}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int nprocs = CCTK_nProcs( const cGH * cctkGH)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}nprocs = CCTK_nProcs(  cctkGH )
+
+integer nprocs
+CCTK_POINTER cctkGH\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{cctkGH}
+pointer to CCTK grid hierarchy
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 For a single processor run this call will return one.
 
 Calling \code{CCTK\_nProcs(NULL)} is safe (it will not crash).
@@ -7464,14 +7944,8 @@ Current drivers (PUGH, Carpet) handle this case correctly
 (i.e.\ \code{CCTK\_nProcs(NULL)} returns a correct result), but only
 a ``best effort'' is guaranteed for future drivers (or future revisions
 of current drivers).
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\end{FunctionDescription}
 
 
 % util/Misc.c
@@ -7731,26 +8205,37 @@ The name of the grid reduction operator, or NULL if none is registered
 
 
 % Groups.c
-\begin{CCTKFunc}{CCTK\_NumGroups}{Get the number of groups of variables compiled in the code}
+\begin{FunctionDescription}{CCTK\_NumGroups}{Get the number of groups of variables compiled in the code}
 \label{CCTK-NumGroups}
-\subroutine{int}{integer}{number}
-\showargs
-\begin{params}
-\parameter{number}{The number of groups compiled from the thorns \code{interface.ccl} files}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t number = CCTK\_NumGroups() };
-\\
-\hfill {\bf Fortran} && call {\t CCTK\_NumGroups(number)};
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int number = CCTK_NumGroups()\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_NumGroups(number )
+
+integer number\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{number}
+The number of groups compiled from the thorns \code{interface.ccl} files
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+number = CCTK_NumGroups();
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call CCTK_NumGroups(number);
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -8017,98 +8502,136 @@ Illegal arguments given.
 Given a {\tt cTimerData} structure, returns its number of clocks.
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-\begin{alltt}
-int err = CCTK\_NumTimerClocks(\var{info})
-\end{alltt}
+\begin{verbatim}
+int err = CCTK_NumTimerClocks(info)
+\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ParameterSection}
-\begin{Parameter} {const cTimerData * \var{info}}
+\begin{Parameter} {const cTimerData * info}
 The timer information structure whose clocks are to be counted.
 \end{Parameter}
 \end{ParameterSection}
-
 \end{FunctionDescription}
 
 
 % Groups.c
-\begin{CCTKFunc}{CCTK\_NumVars}{Get the number of grid variables compiled in the code}
+\begin{FunctionDescription}{CCTK\_NumVars}{Get the number of grid variables compiled in the code}
 \label{CCTK-NumVars}
-\subroutine{int}{integer}{number}
-\showargs
-\begin{params}
-\parameter{number}{The number of grid variables compiled from the thorn's \code{interface.ccl} files}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t number = CCTK\_NumVars() };
-\\
-\hfill {\bf Fortran} && call {\t CCTK\_NumVars(number)}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int number = CCTK_NumVars()\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_NumVars(number )
+
+integer number\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{number}
+The number of grid variables compiled from the thorn's \code{interface.ccl} files
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+number = CCTK_NumVars();
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call CCTK_NumVars(number)
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
 
 
 % Groups.c
-\begin{CCTKFunc}{CCTK\_NumVarsInGroup}{Provides the number of variables in a group from the group name}
+\begin{FunctionDescription}{CCTK\_NumVarsInGroup}{Provides the number of variables in a group from the group name}
 \label{CCTK-NumVarsInGroup}
-\subroutine{int}{integer}{num}
-\argument{const char *}{character*(*)}{name}
-\showargs
-\begin{params}
-\parameter{num}{The number of variables in the group}
-\parameter{group}{The full group name}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int num = CCTK_NumVarsInGroup( const char * name)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_NumVarsInGroup(num , name )
+
+integer num
+character*(*) name\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{num}
+The number of variables in the group
+\end{Parameter}
+\begin{Parameter}{group}
+The full group name
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 The group name should be given in the form \code{<implementation>::<group>}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t numvars = CCTK\_NumVarsInGroup("evolve::scalars") ;}
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_NUMVARSINGROUP(numvars,"evolve::scalars")}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+numvars = CCTK_NumVarsInGroup("evolve::scalars")
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call CCTK_NUMVARSINGROUP(numvars,"evolve::scalars")
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
 
 % Groups.c
-\begin{CCTKFunc}{CCTK\_NumVarsInGroupI}{Provides the number of variables in a group from the group index}
+\begin{FunctionDescription}{CCTK\_NumVarsInGroupI}{Provides the number of variables in a group from the group index}
 \label{CCTK-NumVarsInGroupI}
-\subroutine{int}{integer}{num}
-\argument{int}{integer}{index}
-\showargs
-\begin{params}
-\parameter{num}{The number of variables in the group}
-\parameter{group}{The group index}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int num = CCTK_NumVarsInGroupI( int index)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_NumVarsInGroupI(num , index )
 
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_GroupIndex("evolve::scalars")}\\
-               &&{\t firstvar = CCTK\_NumVarsInGroupI(index) ;}
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_NUMVARSINGROUPI(firstvar,3)}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+integer num
+integer index\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{num}
+The number of variables in the group
+\end{Parameter}
+\begin{Parameter}{group}
+The group index
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
+
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+index = CCTK_GroupIndex("evolve::scalars")}
+firstvar = CCTK_NumVarsInGroupI(index)
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call CCTK_NUMVARSINGROUPI(firstvar,3)
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
 
@@ -8154,7 +8677,7 @@ The IO methods decide themselfes whether it is time to do output now or not.
 \end{Discussion}
 
 \begin{ErrorSection}
-\begin{Error}{\rm 0}
+\begin{Error}{0}
 it wasn't time to output anything yet by any IO method
 \end{Error}
 \begin{Error}{-1}
@@ -8201,7 +8724,7 @@ file is created.
 \end{Discussion}
 
 \begin{ErrorSection}
-\begin{Error}{\rm 0}
+\begin{Error}{0}
 for success
 \end{Error}
 \begin{Error}{negative}
@@ -8253,7 +8776,7 @@ of constructing a filename.
 
 \begin{ErrorSection}
 \begin{Error}{positive}the number of IO methods which did output of \code{variable}\end{Error}
-\begin{Error}{\rm 0}for success\end{Error}
+\begin{Error}{0}for success\end{Error}
 \begin{Error}{negative}if no IO methods were registered\end{Error}
 \end{ErrorSection}
 \end{FunctionDescription}
@@ -8303,7 +8826,7 @@ file is created.
 \end{Discussion}
 
 \begin{ErrorSection}
-\begin{Error}{\rm 0}for success\end{Error}
+\begin{Error}{0}for success\end{Error}
 \begin{Error}{negative}indicating some error (e.g.\ IO method is not registered)\end{Error}
 \end{ErrorSection}
 \end{FunctionDescription}
@@ -8348,7 +8871,7 @@ file is created.
 \end{Discussion}
 
 \begin{ErrorSection}
-\begin{Error}{\rm 0}for success\end{Error}
+\begin{Error}{0}for success\end{Error}
 \begin{Error}{negative}indicating some error (e.g.\ IO method is not registered)\end{Error}
 \end{ErrorSection}
 \end{FunctionDescription}
@@ -8360,18 +8883,22 @@ file is created.
 %%%%%
 
 % CommOverloadables.c
-\begin{CCTKFunc}{CCTK\_ParallelInit}{Initialize the parallel subsystem}
+\begin{FunctionDescription}{CCTK\_ParallelInit}{Initialize the parallel subsystem}
 \label{CCTK-ParallelInit}
-\subroutine{int}{integer}{istat}
-\argument{cGH *}{CCTK\_POINTER}{cctkGH}
-\showcargs
-\begin{params}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int istat = CCTK_ParallelInit( cGH * cctkGH)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{cctkGH}
+pointer to CCTK grid hierarchy
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 Initializes the parallel subsystem.
-\end{discussion}
-\end{CCTKFunc}
+\end{Discussion}
+\end{FunctionDescription}
 
 
 % Parameters.c
@@ -8861,7 +9388,6 @@ void RegisterNotifyCallback (void)
 \end{verbatim}
 \end{Example}
 \end{ExampleSection}
-
 \end{FunctionDescription}
 
 
@@ -8925,7 +9451,6 @@ call CCTK_ParameterSetNotifyUnregister (CCTK_THORNSTRING)
 \end{verbatim}
 \end{Example}
 \end{ExampleSection}
-
 \end{FunctionDescription}
 
 
@@ -8984,7 +9509,7 @@ of your Fortran string.
 \end{ParameterSection}
 
 \begin{Discussion}
-\fbox{In C, the string \code{valstring} must be freed afterwards.}
+In C, the string \code{valstring} must be freed afterwards.
 
 The thorn or implementation name must be the name of the place where
 the parameter is originally defined.  It is not possible to pass the
@@ -9099,31 +9624,42 @@ The initial startpoint was not set.
 
 
 % WarnLevel.c
-\begin{CCTKFunc}{CCTK\_PARAMWARN}{Prints a warning from parameter checking, and possibly stops the code}
+\begin{FunctionDescription}{CCTK\_PARAMWARN}{Prints a warning from parameter checking, and possibly stops the code}
 \label{CCTK-PARAMWARN}
-\subroutine{}{}{}
-\argument{const char *}{character*(*)}{message}
-\showargs
-\begin{params}
-\parameter{message}{The warning message}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}= CCTK_PARAMWARN( const char * message)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_PARAMWARN( , message )
+
+character*(*) message\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{message}
+The warning message
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 The call should be used in routines registered at the schedule point \code{CCTK\_PARAMCHECK}
 to indicate that there is parameter error or conflict and the code should
 terminate. The code will terminate only after all the parameters have been
 checked.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t CCTK\_PARAMWARN("Mass cannot be negative") };
-\\
-\hfill {\bf Fortran} && {\t call  CCTK\_PARAMWARN("Inside interpolator")}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+CCTK_PARAMWARN("Mass cannot be negative");
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call  CCTK_PARAMWARN("Inside interpolator")
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
 % util/Misc.c
@@ -9191,80 +9727,113 @@ call Util_TableSetPointer(ierror, table_handle, addr, "variable")
 
 
 % Groups.c
-\begin{CCTKFunc}{CCTK\_PrintGroup}{Prints a group name from its index}
+\begin{FunctionDescription}{CCTK\_PrintGroup}{Prints a group name from its index}
 \label{CCTK-PrintGroup}
-\subroutine{}{}{}
-\argument{int}{integer}{index}
-\showargs
-\begin{params}
-\parameter{index}{The group index}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}= CCTK_PrintGroup( int index)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_PrintGroup( , index )
+
+integer index\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{index}
+The group index
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 This routine is for debugging purposes for Fortran programmers.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t CCTK\_PrintGroup(1) ;}
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_PRINTGROUP(1)}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+CCTK_PrintGroup(1)
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call CCTK_PRINTGROUP(1)
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 % Groups.c
-\begin{CCTKFunc}{CCTK\_PrintString}{Prints a Cactus string}
+\begin{FunctionDescription}{CCTK\_PrintString}{Prints a Cactus string}
 \label{CCTK-PrintString}
-\subroutine{}{}{}
-\argument{char *}{CCTK\_STRING}{string}
-\showargs
-\begin{params}
-\parameter{string}{The string to print}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}= CCTK_PrintString( char * string)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_PrintString(  , string )
+
+CCTK_STRING string\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{string}
+The string to print
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 This routine can be used to print Cactus string variables and parameters
 from Fortran.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t CCTK\_PrintString(string\_param) ;}
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_PRINTSTRING(string\_param)}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+CCTK_PrintString(string_param)
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call CCTK_PRINTSTRING(string_param)
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
 
 
 % Groups.c
-\begin{CCTKFunc}{CCTK\_PrintVar}{Prints a variable name from its index}
+\begin{FunctionDescription}{CCTK\_PrintVar}{Prints a variable name from its index}
 \label{CCTK-PrintVar}
-\subroutine{}{}{}
-\argument{int}{integer}{index}
-\showargs
-\begin{params}
-\parameter{index}{The variable index}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}= CCTK_PrintVar( int index)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_PrintVar( , index )
+
+integer index\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{index}
+The variable index
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 This routine is for debugging purposes for Fortran programmers.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t CCTK\_PrintVar(1) ;}
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_PRINTVAR(1)}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+CCTK_PrintVar(1)
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call CCTK_PRINTVAR(1)
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
 
@@ -9276,44 +9845,66 @@ This routine is for debugging purposes for Fortran programmers.
 
 
 % cctk_Comm.h
-\begin{CCTKFunc}{CCTK\_QueryGroupStorage}{Query storage for a group given by its group name}
+\begin{FunctionDescription}{CCTK\_QueryGroupStorage}{Query storage for a group given by its group name}
 \label{CCTK-QueryGroupStorage}
-\subroutine{int}{integer}{istat}
-\argument{const cGH *}{CCTK\_POINTER}{cctkGH}
-\argument{const char *}{character*(*)}{groupname}
-\showargs
-\begin{params}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\parameter{groupname}{the group to query, given by its full name}
-\parameter{istat}{the return code}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int istat = CCTK_QueryGroupStorage( const cGH * cctkGH, const char * groupname)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_QueryGroupStorage(istat , cctkGH, groupname )
+
+integer istat
+CCTK_POINTER cctkGH
+character*(*) groupname\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{cctkGH}
+pointer to CCTK grid hierarchy
+\end{Parameter}
+\begin{Parameter}{groupname}
+the group to query, given by its full name
+\end{Parameter}
+\begin{Parameter}{istat}
+the return code
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 This routine queries whether the variables in a group have storage assigned.
 If so it returns true (a positive value), otherwise false (zero).
-\end{discussion}
-\begin{errorcodes}
-\begin{tabular}{l}
+\end{Discussion}
+\begin{ErrorSection}
+\begin{Error}{negative}
 A negative error code is returned for an invalid group name.
-\end{tabular}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Error}
+\end{ErrorSection}
+\end{FunctionDescription}
 
 
 % CommOverloadables.h
-\begin{CCTKFunc}{CCTK\_QueryGroupStorageB}{}
+\begin{FunctionDescription}{CCTK\_QueryGroupStorageB}{}
 \label{CCTK-QueryGroupStorageB}
-\subroutine{int}{}{storage}
-\argument{const cGH *}{}{cctkGH}
-\argument{int}{}{groupindex}
-\argument{const char *}{}{groupname}
-\showcargs
-\begin{params}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\parameter{groupindex}{the group to query, given by its index}
-\parameter{groupname}{the group to query, given by its full name}
-\parameter{istat}{the return code}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int storage = CCTK_QueryGroupStorageB( const cGH * cctkGH, int groupindex, const char * groupname)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{cctkGH}
+pointer to CCTK grid hierarchy
+\end{Parameter}
+\begin{Parameter}{groupindex}
+the group to query, given by its index
+\end{Parameter}
+\begin{Parameter}{groupname}
+the group to query, given by its full name
+\end{Parameter}
+\begin{Parameter}{istat}
+the return code
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 This routine queries whether the variables in a group have storage assigned.
 If so it returns true (a positive value), otherwise false (zero).
 
@@ -9321,36 +9912,50 @@ The group can be specified either through the group index
 \code{groupindex}, or through the group name \code{groupname}.  The groupname
 takes precedence; only if it is passed as \code{NULL}, the group index
 is used.
-\end{discussion}
-\begin{errorcodes}
-\begin{tabular}{l}
+\end{Discussion}
+\begin{ErrorSection}
+\begin{Error}{negative}
 A negative error code is returned for an invalid group name.
-\end{tabular}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Error}
+\end{ErrorSection}
+\end{FunctionDescription}
 
 % cctk_Comm.h
-\begin{CCTKFunc}{CCTK\_QueryGroupStorageI}{Query storage for a group given by its group index}
+\begin{FunctionDescription}{CCTK\_QueryGroupStorageI}{Query storage for a group given by its group index}
 \label{CCTK-QueryGroupStorageI}
-\subroutine{int}{integer}{istat}
-\argument{const cGH *}{}{cctkGH}
-\argument{int}{integer}{groupindex}
-\showargs
-\begin{params}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\parameter{groupindex}{the group to query, given by its index}
-\parameter{istat}{the return code}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int istat = CCTK_QueryGroupStorageI( const cGH * cctkGH, int groupindex)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_QueryGroupStorageI(istat , cctkGH, groupindex )
+
+integer istat
+cctkGH
+integer groupindex\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{cctkGH}
+pointer to CCTK grid hierarchy
+\end{Parameter}
+\begin{Parameter}{groupindex}
+the group to query, given by its index
+\end{Parameter}
+\begin{Parameter}{istat}
+the return code
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 This routine queries whether the variables in a group have storage assigned.
 If so it returns true (a positive value), otherwise false (zero).
-\end{discussion}
-\begin{errorcodes}
-\begin{tabular}{l}
+\end{Discussion}
+\begin{ErrorSection}
+\begin{Error}{negative}
 A negative error code is returned for an invalid group name.
-\end{tabular}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Error}
+\end{ErrorSection}
+\end{FunctionDescription}
 
 
 
@@ -9420,8 +10025,8 @@ CCTK_POINTER             output_values(M_output_values)
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm 0} success \end{Result}
-\begin{Result}{$< 0$} indicates an error condition \end{Result}
+\begin{Result}{0} success \end{Result}
+\begin{Result}{< 0} indicates an error condition \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
@@ -9531,8 +10136,10 @@ The number of grid array reduction operators registered
 \end{SeeAlsoSection}
 
 \begin{ExampleSection}
-\begin{Example}{C}
+\begin{ExampleDescription}
 Here's a simple example to perform grid array reduction of two grids arrays of different types.
+\end{ExampleDescription}
+\begin{Example}{C}
 \begin{verbatim}
 
 #include "cctk.h"
@@ -9627,8 +10234,8 @@ CCTK_POINTER             output_values(M_output_values)
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm 0} success \end{Result}
-\begin{Result}{$< 0$} indicates an error condition \end{Result}
+\begin{Result}{0} success \end{Result}
+\begin{Result}{< 0} indicates an error condition \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
@@ -9733,8 +10340,10 @@ The number of grid array reduction operators registered
 \end{SeeAlsoSection}
 
 \begin{ExampleSection}
-\begin{Example}{C}
+\begin{ExampleDescription}
 Here's a simple example to perform grid array reduction of two grids arrays of different types.
+\end{ExampleDescription}
+\begin{Example}{C}
 \begin{verbatim}
 
 #include "cctk.h"
@@ -9818,8 +10427,8 @@ CCTK_POINTER             output_values(M_output_values)
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm 0} success \end{Result}
-\begin{Result}{$< 0$} indicates an error condition \end{Result}
+\begin{Result}{0} success \end{Result}
+\begin{Result}{< 0} indicates an error condition \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
@@ -9937,9 +10546,11 @@ The number of local reduction operators registered
 \end{SeeAlsoSection}
 
 \begin{ExampleSection}
-\begin{Example}{Fortran 77}
+\begin{ExampleDescription}
 Here's a simple example, written in Fortran 77, to do reduction
 of a real and a complex local array in 3-D:
+\end{ExampleDescription}
+\begin{Example}{Fortran 77}
 \begin{verbatim}
 
 c input arrays:
@@ -9987,133 +10598,122 @@ c output numbers:
 
 
 
-\begin{CCTKFunc}{CCTK\_ReductionHandle}{Handle for given reduction method}
+\begin{FunctionDescription}{CCTK\_ReductionHandle}{Handle for given reduction method}
 \label{CCTK-ReductionHandle}
-\function{int}{integer}{handle}
-% This gives the wrong Fortran binding!!
-\argument{const char *}{character*(*)}{reduction}
-\showargs
-\begin{params}
-\parameter{handle}{handle returned for this method}
-\parameter{name}{name of the reduction method required}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int handle = CCTK_ReductionHandle( const char * reduction)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}handle = CCTK_ReductionHandle(  reduction )
+
+integer handle
+character*(*) reduction\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{handle}
+handle returned for this method
+\end{Parameter}
+\begin{Parameter}{name}
+name of the reduction method required
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 Reduction methods should be registered at \code{CCTK\_STARTUP}. Note that
 integer reduction handles are used to call \code{CCTK\_Reduce} to avoid
 problems with passing Fortran strings. Note that the name of the reduction
 operator is case dependent.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t handle = CCTK\_ReductionHandle("maximum") };
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_ReductionHandle(handle,"maximum")}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+handle = CCTK_ReductionHandle("maximum");
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call CCTK_ReductionHandle(handle,"maximum")
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 % Coord.c
-\begin{CCTKFunc}{CCTK\_RegisterBanner}{Register a banner for a thorn}
+\begin{FunctionDescription}{CCTK\_RegisterBanner}{Register a banner for a thorn}
 \label{CCTK-RegisterBanner}
-\subroutine{void}{}{}
-\argument{const char *}{character*(*)}{message}
-\showargs
-\begin{params}
-\parameter{message}{String which will be displayed as a banner}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}void = CCTK_RegisterBanner( const char * message)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_RegisterBanner(  , message )
+
+character*(*) message\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{message}
+String which will be displayed as a banner
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 The banner must be registered during \code{CCTK\_STARTUP}. The banners are
 displayed in the order in which they are registered.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t CCTK\_RegisterBanner("My Thorn: Does Something Useful")};
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_REGISTERBANNER("*** MY THORN ***")}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+CCTK_RegisterBanner("My Thorn: Does Something Useful");
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call CCTK_REGISTERBANNER("*** MY THORN ***")
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 % cctk_GHExtensions.h
-\begin{CCTKFunc}{CCTK\_RegisterGHExtension}{Register an extension to the CactusGH}
+\begin{FunctionDescription}{CCTK\_RegisterGHExtension}{Register an extension to the CactusGH}
 \label{CCTK-RegisterGHExtension}
-\function{int}{}{istat}
-\argument{const char *}{}{name}
-\showcargs
-\begin{params}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int istat = CCTK_RegisterGHExtension( const char * name)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\end{FunctionDescription}
 
 % cctk_GHExtensions.h
-\begin{CCTKFunc}{CCTK\_RegisterGHExtensionInitGH}{Register a function which will initialise a given extension to the Cactus GH}
+\begin{FunctionDescription}{CCTK\_RegisterGHExtensionInitGH}{Register a function which will initialise a given extension to the Cactus GH}
 \label{CCTK-RegisterGHExtensionInitGH}
-\function{int}{}{istat}
-\argument{int}{}{handle}
-\argument{void *}{}{(*func)(cGH *)}
-\showcargs
-\begin{params}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int istat = CCTK_RegisterGHExtensionInitGH(  int handle, void * (*func)(cGH *))\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\end{FunctionDescription}
 
 % cctk_GHExtensions.h
-\begin{CCTKFunc}{CCTK\_RegisterGHExtensionScheduleTraverseGH}{Register a GH extension schedule traversal routine}
+\begin{FunctionDescription}{CCTK\_RegisterGHExtensionScheduleTraverseGH}{Register a GH extension schedule traversal routine}
 \label{CCTK-RegisterGHExtensionScheduleTraverseGH}
-\function{int}{}{istat}
-\argument{int}{}{handle}
-\argument{int}{}{(*func)(cGH *,const char *)}
-\showcargs
-\begin{params}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int istat = CCTK_RegisterGHExtensionScheduleTraverseGH( int handle, int (*func)(cGH *,const char *))\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\end{FunctionDescription}
 
 % cctk_GHExtensions.h
-\begin{CCTKFunc}{CCTK\_RegisterGHExtensionSetupGH}{Register a function which will set up a given extension to the Cactus GH}
+\begin{FunctionDescription}{CCTK\_RegisterGHExtensionSetupGH}{Register a function which will set up a given extension to the Cactus GH}
 \label{CCTK-RegisterGHExtensionSetupGH}
-\function{int}{}{istat}
-\argument{int}{}{handle}
-\argument{void *}{}{(*func)(tFleshConfig *, int, cGH *)}
-\showcargs
-\begin{params}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int istat = CCTK_RegisterGHExtensionSetupGH(  int handle, void * (*func)(tFleshConfig *, int, cGH *))\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\end{FunctionDescription}
 
 %Reduction.c
 %Entering a function description for CCTK\_RegisterGridArrayReductionOperator
@@ -10133,8 +10733,8 @@ int status = CCTK_RegisterGridArrayReductionOperator(
 \end{SynopsisSection}
 
 \begin{ResultSection}
-\begin{Result}{\rm 0} success \end{Result}
-\begin{Result}{$< 0$} indicates an error condition \end{Result}
+\begin{Result}{0} success \end{Result}
+\begin{Result}{< 0} indicates an error condition \end{Result}
 \end{ResultSection}
 
 \begin{ParameterSection}
@@ -10164,104 +10764,74 @@ The number of grid array reduction operators registered
 \end{SeeAlsoSection}
 \end{FunctionDescription}
 
-\begin{CCTKFunc}{CCTK\_RegisterIOMethod}{Register a new I/O method}
+\begin{FunctionDescription}{CCTK\_RegisterIOMethod}{Register a new I/O method}
 \label{CCTK-RegisterIOMethod}
-\function{int}{integer}{handle}
-\argument{const char *}{}{name}
-\showargs
-\begin{params}
-\parameter{handle}{handle returned by registration}
-\parameter{name}{name of the I/O method}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int handle = CCTK_RegisterIOMethod( const char * name)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}handle = CCTK_RegisterIOMethod( name )
+
+integer handle
+name\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{handle}
+handle returned by registration
+\end{Parameter}
+\begin{Parameter}{name}
+name of the I/O method
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 IO methods should be registered at \code{CCTK\_STARTUP}.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\end{FunctionDescription}
 
 
 % cctk_IOMethods.h
-\begin{CCTKFunc}{CCTK\_RegisterIOMethodOutputGH}{Register a routine for an I/O method which will be called from \code{CCTK\_OutputGH}.}
+\begin{FunctionDescription}{CCTK\_RegisterIOMethodOutputGH}{Register a routine for an I/O method which will be called from \code{CCTK\_OutputGH}.}
 \label{CCTK-RegisterIOMethodOutputGH}
-\function{int}{integer}{istat}
-\argument{int}{}{handle}
-\argument{int}{}{(* func)(const cGH *)}
-\showcargs
-\begin{params}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int istat = CCTK_RegisterIOMethodOutputGH(  int handle, int (* func)(const cGH *))\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\end{FunctionDescription}
 
 
 % cctk_IOMethods.h
-\begin{CCTKFunc}{CCTK\_RegisterIOMethodOutputVarAs}{Register a routine for an I/O method which will provide aliased variable output}
+\begin{FunctionDescription}{CCTK\_RegisterIOMethodOutputVarAs}{Register a routine for an I/O method which will provide aliased variable output}
 \label{CCTK-RegisterIOMethodOutputVarAs}
-\function{int}{integer}{istat}
-\argument{int}{}{handle}
-\argument{int}{}{(* func)(const cGH *,const char*, const char *)}
-\showcargs
-\begin{params}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int istat = CCTK_RegisterIOMethodOutputVarAs(  int handle, int (* func)(const cGH *,const char*, const char *))\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\end{FunctionDescription}
 
 
 % cctk_IOMethods.h
-\begin{CCTKFunc}{CCTK\_RegisterIOMethodTimeToOutput}{Register a routine for an I/O method which will decide if it is time for the method to output.}
+\begin{FunctionDescription}{CCTK\_RegisterIOMethodTimeToOutput}{Register a routine for an I/O method which will decide if it is time for the method to output.}
 \label{CCTK-RegisterIOMethodTimeToOutput}
-\function{int}{integer}{istat}
-\argument{int}{}{handle}
-\argument{int}{}{(* func)(const cGH *,int)}
-\showcargs
-\begin{params}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int istat = CCTK_RegisterIOMethodTimeToOutput(  int handle, int (* func)(const cGH *,int))\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\end{FunctionDescription}
 
 % cctk_IOMethods.h
-\begin{CCTKFunc}{CCTK\_RegisterIOMethodTriggerOutput}{Register a routine for an I/O method which will handle trigger output}
+\begin{FunctionDescription}{CCTK\_RegisterIOMethodTriggerOutput}{Register a routine for an I/O method which will handle trigger output}
 \label{CCTK-RegisterIOMethodTriggerOutput}
-\function{int}{integer}{istat}
-\argument{int}{}{handle}
-\argument{int}{}{(* func)(const cGH *,int)}
-\showcargs
-\begin{params}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int istat = CCTK_RegisterIOMethodTriggerOutput(  int handle, int (* func)(const cGH *,int))\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\end{FunctionDescription}
 
 %Reduction.c
 %Entering a function description for CCTK\_RegisterLocalArrayReductionOperator
@@ -10368,26 +10938,16 @@ operator exists with the same \code{name}, an error is returned.
 Reduces a list of local arrays globally
 \end{SeeAlso}
 \end{SeeAlsoSection}
-
 \end{FunctionDescription}
 
-\begin{CCTKFunc}{CCTK\_RegisterReductionOperator}{}
+\begin{FunctionDescription}{CCTK\_RegisterReductionOperator}{}
 \label{CCTK-RegisterReductionOperator}
-%\function{int}{integer}{istat}
-%\argument{int}{}{handle}
-%\argument{int}{}{(* func)(const cGH *,int)}
-\showcargs
-\begin{params}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}CCTK_RegisterReductionOperator()\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\end{FunctionDescription}
 
 
 %%%%%
@@ -10449,7 +11009,7 @@ int status = CCTK_SchedulePrintTimes(const char *where)
 #include "cctk.h"
 int status = CCTK_SchedulePrintTimes("CCTK_ANALYSIS")
 \end{verbatim}
-    \end{Example}
+\end{Example}
   \end{ExampleSection}
   
 \end{FunctionDescription}
@@ -10520,7 +11080,7 @@ if (CCTK_MyProc(cctkGH)==3)
   fclose(file);
 }
 \end{verbatim}
-    \end{Example}
+\end{Example}
   \end{ExampleSection}
   
 \end{FunctionDescription}
@@ -10528,23 +11088,14 @@ if (CCTK_MyProc(cctkGH)==3)
 
 
 % CommOverloadables.c
-\begin{CCTKFunc}{CCTK\_SetupGH}{Setup a new GH}
+\begin{FunctionDescription}{CCTK\_SetupGH}{Setup a new GH}
 \label{CCTK-SetupGH}
-\subroutine{cGH *}{}{cctkGH}
-\argument{tFleshConfig}{}{config}
-\argument{int}{}{convlevel}
-\showcargs
-\begin{params}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}cGH * cctkGH = CCTK_SetupGH( tFleshConfig config, int convlevel)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\end{FunctionDescription}
 
 
 
@@ -10952,7 +11503,6 @@ At this time, the {\tt cctkGH} parameter does nothing.
   Returns true if {\tt CCTK\_TerminateNext} has been called.
 \end{SeeAlso2}
 \end{SeeAlsoSection}
-
 \end{FunctionDescription}
 
 
@@ -10996,7 +11546,6 @@ At this time, the {\tt cctkGH} parameter does nothing.
   Causes a Cactus simulation to terminate after the present iteration.
 \end{SeeAlso2}
 \end{SeeAlsoSection}
-
 \end{FunctionDescription}
 
 
@@ -11088,18 +11637,18 @@ Fills a {\tt cTimerData}
 structure with timer clock info, for the timer specified by name.
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-\begin{alltt}
-int err = CCTK\_Timer(\var{name},\var{info})
-\end{alltt}
+\begin{verbatim}
+int err = CCTK_Timer(name,info)
+\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ParameterSection}
-\begin{Parameter} {const char * \var{name}}
+\begin{Parameter} {const char * name}
 Timer name
 \end{Parameter}
 
-\begin{Parameter} {cTimerData * \var{info}}
+\begin{Parameter} {cTimerData * info}
 Timer clock info pointer
 \end{Parameter}
 \end{ParameterSection}
@@ -11117,20 +11666,20 @@ Creates a timer with a given name,
 returns an index to the timer.
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-\begin{alltt}
-int index = CCTK\_TimerCreate(\var{name})
-\end{alltt}
+\begin{verbatim}
+int index = CCTK_TimerCreate(name)
+\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ParameterSection}
-\begin{Parameter} {const char * \var{name}}
+\begin{Parameter} {const char * name}
 timer name
 \end{Parameter}
 \end{ParameterSection}
 
 \begin{ErrorSection}
-\begin{Error}{$< 0$}
+\begin{Error}{< 0}
 A negative return value indicates an error.
 \end{Error}
 \end{ErrorSection}
@@ -11143,9 +11692,9 @@ structure, which is used to store timer clock info.
 
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-\begin{alltt}
-cTimerData * info = CCTK\_TimerCreateData()
-\end{alltt}
+\begin{verbatim}
+cTimerData * info = CCTK_TimerCreateData()
+\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
@@ -11162,14 +11711,14 @@ A null return value indicates an error.
 Creates an unnamed timer, returns an index to the timer.
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-\begin{alltt}
-int index = CCTK\_TimerCreate()
-\end{alltt}
+\begin{verbatim}
+int index = CCTK_TimerCreate()
+\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ErrorSection}
-\begin{Error}{$< 0$}
+\begin{Error}{< 0}
 A negative return value indicates an error.
 \end{Error}
 \end{ErrorSection}
@@ -11182,20 +11731,20 @@ Reclaims resources used by the
 given timer, specified by name.
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-\begin{alltt}
-int err = CCTK\_TimerDestroy(\var{name})
-\end{alltt}
+\begin{verbatim}
+int err = CCTK_TimerDestroy(name)
+\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ParameterSection}
-\begin{Parameter} {const char * \var{name}}
+\begin{Parameter} {const char * name}
 timer name
 \end{Parameter}
 \end{ParameterSection}
 
 \begin{ErrorSection}
-\begin{Error}{$< 0$}
+\begin{Error}{< 0}
 A negative return value indicates an error.
 \end{Error}
 \end{ErrorSection}
@@ -11208,20 +11757,20 @@ Releases resources from the {\tt cTimerData}
 structure, created by {\tt CCTK\_TimerCreateData}.
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-\begin{alltt}
-int err = CCTK\_TimerDestroyData(\var{info})
-\end{alltt}
+\begin{verbatim}
+int err = CCTK_TimerDestroyData(info)
+\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ParameterSection}
-\begin{Parameter} {cTimerData * \var{info}}
+\begin{Parameter} {cTimerData * info}
 Timer clock info pointer
 \end{Parameter}
 \end{ParameterSection}
 
 \begin{ErrorSection}
-\begin{Error}{$< 0$}
+\begin{Error}{< 0}
 A negative return value indicates an error.
 \end{Error}
 \end{ErrorSection}
@@ -11234,20 +11783,20 @@ Reclaims resources used by the
 given timer, specified by index.
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-\begin{alltt}
-int err = CCTK\_TimerDestroyI(\var{index})
-\end{alltt}
+\begin{verbatim}
+int err = CCTK_TimerDestroyI(index)
+\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ParameterSection}
-\begin{Parameter} {int \var{index}}
+\begin{Parameter} {int index}
 timer index
 \end{Parameter}
 \end{ParameterSection}
 
 \begin{ErrorSection}
-\begin{Error}{$< 0$}
+\begin{Error}{< 0}
 A negative return value indicates an error.
 \end{Error}
 \end{ErrorSection}
@@ -11260,24 +11809,24 @@ Fills a {\tt cTimerData}
 structure with timer clock info, for the timer specified by index.
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-\begin{alltt}
-int err = CCTK\_TimerI(\var{index},\var{info})
-\end{alltt}
+\begin{verbatim}
+int err = CCTK_TimerI(index,info)
+\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ParameterSection}
-\begin{Parameter} {int \var{index}}
+\begin{Parameter} {int index}
 Timer index
 \end{Parameter}
 
-\begin{Parameter} {cTimerData * \var{info}}
+\begin{Parameter} {cTimerData * info}
 Timer clock info pointer
 \end{Parameter}
 \end{ParameterSection}
 
 \begin{ErrorSection}
-\begin{Error}{$< 0$}
+\begin{Error}{< 0}
 A negative return value indicates an error.
 \end{Error}
 \end{ErrorSection}
@@ -11291,20 +11840,20 @@ Gets values from all the clocks in the
 given timer, specified by name.
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-\begin{alltt}
-int err = CCTK\_TimerReset(\var{name})
-\end{alltt}
+\begin{verbatim}
+int err = CCTK_TimerReset(name)
+\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ParameterSection}
-\begin{Parameter} {const char * \var{name}}
+\begin{Parameter} {const char * name}
 timer name
 \end{Parameter}
 \end{ParameterSection}
 
 \begin{ErrorSection}
-\begin{Error}{$< 0$}
+\begin{Error}{< 0}
 A negative return value indicates an error.
 \end{Error}
 \end{ErrorSection}
@@ -11317,20 +11866,20 @@ Gets values from all the clocks in the
 given timer, specified by index.
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-\begin{alltt}
-int err = CCTK\_TimerResetI(\var{index})
-\end{alltt}
+\begin{verbatim}
+int err = CCTK_TimerResetI(index)
+\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ParameterSection}
-\begin{Parameter} {int \var{index}}
+\begin{Parameter} {int index}
 timer index
 \end{Parameter}
 \end{ParameterSection}
 
 \begin{ErrorSection}
-\begin{Error}{$< 0$}
+\begin{Error}{< 0}
 A negative return value indicates an error.
 \end{Error}
 \end{ErrorSection}
@@ -11343,20 +11892,20 @@ Initialises all the clocks in the
 given timer, specified by name.
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-\begin{alltt}
-int err = CCTK\_TimerStart(\var{name})
-\end{alltt}
+\begin{verbatim}
+int err = CCTK_TimerStart(name)
+\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ParameterSection}
-\begin{Parameter} {const char * \var{name}}
+\begin{Parameter} {const char * name}
 timer name
 \end{Parameter}
 \end{ParameterSection}
 
 \begin{ErrorSection}
-\begin{Error}{$< 0$}
+\begin{Error}{< 0}
 A negative return value indicates an error.
 \end{Error}
 \end{ErrorSection}
@@ -11369,20 +11918,20 @@ Initialises all the clocks in the
 given timer, specified by index.
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-\begin{alltt}
-int err = CCTK\_TimerStartI(\var{index})
-\end{alltt}
+\begin{verbatim}
+int err = CCTK_TimerStartI(index)
+\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ParameterSection}
-\begin{Parameter} {int \var{index}}
+\begin{Parameter} {int index}
 timer index
 \end{Parameter}
 \end{ParameterSection}
 
 \begin{ErrorSection}
-\begin{Error}{$< 0$}
+\begin{Error}{< 0}
 A negative return value indicates an error.
 \end{Error}
 \end{ErrorSection}
@@ -11395,14 +11944,14 @@ given timer, specified by name.
 
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-\begin{alltt}
-int err = CCTK\_TimerStop(\var{name})
-\end{alltt}
+\begin{verbatim}
+int err = CCTK_TimerStop(name)
+\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ParameterSection}
-\begin{Parameter} {int \var{name}}
+\begin{Parameter} {int name}
 timer name
 \end{Parameter}
 \end{ParameterSection}
@@ -11412,7 +11961,7 @@ Call this before getting the values from any of the timer's clocks.
 \end{Discussion}
 
 \begin{ErrorSection}
-\begin{Error}{$< 0$}
+\begin{Error}{< 0}
 A negative return value indicates an error.
 \end{Error}
 \end{ErrorSection}
@@ -11425,14 +11974,14 @@ given timer, specified by index.
 
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-\begin{alltt}
-int err = CCTK\_TimerStopI(\var{index})
-\end{alltt}
+\begin{verbatim}
+int err = CCTK_TimerStopI(index)
+\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 
 \begin{ParameterSection}
-\begin{Parameter} {int \var{index}}
+\begin{Parameter} {int index}
 timer index
 \end{Parameter}
 \end{ParameterSection}
@@ -11442,7 +11991,7 @@ Call this before getting the values from any of the timer's clocks.
 \end{Discussion}
 
 \begin{ErrorSection}
-\begin{Error}{$< 0$}
+\begin{Error}{< 0}
 A negative return value indicates an error.
 \end{Error}
 \end{ErrorSection}
@@ -11459,83 +12008,100 @@ A negative return value indicates an error.
 % VVV
 %%%%%
 
-\begin{CCTKFunc}{CCTK\_VarDataPtr}{Returns the data pointer for a grid variable}
+\begin{FunctionDescription}{CCTK\_VarDataPtr}{Returns the data pointer for a grid variable}
 \label{CCTK-VarDataPtr}
-\subroutine{void *}{}{ptr}
-\argument{const cGH *}{}{cctkGH}
-\argument{int}{}{timelevel}
-\argument{char *}{}{name}
-\showcargs
-\begin{params}
-\parameter{cctkGH}{pointer to CCTK grid hierarchy}
-\parameter{timelevel}{The timelevel of the grid variable}
-\parameter{name}{The full name of the variable}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}void * ptr = CCTK_VarDataPtr( const cGH * cctkGH, int timelevel, char * name)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{cctkGH}
+pointer to CCTK grid hierarchy
+\end{Parameter}
+\begin{Parameter}{timelevel}
+The timelevel of the grid variable
+\end{Parameter}
+\begin{Parameter}{name}
+The full name of the variable
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 The variable name should be in the form \code{<implementation>::<variable>}.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t myVar = (CCTK\_REAL *)(CCTK\_VarDataPtr(GH,0,"imp::realvar"))}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+myVar = (CCTK_REAL *)(CCTK_VarDataPtr(GH,0,"imp::realvar"))
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
-\begin{CCTKFunc}{CCTK\_VarDataPtrB}{Returns the data pointer for a grid variable from the variable index or the variable name}
+\begin{FunctionDescription}{CCTK\_VarDataPtrB}{Returns the data pointer for a grid variable from the variable index or the variable name}
 \label{CCTK-VarDataPtrB}
-\subroutine{void *}{}{ptr}
-\argument{const cGH *}{}{cctkGH}
-\argument{int}{}{timelevel}
-\argument{int}{}{index}
-\argument{char *}{}{name}
-\showcargs
-\begin{params}
-\parameter{ptr}{a void pointer to the grid variable data}
-\parameter{cctkGH}{}
-\parameter{timelevel}{The timelevel of the grid variable}
-\parameter{index}{The index of the variable}
-\parameter{name}{The full name of the variable}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}void * ptr = CCTK_VarDataPtrB( const cGH * cctkGH, int timelevel, int index, char * name)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{ptr}
+a void pointer to the grid variable data
+\end{Parameter}
+\begin{Parameter}{cctkGH}
+
+\end{Parameter}
+\begin{Parameter}{timelevel}
+The timelevel of the grid variable
+\end{Parameter}
+\begin{Parameter}{index}
+The index of the variable
+\end{Parameter}
+\begin{Parameter}{name}
+The full name of the variable
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 If the name is \code{NULL} the index will be used, if the index is negative the name will be used.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t myVar = (CCTK\_REAL *)(CCTK\_VarDataPtrB(GH,0,CCTK\_VarIndex("imp::realvar"),NULL))}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+myVar = (CCTK_REAL *)(CCTK_VarDataPtrB(GH,0,CCTK_VarIndex("imp::realvar"),NULL));
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
-\begin{CCTKFunc}{CCTK\_VarDataPtrI}{Returns the data pointer for a grid variable from the variable index}
+\begin{FunctionDescription}{CCTK\_VarDataPtrI}{Returns the data pointer for a grid variable from the variable index}
 \label{CCTK-VarDataPtrI}
-\subroutine{void *}{}{ptr}
-\argument{const cGH *}{}{cctkGH}
-\argument{int}{}{timelevel}
-\argument{int}{}{index}
-\showcargs
-\begin{params}
-\parameter{cctkGH}{}
-\parameter{timelevel}{The timelevel of the grid variable}
-\parameter{index}{The index of the variable}
-\end{params}
-\begin{discussion}
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t myVar = (CCTK\_REAL *)(CCTK\_VarDataPtr(GH,0,CCTK\_VarIndex("imp::realvar")))}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}void * ptr = CCTK_VarDataPtrI( const cGH * cctkGH, int timelevel, int index)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{cctkGH}
+pointer to CCTK grid hierarchy
+\end{Parameter}
+\begin{Parameter}{timelevel}
+The timelevel of the grid variable
+\end{Parameter}
+\begin{Parameter}{index}
+The index of the variable
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+myVar = (CCTK_REAL *)(CCTK_VarDataPtr(GH,0,CCTK_VarIndex("imp::realvar")));
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
 % Groups.c
@@ -11602,62 +12168,81 @@ call CCTK_VarIndex(index,"evolve::phi")
 
 
 % Groups.c
-\begin{CCTKFunc}{CCTK\_VarName}{Given a variable index, returns the variable name}
+\begin{FunctionDescription}{CCTK\_VarName}{Given a variable index, returns the variable name}
 \label{CCTK-VarName}
-\subroutine{const char *}{integer}{name}
-\argument{int}{integer}{index}
-\showcargs
-\begin{params}
-\parameter{name}{The variable name}
-\parameter{index}{The variable index}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}const char * name = CCTK_VarName( int index)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{name}
+The variable name
+\end{Parameter}
+\begin{Parameter}{index}
+The variable index
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 The pointer returned is part of a structure managed by Cactus
 and so must {\em not} be freed after use.
 
 No Fortran routine exists at the moment.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_VarIndex("evolve::phi");}\\
-               && {\t name = CCTK\_VarName(index);}
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+index = CCTK_VarIndex("evolve::phi");
+name = CCTK_VarName(index);
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
 
 % Groups.c
-\begin{CCTKFunc}{CCTK\_VarTypeI}{Provides variable type index from the variable index}
+\begin{FunctionDescription}{CCTK\_VarTypeI}{Provides variable type index from the variable index}
 \label{CCTK-VarTypeI}
-\subroutine{int}{integer}{type}
-\argument{int}{integer}{index}
-\showargs
-\begin{params}
-\parameter{type}{The variable type index}
-\parameter{group}{The variable index}
-\end{params}
-\begin{discussion}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int type = CCTK_VarTypeI( int index)\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}call CCTK_VarTypeI(type , index )
+
+integer type
+integer index\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{type}
+The variable type index
+\end{Parameter}
+\begin{Parameter}{group}
+The variable index
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
 The variable type index indicates the type of the variable.
 Either character, int, complex or real. The group type can be checked
 with the Cactus provided macros for \code{CCTK\_VARIABLE\_INT}, \code{CCTK\_VARIABLE\_REAL}, \code{CCTK\_VARIABLE\_COMPLEX} or \code{CCTK\_VARIABLE\_CHAR}.
-\end{discussion}
-\begin{examples}
-\begin{tabular}{@{}p{3cm}cp{11cm}}
-\hfill {\bf C} && {\t index = CCTK\_VarIndex("evolve::phi")}\\
-               &&{\t real = (CCTK\_VARIABLE\_REAL == CCTK\_VarTypeI(index)) ;}
-\\
-\hfill {\bf Fortran} && {\t call CCTK\_VARTYPEI(type,3)}\\
-\\
-\end{tabular}
-\end{examples}
-\begin{errorcodes}
-\end{errorcodes}
-\end{CCTKFunc}
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+index = CCTK_VarIndex("evolve::phi")
+real = (CCTK_VARIABLE_REAL == CCTK_VarTypeI(index)) ;
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+call CCTK_VARTYPEI(type,3)
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
 
-%Entering a function description for CCTK\_VarTypeSize
+%Entering a function description for CCTK_VarTypeSize
 \begin{FunctionDescription}{CCTK\_VarTypeSize}
 \label{CCTK-VarTypeSize}
 Provides variable type size in bytes from the variable type index
@@ -11764,7 +12349,7 @@ CCTK_VInfo(CCTK_THORNSTRING, "Output files will go to '%s'", outdir);
 \end{FunctionDescription}
 
 
-%Entering a function description for CCTK\_VWarn
+%Entering a function description for CCTK_VWarn
 \begin{FunctionDescription}{CCTK\_VWarn}
 \label{CCTK-VWarn}
 Possibly prints a formatted string with a variable argument list as
@@ -11911,7 +12496,7 @@ CCTK_VWarn(CCTK_WARN_ALERT, __LINE__, __FILE__, CCTK_THORNSTRING,
 
 
 % WarnLevel.c
-%Entering a function description for CCTK\_WARN
+%Entering a function description for CCTK_WARN
 \begin{FunctionDescription}{CCTK\_WARN}
 \label{CCTK-WARN}
 Macro to print a single string as a warning message and possibly stop the code
@@ -12124,9 +12709,7 @@ void DumpWarn(int level,
 /*minlevel = 0; maxlevel = 5; data = NULL; callback = DumpWarn*/
 
 CCTK_WarnCallbackRegister(0,5,NULL,DumpWarn);
-
 \end{verbatim}
-
 \end{Example}
 \end{ExampleSection}
 \end{FunctionDescription}
