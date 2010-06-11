@@ -16,6 +16,10 @@
 $CST_errors = 0;
 $error_string = '';
 
+#$debug_configuration = 1;
+#$debug_interface     = 1;
+#$debug_parameters    = 1;
+#$debug_schedule      = 1;
 
 ##########################################################################
 # Parse the command line
@@ -87,7 +91,6 @@ print "Reading ThornList...\n";
 print "Parsing configuration files...\n";
 $configuration_database = &CreateConfigurationDatabase($config_dir, %thorns);
 
-#$debug_configuration = 1;
 &print_database("configuration", $configuration_database) if($debug_configuration);
 &save_database("configuration", $configuration_database) if($debug_configuration);
 
@@ -99,7 +102,6 @@ $configuration_database = &CreateConfigurationDatabase($config_dir, %thorns);
 print "Parsing interface files...\n";
 %interface_database = &create_interface_database(scalar(keys %system_database), %system_database, %source_thorns);
 
-#$debug_interface = 1;
 &print_database("interface", \%interface_database) if($debug_interface);
 &save_database("interface", \%interface_database) if($debug_interface);
 
@@ -123,14 +125,11 @@ print "Checking consistency...\n";
 
 $err_msg = &CheckCrossConsistency(\%interface_database,\%parameter_database);
 
-#$debug_interface = 1;
 &print_database("interface", \%interface_database) if($debug_interface);
 
-#$debug_parameters=1;
 &print_database("parameter", \%parameter_database ) if($debug_parameters);
 &save_database("parameter", \%parameter_database) if($debug_parameters);
 
-#$debug_schedule = 1;
 &print_database("schedule", \%schedule_database) if($debug_schedule);
 
 # Create all the bindings
