@@ -60,7 +60,7 @@ sub CreateConfigurationBindings
   }
 
 
-  # this string goes into the cactus executable directly 
+  # this string goes into the cactus executable directly
   $linkerflagdirs = '';
   $linkerflaglibs = '';
 
@@ -101,7 +101,9 @@ sub CreateConfigurationBindings
 
         if ($cfg->{"\U$thorn $providedcap\E DEFINE"})
         {
-          $temp .=  "#define " . $cfg->{"\U$thorn $providedcap\E DEFINE"};
+            my $lines = $cfg->{"\U$thorn $providedcap\E DEFINE"};
+            $lines =~ s/^(.*)/#define $1/gm;
+            $temp .=  $lines . "\n";
         }
 
         &WriteFile("Capabilities/cctki_\U$providedcap\E.h",\$temp);
@@ -126,7 +128,7 @@ sub CreateConfigurationBindings
           $linker_thorns{"$thorn"} = $thorn;
           $linker_cfg{"\U$thorn\E USES"} = $cfg->{"\U$thorn\E USES THORNS"};
         }
-      } 
+      }
     }
   }
 
@@ -184,7 +186,7 @@ sub CreateConfigurationBindings
       unlink "./Thorns/cctki_$thorn.h";
       unlink "./Thorns/make.$thorn.deps";
     }
-    
+
   }
 
   # Sort the linker thorns
