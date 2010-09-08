@@ -42,7 +42,7 @@ else
       LINUX_F90_COMP=gnu77
     elif test "`$F90 -v 2>&1 | grep PathScale`" ; then
       LINUX_F90_COMP=PathScale
-    elif test "`$F90 -dumpversion 2>&1 | grep 'GNU Fortran'`" ; then
+    elif test "`$F90 --version 2>&1 | grep 'GNU Fortran'`" ; then
       LINUX_F90_COMP=gnu95
     else
       echo 'Unknown Linux f90 compiler.'
@@ -58,7 +58,7 @@ else
       LINUX_F90_COMP=portland
     elif test "`$F77 -v 2>&1 | grep -i 'gcc version'`" ; then
       LINUX_F90_COMP=gnu77
-    elif test "`$F77 -dumpversion 2>&1 | grep 'GNU Fortran'`" ; then
+    elif test "`$F77 --version 2>&1 | grep 'GNU Fortran'`" ; then
       LINUX_F90_COMP=gnu95
     elif test "`$F90 -v 2>&1 | grep PathScale`" ; then
       LINUX_F90_COMP=PathScale
@@ -118,8 +118,8 @@ else
         : ${LIBS='gfortran'}
         : ${LIBDIRS="$gnu95_libdir"}
       fi
-      F77_VERSION="`$F77 -dumpversion 2>&1 | grep -i version | head -n1`"
-      F90_VERSION="`$F90 -dumpversion 2>&1 | grep -i version | head -n1`"
+      F77_VERSION="`$F77 --version 2>&1 | grep -i version | head -n1`"
+      F90_VERSION="`$F90 --version 2>&1 | grep -i version | head -n1`"
       ;;
     portland)
       : ${LIBS='pgf90 pgf90rtl pgftnrtl pgf90_rpm1 pghpf2 pgc m'}
