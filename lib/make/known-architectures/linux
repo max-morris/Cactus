@@ -297,7 +297,7 @@ else
          # add the libpath
          : ${LIBDIRS="$intel_dir/lib"}
          # add the linker script if the linker is not Intel
-         if test `basename $LD` != 'icc' -a `basename $LD` != 'icpc' ; then
+         if test `basename $LD` != 'icc' -a `basename $LD` != 'icpc' -a -e "$intel_dir/lib/icrt.link" ; then
            : ${LDFLAGS="-Qy $intel_dir/lib/icrt.link"}
          fi
          ;;
