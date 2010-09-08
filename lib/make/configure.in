@@ -845,16 +845,18 @@ if test -n "$PTHREADS" ; then
 fi
 
 if test "$PTHREADS_MODE" = 'yes'; then
-  PTHREAD_LIBS=
-  CCTK_CHECK_LIB(c_r, main,[PTHREAD_LIBS="c_r" LIBS="$LIBS c_r"],,)
-  CCTK_CHECK_LIB(pthread,
-                 main,
-                 PTHREAD_LIBS="pthread $PTHREAD_LIBS",
-                 CCTK_CHECK_LIB(pthreads,
-                                main,
-                                PTHREAD_LIBS="pthreads $PTHREAD_LIBS",
-                                ,)
-                 ,)
+  if test -z "$PTHREAD_LIBS"; then
+    PTHREAD_LIBS=
+    CCTK_CHECK_LIB(c_r, main,[PTHREAD_LIBS="c_r" LIBS="$LIBS c_r"],,)
+    CCTK_CHECK_LIB(pthread,
+                   main,
+                   PTHREAD_LIBS="pthread $PTHREAD_LIBS",
+                   CCTK_CHECK_LIB(pthreads,
+                                  main,
+                                  PTHREAD_LIBS="pthreads $PTHREAD_LIBS",
+                                  ,)
+                   ,)
+  fi
 fi
 
 
