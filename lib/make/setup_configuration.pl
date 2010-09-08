@@ -178,7 +178,7 @@ sub SetConfigureEnv
   }
   elsif ($default_file)
   {
-    print "Adding configuration options from user defaults...\n";
+    print "Adding configuration options from user defaults in $default_file...\n";
     ParseOptionsFile ($default_file, \%ENV, \%CONFIGURED);
     print "End of options from user defaults.\n";
   }
