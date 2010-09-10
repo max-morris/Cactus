@@ -1898,7 +1898,8 @@ The Cactus variables which are passed through the macro
 \item [\texttt{cctk\_dim}] An integer with the number of dimensions
       used for this grid hierarchy.
 \item [\texttt{cctk\_lsh}] An array of \texttt{cctk\_dim} integers
-      with the local grid size on this processor.
+      with the local grid size on this processor.  This is the allocated
+      size of the array.
 \item [\texttt{cctk\_gsh}] An array of \texttt{cctk\_dim} integers
       with the \textit{global} grid size.
 \item [\texttt{cctk\_iteration}] The current iteration number.
@@ -1915,7 +1916,11 @@ CCTK\_REAL}s with the grid spacing in each direction.
       of the grid.
 \item [\texttt{cctk\_lssh}]  This is an internal array used to hold
 array extents for staggering.  One should use the macro CCTK\_LSSH(,)
-to access its elements.
+to access its elements.  This variable is also used to determine the
+extent of the array over which to loop.  Usually it is identical to
+\texttt{cctk\_lsh}, but if array padding is used (not yet implemented), all
+loops should use CCTK\_LSSH(,) to determine the loop indices over which to
+loop.
 
 \end{Lentry}
 
