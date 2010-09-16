@@ -124,7 +124,7 @@ endif
 
 ifdef F77FLAGS
 ifneq ($(strip $(origin F77FLAGS)), default)
-SETUP_ENV += F77FLAGS="$(F77FLAGS)" ; export F90FLAGS ;
+SETUP_ENV += F77FLAGS="$(F77FLAGS)" ; export F77FLAGS ;
 endif
 endif
 
