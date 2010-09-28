@@ -1560,27 +1560,32 @@ int ValidateModifiers(t_sched_modifier *modifier)
 
   for (;modifier;modifier=modifier->next)
   {
-    if (modifier->type == sched_while)
+    vindex = CCTK_VarIndex(modifier->argument);
+    if (vindex < 0)
     {
-      vindex = CCTK_VarIndex(modifier->argument);
-      type = CCTK_VarTypeI(vindex);
-      if (type != CCTK_VARIABLE_INT)
-      {
-        CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
-                   "While qualifier %s is not a CCTK_INT grid variable",
-                   modifier->argument);
-        retval = -1;
-      }
+      CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+                 "While qualifier %s could not be parsed as fully "
+                 "specified grid variable name (e.g. MyThorn::MyVar",
+                 modifier->argument);
+      retval = -1;
     }
-    else if (modifier->type == sched_if)
+    else
     {
-      vindex = CCTK_VarIndex(modifier->argument);
       type = CCTK_VarTypeI(vindex);
       if (type != CCTK_VARIABLE_INT)
       {
-        CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
-                   "If qualifier %s is not a CCTK_INT grid variable",
-                   modifier->argument);
+        if (modifier->type == sched_while)
+        {
+          CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+                     "While qualifier %s is not a CCTK_INT grid variable",
+                     modifier->argument);
+        }
+        else if (modifier->type == sched_if)
+        {
+          CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
+                     "If qualifier %s is not a CCTK_INT grid variable",
+                     modifier->argument);
+        }
         retval = -1;
       }
     }
