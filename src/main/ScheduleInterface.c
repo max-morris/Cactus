@@ -1560,6 +1560,11 @@ int ValidateModifiers(t_sched_modifier *modifier)
 
   for (;modifier;modifier=modifier->next)
   {
+    if (modifier->type != sched_while ||
+        modifier->type != sched_if)
+    {
+      continue;
+    }
     vindex = CCTK_VarIndex(modifier->argument);
     if (vindex < 0)
     {
