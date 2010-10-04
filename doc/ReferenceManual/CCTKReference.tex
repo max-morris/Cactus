@@ -9212,6 +9212,14 @@ The thorn or implementation name must be the name of the place where
 the parameter is originally defined.  It is not possible to pass the
 thorn or implementation name of a thorn that merely declares the
 parameter as used.
+
+While setting a new parameter value is immediately reflected in
+Cactus' database, the value of the parameter is not changed
+immediately in the routine that sets the new value: It is updated only
+the next time a routine is entered (or rather, when the
+\code{DECLARE\_CCTK\_PARAMETERS} is encountered the next time). It is
+therefore advisable to set the new parameter value in a routine
+scheduled at a time earlier to when the new value is required.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
