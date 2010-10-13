@@ -23,3 +23,4 @@
 11 Nov 2009: Detect whether _Pragma is available
 11 Nov 2009: Add CCTK_ATTRIBUTE_* macros and friends
 26 Mar 2010: Add RUNDIR_PREFIX configuration option
+13 Oct 2010: Updated ExternalLibraries/HDF5
