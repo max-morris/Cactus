@@ -792,6 +792,15 @@ sub WriteFullResults
   push (@summary, '');
 
   $total = $testdata->{"NUNRUNNABLE"}+$testdata->{"NRUNNABLE"};
+
+  my $date     = `date`;     chomp($date);
+  my $hostname = `hostname`; chomp($hostname);
+
+  push (@summary, "    Time                     -> $date");
+  push (@summary, "    Host                     -> $hostname");
+  push (@summary, "    User                     -> ".getlogin());
+  push (@summary, '');
+
   push (@summary, "    Total available tests    -> $total");
   push (@summary, "    Unrunnable tests         -> $testdata->{'NUNRUNNABLE'}");
   push (@summary, "    Runnable tests           -> $testdata->{'NRUNNABLE'}");
