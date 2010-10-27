@@ -222,7 +222,8 @@ static cGroupDefinition *CCTKi_SetupGroup (const char *implementation,
                                            int vectorlength);
 static CCTK_INT **CCTKi_ExtractSize (int dimension,
                                      const char *thorn,
-                                     const char *sizestring);
+                                     const char *sizestring,
+                                     const char *gname);
 
 static int CCTKi_ParamExpressionToInt(const char *expression, const char *thorn);
 
@@ -2494,8 +2495,8 @@ int CCTKi_CreateGroup (const char *gname,
     {
       staggered = 1;
     }
-    group->size      = CCTKi_ExtractSize (dimension, thorn, size);
-    group->ghostsize = CCTKi_ExtractSize (dimension, thorn, ghostsize);
+    group->size      = CCTKi_ExtractSize (dimension, thorn, size, gname);
+    group->ghostsize = CCTKi_ExtractSize (dimension, thorn, ghostsize, gname);
 
     /* Only typically have GFs in a single dimension */
     if (group->gtype == CCTK_GF)
@@ -2700,13 +2701,13 @@ static cGroupDefinition *CCTKi_SetupGroup (const char *implementation,
 @@*/
 static CCTK_INT **CCTKi_ExtractSize (int dimension,
                                      const char *this_thorn,
-                                     const char *sizestring)
+                                     const char *sizestring,
+                                     const char *gname)
 {
   int         dim;
   char       *tmp;
   const char *last_comma, *next_comma;
   CCTK_INT   **size_array;
-
 
   if (dimension < 0)
   {
@@ -2732,6 +2733,10 @@ static CCTK_INT **CCTKi_ExtractSize (int dimension,
 
         for (dim = 0; dim < dimension; dim++)
         {
+          if (!next_comma)
+          {
+             CCTK_VWarn (0, __LINE__, __FILE__, "Cactus","Insufficient dimension size specified in %s::%s -> %s", this_thorn, gname, sizestring);
+          }
           /* find the comma as a delimiter for different dimension sizes */
           last_comma = next_comma[0] == ',' ? next_comma+1 : next_comma;
           next_comma = strstr (last_comma, ",");
