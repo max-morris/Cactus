@@ -798,7 +798,7 @@ sub WriteFullResults
 
   push (@summary, "    Time                     -> $date");
   push (@summary, "    Host                     -> $hostname");
-  push (@summary, "    User                     -> ".getlogin());
+  push (@summary, "    User                     -> ".getpwuid($<));
   push (@summary, '');
 
   push (@summary, "    Total available tests    -> $total");
