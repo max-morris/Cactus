@@ -218,3 +218,10 @@ int CCTK_SyncGroupsI (const cGH *GH,
 
   return (retval);
 }
+
+
+void CCTK_FCALL CCTK_FNAME (CCTK_SyncGroupsI)
+     (int *ierror, const cGH **GH, const int *num_groups, const int *groups)
+{
+  *ierror = CCTK_SyncGroupsI (*GH, *num_groups, groups);
+}
