@@ -249,6 +249,7 @@
 \newenvironment{FunctionDescription}[1]
 {
 \newpage
+\phantomsection
 \noindent{\tt #1}
 \vskip1mm
 \hrule 
@@ -366,6 +367,16 @@
   padding: 4px 10px;
 }
 }
+\Css{ div.functiondescription h3.likesectionHead {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+}
+\Css{ div.functiondescription p.noindent {
+  display: none;
+}
+}
 \Css{ div.functiondescriptioncontent {
   padding: 0px 10px;
 }
@@ -392,7 +403,7 @@
 }
 
 \HCode{<div class="functiondescription">}
-{\bf #1}
+\section*{\bf #1}
 \HCode{</div>}
 \HCode{<div class="functiondescriptioncontent">}
 
