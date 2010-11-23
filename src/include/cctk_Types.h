@@ -196,3 +196,82 @@ typedef unsigned char CCTK_BYTE;
 
 #endif /*_CCTK_TYPES_H_ */
 
+/* Determine whether we have a traditional or an ANSI cpp. */
+#ifdef FCODE
+/* The empty
+   comment in the definition of CCTK_ANSI_FPP will either turn into
+   nothing or into white space.  There must not be any add spaces
+   around this empty comment.
+
+   A traditional cpp will turn it into nothing, an ANSI cpp will turn
+   it into white space.  Depending on this, CCTK_ANSI_FPP will either
+   turn into a single separate token (which lead to the value 0), or
+   into two separate tokens (which lead to the value 1).
+
+   This is magic.  */
+#define CCTKi_FPP_A
+#define CCTKi_FPP_B 1
+#define CCTKi_FPP_ACCTKi_FPP_B 0
+#define CCTK_ANSI_FPP CCTKi_FPP_A/**/CCTKi_FPP_B
+#endif
+
+/* Handle 'unused' function arguments */
+#ifdef FCODE
+/* Declare a variable and tell the compiler that it may be unused.
+   This is used for CCTK_ARGUMENTS.
+
+   The macro CCTK_DECLARE (typ, nam, dim) is used with
+   typ: a type, used to declare the variable (e.g. "CCTK_REAL")
+   nam: the variable name (e.g. "x")
+   dim: optional array dimensions, (e.g. "(10,10)")
+*/
+#ifdef F90CODE
+/* Declare it, and use it for a dummy operation  */
+
+#if CCTK_ANSI_FPP
+#define CCTK_DECLARE(typ,nam,dim)                       \
+  typ nam dim &&                                        \
+  integer, parameter :: cctki_use_##nam = kind(nam)
+#else
+#define CCTK_DECLARE(typ,nam,dim)                       \
+  typ nam dim &&                                        \
+  integer, parameter :: cctki_use_/**/nam = kind(nam)
+#endif
+
+#else /* F90CODE */
+
+/* Just declare it; FORTRAN 77 has no good way of marking it as used
+   within a block of declarations  */
+#define CCTK_DECLARE(typ,nam,dim)               \
+  typ nam dim
+
+#endif /* F90CODE */
+#endif /* FCODE */
+
+#ifdef CCODE
+/* Declare and initialise a variable and tell the compiler that it may
+   be unused.  This is used for CCTK_PARAMETERS and CCTK_ARGUMENTS.
+
+   The macro CCTK_DECLARE_INIT (typ, nam, val) is used with
+   typ: a type, used to declare the variable (e.g. "const int")
+   nam: the variable name (e.g. "x")
+   val: the value used to initialise it (e.g. "42")
+*/
+#if  (! defined(__cplusplus) && defined(HAVE_CCTK_C_ATTRIBUTE_UNUSED  )) \
+  || (  defined(__cplusplus) && defined(HAVE_CCTK_CXX_ATTRIBUTE_UNUSED))
+
+/* We have __attribute__((unused)), so use it */
+#define CCTK_DECLARE_INIT(typ,nam,val)          \
+  typ nam __attribute__((unused)) = (val);
+
+#else
+
+/* Some fallback, bound to fool most compilers */
+#define CCTK_DECLARE_INIT(typ,nam,val)                                  \
+  typ nam = (val);                                                      \
+  enum cctki_use_##nam { cctki_use0_##nam = sizeof nam };
+
+#endif /* HAVE_..._ATTRIBUTE_UNUSED */
+
+#endif /* CCODE */
+

@@ -172,11 +172,10 @@ sub GetThornParameterList
 sub CreateCStructureParameterHeader
 {
   my($prefix, $structure, $rhparameters, $rhparameter_db) = @_;
-  my($line,@data,@use);
+  my($line,@data);
   my(%parameters);
   my($type, $type_string);
   my(@definition);
-  my(@use);
 
   # Create the structure
   push(@data, '#ifdef __cplusplus');
@@ -207,8 +206,7 @@ sub CreateCStructureParameterHeader
     my $realname = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E realname"};
 
     push(@data, "  $type_string $realname$suffix;");
-    push(@definition, "  $type_string$varprefix const $parameter = $structure.$realname; \\");
-    push(@use, "    $delim dummy\_$structure\_$parameter = sizeof( $parameter ) \\");
+    push(@definition, "  CCTK_DECLARE_INIT ($type_string$varprefix const, $parameter, $structure.$realname); \\");
     $delim = ',';
   }
 
@@ -228,12 +226,6 @@ sub CreateCStructureParameterHeader
 
   push(@data, "#define DECLARE_${structure}_PARAMS \\");
   push(@data, @definition);
-  if( @use )
-  {
-    push(@data, "  enum { \\");
-    push(@data, @use);
-    push(@data, "  }; \\");
-  }
 
   push(@data, "\n");   # workaround for perl 5.004_04 to add a trailing newline
 

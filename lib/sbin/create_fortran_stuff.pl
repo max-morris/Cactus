@@ -178,7 +178,7 @@ sub CreateFortranCommonDeclaration
       $name = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E realname"};
     }
       
-    $line = "$type_string $name$suffix";
+    $line = "CCTK_DECLARE($type_string,$name,$suffix)";
     $definition .= "$sepchar$name";
 
     push(@data, $line);

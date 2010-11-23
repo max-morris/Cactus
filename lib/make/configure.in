@@ -781,11 +781,11 @@ CCTK_C__PRAGMA
 #CCTK_C_ATTRIBUTE_PURE
 #CCTK_CXX_ATTRIBUTE_PURE
 #CCTK_CXX_MEMBER_ATTRIBUTE_PURE
-#
-## Find out whether the C compiler supports __attribute__((unused))
-#CCTK_C_ATTRIBUTE_UNUSED
-#CCTK_CXX_ATTRIBUTE_UNUSED
-#
+
+# Find out whether the C compiler supports __attribute__((unused))
+CCTK_C_ATTRIBUTE_UNUSED
+CCTK_CXX_ATTRIBUTE_UNUSED
+
 ## Find out whether the C compiler supports __attribute__((cold))
 #CCTK_C_ATTRIBUTE_COLD
 #CCTK_CXX_ATTRIBUTE_COLD

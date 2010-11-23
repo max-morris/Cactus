@@ -481,7 +481,7 @@ sub CreateFortranArgumentDeclarations
 
     for(my $level = 0; $level < $ntimelevels; $level++)
     {
-      push(@declarations, "CCTK_$type $argument$dimensions");
+      push(@declarations, "CCTK_DECLARE(CCTK_$type,$argument,$dimensions)");
 
       # Modify the name for the time level
       $argument .= '_p';
@@ -527,7 +527,7 @@ sub CreateCArgumentDeclarations
 
     for(my $level = 0; $level < $ntimelevels; $level++)
     {
-      push(@declarations, "CCTK_$type * CCTK_RESTRICT $varname = (cctki_dummy_int = \&$varname - \&$varname, (CCTK_$type *) CCTKi_VarDataPtr(cctkGH, $level, $implementation, $var));");
+       push(@declarations, "CCTK_DECLARE_INIT (CCTK_$type * CCTK_RESTRICT const, $varname, (CCTK_$type *) CCTKi_VarDataPtr(cctkGH, $level, $implementation, $var));");
 
       # Modify the name for the time level
       $varname .= '_p';
