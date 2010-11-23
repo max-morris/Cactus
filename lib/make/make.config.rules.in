@@ -132,7 +132,7 @@ define PREPROCESS_F
 endef
 
 define COMPILE_F
-if test "$(F90)" = "none" ; then echo "There is no Fortran 90 compiler available.  Aborting." ; exit 1 ; fi ; current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(F90) $(F90FLAGS) $(FCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(basename $(notdir $<)).f
+if test "$(F90)" = "none" ; then echo "There is no Fortran 90 compiler available.  Aborting." ; exit 1 ; fi ; current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(F90) $(F90FLAGS) $(INCLUDE_LINE) $(FCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(basename $(notdir $<)).f
 endef
 
 define POSTPROCESS_F
@@ -145,7 +145,7 @@ define PREPROCESS_F90
 endef
 
 define COMPILE_F90
-if test "$(F90)" = "none" ; then echo "There is no Fortran 90 compiler available.  Aborting." ; exit 1 ; fi ; current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(F90) $(F90FLAGS) $(FCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(basename $(notdir $<)).$(F90_SUFFIX)
+if test "$(F90)" = "none" ; then echo "There is no Fortran 90 compiler available.  Aborting." ; exit 1 ; fi ; current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(F90) $(F90FLAGS) $(INCLUDE_LINE) $(FCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(basename $(notdir $<)).$(F90_SUFFIX)
 endef
 
 define POSTPROCESS_F90
