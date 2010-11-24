@@ -66,3 +66,24 @@ int CCTK_GFIndex4D (const cGH *GH, int i, int j, int k, int l)
 {
   return (i + GH->cctk_lsh[0]*(j + GH->cctk_lsh[1]*(k + GH->cctk_lsh[2] * l)));
 }
+
+int CCTK_VectGFIndex1D (const cGH *GH, int i, int n)
+{
+  return (i + GH->cctk_lsh[0]*n);
+}
+
+int CCTK_VectGFIndex2D (const cGH *GH, int i, int j, int n)
+{
+  return (i + GH->cctk_lsh[0]*(j + GH->cctk_lsh[1]*n));
+}
+
+int CCTK_VectGFIndex3D (const cGH *GH, int i, int j, int k, int n)
+{
+  return (i + GH->cctk_lsh[0]*(j + GH->cctk_lsh[1]*(k + GH->cctk_lsh[2]*n)));
+}
+
+int CCTK_VectGFIndex4D (const cGH *GH, int i, int j, int k, int l, int n)
+{
+  return (i + GH->cctk_lsh[0]*(j + GH->cctk_lsh[1]*(k + GH->cctk_lsh[2]*
+                                                    (l + GH->cctk_lsh[3]*n))));
+}

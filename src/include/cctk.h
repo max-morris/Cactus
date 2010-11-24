@@ -202,7 +202,36 @@ static inline int CCTK_GFINDEX3D (const cGH *GH, int i, int j, int k)
 static inline int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l);
 static inline int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l)
 {
-  return (i + GH->cctk_lsh[0]*(j + GH->cctk_lsh[1]*(k + GH->cctk_lsh[2] * l)));
+  return (i + GH->cctk_lsh[0]*(j + GH->cctk_lsh[1]*(k + GH->cctk_lsh[2]*l)));
+}
+
+static inline int CCTK_VECTGFINDEX1D (const cGH *GH, int i, int n);
+static inline int CCTK_VECTGFINDEX1D (const cGH *GH, int i, int n)
+{
+  return (i + GH->cctk_lsh[0]*n);
+}
+
+static inline int CCTK_VECTGFINDEX2D (const cGH *GH, int i, int j, int n);
+static inline int CCTK_VECTGFINDEX2D (const cGH *GH, int i, int j, int n)
+{
+  return (i + GH->cctk_lsh[0]*(j + GH->cctk_lsh[1]*n));
+}
+
+static inline int CCTK_VECTGFINDEX3D (const cGH *GH,
+                                      int i, int j, int k, int n);
+static inline int CCTK_VECTGFINDEX3D (const cGH *GH,
+                                      int i, int j, int k, int n)
+{
+  return (i + GH->cctk_lsh[0]*(j + GH->cctk_lsh[1]*(k + GH->cctk_lsh[2]*n)));
+}
+
+static inline int CCTK_VECTGFINDEX4D (const cGH *GH,
+                                      int i, int j, int k, int l, int n);
+static inline int CCTK_VECTGFINDEX4D (const cGH *GH,
+                                      int i, int j, int k, int l, int n)
+{
+  return (i + GH->cctk_lsh[0]*(j + GH->cctk_lsh[1]*(k + GH->cctk_lsh[2]*
+                                                    (l + GH->cctk_lsh[3]*n))));
 }
 
 #else /* ! defined(__cplusplus) && defined(inline) */
@@ -214,17 +243,40 @@ static inline int CCTK_GFINDEX4D (const cGH *GH, int i, int j, int k, int l)
 #define CCTK_GFINDEX2D CCTK_GFIndex2D
 #define CCTK_GFINDEX3D CCTK_GFIndex3D
 #define CCTK_GFINDEX4D CCTK_GFIndex4D
+#define CCTK_VECTGFINDEX1D CCTK_VectGFIndex1D
+#define CCTK_VECTGFINDEX2D CCTK_VectGFIndex2D
+#define CCTK_VECTGFINDEX3D CCTK_VectGFIndex3D
+#define CCTK_VECTGFINDEX4D CCTK_VectGFIndex4D
 
 #else /* ! defined(CCTK_DEBUG) */
 /* The "inline" keyword is not supported, and we want to optimise */
 
-#define CCTK_GFINDEX1D(GH, i)          (i)
-#define CCTK_GFINDEX2D(GH, i, j)       ((i) + (GH)->cctk_lsh[0] * (j))
-#define CCTK_GFINDEX3D(GH, i, j, k)    ((i) + (GH)->cctk_lsh[0] *             \
-                                        ((j) + (GH)->cctk_lsh[1] * (k)))
-#define CCTK_GFINDEX4D(GH, i, j, k, l) ((i) + (GH)->cctk_lsh[0] *             \
-                                        ((j) + (GH)->cctk_lsh[1] *            \
-                                         ((k) + (GH)->cctk_lsh[2] * (l))))
+#define CCTK_GFINDEX1D(GH, i)                   \
+  (i)
+#define CCTK_GFINDEX2D(GH, i, j)                \
+  ((i) + (GH)->cctk_lsh[0] * (j))
+#define CCTK_GFINDEX3D(GH, i, j, k)             \
+  ((i) + (GH)->cctk_lsh[0] *                    \
+   ((j) + (GH)->cctk_lsh[1] * (k)))
+#define CCTK_GFINDEX4D(GH, i, j, k, l)          \
+  ((i) + (GH)->cctk_lsh[0] *                    \
+   ((j) + (GH)->cctk_lsh[1] *                   \
+    ((k) + (GH)->cctk_lsh[2] * (l))))
+
+#define CCTK_VECTGFINDEX1D(GH, i, n)            \
+  ((i) + (GH)->cctk_lsh[0] * (n))
+#define CCTK_VECTGFINDEX2D(GH, i, j, n)         \
+  ((i) + (GH)->cctk_lsh[0] *                    \
+   ((j) + (GH)->cctk_lsh[1] * (n)))
+#define CCTK_VECTGFINDEX3D(GH, i, j, k, n)      \
+  ((i) + (GH)->cctk_lsh[0] *                    \
+   ((j) + (GH)->cctk_lsh[1] *                   \
+    ((k) + (GH)->cctk_lsh[2] * (n))))
+#define CCTK_VECTGFINDEX4D(GH, i, j, k, l, n)   \
+  ((i) + (GH)->cctk_lsh[0] *                    \
+   ((j) + (GH)->cctk_lsh[1] *                   \
+    ((k) + (GH)->cctk_lsh[2] *                  \
+     ((l) + (GH)->cctk_lsh[3] * (n)))))
 
 #endif /* ! defined(CCTK_DEBUG) */
 
