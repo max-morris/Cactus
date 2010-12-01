@@ -76,7 +76,7 @@ fi
 
 # which version of OpenMPI are we using ?
 if test -x "$OPENMPI_DIR/bin/ompi_info" ; then
-  version=`$OPENMPI_DIR/bin/ompi_info --parsable | grep 'ompi:version:full' | cut -c19-`
+  version=`LD_LIBRARY_PATH=$OPENMPI_BIN_LIB_DIR:$LD_LIBRARY_PATH $OPENMPI_DIR/bin/ompi_info --parsable | grep 'ompi:version:full' | cut -c19-`
 fi
 
 MPI_LIBS='mpi mpi_cxx'
