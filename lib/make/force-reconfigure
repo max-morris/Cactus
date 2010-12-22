@@ -25,3 +25,4 @@
 26 Mar 2010: Add RUNDIR_PREFIX configuration option
 13 Oct 2010: Updated ExternalLibraries/HDF5
 23 Nov 2010: Improve handling of unused variables
+21 Dec 2010: Add new options CPP_*_FLAGS and FPP_*_FLAGS

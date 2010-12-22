@@ -270,6 +270,12 @@ AC_SUBST(WARN_MODE)
 
 # Set the warning flags if they've not been set by now
 # (using GNU compiler warning flags as a reasonable default)
+AC_SUBST(CPP_WARN_FLAGS)
+: ${CPP_WARN_FLAGS='-Wall'}
+
+AC_SUBST(FPP_WARN_FLAGS)
+: ${FPP_WARN_FLAGS='-Wall'}
+
 AC_SUBST(C_WARN_FLAGS)
 if test "$CC" = 'gcc' ; then
   : ${C_WARN_FLAGS='-Wall -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wbad-function-cast -Wsign-compare'}
@@ -307,6 +313,12 @@ fi
 
 # Set the debug flags if they've not been set by now
 # (using '-g' as a reasonable default)
+AC_SUBST(CPP_DEBUG_FLAGS)
+: ${CPP_DEBUG_FLAGS='-g'}
+
+AC_SUBST(FPP_DEBUG_FLAGS)
+: ${FPP_DEBUG_FLAGS='-g'}
+
 AC_SUBST(C_DEBUG_FLAGS)
 : ${C_DEBUG_FLAGS='-g'}
 
@@ -323,6 +335,12 @@ AC_SUBST(F90_DEBUG_FLAGS)
 # Set the optimization flags if they've not been set by now
 # (using '-O2' as a reasonable default)
 AC_SUBST(OPTIMISE_MODE)
+
+AC_SUBST(CPP_OPTIMISE_FLAGS)
+: ${CPP_OPTIMISE_FLAGS=''}
+
+AC_SUBST(FPP_OPTIMISE_FLAGS)
+: ${FPP_OPTIMISE_FLAGS=''}
 
 AC_SUBST(C_OPTIMISE_FLAGS)
 : ${C_OPTIMISE_FLAGS='-O2'}
@@ -345,6 +363,12 @@ AC_SUBST(F90_OPTIMISE_FLAGS)
 # (using '-pg' as a reasonable default)
 AC_SUBST(PROFILE_MODE)
 
+AC_SUBST(CPP_PROFILE_FLAGS)
+: ${CPP_PROFILE_FLAGS=''}
+
+AC_SUBST(FPP_PROFILE_FLAGS)
+: ${FPP_PROFILE_FLAGS=''}
+
 AC_SUBST(C_PROFILE_FLAGS)
 : ${C_PROFILE_FLAGS='-pg'}
 
@@ -361,6 +385,8 @@ AC_SUBST(F90_PROFILE_FLAGS)
 # Set the OpenMP flags if they've not been set by now
 AC_SUBST(OPENMP_MODE)
 
+AC_SUBST(CPP_OPENMP_FLAGS)
+AC_SUBST(FPP_OPENMP_FLAGS)
 AC_SUBST(C_OPENMP_FLAGS)
 AC_SUBST(CXX_OPENMP_FLAGS)
 AC_SUBST(F77_OPENMP_FLAGS)
