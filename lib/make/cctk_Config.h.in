@@ -220,6 +220,14 @@ typedef enum {false, true} bool;
 #  define CCTK_ATTRIBUTE_PURE
 #endif
 
+/* Whether __attribute__((noinline)) exists. */
+#undef HAVE_CCTK_C_ATTRIBUTE_NOINLINE
+#ifdef HAVE_CCTK_C_ATTRIBUTE_NOINLINE
+#  define CCTK_ATTRIBUTE_NOINLINE __attribute__((__noinline__))
+#else
+#  define CCTK_ATTRIBUTE_NOINLINE
+#endif
+
 /* Whether __attribute__((unused)) exists. */
 #undef HAVE_CCTK_C_ATTRIBUTE_UNUSED
 #ifdef HAVE_CCTK_C_ATTRIBUTE_UNUSED
@@ -290,6 +298,20 @@ typedef enum {false, true} bool;
 #  define CCTK_MEMBER_ATTRIBUTE_PURE __attribute__((__pure__))
 #else
 #  define CCTK_MEMBER_ATTRIBUTE_PURE
+#endif
+
+/* Whether __attribute__((noinline)) exists. */
+#undef HAVE_CCTK_CXX_ATTRIBUTE_NOINLINE
+#ifdef HAVE_CCTK_CXX_ATTRIBUTE_NOINLINE
+#  define CCTK_ATTRIBUTE_NOINLINE __attribute__((__noinline__))
+#else
+#  define CCTK_ATTRIBUTE_NOINLINE
+#endif
+#undef HAVE_CCTK_CXX_MEMBER_ATTRIBUTE_NOINLINE
+#ifdef HAVE_CCTK_CXX_MEMBER_ATTRIBUTE_NOINLINE
+#  define CCTK_MEMBER_ATTRIBUTE_NOINLINE __attribute__((__noinline__))
+#else
+#  define CCTK_MEMBER_ATTRIBUTE_NOINLINE
 #endif
 
 /* Whether __attribute__((unused)) exists. */

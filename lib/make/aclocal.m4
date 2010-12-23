@@ -683,6 +683,44 @@ fi
 
 
 
+AC_DEFUN(CCTK_C_ATTRIBUTE_NOINLINE,
+[AC_CACHE_CHECK([for C function __attribute__((__noinline__))], cctk_cv_have_c_attribute_noinline,
+[cctk_cv_have_c_attribute_noinline=no
+AC_TRY_COMPILE(, double foo (double) __attribute__((__noinline__));, cctk_cv_have_c_attribute_noinline=yes, cctk_cv_have_c_attribute_noinline=no)
+])
+if test "$cctk_cv_have_c_attribute_noinline" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_NOINLINE)
+fi
+])
+
+AC_DEFUN(CCTK_CXX_ATTRIBUTE_NOINLINE,
+[AC_CACHE_CHECK([for CXX function __attribute__((__noinline__))], cctk_cv_have_cxx_attribute_noinline,
+[cctk_cv_have_cxx_attribute_noinline=no
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(, double foo (double) __attribute__((__noinline__));, cctk_cv_have_cxx_attribute_noinline=yes, cctk_cv_have_cxx_attribute_noinline=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_cxx_attribute_noinline" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_CXX_ATTRIBUTE_NOINLINE)
+fi
+])
+
+AC_DEFUN(CCTK_CXX_MEMBER_ATTRIBUTE_NOINLINE,
+[AC_CACHE_CHECK([for CXX member function __attribute__((__noinline__))], cctk_cv_have_cxx_member_attribute_noinline,
+[cctk_cv_have_cxx_member_attribute_noinline=no
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(, struct { double foo (double) __attribute__((__noinline__)); };, cctk_cv_have_cxx_member_attribute_noinline=yes, cctk_cv_have_cxx_member_attribute_noinline=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_cxx_member_attribute_noinline" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_CXX_MEMBER_ATTRIBUTE_NOINLINE)
+fi
+])
+
+
+
 AC_DEFUN(CCTK_C_ATTRIBUTE_UNUSED,
 [AC_CACHE_CHECK([for C __attribute__((__unused__))], cctk_cv_have_c_attribute_unused,
 [cctk_cv_have_c_attribute_unused=no
