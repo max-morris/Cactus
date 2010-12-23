@@ -1877,7 +1877,8 @@ for (k=0; k<cctk_lsh[2]; k++)
   {
     for (i=0; i<cctk_lsh[0]; i++)
     {
-      My3D_GF[CCTK_GFINDEX3D(cctkGH,i,j,k)] = i*j*k;
+      int const ind3d = CCTK_GFINDEX3D(cctkGH,i,j,k);
+      rho[ind3d] = exp(-pow(r[ind3d],2));
     }
   }
 }
@@ -1886,6 +1887,30 @@ for (k=0; k<cctk_lsh[2]; k++)
 Here, \verb|CCTK_GFINDEX3D(cctkGH,i,j,k)| expands to
 \begin{verbatim}
 ((i) + cctkGH->cctk_lsh[0]*((j)+cctkGH->cctk_lsh[1]*(k)))
+\end{verbatim}
+%
+Note: In Fortran, grid functions are accessed as Fortran arrays,
+i.e.\ simply as \verb|rho(i,j,k)|.
+
+To access vector grid functions (vector grid functions are a
+``vector'' of grid functions; see section
+\ref{subsec:Appendix.interface-variables}), one also needs to specify
+the vector index. This is best done via the 3D macro
+\texttt{CCTK\_VECTGFINDEX3D}:
+\begin{verbatim}
+for (k=0; k<cctk_lsh[2]; k++)
+{
+  for (j=0; j<cctk_lsh[1]; j++)
+  {
+    for (i=0; i<cctk_lsh[0]; i++)
+    {
+      /* vector indices are 0, 1, 2 */
+      vel[CCTK_VECTGFINDEX3D(cctkGH,i,j,k,0)] = 1.0;
+      vel[CCTK_VECTGFINDEX3D(cctkGH,i,j,k,1)] = 0.0;
+      vel[CCTK_VECTGFINDEX3D(cctkGH,i,j,k,2)] = 0.0;
+    }
+  }
+}
 \end{verbatim}
 
 \subsubsection{Cactus Variables}
