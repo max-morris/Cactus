@@ -90,6 +90,8 @@ sub CreateConfigurationBindings
           $temp .= $cfg->{"\U$thorn $providedcap\E MAKE_DEFINITION"};
         }
 
+        $temp .=  "HAVE_CAPABILITY_$providedcap = 1\n";
+
         &WriteFile("Capabilities/make.\U$providedcap\E.defn",\$temp);
 
         $temp = '';
@@ -105,6 +107,8 @@ sub CreateConfigurationBindings
             $lines =~ s/^(.*)/#define $1/gm;
             $temp .=  $lines . "\n";
         }
+
+        $temp .=  "#define HAVE_CAPABILITY_$providedcap 1\n";
 
         &WriteFile("Capabilities/cctki_\U$providedcap\E.h",\$temp);
         $temp = '';
@@ -163,7 +167,6 @@ sub CreateConfigurationBindings
         {
           $defs .= $providedcap . " = 1\n";
           $defs .= "include $bindings_dir/Configuration/Capabilities/make.\U$providedcap\E.defn\n";
-          $incs .= "#define " . $cfg->{"\U$thorn\E OPTIONAL \U$providedcap\E DEFINE"} . " 1\n";
           $incs .= "#include \"../Capabilities/cctki_\U$providedcap\E.h\"\n";
           $deps .= "include $bindings_dir/Configuration/Capabilities/make.\U$providedcap\E.deps\n";
         }
@@ -205,7 +208,7 @@ sub CreateConfigurationBindings
   $temp = $linkerdirs . "\n" . $linkerlibs . "\n";
   &WriteFile("make.link",\$temp);
 
-  # write cctki_Capabilities.h file to bindings/include
+  # write cctk_Capabilities.h file to bindings/include
   # this file adds the if_i_am_thorn stuff
   $temp = '';
   foreach $thorn (sort keys %thorns)
@@ -218,7 +221,7 @@ sub CreateConfigurationBindings
       $temp .= "\n";
     }
   }
-  &WriteFile("../include/cctki_Capabilities.h",\$temp);
+  &WriteFile("../include/cctk_Capabilities.h",\$temp);
 }
 
 return 1;

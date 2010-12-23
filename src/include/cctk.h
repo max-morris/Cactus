@@ -158,6 +158,8 @@ cctk_convfac,cctk_nghostzones,cctk_iteration,cctkGH
 #include "cctk_Timers.h"
 #include "cctk_WarnLevel.h"
 
+/* Include definitions provided by capabilities */
+#include "cctk_Capabilities.h"
 
 /*
  * routines/macros to compute the linear index
