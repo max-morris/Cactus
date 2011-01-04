@@ -297,7 +297,7 @@ realclean:
 	rm -rf $(TOP)/build
 	rm -rf $(TOP)/bindings
 	rm -rf $(TOP)/config-data/make.thornlist
-	rm -rf $(TOP)/lib/*
+	rm -rf $(TOP)/lib; $(MKDIR) $(MKDIRFLAGS) $(TOP)/lib
 	rm -rf $(TOP)/scratch; $(MKDIR) $(MKDIRFLAGS) $(TOP)/scratch
 	rm -f datestamp.o
 
