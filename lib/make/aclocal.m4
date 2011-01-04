@@ -746,6 +746,31 @@ fi
 
 
 
+AC_DEFUN(CCTK_C_ATTRIBUTE_ALIGNED,
+[AC_CACHE_CHECK([for C __attribute__((__aligned__(...)))], cctk_cv_have_c_attribute_aligned,
+[cctk_cv_have_c_attribute_aligned=no
+AC_TRY_COMPILE(, double * foo __attribute__((__aligned__(16)));, cctk_cv_have_c_attribute_aligned=yes, cctk_cv_have_c_attribute_aligned=no)
+])
+if test "$cctk_cv_have_c_attribute_aligned" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_ALIGNED)
+fi
+])
+
+AC_DEFUN(CCTK_CXX_ATTRIBUTE_ALIGNED,
+[AC_CACHE_CHECK([for CXX __attribute__((__aligned__(...)))], cctk_cv_have_cxx_attribute_aligned,
+[cctk_cv_have_cxx_attribute_aligned=no
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(, double * foo __attribute__((__aligned__(16)));, cctk_cv_have_cxx_attribute_aligned=yes, cctk_cv_have_cxx_attribute_aligned=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_cxx_attribute_aligned" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_CXX_ATTRIBUTE_ALIGNED)
+fi
+])
+
+
+
 AC_DEFUN(CCTK_C_ATTRIBUTE_COLD,
 [AC_CACHE_CHECK([for C __attribute__((__cold__))], cctk_cv_have_c_attribute_cold,
 [cctk_cv_have_c_attribute_cold=no

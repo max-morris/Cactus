@@ -817,6 +817,10 @@ CCTK_CXX_MEMBER_ATTRIBUTE_NOINLINE
 CCTK_C_ATTRIBUTE_UNUSED
 CCTK_CXX_ATTRIBUTE_UNUSED
 
+# Find out whether the C compiler supports __attribute__((aligned(...)))
+CCTK_C_ATTRIBUTE_ALIGNED
+CCTK_CXX_ATTRIBUTE_ALIGNED
+
 ## Find out whether the C compiler supports __attribute__((cold))
 #CCTK_C_ATTRIBUTE_COLD
 #CCTK_CXX_ATTRIBUTE_COLD

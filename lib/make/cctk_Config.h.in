@@ -236,6 +236,14 @@ typedef enum {false, true} bool;
 #  define CCTK_ATTRIBUTE_UNUSED
 #endif
 
+/* Whether __attribute__((aligned(...))) exists. */
+#undef HAVE_CCTK_C_ATTRIBUTE_ALIGNED
+#ifdef HAVE_CCTK_C_ATTRIBUTE_ALIGNED
+#  define CCTK_ATTRIBUTE_ALIGNED(x) __attribute__((__aligned__(x)))
+#else
+#  define CCTK_ATTRIBUTE_ALIGNED(x)
+#endif
+
 /* Whether __attribute__((cold)) exists. */
 #undef HAVE_CCTK_C_ATTRIBUTE_COLD
 #ifdef HAVE_CCTK_C_ATTRIBUTE_COLD
@@ -320,6 +328,14 @@ typedef enum {false, true} bool;
 #  define CCTK_ATTRIBUTE_UNUSED __attribute__((__unused__))
 #else
 #  define CCTK_ATTRIBUTE_UNUSED
+#endif
+
+/* Whether __attribute__((aligned(...))) exists. */
+#undef HAVE_CCTK_CXX_ATTRIBUTE_ALIGNED
+#ifdef HAVE_CCTK_CXX_ATTRIBUTE_ALIGNED
+#  define CCTK_ATTRIBUTE_ALIGNED(x) __attribute__((__aligned__(x)))
+#else
+#  define CCTK_ATTRIBUTE_ALIGNED(x)
 #endif
 
 /* Whether __attribute__((cold)) exists. */
