@@ -42,6 +42,7 @@ static void CheckBuf(int, int);
 static void removeSpaces(char *stripMe);
 static char *ReadFile(FILE *file, unsigned long *filesize);
 static char *ParseDefines(char *buffer, unsigned long *buffersize);
+static char *convert_crlf_to_lf(const char *buffer);
 int ParseBuffer(char *buffer,
                 int (*set_function)(const char *, const char *, int),
                 tFleshConfig *ConfigData);
@@ -127,8 +128,16 @@ int ParseFile(FILE *ifp,
   int retval;
   unsigned long buffersize;
   char *buffer = ReadFile(ifp, &buffersize);
+  char *buffer2 = NULL;
   if (!buffer)
     return 1;
+
+  /* Ensure Unix line endings */
+  buffer2 = convert_crlf_to_lf(buffer);
+  free(buffer);
+  buffer = buffer2;
+  buffersize = strlen(buffer);
+
   buffer = ParseDefines(buffer, &buffersize);
   /* ParseBuffer can get confused with detecting the end of the buffer
      (when in a comment or in a string), and may overrun.  Therefore
@@ -233,6 +242,33 @@ static void removeSpaces(char *stripMe)
   }
 
   free(s);
+}
+
+/* Convert string CRLF line endings to LF */
+char *convert_crlf_to_lf(const char *buffer)
+{
+  int dropped = 0;
+  int len = strlen(buffer);
+  char *buffer2 = malloc(len+1);
+  assert(buffer2);
+  char *to = buffer2;
+  const char *p = NULL;
+
+  for (p = buffer; p < buffer+len+1; p++)
+  {
+    int is_crlf = (*p == '\r' && p < buffer + len && *(p+1) == '\n');
+    if (!is_crlf)
+    {
+      *to = *p;
+      to++;
+    }
+    else
+    {
+      dropped++;
+    }
+  }
+
+  return buffer2;
 }
 
 
