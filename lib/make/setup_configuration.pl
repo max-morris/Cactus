@@ -123,7 +123,7 @@ sub SetConfigureEnv
   $commandline = $ENV{"MAKEFLAGS"};
   $line_number = 0;
 #  while ($commandline =~ /^(.*)\s+(\w+)\s*=\s*([_+\-\.\w\\\/\s]*)\s*/)
-  while ($commandline =~ /^(.*)\s*\b(\w+)\s*=\s*(.*)\s*$/)
+  while ($commandline =~ /^(.*)\s*\b(\w+)\s*=\s*(.*?)\s*$/)
   {
     if ($2 ne 'options' && $2 ne 'SILENT')
     {
