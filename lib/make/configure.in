@@ -358,6 +358,18 @@ fi
 AC_SUBST(F90_OPTIMISE_FLAGS)
 : ${F90_OPTIMISE_FLAGS=''}
 
+AC_SUBST(C_NO_OPTIMISE_FLAGS)
+: ${C_NO_OPTIMISE_FLAGS='-O0'}
+
+AC_SUBST(CXX_NO_OPTIMISE_FLAGS)
+: ${CXX_NO_OPTIMISE_FLAGS='-O0'}
+
+AC_SUBST(F77_NO_OPTIMISE_FLAGS)
+: ${F77_NO_OPTIMISE_FLAGS='-O0'}
+
+AC_SUBST(F90_NO_OPTIMISE_FLAGS)
+: ${F90_NO_OPTIMISE_FLAGS='-O0'}
+
 
 # Set the profiling flags if they've not been set by now
 # (using '-pg' as a reasonable default)
