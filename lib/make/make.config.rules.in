@@ -70,6 +70,11 @@ define F90_DEPENDENCIES
 	current_wd=`$(GET_WD)` ; { if test $(F_LINE_DIRECTIVES) = 'yes'; then echo '#line 1 "'$<'"'; fi; cat $<; } | $(PERL) -p -e 's.//.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.g' | $(FPP) $(FPPFLAGS) $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DFCODE -DF90CODE | $(PERL) -p -e 's.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.//.g' | $(PERL) $(F_DEPEND_MODULES) $< $(basename $(notdir $<)).F90.o $(SRCDIR) $(USESTHORNS:%=$$current_wd/../%) $(F_DEPEND_MODULES_OUT) || { rm $@; exit 1; }
 endef
 
+define CU_DEPENDENCIES
+        $(CU_DEPEND) $< $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DCCODE $(CU_DEPEND_OUT)
+        $(DEPENDENCY_FIXER)
+endef
+
 # No preprocessing, just create empty dependency file
 define f77_DEPENDENCIES
 	echo "" > $@
@@ -87,6 +92,21 @@ define f90_DEPENDENCIES
 endef
 
 #####################################################################
+# Define how to do a CUDA compilation
+# preporcess and postprocess are currently set the same as C.
+define PREPROCESS_CU
+{ if test $(C_LINE_DIRECTIVES) = 'yes'; then echo '#line 1 "'$<'"'; fi; cat $<; } | $(PERL) -s $(C_FILE_PROCESSOR) -line_directives=$(C_LINE_DIRECTIVES) -source_file_name=$< $(CONFIG) > $(notdir $<)
+#{ if test $(C_LINE_DIRECTIVES) = 'yes'; then echo '#line 1 "'$<'"'; fi; cat $<; } | $(NVCC) -E $< $(INCLUDE_LINE) > $(notdir $<)
+endef
+
+define COMPILE_CU
+current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(NVCC) $(NVCCFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(notdir $<) $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DCCODE 
+endef
+
+define POSTPROCESS_CU
+$(CU_POSTPROCESSING)
+endef
+
 # Define how to do a C compilation
 define PREPROCESS_C
 { if test $(C_LINE_DIRECTIVES) = 'yes'; then echo '#line 1 "'$<'"'; fi; cat $<; } | $(PERL) -s $(C_FILE_PROCESSOR) -line_directives=$(C_LINE_DIRECTIVES) -source_file_name=$< $(CONFIG) > $(notdir $<)
@@ -168,6 +188,19 @@ define PREPROCESS_f90
 cat $< > $(basename $(notdir $<)).$(F90_SUFFIX)
 endef
 
+# Build rules for CUDA
+
+%.cu.o: $(SRCDIR)/%.cu
+	@echo Preprocessing $<
+	$(PREPROCESS_CU)
+	@echo Compiling $<
+	$(COMPILE_CU)
+	@echo Postprocessing $<
+	$(POSTPROCESS_CU)
+	@echo $(DIVIDER)
+
+%.cu.d: $(SRCDIR)/%.cu
+	$(CU_DEPENDENCIES)
 
 # Build rules for C
 
