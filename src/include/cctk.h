@@ -156,6 +156,7 @@ cctk_convfac,cctk_nghostzones,cctk_iteration,cctkGH
 #include "cctk_Stagger.h"
 #include "cctk_Sync.h"
 #include "cctk_Timers.h"
+#include "cctk_Termination.h"
 #include "cctk_WarnLevel.h"
 
 /* Include definitions provided by capabilities */
