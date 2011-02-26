@@ -96,11 +96,11 @@ endef
 # preporcess and postprocess are currently set the same as C.
 define PREPROCESS_CU
 { if test $(C_LINE_DIRECTIVES) = 'yes'; then echo '#line 1 "'$<'"'; fi; cat $<; } | $(PERL) -s $(C_FILE_PROCESSOR) -line_directives=$(C_LINE_DIRECTIVES) -source_file_name=$< $(CONFIG) > $(notdir $<)
-#{ if test $(C_LINE_DIRECTIVES) = 'yes'; then echo '#line 1 "'$<'"'; fi; cat $<; } | $(NVCC) -E $< $(INCLUDE_LINE) > $(notdir $<)
+#{ if test $(C_LINE_DIRECTIVES) = 'yes'; then echo '#line 1 "'$<'"'; fi; cat $<; } | $(CUCC) -E $< $(INCLUDE_LINE) > $(notdir $<)
 endef
 
 define COMPILE_CU
-current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(NVCC) $(NVCCFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(notdir $<) $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DCCODE 
+current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(CUCC) $(CUCCFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(notdir $<) $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DCCODE 
 endef
 
 define POSTPROCESS_CU

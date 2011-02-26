@@ -193,8 +193,8 @@ if test -z "$FPP" ; then
   AC_PATH_PROGS(FPP, cpp, echo, /lib:/usr/lib:/usr/local/lib:$PATH)
 fi
 
-if test -z "$NVCC" ; then
-  AC_CHECK_PROGS(NVCC, nvcc)
+if test -z "$CUCC" ; then
+  AC_CHECK_PROGS(CUCC, nvcc)
 fi
 
 if test -z "$PERL" ; then
@@ -312,8 +312,8 @@ else
 fi
 
 # nvcc itself doesn't have warning flags. warnings will be given by C compilers.
-AC_SUBST(NVCC_WARN_FLAGS)
-  : ${NVCC_WARN_FLAGS=''}
+AC_SUBST(CUCC_WARN_FLAGS)
+  : ${CUCC_WARN_FLAGS=''}
 
 AC_SUBST(DEBUG_MODE)
 DEBUG_MODE='no'
@@ -341,8 +341,8 @@ AC_SUBST(F77_DEBUG_FLAGS)
 AC_SUBST(F90_DEBUG_FLAGS)
 : ${F90_DEBUG_FLAGS='-g'}
 
-AC_SUBST(NVCC_DEBUG_FLAGS)
-: ${NVCC_DEBUG_FLAGS='-g'}
+AC_SUBST(CUCC_DEBUG_FLAGS)
+: ${CUCC_DEBUG_FLAGS='-g'}
 
 # Set the optimization flags if they've not been set by now
 # (using '-O2' as a reasonable default)
@@ -382,8 +382,8 @@ AC_SUBST(F77_NO_OPTIMISE_FLAGS)
 AC_SUBST(F90_NO_OPTIMISE_FLAGS)
 : ${F90_NO_OPTIMISE_FLAGS='-O0'}
 
-AC_SUBST(NVCC_OPTIMISE_FLAGS)
-: ${NVCC_OPTIMISE_FLAGS='-O2'}
+AC_SUBST(CUCC_OPTIMISE_FLAGS)
+: ${CUCC_OPTIMISE_FLAGS='-O2'}
 
 # Set the profiling flags if they've not been set by now
 # (using '-pg' as a reasonable default)
@@ -407,8 +407,8 @@ AC_SUBST(F77_PROFILE_FLAGS)
 AC_SUBST(F90_PROFILE_FLAGS)
 : ${F90_PROFILE_FLAGS='-pg'}
 
-AC_SUBST(NVCC_PROFILE_FLAGS)
-: ${NVCC_PROFILE_FLAGS='-pg'}
+AC_SUBST(CUCC_PROFILE_FLAGS)
+: ${CUCC_PROFILE_FLAGS='-pg'}
 
 # Set the OpenMP flags if they've not been set by now
 AC_SUBST(OPENMP_MODE)
@@ -419,7 +419,7 @@ AC_SUBST(C_OPENMP_FLAGS)
 AC_SUBST(CXX_OPENMP_FLAGS)
 AC_SUBST(F77_OPENMP_FLAGS)
 AC_SUBST(F90_OPENMP_FLAGS)
-AC_SUBST(NVCC_OPENMP_FLAGS)
+AC_SUBST(CUCC_OPENMP_FLAGS)
 
 ##########################################################################
 
@@ -575,7 +575,7 @@ AC_SUBST(RANLIBFLAGS)
 
 AC_SUBST(F90FLAGS)
 AC_SUBST(F77FLAGS)
-AC_SUBST(NVCCFLAGS)
+AC_SUBST(CUCCFLAGS)
 
 #: ${F90FLAGS="$CFLAGS"}
 #: ${F77FLAGS="$CFLAGS"}
@@ -586,7 +586,7 @@ AC_SUBST(CXX_VERSION)
 AC_SUBST(FPP_VERSION)
 AC_SUBST(F77_VERSION)
 AC_SUBST(F90_VERSION)
-AC_SUBST(NVCC_VERSION)
+AC_SUBST(CUCC_VERSION)
 
 dnl Checks for library functions.
 
@@ -1190,7 +1190,7 @@ AC_SUBST(F_DEPEND_OUT)
 : ${F_DEPEND_OUT=' > $@'}
 
 AC_SUBST(CU_DEPEND)
-: ${CU_DEPEND='$(NVCC) -M'}
+: ${CU_DEPEND='$(CUCC) -M'}
 AC_SUBST(CU_DEPEND_OUT)
 : ${CU_DEPEND_OUT=' > $@'}
 
@@ -1212,8 +1212,8 @@ AC_SUBST(F_POSTPROCESSING)
 : ${F_POSTPROCESSING=''}
 AC_SUBST(F90_POSTPROCESSING)
 : ${F90_POSTPROCESSING=''}
-AC_SUBST(NVCC_POSTPROCESSING)
-: ${NVCC_POSTPROCESSING=''}
+AC_SUBST(CUCC_POSTPROCESSING)
+: ${CUCC_POSTPROCESSING=''}
 
 # How to generate an intermediate C++ name (some compilers are very picky).
 AC_SUBST(CXX_WORKING_NAME)
