@@ -205,8 +205,8 @@ if test -z "$TAR" ; then
   AC_CHECK_PROGS(TAR, gtar tar)
 fi
 
-if test -z "$GZIP" ; then
-  AC_CHECK_PROGS(GZIP, gzip)
+if test -z "$GZIP_CMD" ; then
+  AC_CHECK_PROGS(GZIP_CMD, gzip)
 fi
 
 if test -z "$PATCH" ; then
