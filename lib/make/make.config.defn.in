@@ -32,6 +32,10 @@ export LD          = @LD@
 export AR          = @AR@
 export RANLIB      = @RANLIB@
 export PERL        = @PERL@
+export TAR         = @TAR@
+export GZIP        = @GZIP@
+export PATCH       = @PATCH@
+export GIT         = @GIT@
 
 export CFLAGS      = @CFLAGS@
 export CXXFLAGS    = @CXXFLAGS@

@@ -201,6 +201,22 @@ if test -z "$PERL" ; then
   AC_CHECK_PROGS(PERL, perl)
 fi
 
+if test -z "$TAR" ; then
+  AC_CHECK_PROGS(TAR, gtar tar)
+fi
+
+if test -z "$GZIP" ; then
+  AC_CHECK_PROGS(GZIP, gzip)
+fi
+
+if test -z "$PATCH" ; then
+  AC_CHECK_PROGS(PATCH, gpatch patch)
+fi
+
+if test -z "$GIT" ; then
+  AC_CHECK_PROGS(GIT, git)
+fi
+
 if test -z "$F90" ; then
   AC_CHECK_PROGS(F90, f90 pgf90 xlf90 ifort gfortran-mp-4.4 gfortran-mp-4.3 gfortran-mp-4.2 gfortran)
 fi
