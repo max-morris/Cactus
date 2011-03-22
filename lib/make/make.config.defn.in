@@ -32,6 +32,8 @@ export LD          = @LD@
 export AR          = @AR@
 export RANLIB      = @RANLIB@
 export PERL        = @PERL@
+# MAKE needs no definition, since make will set this variable automatically
+export MAKE
 export TAR         = @TAR@
 # GZIP is used by gzip for a list of default options, thus we use GZIP_CMD
 export GZIP_CMD    = @GZIP_CMD@
