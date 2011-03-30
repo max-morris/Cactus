@@ -159,6 +159,9 @@ cctk_convfac,cctk_nghostzones,cctk_iteration,cctkGH
 #include "cctk_Termination.h"
 #include "cctk_WarnLevel.h"
 
+/* Include prototypes for scheduled functions */
+#include "cctk_ScheduleFunctions.h"
+
 /* Include definitions provided by capabilities */
 #include "cctk_Capabilities.h"
 
