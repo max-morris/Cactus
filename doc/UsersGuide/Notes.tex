@@ -77,6 +77,17 @@ written in C++ you also need
 
 \noindent
 If you are using any thorns containing routines
+written in CUDA (Compute Unified Device Architecture), a parallel 
+computing architecture developed by NVIDIA, you also need
+\begin{Lentry}
+\item[CUCC] CUDA compiler. For example, the NVIDIA C compiler. In many
+cases, you can compile your C and C++ code with a CUDA compiler without 
+encountering any problems, but you are advised to use a CUDA compiler exclusively
+for CUDA code.
+\end{Lentry}
+
+\noindent
+If you are using any thorns containing routines
 written in Fortran you also need
 \begin{Lentry}
 \item[F90/F77] For routines written in Fortran 77, either a Fortran 90 or
@@ -270,6 +281,7 @@ by * may be specified on the command line.
 
 \begin{Lentry}
 \item [\texttt{CC}]   * The C compiler.
+\item [\texttt{CUCC}] * The CUDA compiler.
 \item [\texttt{CXX}]    The C++ compiler.
 \item [\texttt{F90}]  * The Fortran 90 compiler.
 \item [\texttt{F77}]  * The Fortran 77 compiler.
@@ -291,6 +303,9 @@ Flags which are passed to the compilers and the tools.
 \begin{Lentry}
 \item [\texttt{CFLAGS}]
 Flags for the C compiler.
+
+\item [\texttt{CUCCFLAGS}]
+Flags for the CUDA compiler.
 
 \item [\texttt{CXXFLAGS}]
 Flags for the C++ compiler.
@@ -358,6 +373,10 @@ employs memory tracing (Section \ref{sec:metr}).
 Debug flags for the C compiler, their use depends on the type of
 debugging being used.
 
+\item [\texttt{CUCC\_DEBUG\_FLAGS}]
+Debug flags for the CUDA compiler, their use depends on the type of
+debugging being used.
+
 \item [\texttt{CXX\_DEBUG\_FLAGS}]
 Debug flags for the C++ compiler, their use depends on the type of
 debugging being used.
@@ -380,6 +399,10 @@ will override any setting of the American-spelled \texttt{OPTIMIZE}.
 Optimisation flags for the C compiler, their use depends on the type of
 optimisation being used.
 
+\item [\texttt{CUCC\_OPTIMISE\_FLAGS}]
+Optimisation flags for the C compiler, their use depends on the type of
+optimisation being used.
+
 \item [\texttt{CXX\_OPTIMISE\_FLAGS}]
 Optimisation flags for the C++ compiler, their use depends on the type of
 optimisation being used.
@@ -393,6 +416,8 @@ Optimisation flags for the Fortran 77 compiler, their use depends on the
 type of optimisation being used.
 
 \item [\texttt{C\_NO\_OPTIMISE\_FLAGS}]
+
+\item [\texttt{CUCC\_NO\_OPTIMISE\_FLAGS}]
 
 \item [\texttt{CXX\_NO\_OPTIMISE\_FLAGS}]
 
@@ -409,6 +434,10 @@ performed.  These are invoked when OPTIMISE=no is used.
 
 \item [\texttt{C\_PROFILE\_FLAGS}]
   Profile flags for the C compiler, their use depends on the type of
+  profiling being used.
+
+\item [\texttt{CUCC\_PROFILE\_FLAGS}]
+  Profile flags for the CUDA compiler, their use depends on the type of
   profiling being used.
 
 \item [\texttt{CXX\_PROFILE\_FLAGS}]
@@ -430,6 +459,10 @@ performed.  These are invoked when OPTIMISE=no is used.
 
 \item [\texttt{C\_WARN\_FLAGS}]
 Warning flags for the C compiler, their use depends on the type of
+warnings used during compilation (Section \ref{sec:gmopfobuco}).
+
+\item [\texttt{CUCC\_WARN\_FLAGS}]
+Warning flags for the CUCC compiler, their use depends on the type of
 warnings used during compilation (Section \ref{sec:gmopfobuco}).
 
 \item [\texttt{CXX\_WARN\_FLAGS}]

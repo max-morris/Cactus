@@ -746,6 +746,7 @@ Extension           & Language   & Format & Preprocess \\
 {\t .f77}           & Fortran 77 & fixed  & no  \\
 {\t .c}             & C          & -      & yes \\
 {\t .cc} or {\t .C} & C++        & -      & yes \\
+{\t .cu}            & CUDA       & -      & yes \\
 \hline
 \end{tabular}
 \end{center}
@@ -851,12 +852,14 @@ and has a working directory of
   \texttt{CC}, and to \texttt{CXX}
 \item \texttt{FPPFLAGS}: Flags which are passed to \texttt{FPP}
 \item \texttt{CC}: The C compiler
+\item \texttt{CUDA}: The CUDA compiler
 \item \texttt{CXX}: The C++ compiler
 \item \texttt{F77}: The Fortran 77 compiler.  This is only used if
   there is no Fortran 90 compiler
 \item \texttt{F90}: The Fortran 90 compiler.  If this variable is
   set, it is also used to compile Fortran 77 files
 \item \texttt{CFLAGS}: Flags which are passed to \texttt{CC}
+\item \texttt{CUDAFLAGS}: Flags which are passed to \texttt{CUDA}
 \item \texttt{CXXFLAGS}: Flags which are passed to \texttt{CXX}
 \item \texttt{F77FLAGS}: Flags which are passed to \texttt{F77}
 \item \texttt{F90FLAGS}: Flags which are passed to \texttt{F90}
