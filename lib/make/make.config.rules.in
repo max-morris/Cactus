@@ -53,6 +53,11 @@ define CXX_DEPENDENCIES
 	$(DEPENDENCY_FIXER)
 endef
 
+define CU_DEPENDENCIES
+        $(CU_DEPEND) $< $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DCCODE $(CU_DEPEND_OUT)
+        $(DEPENDENCY_FIXER)
+endef
+
 define F77_DEPENDENCIES
 	$(F77_DEPEND) $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DFCODE $< $(F77_DEPEND_OUT)
 	$(DEPENDENCY_FIXER)
@@ -68,11 +73,6 @@ define F90_DEPENDENCIES
 	$(F_DEPEND) $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DFCODE -DF90CODE $< $(F_DEPEND_OUT)
 	$(DEPENDENCY_FIXER)
 	current_wd=`$(GET_WD)` ; { if test $(F_LINE_DIRECTIVES) = 'yes'; then echo '#line 1 "'$<'"'; fi; cat $<; } | $(PERL) -p -e 's.//.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.g' | $(FPP) $(FPPFLAGS) $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DFCODE -DF90CODE | $(PERL) -p -e 's.CCTK_AUTOMATICALLY_GENERATED_CONCATENATION_PROTECTION.//.g' | $(PERL) $(F_DEPEND_MODULES) $< $(basename $(notdir $<)).F90.o $(SRCDIR) $(USESTHORNS:%=$$current_wd/../%) $(F_DEPEND_MODULES_OUT) || { rm $@; exit 1; }
-endef
-
-define CU_DEPENDENCIES
-        $(CU_DEPEND) $< $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DCCODE $(CU_DEPEND_OUT)
-        $(DEPENDENCY_FIXER)
 endef
 
 # No preprocessing, just create empty dependency file
@@ -91,21 +91,7 @@ define f90_DEPENDENCIES
 	current_wd=`$(GET_WD)` ; cat $< | $(PERL) $(F_DEPEND_MODULES) $< $(basename $(notdir $<)).f90.o $(SRCDIR) $(USESTHORNS:%=$$current_wd/../%) $(F_DEPEND_MODULES_OUT) || { rm $@; exit 1; }
 endef
 
-#####################################################################
-# Define how to do a CUDA compilation
-# preporcess and postprocess are currently set the same as C.
-define PREPROCESS_CU
-{ if test $(C_LINE_DIRECTIVES) = 'yes'; then echo '#line 1 "'$<'"'; fi; cat $<; } | $(PERL) -s $(C_FILE_PROCESSOR) -line_directives=$(C_LINE_DIRECTIVES) -source_file_name=$< $(CONFIG) > $(notdir $<)
-#{ if test $(C_LINE_DIRECTIVES) = 'yes'; then echo '#line 1 "'$<'"'; fi; cat $<; } | $(CUCC) -E $< $(INCLUDE_LINE) > $(notdir $<)
-endef
 
-define COMPILE_CU
-current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(CUCC) $(CUCCFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(notdir $<) $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DCCODE 
-endef
-
-define POSTPROCESS_CU
-$(CU_POSTPROCESSING)
-endef
 
 # Define how to do a C compilation
 define PREPROCESS_C
@@ -131,6 +117,19 @@ endef
 
 define POSTPROCESS_CXX
 $(CXX_POSTPROCESSING)
+endef
+
+# Define how to do a CUDA compilation
+define PREPROCESS_CU
+{ if test $(C_LINE_DIRECTIVES) = 'yes'; then echo '#line 1 "'$<'"'; fi; cat $<; } | $(PERL) -s $(C_FILE_PROCESSOR) -line_directives=$(C_LINE_DIRECTIVES) -source_file_name=$< $(CONFIG) > $(notdir $<)
+endef
+
+define COMPILE_CU
+current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(CUCC) $(CUCCFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(notdir $<) $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DCCODE 
+endef
+
+define POSTPROCESS_CU
+$(CU_POSTPROCESSING)
 endef
 
 # Define how to do a F77 compilation
@@ -172,7 +171,6 @@ define POSTPROCESS_F90
 $(F90_POSTPROCESSING)
 endef
 
-
 # Define how to do a f77 compilation
 define PREPROCESS_f77
 cat $< > $(basename $(notdir $<)).f
@@ -188,19 +186,7 @@ define PREPROCESS_f90
 cat $< > $(basename $(notdir $<)).$(F90_SUFFIX)
 endef
 
-# Build rules for CUDA
 
-%.cu.o: $(SRCDIR)/%.cu
-	@echo Preprocessing $<
-	$(PREPROCESS_CU)
-	@echo Compiling $<
-	$(COMPILE_CU)
-	@echo Postprocessing $<
-	$(POSTPROCESS_CU)
-	@echo $(DIVIDER)
-
-%.cu.d: $(SRCDIR)/%.cu
-	$(CU_DEPENDENCIES)
 
 # Build rules for C
 
@@ -239,7 +225,6 @@ endef
 	$(POSTPROCESS_CXX)
 	@echo $(DIVIDER)
 
-
 %.C.d: $(SRCDIR)/%.C
 	$(CXX_DEPENDENCIES)
 
@@ -265,9 +250,22 @@ endef
 	$(POSTPROCESS_CXX)
 	@echo $(DIVIDER)
 
-
 %.cxx.d: $(SRCDIR)/%.cxx
 	$(CXX_DEPENDENCIES)
+
+# Build rules for CUDA
+
+%.cu.o: $(SRCDIR)/%.cu
+	@echo Preprocessing $<
+	$(PREPROCESS_CU)
+	@echo Compiling $<
+	$(COMPILE_CU)
+	@echo Postprocessing $<
+	$(POSTPROCESS_CU)
+	@echo $(DIVIDER)
+
+%.cu.d: $(SRCDIR)/%.cu
+	$(CU_DEPENDENCIES)
 
 # Build rules for F77
 

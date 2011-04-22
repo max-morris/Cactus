@@ -177,6 +177,10 @@ if test "x$CXX" != 'xnone' ; then
   AC_PROG_CXX_GNU
 fi
 
+if test -z "$CUCC" ; then
+  AC_CHECK_PROGS(CUCC, nvcc)
+fi
+
 if test -z "$RANLIB" ; then
   AC_PROG_RANLIB
 fi
@@ -191,10 +195,6 @@ AC_SUBST(FPPFLAGS)
 
 if test -z "$FPP" ; then
   AC_PATH_PROGS(FPP, cpp, echo, /lib:/usr/lib:/usr/local/lib:$PATH)
-fi
-
-if test -z "$CUCC" ; then
-  AC_CHECK_PROGS(CUCC, nvcc)
 fi
 
 if test -z "$PERL" ; then
@@ -313,6 +313,10 @@ else
   : ${CXX_WARN_FLAGS=''}
 fi
 
+# nvcc itself doesn't have warning flags. warnings will be given by C compilers.
+AC_SUBST(CUCC_WARN_FLAGS)
+  : ${CUCC_WARN_FLAGS=''}
+
 AC_SUBST(F77_WARN_FLAGS)
 if test "$F77" = 'g77' ; then
   : ${F77_WARN_FLAGS='-Wall'}
@@ -326,10 +330,6 @@ if test "$F90" = 'gfortran' ; then
 else
   : ${F90_WARN_FLAGS=''}
 fi
-
-# nvcc itself doesn't have warning flags. warnings will be given by C compilers.
-AC_SUBST(CUCC_WARN_FLAGS)
-  : ${CUCC_WARN_FLAGS=''}
 
 AC_SUBST(DEBUG_MODE)
 DEBUG_MODE='no'
@@ -351,14 +351,14 @@ AC_SUBST(C_DEBUG_FLAGS)
 AC_SUBST(CXX_DEBUG_FLAGS)
 : ${CXX_DEBUG_FLAGS='-g'}
 
+AC_SUBST(CUCC_DEBUG_FLAGS)
+: ${CUCC_DEBUG_FLAGS='-g'}
+
 AC_SUBST(F77_DEBUG_FLAGS)
 : ${F77_DEBUG_FLAGS='-g'}
 
 AC_SUBST(F90_DEBUG_FLAGS)
 : ${F90_DEBUG_FLAGS='-g'}
-
-AC_SUBST(CUCC_DEBUG_FLAGS)
-: ${CUCC_DEBUG_FLAGS='-g'}
 
 # Set the optimization flags if they've not been set by now
 # (using '-O2' as a reasonable default)
@@ -376,6 +376,9 @@ AC_SUBST(C_OPTIMISE_FLAGS)
 AC_SUBST(CXX_OPTIMISE_FLAGS)
 : ${CXX_OPTIMISE_FLAGS='-O2'}
 
+AC_SUBST(CUCC_OPTIMISE_FLAGS)
+: ${CUCC_OPTIMISE_FLAGS='-O2'}
+
 AC_SUBST(F77_OPTIMISE_FLAGS)
 if test -z "$F77_OPTIMISE_FLAGS" -a "$F77" = 'g77' ; then
   F77_OPTIMISE_FLAGS='-O2'
@@ -384,7 +387,10 @@ else
 fi
 
 AC_SUBST(F90_OPTIMISE_FLAGS)
-: ${F90_OPTIMISE_FLAGS=''}
+: ${F90_OPTIMISE_FLAGS='-O2'}
+
+# Set the no-optimization flags if they've not been set by now
+# (using '-O0' as a reasonable default)
 
 AC_SUBST(C_NO_OPTIMISE_FLAGS)
 : ${C_NO_OPTIMISE_FLAGS='-O0'}
@@ -392,14 +398,14 @@ AC_SUBST(C_NO_OPTIMISE_FLAGS)
 AC_SUBST(CXX_NO_OPTIMISE_FLAGS)
 : ${CXX_NO_OPTIMISE_FLAGS='-O0'}
 
+AC_SUBST(CUCC_NO_OPTIMISE_FLAGS)
+: ${CUCC_NO_OPTIMISE_FLAGS='-O0'}
+
 AC_SUBST(F77_NO_OPTIMISE_FLAGS)
 : ${F77_NO_OPTIMISE_FLAGS='-O0'}
 
 AC_SUBST(F90_NO_OPTIMISE_FLAGS)
 : ${F90_NO_OPTIMISE_FLAGS='-O0'}
-
-AC_SUBST(CUCC_OPTIMISE_FLAGS)
-: ${CUCC_OPTIMISE_FLAGS='-O2'}
 
 # Set the profiling flags if they've not been set by now
 # (using '-pg' as a reasonable default)
@@ -417,14 +423,14 @@ AC_SUBST(C_PROFILE_FLAGS)
 AC_SUBST(CXX_PROFILE_FLAGS)
 : ${CXX_PROFILE_FLAGS='-pg'}
 
+AC_SUBST(CUCC_PROFILE_FLAGS)
+: ${CUCC_PROFILE_FLAGS=''}
+
 AC_SUBST(F77_PROFILE_FLAGS)
 : ${F77_PROFILE_FLAGS='-pg'}
 
 AC_SUBST(F90_PROFILE_FLAGS)
 : ${F90_PROFILE_FLAGS='-pg'}
-
-AC_SUBST(CUCC_PROFILE_FLAGS)
-: ${CUCC_PROFILE_FLAGS='-pg'}
 
 # Set the OpenMP flags if they've not been set by now
 AC_SUBST(OPENMP_MODE)
@@ -433,9 +439,9 @@ AC_SUBST(CPP_OPENMP_FLAGS)
 AC_SUBST(FPP_OPENMP_FLAGS)
 AC_SUBST(C_OPENMP_FLAGS)
 AC_SUBST(CXX_OPENMP_FLAGS)
+AC_SUBST(CUCC_OPENMP_FLAGS)
 AC_SUBST(F77_OPENMP_FLAGS)
 AC_SUBST(F90_OPENMP_FLAGS)
-AC_SUBST(CUCC_OPENMP_FLAGS)
 
 ##########################################################################
 
@@ -589,9 +595,9 @@ AC_SUBST(USE_RANLIB)
 AC_SUBST(RANLIBFLAGS)
 : ${RANLIBFLAGS=-cs}
 
+AC_SUBST(CUCCFLAGS)
 AC_SUBST(F90FLAGS)
 AC_SUBST(F77FLAGS)
-AC_SUBST(CUCCFLAGS)
 
 #: ${F90FLAGS="$CFLAGS"}
 #: ${F77FLAGS="$CFLAGS"}
@@ -599,10 +605,10 @@ AC_SUBST(CUCCFLAGS)
 AC_SUBST(CPP_VERSION)
 AC_SUBST(CC_VERSION)
 AC_SUBST(CXX_VERSION)
+AC_SUBST(CUCC_VERSION)
 AC_SUBST(FPP_VERSION)
 AC_SUBST(F77_VERSION)
 AC_SUBST(F90_VERSION)
-AC_SUBST(CUCC_VERSION)
 
 dnl Checks for library functions.
 
@@ -1195,6 +1201,11 @@ AC_SUBST(CXX_DEPEND)
 AC_SUBST(CXX_DEPEND_OUT)
 : ${CXX_DEPEND_OUT=' > $@'}
 
+AC_SUBST(CU_DEPEND)
+: ${CU_DEPEND='$(CUCC) -M'}
+AC_SUBST(CU_DEPEND_OUT)
+: ${CU_DEPEND_OUT=' > $@'}
+
 AC_SUBST(F77_DEPEND)
 : ${F77_DEPEND='$(FPP) -M $(FPPFLAGS)'}
 AC_SUBST(F77_DEPEND_OUT)
@@ -1204,12 +1215,6 @@ AC_SUBST(F_DEPEND)
 : ${F_DEPEND='$(FPP) -M $(FPPFLAGS)'}
 AC_SUBST(F_DEPEND_OUT)
 : ${F_DEPEND_OUT=' > $@'}
-
-AC_SUBST(CU_DEPEND)
-: ${CU_DEPEND='$(CUCC) -M'}
-AC_SUBST(CU_DEPEND_OUT)
-: ${CU_DEPEND_OUT=' > $@'}
-
 
 # How to generate F90 dependency info for modules
 AC_SUBST(F_DEPEND_MODULES)
@@ -1222,14 +1227,14 @@ AC_SUBST(C_POSTPROCESSING)
 : ${C_POSTPROCESSING=''}
 AC_SUBST(CXX_POSTPROCESSING)
 : ${CXX_POSTPROCESSING=''}
+AC_SUBST(CUCC_POSTPROCESSING)
+: ${CUCC_POSTPROCESSING=''}
 AC_SUBST(F77_POSTPROCESSING)
 : ${F77_POSTPROCESSING=''}
 AC_SUBST(F_POSTPROCESSING)
 : ${F_POSTPROCESSING=''}
 AC_SUBST(F90_POSTPROCESSING)
 : ${F90_POSTPROCESSING=''}
-AC_SUBST(CUCC_POSTPROCESSING)
-: ${CUCC_POSTPROCESSING=''}
 
 # How to generate an intermediate C++ name (some compilers are very picky).
 AC_SUBST(CXX_WORKING_NAME)
