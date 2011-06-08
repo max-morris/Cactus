@@ -260,6 +260,14 @@ typedef enum {false, true} bool;
 #  define CCTK_ATTRIBUTE_HOT
 #endif
 
+/* Whether __builtin_expect exists. */
+#undef HAVE_CCTK_C_BUILTIN_EXPECT
+#ifdef HAVE_CCTK_C_BUILTIN_EXPECT
+#  define CCTK_BUILTIN_EXPECT(x,y) __builtin_expect(x,y)
+#else
+#  define CCTK_BUILTIN_EXPECT(x,y) (x)
+#endif
+
 #endif /* ! defined __cplusplus */
 /****************************************************************************/
 
@@ -352,6 +360,14 @@ typedef enum {false, true} bool;
 #  define CCTK_ATTRIBUTE_HOT __attribute__((__hot__))
 #else
 #  define CCTK_ATTRIBUTE_HOT
+#endif
+
+/* Whether __builtin_expect exists. */
+#undef HAVE_CCTK_CXX_BUILTIN_EXPECT
+#ifdef HAVE_CCTK_CXX_BUILTIN_EXPECT
+#  define CCTK_BUILTIN_EXPECT(x,y) __builtin_expect(x,y)
+#else
+#  define CCTK_BUILTIN_EXPECT(x,y) (x)
 #endif
 
 /* Some C++ compilers recognise the restrict keyword */

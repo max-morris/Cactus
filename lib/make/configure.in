@@ -874,13 +874,17 @@ CCTK_CXX_ATTRIBUTE_UNUSED
 CCTK_C_ATTRIBUTE_ALIGNED
 CCTK_CXX_ATTRIBUTE_ALIGNED
 
-## Find out whether the C compiler supports __attribute__((cold))
-#CCTK_C_ATTRIBUTE_COLD
-#CCTK_CXX_ATTRIBUTE_COLD
-#
-## Find out whether the C compiler supports __attribute__((hot))
-#CCTK_C_ATTRIBUTE_HOT
-#CCTK_CXX_ATTRIBUTE_HOT
+# Find out whether the C compiler supports __attribute__((cold))
+CCTK_C_ATTRIBUTE_COLD
+CCTK_CXX_ATTRIBUTE_COLD
+
+# Find out whether the C compiler supports __attribute__((hot))
+CCTK_C_ATTRIBUTE_HOT
+CCTK_CXX_ATTRIBUTE_HOT
+
+# Find out whether the C compiler supports __builtin_expect
+CCTK_C_BUILTIN_EXPECT
+CCTK_CXX_BUILTIN_EXPECT
 
 CCTK_FORTRAN_REAL4
 CCTK_FORTRAN_REAL8
