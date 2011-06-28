@@ -1265,10 +1265,14 @@ AC_SUBST(SYS_INC_DIRS)
 : ${SYS_INC_DIRS=' '}
 
 # How to link in the non-Cactus libraries:
-# Add -L and -l prefixes, but only for file names;
-# allow arbitrary options in between
+# - Add -L, -R, and -l prefixes, but only for file names (not for
+#   options), and allow arbitrary options in between these.
+# - Sort library directories so that system directories (/opt/local/*)
+#   come last. This increases the probability that the correct library
+#   is used, e.g. if a library exists both in a specific path and in
+#   /opt/local/lib.
 AC_SUBST(GENERAL_LIBRARIES)
-: ${GENERAL_LIBRARIES='$(patsubst $(LIBDIR_PREFIX)-%,-%,$(LIBDIRS:%=$(LIBDIR_PREFIX)%)) $(patsubst $(RUNDIR_PREFIX)-%,-%,$(LIBDIRS:%=$(RUNDIR_PREFIX)%)) $(patsubst $(LIBLINK_PREFIX)-%,-%,$(LIBS:%=$(LIBLINK_PREFIX)%))'}
+: ${GENERAL_LIBRARIES='$(patsubst $(LIBDIR_PREFIX)-%,-%,$(addprefix $(LIBDIR_PREFIX),$(filter-out /opt/local/%,$(LIBDIRS)) $(filter /opt/local/%,$(LIBDIRS)))) $(patsubst $(RUNDIR_PREFIX)-%,-%,$(addprefix $(RUNDIR_PREFIX),$(filter-out /opt/local/%,$(LIBDIRS)) $(filter /opt/local/%,$(LIBDIRS)))) $(patsubst $(LIBLINK_PREFIX)-%,-%,$(addprefix $(LIBLINK_PREFIX),$(LIBS)))'}
 
 
 # Do we need to make sure Perl makes a backup when editting in place ?
