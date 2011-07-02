@@ -956,11 +956,27 @@ at the same time.
   used, for example, to initialise external libraries, or to set up
   data structures that live in global variables.
   
+\item[{\tt META-EARLY}] This option is identical to to {\tt META}
+  option with the exception that the routine will be called together
+  with the routines on the first subgrid.
+  
+\item[{\tt META-LATE}] This option is identical to to {\tt META}
+  option with the exception that the routine will be called together
+  with the routines on the last subgrid.
+  
 \item[{\tt GLOBAL}] This routine will only be called once on a grid
   hierarchy, not for all subgrids making up the hierarchy.  This can
   be used, for example, for analysis routines which use global
   reduction or interpolation routines, rather than the local subgrid
   passed to them, and hence should only be called once.
+  
+\item[{\tt GLOBAL-EARLY}] This option is identical to to {\tt GLOBAL}
+  option with the exception that the routine will be called together
+  with the routines on the first subgrid.
+  
+\item[{\tt GLOBAL-LATE}] This option is identical to to {\tt GLOBAL}
+  option with the exception that the routine will be called together
+  with the routines on the last subgrid.
   
 \item[{\tt LEVEL}] This routine will only be called once on any
   ``level'' of the grid hierarchy.  That is, it will only be called
