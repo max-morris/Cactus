@@ -1027,12 +1027,14 @@ constructs using the parameter data base. These can be nested,
 and have the general form:
 
 \begin{alltt}
-if (CCTK_Equals(<\var{parameter}>,<\var{string}>))
+if (<\var{conditional-expression}>)
 \{
   [<\var{assignments}>]
   [<\var{schedule blocks}>]
 \}\end{alltt}
 
+<\var{conditional-expression}> can be any valid C construct evaluating
+to a truth value.
 Such conditionals are evaluated only at program startup, and are used
 to pick between different static schedule options.  For dynamic
 scheduling, the {\tt SCHEDULE WHILE} construction should be used.
