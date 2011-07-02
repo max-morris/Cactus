@@ -837,7 +837,10 @@ The storage line includes the number of timelevels to activate storage
 for, this number can be from 1 up to the maximum number or timelevels
 for the group, as specified in the defining {\tt interface.ccl}
 file. If the maximum number of timelevels is 1 (the default), this
-number may be omitted.
+number may be omitted. Alternatively \var{timelevels} can be the name of a
+parameter accessible to the thorn. The parameter name is the same as used in C
+routines of the thorn, fully qualified parameter names of the form
+\texttt{\var{thorn}::\var{parameter}} are not allowed.
 
 The behaviour of an assignment statement is independent of its
 position in the schedule file (so long as it is outside a schedule
@@ -913,7 +916,10 @@ schedule [GROUP] <\var{function name}|\var{group name}> AT|IN <\var{time}> \verb
   Each group must specify how many timelevels to activate storage for,
   from 1 up to the maximum number for the group as specified in the
   defining {\tt interface.ccl} file. If the maximum is 1 (the default)
-  this number may be omitted.
+  this number may be omitted. Alternatively \var{timelevels} can be the
+  name of a parameter accessible to the thorn. The parameter name is the
+  same as used in C routines of the thorn, fully qualified parameter names
+  of the form \texttt{\var{thorn}::\var{parameter}} are not allowed.
 
   \item[{\tt TRIGGER}] List of grid variables or groups to be used as
   triggers for causing an {\tt ANALYSIS} function or group to be
