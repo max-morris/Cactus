@@ -566,6 +566,17 @@ sub ScheduleBlock
 
   $buffer .= "0};\n";
 
+  # add check on number of timelevels in case we were using a parameter
+  for($i=0; $i < @$tlist; $i++)
+  {
+    $buffer .= "    if(!($$tlist[$i] > 0 && $$tlist[$i]  <= CCTK_MaxTimeLevels(\"$$mem_groups[$i]\")))\n";
+    $buffer .= "        CCTK_VWarn(0, __LINE__, __FILE__, CCTK_THORNSTRING,\n";
+    $buffer .= "                   \"Tried to schedule %d timelevels for group '%s' in schedule.ccl.\\n\"\n";
+    $buffer .= "                   \"Value must be between 1 and %d (inclusive)\",\n";
+    $buffer .= "                   $$tlist[$i], \"$$mem_groups[$i]\", CCTK_MaxTimeLevels(\"$$mem_groups[$i]\"));\n";
+    $buffer .= "\n";
+  }
+
   # Start writing out the data
   if($rhschedule_db->{"\U$thorn\E BLOCK_$block TYPE"} eq "GROUP")
   {
@@ -688,6 +699,17 @@ sub ScheduleStatement
     $prototype = "";
 
     my $i;
+
+    # add check on number of timelevels in case we were using a parameter
+    for($i=0; $i < @$groups; $i++)
+    {
+      $buffer .= "  if(!($$misc[$i] > 0 && $$misc[$i]  <= CCTK_MaxTimeLevels(\"$$groups[$i]\")))\n";
+      $buffer .= "      CCTK_VWarn(0, __LINE__, __FILE__, CCTK_THORNSTRING,\n";
+      $buffer .= "                 \"Tried to schedule %d timelevels for group '%s' in schedule.ccl.\\n\"\n";
+      $buffer .= "                 \"Value must be between 1 and %d (inclusive)\",\n";
+      $buffer .= "                 $$misc[$i], \"$$groups[$i]\", CCTK_MaxTimeLevels(\"$$groups[$i]\"));\n";
+      $buffer .= "\n";
+    }
 
     for($i=0; $i < @$groups; $i++)
     {
@@ -951,7 +973,7 @@ sub ScheduleValidateTimeLevels
 
 #    print "DEBUG: validate $thorn,$implementation,$group,$timelevels\n";
 
-    if($timelevels !~ /^\d*$/)
+    if($timelevels !~ /^[[:alpha:]_][[:word:]]*$/ && $timelevels !~ /^\d*$/)
     {
       &CST_error(0,"Invalid timelevel specifier '$timelevels' in schedule.ccl of thorn '$thorn'","",__LINE__,__FILE__);
       $return_code++;
@@ -993,7 +1015,7 @@ sub ScheduleValidateTimeLevels
                  ,"",__LINE__,__FILE__);
       $return_code++;
     }
-    elsif($timelevels > 0 && $timelevels  <= $allowed_timelevels)
+    elsif($timelevels =~ /^[[:alpha:]_][[:word:]]*$/ || ($timelevels > 0 && $timelevels  <= $allowed_timelevels))
     {
       next;
     }
