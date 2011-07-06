@@ -1301,7 +1301,7 @@ do
     if test -x $srcdir/extras/$extra/setup.sh ; then
         # Put some comment lines in the files.
         CCTK_WriteLine cctk_Extradefs.h ''
-        CCTK_WriteLine cctk_Extradefs.h '/* $extra definitions */'
+        CCTK_WriteLine cctk_Extradefs.h "/* $extra definitions */"
         CCTK_WriteLine make.extra.defn ''
         CCTK_WriteLine make.extra.defn "# $extra definitions"
         # Call the setup script
