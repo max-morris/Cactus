@@ -175,11 +175,11 @@ cctk_convfac,cctk_nghostzones,cctk_iteration,cctkGH
  */
 
 #ifdef __cplusplus
-#define HAVE_INLINE
+#  define HAVE_INLINE
 #else
-#ifndef inline
-#define HAVE_INLINE
-#endif
+#  ifdef HAVE_CCTK_C_INLINE
+#    define HAVE_INLINE
+#  endif
 #endif
 
 #ifdef HAVE_INLINE
@@ -240,7 +240,7 @@ static inline int CCTK_VECTGFINDEX4D (const cGH *GH,
                                                     (l + GH->cctk_lsh[3]*n))));
 }
 
-#else /* ! defined(__cplusplus) && defined(inline) */
+#else /* ! defined(HAVE_INLINE) */
 
 #ifdef CCTK_DEBUG
 /* The "inline" keyword is not supported, and we want to debug */
@@ -286,7 +286,10 @@ static inline int CCTK_VECTGFINDEX4D (const cGH *GH,
 
 #endif /* ! defined(CCTK_DEBUG) */
 
-#endif /* ! defined(__cplusplus) && defined(inline) */
+#endif /* ! defined(HAVE_INLINE) */
+
+#undef HAVE_INLINE
+
 
 
 #define CCTK_PRINTSEPARATOR \
