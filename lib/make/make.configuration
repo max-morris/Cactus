@@ -212,7 +212,7 @@ include $(CONFIG)/make.config.deps
 
 rebuild: $(CONFIG)/make.thornlist
 
-$(CONFIG)/make.thornlist: $(TOP)/ThornList $(foreach lib, $(CCTK_HOME)/src $(THORNS:%=$(PACKAGE_DIR)/%), $(lib)/param.ccl $(lib)/interface.ccl $(lib)/schedule.ccl) $(CONFIG_THORNS:%=$(PACKAGE_DIR)/%/configuration.ccl) $(CCTK_HOME)/lib/make/force-rebuild
+$(CONFIG)/make.thornlist: $(TOP)/ThornList $(foreach lib, $(CCTK_HOME)/src $(THORNS:%=$(PACKAGE_DIR)/%), $(lib)/param.ccl $(lib)/interface.ccl $(lib)/schedule.ccl) $(CCTK_HOME)/src/configuration.ccl $(CONFIG_THORNS:%=$(PACKAGE_DIR)/%/configuration.ccl) $(CCTK_HOME)/lib/make/force-rebuild
 	if [ -r $@ ] ; then echo Reconfiguring thorns ; rm $@ ;\
 	else echo Processing CCL files ; fi
 	+$(PERL) -s $(CST) -config_dir=$(CONFIG) -cctk_home=$(CCTK_HOME) -top=$(TOP) $<
@@ -244,7 +244,7 @@ ifneq ($(strip $(THORNS)),)
 endif
 
 # Catch the special case of a thorn being removed from the disk entirely.
-$(foreach lib, $(CCTK_HOME)/src $(THORNS:%=$(PACKAGE_DIR)/%), $(lib)/param.ccl $(lib)/interface.ccl $(lib)/schedule.ccl) $(CONFIG_THORNS:%=$(PACKAGE_DIR)/%/configuration.ccl):
+$(foreach lib, $(CCTK_HOME)/src $(THORNS:%=$(PACKAGE_DIR)/%), $(lib)/param.ccl $(lib)/interface.ccl $(lib)/schedule.ccl) $(CCTK_HOME)/src/configuration.ccl $(CONFIG_THORNS:%=$(PACKAGE_DIR)/%/configuration.ccl):
 	@echo "Missing file $@"
 	@echo "Possibly from a thorn deleted from an arrangement"
 	@echo "Deleting make.thornlist"

@@ -42,6 +42,8 @@ sub CreateConfigurationDatabase
 #        if ($cfg{"\U$thorn\E PROVIDES"});
 #      print "           Requires: ", $cfg{"\U$thorn\E REQUIRES"}, "\n"
 #        if ($cfg{"\U$thorn\E REQUIRES"});
+#      print "           Optional: ", $cfg{"\U$thorn\E OPTIONAL"}, "\n"
+#        if ($cfg{"\U$thorn\E OPTIONAL"});
 #    }
 
     $cfg{"\U$thorn\E USES THORNS"} = '';
