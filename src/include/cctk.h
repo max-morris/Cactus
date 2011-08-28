@@ -78,8 +78,10 @@ cctk_convfac,cctk_nghostzones,cctk_iteration,cctkGH
 #define CCTK_ORIGIN_SPACE(x) (cctk_origin_space(x)+cctk_delta_space(x)/cctk_levfac(x)*cctk_levoff(x)/cctk_levoffdenom(x))
 #define CCTK_DELTA_SPACE(x) (cctk_delta_space(x)/cctk_levfac(x))
 #define CCTK_DELTA_TIME (cctk_delta_time/cctk_timefac)
-#define CCTK_LSSH(stag,dim) cctk_lssh((stag)+CCTK_NSTAGGER*(dim))
-#define CCTK_LSSH_IDX(stag,dim) ((stag)+CCTK_NSTAGGER*(dim))
+/* The "stagger index" stag is zero-based (0,1,...), the direction dim
+   is one-based in Fortran (1,2,3,...) */
+#define CCTK_LSSH(stag,dim) cctk_lssh(CCTK_LSSH_IDX(stag,dim))
+#define CCTK_LSSH_IDX(stag,dim) (1+(stag)+CCTK_NSTAGGER*((dim)-1))
 
 #ifdef F90CODE
 
@@ -500,7 +502,9 @@ static inline int CCTK_VECTGFINDEX4D (const cGH *GH,
 #define CCTK_ORIGIN_SPACE(x) (cctk_origin_space[x]+cctk_delta_space[x]/cctk_levfac[x]*cctk_levoff[x]/cctk_levoffdenom[x])
 #define CCTK_DELTA_SPACE(x) (cctk_delta_space[x]/cctk_levfac[x])
 #define CCTK_DELTA_TIME (cctk_delta_time/cctk_timefac)
-#define CCTK_LSSH(stag,dim) cctk_lssh[(stag)+CCTK_NSTAGGER*(dim)]
+/* The "stagger index" stag is zero-based (0,1,...), the direction dim
+   is zero-based in C (0,1,2,...) */
+#define CCTK_LSSH(stag,dim) cctk_lssh[CCTK_LSSH_IDX(stag,dim)]
 #define CCTK_LSSH_IDX(stag,dim) ((stag)+CCTK_NSTAGGER*(dim))
 
 #define CCTK_WARN(a,b) CCTK_Warn(a,__LINE__,__FILE__,CCTK_THORNSTRING,b)
