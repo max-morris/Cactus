@@ -931,7 +931,7 @@ dnl Do we have backtrace_symbols(3)
 CCTK_CHECK_FUNCS(backtrace_symbols, , )
 
 dnl Do we have crypt(3)
-CCTK_CHECK_FUNC(crypt, , CCTK_CHECK_LIB_FUNC(crypt, crypt))
+CCTK_CHECK_FUNCS(crypt, , CCTK_CHECK_LIB_FUNC(crypt, crypt))
 
 dnl Do we have finite(3)
 CCTK_CHECK_FUNCS(finite, , CCTK_CHECK_LIB_FUNC(m, finite))
