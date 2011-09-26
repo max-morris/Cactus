@@ -162,44 +162,42 @@ sub ParseTestConfigs
       print "  Thorn $thorn has a 'config' file in 'test/'.\n".
             "    Config files are deprecated. Use test.ccl instead.\n";
     }
-    if (!-r $config_file)
+    if (-r $config_file)
     {
-      $config_file = '';
-    }
-
-    my @config = &read_file($config_file);
-    for($line_number = 0; $line_number < @config; $line_number++)
-    {
-      $line = $config[$line_number];
-
-      # Parse tokens
-      if ($line =~ m/^\s*ABSTOL\s*(.*)/i)
+      my @config = &read_file($config_file);
+      for($line_number = 0; $line_number < @config; $line_number++)
       {
+        $line = $config[$line_number];
+
+        # Parse tokens
+        if ($line =~ m/^\s*ABSTOL\s*(.*)/i)
+        {
         $ABSTOL = $rundata->{"$thorn ABSTOL"}=$1;
-      }
-      elsif ($line =~ m/^\s*RELTOL\s*(.*)/i)
-      {
-        $RELTOL = $rundata->{"$thorn RELTOL"}=$1;
-      }
-      elsif ($line =~ m/^\s*NPROCS\s+(\d+)\s*$/i)
-      {
-        $NPROCS = $rundata->{"$thorn NPROCS"} = $1;
-      }
-      elsif ($line =~ m/^\s*EXTENSIONS\s*(.*)/i)
-      {
-        $testdata->{"EXTENSIONS"} .= "$1 ";
-      }
-      elsif ($line =~ m/^\s*TEST\s*(.*)/i)
-      {
-        ($test, $ABSTOL, $RELTOL, $NPROCS, $line_number) =
-          &ParseTestBlock($line_number, \@config);
-        $rundata->{"$thorn $test ABSTOL"} = $ABSTOL;
-        $rundata->{"$thorn $test RELTOL"} = $RELTOL;
-        $rundata->{"$thorn $test NPROCS"} = $NPROCS;
-      }
-      else
-      {
-        print "  Unrecognised token $line in config file for thorn $thorn\n";
+        }
+        elsif ($line =~ m/^\s*RELTOL\s*(.*)/i)
+        {
+          $RELTOL = $rundata->{"$thorn RELTOL"}=$1;
+        }
+        elsif ($line =~ m/^\s*NPROCS\s+(\d+)\s*$/i)
+        {
+          $NPROCS = $rundata->{"$thorn NPROCS"} = $1;
+        }
+        elsif ($line =~ m/^\s*EXTENSIONS\s*(.*)/i)
+        {
+          $testdata->{"EXTENSIONS"} .= "$1 ";
+        }
+        elsif ($line =~ m/^\s*TEST\s*(.*)/i)
+        {
+          ($test, $ABSTOL, $RELTOL, $NPROCS, $line_number) =
+            &ParseTestBlock($line_number, \@config);
+          $rundata->{"$thorn $test ABSTOL"} = $ABSTOL;
+          $rundata->{"$thorn $test RELTOL"} = $RELTOL;
+          $rundata->{"$thorn $test NPROCS"} = $NPROCS;
+        }
+        else
+        {
+          print "  Unrecognised token $line in config file for thorn $thorn\n";
+        }
       }
     }
   }
