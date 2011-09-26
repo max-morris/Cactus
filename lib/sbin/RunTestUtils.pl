@@ -154,25 +154,18 @@ sub ParseTestConfigs
   {
     my $testdir = $arrangement_dir . $testdata->{"$thorn ARRANGEMENT"} .
                   "${sep}$thorn${sep}test";
-    my $old_config_file = "$testdir${sep}test.ccl";
-    my $new_config_file = "$testdir${sep}config";
-    my $config_file = '';
+    my $config_file     = "$testdir${sep}test.ccl";
+    my $old_config_file = "$testdir${sep}config";
 
-    if (-r $old_config_file and -r $new_config_file)
+    if (-r $old_config_file)
     {
-      print " Thorn $thorn has a test.ccl file and a config file.\n" .
-            " Config files will be deprecated, using test.ccl file.\n";
-      $config_file = $new_config_file;
+      print "  Thorn $thorn has a 'config' file in 'test/'.\n"
+            "    Config files are deprecated. Use test.ccl instead.\n";
     }
-    elsif (-r $new_config_file)
+    if (!-r $config_file)
     {
-      $config_file = $new_config_file;
+      $config_file = '';
     }
-    elsif (-r $old_config_file)
-    {
-      $config_file = $old_config_file;
-    }
-    next unless ($config_file);
 
     my @config = &read_file($config_file);
     for($line_number = 0; $line_number < @config; $line_number++)
