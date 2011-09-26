@@ -253,20 +253,44 @@ sub ParseTestBlock
   return ($Test, $ABSTOL, $RELTOL, $NPROCS, $line_number);
 }
 
+# Find archive files for one particular test
 sub FindTestArchiveFiles
 {
-  my($testdata) = @_;
-  my($thorn,$test);
+  my($test,$thorn,$testdata) = @_;
 
-  foreach $thorn (split(" ",$testdata->{"THORNS"}))
+  my $dir = "$testdata->{\"$thorn TESTSDIR\"}/$test";
+  if ( !-d "$dir")
   {
-    foreach $test (split(" ",$testdata->{"$thorn TESTS"}))
+    my $tarname      = undef;
+    my $unpackoption = undef;
+    if (-f "$dir.tar")     { $tarname ="$dir.tar";     $unpackoption = "";}
+    if (-f "$dir.tar.gz")  { $tarname ="$dir.tar.gz";  $unpackoption = "--gzip";}
+    if (-f "$dir.tgz")     { $tarname ="$dir.tgz";     $unpackoption = "--gzip";}
+    if (-f "$dir.tar.bz2") { $tarname ="$dir.tar.bz2"; $unpackoption = "--bzip";}
+    if (-f "$dir.tbz")     { $tarname ="$dir.tbz";     $unpackoption = "--bzip";}
+    if (-f "$dir.tar.xz")  { $tarname ="$dir.tar.xz";  $unpackoption = "--xz";}
+    if (-f "$dir.txz")     { $tarname ="$dir.txz";     $unpackoption = "--xz";}
+    if (defined($unpackoption))
     {
-      $dir = "$testdata->{\"$thorn TESTSDIR\"}/$test";
-      ($testdata->{"$thorn $test UNKNOWNFILES"},$testdata->{"$thorn $test DATAFILES"}) = &FindFiles($dir,$testdata);
-      $testdata->{"$thorn $test NDATAFILES"} = scalar(split(" ",$testdata->{"$thorn $test DATAFILES"}));
+      my $tar       = `gtar --help > /dev/null 2> /dev/null && echo -n gtar || echo -n tar`;
+      my $supported = `tar --help | grep -- "$unpackoption" > /dev/null 2> /dev/null && echo -n "yes" || echo -n "no"`;
+      if ($supported ne "yes")
+      {
+        print("  $tarname found, but $tar does not support the option $unpackoption.");
+        return $testdata;
+      }
+      print("  Decompressing testsuite data\n");
+      my $basename = `basename $dir`; chomp($basename);
+      my $unpackdir = $config_data->{"TESTS_DIR"}.$sep.$config_data->{"CONFIG"}.$sep.$thorn;
+      system("mkdir -p $unpackdir");
+      system("cd $unpackdir && rm -rf $basename $basename.orig");
+      system("cd $unpackdir && $tar -x $unpackoption -f $tarname && mv $basename $basename.orig");
+      $testdata->{"$thorn $test UNCOMPRESSED"} = "$unpackdir$sep$basename.orig";
+      $dir = "$unpackdir$sep$basename.orig";
     }
   }
+  ($testdata->{"$thorn $test UNKNOWNFILES"},$testdata->{"$thorn $test DATAFILES"}) = &FindFiles($dir,$testdata);
+  $testdata->{"$thorn $test NDATAFILES"} = scalar(split(" ",$testdata->{"$thorn $test DATAFILES"}));
   return $testdata;
 }
 
@@ -323,7 +347,10 @@ sub FindTestParameterFiles
       {
         $file =~ m:^(.*)\.par$:;
         $filedir = $1;
-        if (-d $filedir)
+        if (-d $filedir or -f "$filedir.tar" or
+            -f "$filedir.tar.gz"  or -f "$filedir.tgz" or
+            -f "$filedir.tar.bz2" or -f "$filedir.tbz" or
+            -f "$filedir.tar.xz"  or -f "$filedir.txz")
         {
           $testdata->{"$thorn TESTS"} .= "$filedir ";
           $testdata->{"$thorn NTESTS"}++;
@@ -961,6 +988,8 @@ sub RunTest
   my ($test_dir,$config);
   my ($retcode);
 
+  $testdata = &FindTestArchiveFiles($test,$thorn,$testdata);
+
   my $arrangement = $testdata->{"$thorn ARRANGEMENT"};
 
   $testdata->{"$thorn $test TESTRUNDIR"} = $config_data->{"TESTS_DIR"}.$sep.$config_data->{"CONFIG"}.$sep.$thorn;
@@ -999,6 +1028,7 @@ sub RunTest
   return $testdata;
 }
 
+# Compares output from one particular testsuite
 sub CompareTestFiles
 {
   my ($test,$thorn,$runconfig,$rundata,$config_data,$testdata) = @_;
@@ -1049,7 +1079,17 @@ sub CompareTestFiles
       my (@maxabsdiff, @absdiff, @valmax) = ();
 
       $newfile = "$test_dir$sep$file";
+      # This is the standard location of test data files
       $oldfile = "$testdata->{\"$thorn TESTSDIR\"}${sep}${test}${sep}$file";
+      # If there is no data in the standard location, see if it got
+      # decompressed to some place else
+      if (!-d "$testdata->{\"$thorn TESTSDIR\"}${sep}${test}")
+      {
+        if (-d "$testdata->{\"$thorn $test UNCOMPRESSED\"}")
+        {
+          $oldfile = "$testdata->{\"$thorn $test UNCOMPRESSED\"}${sep}$file";
+        }
+      }
 
       $rundata->{"$thorn $test $file NINF"}=0;
       $rundata->{"$thorn $test $file NNAN"}=0;
@@ -1192,7 +1232,7 @@ sub CompareTestFiles
       }
       else
       {
-        print "     TESTSUITE ERROR: $newfile not compared\n";
+        print "     TESTSUITE ERROR: $newfile not compared to $oldfile\n";
       }
 
       my $havediffs = 0;
@@ -1232,7 +1272,7 @@ sub CompareTestFiles
   return $rundata;
 }
 
-
+# Reports on one particular test
 sub ReportOnTest
 {
   my($test,$thorn,$rundata,$testdata) = @_;
@@ -1487,6 +1527,7 @@ sub MakeTestRunDir
 
 }
 
+# Views results from one particular test
 sub ViewResults
 {
   my($test,$thorn,$runconfig,$rundata,$testdata) = @_;
