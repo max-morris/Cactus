@@ -159,7 +159,7 @@ sub ParseTestConfigs
 
     if (-r $old_config_file)
     {
-      print "  Thorn $thorn has a 'config' file in 'test/'.\n"
+      print "  Thorn $thorn has a 'config' file in 'test/'.\n".
             "    Config files are deprecated. Use test.ccl instead.\n";
     }
     if (!-r $config_file)
