@@ -9,11 +9,14 @@
 # @@*/
 
 # Silence all but designated output
-#.SILENT:
+#.VERBOSE:
 
 # Dividers to make the screen output slightly nicer
 DIVEL   =  __________________
 DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
+define NOTIFY_DIVIDER
+	{ if test "$(VERBOSE)" == "yes"; then echo $(DIVIDER); fi }
+endef
 
 # Include the main make definitions for this configuration
 include $(CONFIG)/make.config.defn
@@ -98,7 +101,7 @@ $(NAME): $(addsuffix /make.checked, $(SUBDIRS) $(THORNBINDINGS))
 ##	to do: use a two-level namespace
 ##		(this requires knowing the dependencies of each thorn library)
 #	libtool -dynamic -arch_only ppc -o $@ $(OBJS) -flat_namespace -undefined suppress -single_module
-	@echo $(DIVIDER)
+	$(NOTIFY_DIVIDER)
 
 # Extra stuff for allowing make to recurse into directories
 

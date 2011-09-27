@@ -125,7 +125,7 @@ sub SetConfigureEnv
 #  while ($commandline =~ /^(.*)\s+(\w+)\s*=\s*([_+\-\.\w\\\/\s]*)\s*/)
   while ($commandline =~ /^(.*)\s*\b(\w+)\s*=\s*(.*?)\s*$/)
   {
-    if ($2 ne 'options' && $2 ne 'SILENT')
+    if ($2 ne 'options' && $2 ne 'VERBOSE')
     {
       print "Using configuration options from configure line\n"
         if (!$line_number);

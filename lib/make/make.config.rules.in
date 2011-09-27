@@ -28,8 +28,25 @@ DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 INCLUDE_LINE = $(patsubst %,-I"%",$(call TRANSFORM_DIRS,$(INC_DIRS)))
 
 #####################################################################
-# Define how to do dependencies
 
+define NOTIFY_PREPROCESSING
+	{ if test "$(VERBOSE)" == "yes"; then echo Preprocessing $<; fi }
+endef
+define NOTIFY_COPYING
+	{ if test "$(VERBOSE)" == "yes"; then echo Copying $<; fi }
+endef
+define NOTIFY_COMPILING
+	 { if test "$(VERBOSE)" == "yes"; then echo Compiling $<; \
+                                   else echo COMPILING $<; fi }
+endef
+define NOTIFY_POSTPROCESSING
+	{ if test "$(VERBOSE)" == "yes"; then echo Postprocessing $<; fi }
+endef
+define NOTIFY_DIVIDER
+	{ if test "$(VERBOSE)" == "yes"; then echo $(DIVIDER); fi }
+endef
+
+# Define how to do dependencies
 ifeq ($(strip $(PERL_BACKUP_NECESSARY)),)
 define DEPENDENCY_FIXER
 	$(PERL) -pi -e "s,([^:]*),$(basename $@).o $(basename $@).d, if(m/: /);\
@@ -191,13 +208,13 @@ endef
 # Build rules for C
 
 %.c.o: $(SRCDIR)/%.c
-	@echo Preprocessing $<
+	$(NOTIFY_PREPROCESSING)
 	$(PREPROCESS_C)
-	@echo Compiling $<
+	$(NOTIFY_COMPILING)
 	$(COMPILE_C)
-	@echo Postprocessing $<
+	$(NOTIFY_POSTPROCESSING)
 	$(POSTPROCESS_C)
-	@echo $(DIVIDER)
+	$(NOTIFY_DIVIDER)
 
 %.c.d: $(SRCDIR)/%.c
 	$(C_DEPENDENCIES)
@@ -205,50 +222,50 @@ endef
 # Build rules for C++
 
 %.cc.o: $(SRCDIR)/%.cc
-	@echo Preprocessing $<
+	$(NOTIFY_PREPROCESSING)
 	$(PREPROCESS_CXX)
-	@echo Compiling $<
+	$(NOTIFY_COMPILING)
 	$(COMPILE_CXX)
-	@echo Postprocessing $<
+	$(NOTIFY_POSTPROCESSING)
 	$(POSTPROCESS_CXX)
-	@echo $(DIVIDER)
+	$(NOTIFY_DIVIDER)
 
 %.cc.d: $(SRCDIR)/%.cc
 	$(CXX_DEPENDENCIES)
 
 %.C.o: $(SRCDIR)/%.C
-	@echo Preprocessing $<
+	$(NOTIFY_PREPROCESSING)
 	$(PREPROCESS_CXX)
-	@echo Compiling $<
+	$(NOTIFY_COMPILING)
 	$(COMPILE_CXX)
-	@echo Postprocessing $<
+	$(NOTIFY_POSTPROCESSING)
 	$(POSTPROCESS_CXX)
-	@echo $(DIVIDER)
+	$(NOTIFY_DIVIDER)
 
 %.C.d: $(SRCDIR)/%.C
 	$(CXX_DEPENDENCIES)
 
 %.cpp.o: $(SRCDIR)/%.cpp
-	@echo Preprocessing $<
+	$(NOTIFY_PREPROCESSING)
 	$(PREPROCESS_CXX)
-	@echo Compiling $<
+	$(NOTIFY_COMPILING)
 	$(COMPILE_CXX)
-	@echo Postprocessing $<
+	$(NOTIFY_POSTPROCESSING)
 	$(POSTPROCESS_CXX)
-	@echo $(DIVIDER)
+	$(NOTIFY_DIVIDER)
 
 
 %.cpp.d: $(SRCDIR)/%.cpp
 	$(CXX_DEPENDENCIES)
 
 %.cxx.o: $(SRCDIR)/%.cxx
-	@echo Preprocessing $<
+	$(NOTIFY_PREPROCESSING)
 	$(PREPROCESS_CXX)
-	@echo Compiling $<
+	$(NOTIFY_COMPILING)
 	$(COMPILE_CXX)
-	@echo Postprocessing $<
+	$(NOTIFY_POSTPROCESSING)
 	$(POSTPROCESS_CXX)
-	@echo $(DIVIDER)
+	$(NOTIFY_DIVIDER)
 
 %.cxx.d: $(SRCDIR)/%.cxx
 	$(CXX_DEPENDENCIES)
@@ -256,13 +273,13 @@ endef
 # Build rules for CUDA
 
 %.cu.o: $(SRCDIR)/%.cu
-	@echo Preprocessing $<
+	$(NOTIFY_PREPROCESSING)
 	$(PREPROCESS_CU)
-	@echo Compiling $<
+	$(NOTIFY_COMPILING)
 	$(COMPILE_CU)
-	@echo Postprocessing $<
+	$(NOTIFY_POSTPROCESSING)
 	$(POSTPROCESS_CU)
-	@echo $(DIVIDER)
+	$(NOTIFY_DIVIDER)
 
 %.cu.d: $(SRCDIR)/%.cu
 	$(CU_DEPENDENCIES)
@@ -270,22 +287,22 @@ endef
 # Build rules for F77
 
 %.F77.o: $(SRCDIR)/%.F77
-	@echo Preprocessing $<
+	$(NOTIFY_PREPROCESSING)
 	$(PREPROCESS_F77)
-	@echo Compiling $<
+	$(NOTIFY_COMPILING)
 	$(COMPILE_F77)
-	@echo Postprocessing $<
+	$(NOTIFY_POSTPROCESSING)
 	$(POSTPROCESS_F77)
-	@echo $(DIVIDER)
+	$(NOTIFY_DIVIDER)
 
 %.f77.o: $(SRCDIR)/%.f77
-	@echo Copying $<
+	$(NOTIFY_COPYING)
 	$(PREPROCESS_f77)
-	@echo Compiling $<
+	$(NOTIFY_COMPILING)
 	$(COMPILE_F77)
-	@echo Postprocessing $<
+	$(NOTIFY_POSTPROCESSING)
 	$(POSTPROCESS_F77)
-	@echo $(DIVIDER)
+	$(NOTIFY_DIVIDER)
 
 %.F77.d: $(SRCDIR)/%.F77
 	$(F77_DEPENDENCIES)
@@ -296,22 +313,22 @@ endef
 # Build rules for F90
 
 %.F.o: $(SRCDIR)/%.F
-	@echo Preprocessing $<
+	$(NOTIFY_PREPROCESSING)
 	$(PREPROCESS_F)
-	@echo Compiling $<
+	$(NOTIFY_COMPILING)
 	$(COMPILE_F)
-	@echo Postprocessing $<
+	$(NOTIFY_POSTPROCESSING)
 	$(POSTPROCESS_F)
-	@echo $(DIVIDER)
+	$(NOTIFY_DIVIDER)
 
 %.f.o: $(SRCDIR)/%.f
-	@echo Copying $<
+	$(NOTIFY_COPYING)
 	$(PREPROCESS_f)
-	@echo Compiling $<
+	$(NOTIFY_COMPILING)
 	$(COMPILE_F)
-	@echo Postprocessing $<
+	$(NOTIFY_POSTPROCESSING)
 	$(POSTPROCESS_F)
-	@echo $(DIVIDER)
+	$(NOTIFY_DIVIDER)
 
 %.F.d: $(SRCDIR)/%.F
 	$(F_DEPENDENCIES)
@@ -322,22 +339,22 @@ endef
 # Build rules for free-format F90
 
 %.F90.o: $(SRCDIR)/%.F90
-	@echo Preprocessing $<
+	$(NOTIFY_PREPROCESSING)
 	$(PREPROCESS_F90)
-	@echo Compiling $<
+	$(NOTIFY_COMPILING)
 	$(COMPILE_F90)
-	@echo Postprocessing $<
+	$(NOTIFY_POSTPROCESSING)
 	$(POSTPROCESS_F90)
-	@echo $(DIVIDER)
+	$(NOTIFY_DIVIDER)
 
 %.f90.o: $(SRCDIR)/%.f90
-	@echo Copying $<
+	$(NOTIFY_COPYING)
 	$(PREPROCESS_f90)
-	@echo Compiling $<
+	$(NOTIFY_COMPILING)
 	$(COMPILE_F90)
-	@echo Postprocessing $<
+	$(NOTIFY_POSTPROCESSING)
 	$(POSTPROCESS_F90)
-	@echo $(DIVIDER)
+	$(NOTIFY_DIVIDER)
 
 %.F90.d: $(SRCDIR)/%.F90
 	$(F90_DEPENDENCIES)

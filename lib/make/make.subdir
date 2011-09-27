@@ -9,7 +9,7 @@
 # @@*/
 
 # Silence all but designated output
-#.SILENT:
+#.VERBOSE:
 
 # Include the main make definitions for this configuration
 include $(CONFIG)/make.config.defn
