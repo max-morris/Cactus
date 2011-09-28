@@ -49,7 +49,7 @@ CACTUSLIBS = $(FLESHLIB) $(BINDINGSLIB)
 DIVEL   =  __________________
 DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 define NOTIFY_DIVIDER
-	{ if test "$(VERBOSE)" == "yes"; then echo $(DIVIDER); fi }
+	if test "$(VERBOSE)" = "yes"; then echo $(DIVIDER); fi
 endef
 
 # Include the definitions for this configuration

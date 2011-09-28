@@ -30,20 +30,20 @@ INCLUDE_LINE = $(patsubst %,-I"%",$(call TRANSFORM_DIRS,$(INC_DIRS)))
 #####################################################################
 
 define NOTIFY_PREPROCESSING
-	{ if test "$(VERBOSE)" == "yes"; then echo Preprocessing $<; fi }
+	if test "$(VERBOSE)" = "yes"; then echo Preprocessing $<; fi
 endef
 define NOTIFY_COPYING
-	{ if test "$(VERBOSE)" == "yes"; then echo Copying $<; fi }
+	if test "$(VERBOSE)" = "yes"; then echo Copying $<; fi
 endef
 define NOTIFY_COMPILING
-	 { if test "$(VERBOSE)" == "yes"; then echo Compiling $<; \
-                                   else echo COMPILING $<; fi }
+	if test "$(VERBOSE)" = "yes"; then echo Compiling $<; \
+                                   else echo COMPILING $<; fi
 endef
 define NOTIFY_POSTPROCESSING
-	{ if test "$(VERBOSE)" == "yes"; then echo Postprocessing $<; fi }
+	if test "$(VERBOSE)" = "yes"; then echo Postprocessing $<; fi
 endef
 define NOTIFY_DIVIDER
-	{ if test "$(VERBOSE)" == "yes"; then echo $(DIVIDER); fi }
+	if test "$(VERBOSE)" = "yes"; then echo $(DIVIDER); fi
 endef
 
 # Define how to do dependencies
