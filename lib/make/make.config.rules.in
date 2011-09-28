@@ -30,19 +30,24 @@ INCLUDE_LINE = $(patsubst %,-I"%",$(call TRANSFORM_DIRS,$(INC_DIRS)))
 #####################################################################
 
 define NOTIFY_PREPROCESSING
+	VERBOSE=`echo $VERBOSE | tr '[:upper:]' '[:lower:]'`; \
 	if test "$(VERBOSE)" = "yes"; then echo Preprocessing $<; fi
 endef
 define NOTIFY_COPYING
+	VERBOSE=`echo $VERBOSE | tr '[:upper:]' '[:lower:]'`; \
 	if test "$(VERBOSE)" = "yes"; then echo Copying $<; fi
 endef
 define NOTIFY_COMPILING
+	VERBOSE=`echo $VERBOSE | tr '[:upper:]' '[:lower:]'`; \
 	if test "$(VERBOSE)" = "yes"; then echo Compiling $<; \
                                    else echo COMPILING $<; fi
 endef
 define NOTIFY_POSTPROCESSING
+	VERBOSE=`echo $VERBOSE | tr '[:upper:]' '[:lower:]'`; \
 	if test "$(VERBOSE)" = "yes"; then echo Postprocessing $<; fi
 endef
 define NOTIFY_DIVIDER
+	VERBOSE=`echo $VERBOSE | tr '[:upper:]' '[:lower:]'`; \
 	if test "$(VERBOSE)" = "yes"; then echo $(DIVIDER); fi
 endef
 

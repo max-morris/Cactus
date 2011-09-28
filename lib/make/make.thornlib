@@ -8,13 +8,11 @@
 #   @version $Id$
 # @@*/
 
-# Silence all but designated output
-#.VERBOSE:
-
 # Dividers to make the screen output slightly nicer
 DIVEL   =  __________________
 DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 define NOTIFY_DIVIDER
+	VERBOSE=`echo $VERBOSE | tr '[:upper:]' '[:lower:]'`; \
 	if test "$(VERBOSE)" = "yes"; then echo $(DIVIDER); fi
 endef
 

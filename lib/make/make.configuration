@@ -8,9 +8,6 @@
 #  @version $Id$
 # @@*/
 
-# Silence all but designated output
-#.VERBOSE:
-
 # Some configuration variables
 CONFIG = $(TOP)/config-data
 BINDINGS_DIR = $(TOP)/bindings
@@ -49,6 +46,7 @@ CACTUSLIBS = $(FLESHLIB) $(BINDINGSLIB)
 DIVEL   =  __________________
 DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 define NOTIFY_DIVIDER
+	VERBOSE=`echo $VERBOSE | tr '[:upper:]' '[:lower:]'`; \
 	if test "$(VERBOSE)" = "yes"; then echo $(DIVIDER); fi
 endef
 
