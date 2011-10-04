@@ -29,27 +29,35 @@ INCLUDE_LINE = $(patsubst %,-I"%",$(call TRANSFORM_DIRS,$(INC_DIRS)))
 
 #####################################################################
 
+ifeq ($(shell echo $(VERBOSE) | tr '[:upper:]' '[:lower:]'),yes)
 define NOTIFY_PREPROCESSING
-	VERBOSE=`echo $VERBOSE | tr '[:upper:]' '[:lower:]'`; \
-	if test "$(VERBOSE)" = "yes"; then echo Preprocessing $<; fi
+	echo Preprocessing $<
 endef
 define NOTIFY_COPYING
-	VERBOSE=`echo $VERBOSE | tr '[:upper:]' '[:lower:]'`; \
-	if test "$(VERBOSE)" = "yes"; then echo Copying $<; fi
+	echo Copying $<
 endef
 define NOTIFY_COMPILING
-	VERBOSE=`echo $VERBOSE | tr '[:upper:]' '[:lower:]'`; \
-	if test "$(VERBOSE)" = "yes"; then echo Compiling $<; \
-                                   else echo COMPILING $<; fi
+	echo Compiling $<
 endef
 define NOTIFY_POSTPROCESSING
-	VERBOSE=`echo $VERBOSE | tr '[:upper:]' '[:lower:]'`; \
-	if test "$(VERBOSE)" = "yes"; then echo Postprocessing $<; fi
+	echo Postprocessing $<
 endef
 define NOTIFY_DIVIDER
-	VERBOSE=`echo $VERBOSE | tr '[:upper:]' '[:lower:]'`; \
-	if test "$(VERBOSE)" = "yes"; then echo $(DIVIDER); fi
+	echo $(DIVIDER)
 endef
+else
+define NOTIFY_PREPROCESSING
+endef
+define NOTIFY_COPYING
+endef
+define NOTIFY_COMPILING
+	echo COMPILING $<
+endef
+define NOTIFY_POSTPROCESSING
+endef
+define NOTIFY_DIVIDER
+endef
+endif
 
 # Define how to do dependencies
 ifeq ($(strip $(PERL_BACKUP_NECESSARY)),)

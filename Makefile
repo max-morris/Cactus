@@ -40,6 +40,10 @@ endif
 
 export PROMPT
 
+# backwards compatibility for VERBOSE=yes (SILENT=no)
+ifeq ($(shell echo $(strip $(SILENT)) | tr '[:upper:]' '[:lower:]'),no)
+VERBOSE = yes
+endif
 # Make quietly unless told not to
 ifneq ($(shell echo $(strip $(VERBOSE)) | tr '[:upper:]' '[:lower:]'),yes)
 .SILENT:
@@ -191,9 +195,15 @@ BUILD_ACTIVETHORNS = lib/sbin/BuildActiveThorns.pl
 # Dividers to make the screen output slightly nicer
 DIVEL   =  __________________
 DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
+ifeq ($(shell echo $(VERBOSE) | tr '[:upper:]' '[:lower:]'),yes)
 define NOTIFY_DIVIDER
-	{ if test "$(BRIEF)" != "yes"; then echo $(DIVIDER); fi }
+	echo $(DIVIDER)
 endef
+else
+define NOTIFY_DIVIDER
+	:
+endef
+endif
 
 # Work out where we are
 export CCTK_HOME := $(shell pwd)

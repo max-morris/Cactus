@@ -45,10 +45,15 @@ CACTUSLIBS = $(FLESHLIB) $(BINDINGSLIB)
 # Dividers to make the screen output slightly nicer
 DIVEL   =  __________________
 DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
+ifeq ($(shell echo $(VERBOSE) | tr '[:upper:]' '[:lower:]'),yes)
 define NOTIFY_DIVIDER
-	VERBOSE=`echo $VERBOSE | tr '[:upper:]' '[:lower:]'`; \
-	if test "$(VERBOSE)" = "yes"; then echo $(DIVIDER); fi
+	echo $(DIVIDER)
 endef
+else
+define NOTIFY_DIVIDER
+	:
+endef
+endif
 
 # Include the definitions for this configuration
 include $(CONFIG)/make.config.defn
