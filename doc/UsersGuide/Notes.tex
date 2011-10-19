@@ -551,11 +551,15 @@ which should be consulted for the full range of configuration options.
 \item [\texttt{MPI}] * The MPI package to use, if required. Supported values are
         \texttt{CUSTOM}, \texttt{NATIVE}, \texttt{MPICH}, or \texttt{LAM}.
 
-\item [\texttt{HDF5}]
-Supported values are \texttt{yes}, and \texttt{no}. A blank value is taken as \texttt{no}.
+\item [\texttt{HDF5\_DIR}]
+Used in connection with thorn \texttt{ExternalLibraries/HDF5}.
+Supported values are \texttt{BUILD}, or a path pointing to an existing installation. The
+option \texttt{HDF5} is depreciated.
 
-\item [\texttt{LAPACK}]
-Supported values are \texttt{yes}, and \texttt{no}. A blank value is taken as \texttt{no}.
+\item [\texttt{LAPACK\_DIR}]
+Used in connection with thorn \texttt{ExternalLibraries/LAPACK}.
+Supported values are \texttt{BUILD}, or a path pointing to an existing installation. The
+option \texttt{LAPACK} is depreciated.
 
 \item [\texttt{PETSC}]
 Supported values are \texttt{yes}, and \texttt{no}. A blank value is taken as \texttt{no}.
@@ -698,13 +702,14 @@ locations given in the files in \texttt{lib/make/extras/MPI}.
 \label{subsec:hdf5}
 
 To compile with HDF5 (\url{http://hdf.ncsa.uiuc.edu/whatishdf5.html}),
-the configure options are
+include thorn \texttt{ExternalLibraries/HDF5} in your thornlist, and use
+the configure option
 
-\texttt{HDF5 = yes/no [HDF5\_DIR = <\var{dir}>] [LIBZ\_DIR = <\var{dir}>] [LIBSZ\_DIR = <\var{dir}>]}
+\texttt{HDF5\_DIR = BUILD/<\var{dir}> [LIBZ\_DIR = <\var{dir}>] [LIBSZ\_DIR = <\var{dir}>]}
 
 If \texttt{HDF5\_DIR} is not given, the configuration process will search for an
-installed HDF5 package in some standard places (defined in
-\texttt{lib/make/extras/HDF5}).
+installed HDF5 package in some standard places. If \texttt{HDF5\_DIR} is set to
+\texttt{BUILD} an HDF5 installation will be build.
 If the found HDF5 library was built with the external deflate I/O filter,
 the configuration process also searches for the \texttt{libz} library and adds
 it to the linker flags. You may also point directly to the location of
@@ -713,34 +718,27 @@ If the found HDF5 library was built with the external \texttt{szlib} I/O filter,
 the configuration process also searches for the \texttt{szlib} library and adds
 it to the linker flags. You may also point directly to the location of
 \texttt{libsz.a} by setting \texttt{LIBSZ\_DIR}.
+Note that the option \texttt{HDF5 = yes/no} is depreciated and does not work with
+thorn \texttt{ExternalLibraries/HDF5}.
 
 
 \subsection{LAPACK: Linear Algebra PACKage}
 
 To compile with LAPACK (\url{http://www.netlib.org/lapack/}),
-the configure options are
+include thorn \texttt{ExternalLibraries/LAPACK} in your thornlist, and use
+the configure option
 
 \begin{alltt}
-LAPACK = yes | no | <blank>
-[ LAPACK\_DIR = <\var{dir}> | none ]
+[ LAPACK\_DIR = BUILD | <\var{dir}> ]
 [ LAPACK\_EXTRA\_LIBS\_DIRS = <\var{dir}> ]
 [ LAPACK\_LIBS = <\var{libs}> ]
 [ LAPACK\_EXTRA\_LIBS = <\var{libs}> ]
 \end{alltt}
 
 If \texttt{LAPACK\_DIR} is not given, the configuration process will search for a
-LAPACK library \texttt{liblapack.[\{a,so\}]} in some standard places (defined in
-\texttt{lib/make/extras/LAPACK}). If \texttt{LAPACK\_DIR} is set to \texttt{no}
-the LAPACK library path is assumed to be installed in a standard system location
-(e.g. \texttt{/usr/lib/}), and thus the library path will not be added to the
-linker's command line.
-
-Because LAPACK doesn't come as a standardized system installation, there are
-additional configuration variables to set the name of the LAPACK library
-(\texttt{LAPACK\_LIBS}) as well as the name (\texttt{LAPACK\_EXTRA\_LIBS}) and
-location (\texttt{LAPACK\_EXTRA\_LIBS\_DIRS}) of extra libraries that are
-required by LAPACK itself.
-
+LAPACK library \texttt{liblapack.[\{a,so\}]} in some standard places.
+If \texttt{LAPACK\_DIR} is set to \texttt{BUILD}, a Lapack installation will
+be build.
 
 \subsection{PETSc: Portable, Extensible Toolkit for Scientific Computation}
 
