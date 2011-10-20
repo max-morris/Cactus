@@ -166,7 +166,7 @@ else
     fi
     NATIVE_MPI_INC_DIRS='/usr/lpp/ppe.poe/include'
     if test "X$MPI" = 'XNATIVE' ; then
-      case "$CC:$CXX" in
+      case "`basename $CC`:`basename $CXX`" in
         "xlc:xlC"|"cc:xlC")
           LD="mpCC -q$AIX_BITS"
           ;;
