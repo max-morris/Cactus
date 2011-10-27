@@ -381,19 +381,37 @@ sub GetThornArguments
         {
 # FIXME: quick hack to shorten argument names
 #          $type .= "${sep}cctkv$dim$group";
-          $type .= "${sep}X$dim$group";
-          $sep = ',';
-          if($block eq 'PRIVATE')
+          if ($gtype ne 'GF')
           {
-# FIXME: quick hack to shorten argument names
-#            $arguments{"cctkv$dim$group"} = "(STORAGESIZE($thorn\::$group, $dim))";
-            $arguments{"X$dim$group"} = "(STORAGESIZE($thorn\::$group, $dim))";
+            $type .= "${sep}X$dim$group";
           }
           else
           {
+            my $dim1=$dim+1;
+            if ($dim<3)
+            {
+              $type .= "${sep}cctk_lsh$dim1";
+            }
+            else
+            {
+              $type .= "${sep}cctk_lsh($dim1)";
+            }
+          }
+          $sep = ',';
+          if ($gtype ne 'GF')
+          {
+            if($block eq 'PRIVATE')
+            {
+# FIXME: quick hack to shorten argument names
+#            $arguments{"cctkv$dim$group"} = "(STORAGESIZE($thorn\::$group, $dim))";
+              $arguments{"X$dim$group"} = "(STORAGESIZE($thorn\::$group, $dim))";
+            }
+            else
+            {
 # FIXME: quick hack to shorten argument names
 #            $arguments{"cctkv$dim$group"} = "(STORAGESIZE($imp\::$group, $dim))";
-            $arguments{"X$dim$group"} = "(STORAGESIZE($imp\::$group, $dim))";
+              $arguments{"X$dim$group"} = "(STORAGESIZE($imp\::$group, $dim))";
+            }
           }
         }
         if(defined($vararraysize) && $compactgroup == 0)

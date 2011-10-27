@@ -37,7 +37,8 @@
 cctk_dim,cctk_gsh,cctk_lsh,cctk_lbnd,cctk_ubnd,cctk_lssh,cctk_from,cctk_to,\
 cctk_bbox,cctk_delta_time,cctk_time,cctk_delta_space,cctk_origin_space,\
 cctk_levfac,cctk_levoff,cctk_levoffdenom,cctk_timefac,cctk_convlevel,\
-cctk_convfac,cctk_nghostzones,cctk_iteration,cctkGH
+cctk_convfac,cctk_nghostzones,cctk_iteration,cctkGH,\
+cctk_lsh1,cctk_lsh2,cctk_lsh3
 
 #define _DECLARE_CCTK_ARGUMENTS _DECLARE_CCTK_FARGUMENTS
 #define _DECLARE_CCTK_FARGUMENTS &&\
@@ -62,7 +63,10 @@ cctk_convfac,cctk_nghostzones,cctk_iteration,cctkGH
         CCTK_DECLARE(INTEGER,cctk_convfac,)&&\
         CCTK_DECLARE(INTEGER,cctk_nghostzones,(cctk_dim))&&\
         CCTK_DECLARE(INTEGER,cctk_iteration,)&&\
-        CCTK_DECLARE(CCTK_POINTER,cctkGH,)&&
+        CCTK_DECLARE(CCTK_POINTER,cctkGH,)&&\
+        CCTK_DECLARE(INTEGER,cctk_lsh1,)&&\
+        CCTK_DECLARE(INTEGER,cctk_lsh2,)&&\
+        CCTK_DECLARE(INTEGER,cctk_lsh3,)&&
 
 #define CCTK_WARN(a,b) CCTK_Warn(a,__LINE__,__FORTRANFILE__,CCTK_THORNSTRING,b)
 
@@ -160,6 +164,9 @@ cctk_convfac,cctk_nghostzones,cctk_iteration,cctkGH
 #include "cctk_Timers.h"
 #include "cctk_Termination.h"
 #include "cctk_WarnLevel.h"
+
+/* Include prototypes for scheduled functions */
+#include "cctk_ScheduleFunctions.h"
 
 /* Include prototypes for scheduled functions */
 #include "cctk_ScheduleFunctions.h"
@@ -479,7 +486,10 @@ static inline int CCTK_VECTGFINDEX4D (const cGH *GH,
                             &((xGH)->cctk_convfac),\
                             (xGH)->cctk_nghostzones,\
                             &((xGH)->cctk_iteration),\
-                            &(xGH)
+                            &(xGH),\
+                            &(xGH)->cctk_lsh[0],\
+                            &(xGH)->cctk_lsh[1],\
+                            &(xGH)->cctk_lsh[2]
 #define _CCTK_C2F_PROTO     int *,\
                             int *,\
                             int *,int *, int *, int *, int *,int *,int *,\
@@ -493,7 +503,10 @@ static inline int CCTK_VECTGFINDEX4D (const cGH *GH,
                             int *,\
                             int *,\
                             int *,\
-                            cGH **
+                            cGH **,\
+                            int *,\
+                            int *,\
+                            int *
 
 #define CCTK_EQUALS(a,b) (CCTK_Equals((a),(b)))
 
