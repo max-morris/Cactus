@@ -413,7 +413,6 @@ static inline int CCTK_VECTGFINDEX4D (const cGH *GH,
   ((i) + (GH)->cctk_lsh[0] *                    \
    ((j) + (GH)->cctk_lsh[1] *                   \
     ((k) + (GH)->cctk_lsh[2] * (l))))
-
 #define CCTK_VECTGFINDEX0D(GH, n)               \
   (n)
 #define CCTK_VECTGFINDEX1D(GH, i, n)            \
@@ -445,27 +444,27 @@ static inline int CCTK_VECTGFINDEX4D (const cGH *GH,
 #define _DECLARE_CCTK_ARGUMENTS _DECLARE_CCTK_CARGUMENTS
 #define _DECLARE_CCTK_CARGUMENTS \
         CCTK_DECLARE_INIT(ptrdiff_t,cctki_dummy_int,0);\
-        CCTK_DECLARE_INIT(int,cctk_dim,cctkGH->cctk_dim);\
-        CCTK_DECLARE_INIT(int,*cctk_gsh,cctkGH->cctk_gsh);\
-        CCTK_DECLARE_INIT(int,*cctk_lsh,cctkGH->cctk_lsh);\
-        CCTK_DECLARE_INIT(int,*cctk_lbnd,cctkGH->cctk_lbnd);\
-        CCTK_DECLARE_INIT(int,*cctk_ubnd,cctkGH->cctk_ubnd);\
-        CCTK_DECLARE_INIT(int,*cctk_lssh,cctkGH->cctk_lssh);\
-        CCTK_DECLARE_INIT(int,*cctk_from,cctkGH->cctk_from);\
-        CCTK_DECLARE_INIT(int,*cctk_to,cctkGH->cctk_to);\
-        CCTK_DECLARE_INIT(int,*cctk_bbox,cctkGH->cctk_bbox);\
-        CCTK_DECLARE_INIT(CCTK_REAL,cctk_delta_time,cctkGH->cctk_delta_time);\
-        CCTK_DECLARE_INIT(CCTK_REAL,cctk_time,cctkGH->cctk_time);\
-        CCTK_DECLARE_INIT(CCTK_REAL,*cctk_delta_space,cctkGH->cctk_delta_space);\
-        CCTK_DECLARE_INIT(CCTK_REAL,*cctk_origin_space,cctkGH->cctk_origin_space);\
-        CCTK_DECLARE_INIT(int,*cctk_levfac,cctkGH->cctk_levfac);\
-        CCTK_DECLARE_INIT(int,*cctk_levoff,cctkGH->cctk_levoff);\
-        CCTK_DECLARE_INIT(int,*cctk_levoffdenom,cctkGH->cctk_levoffdenom);\
-        CCTK_DECLARE_INIT(int,cctk_timefac,cctkGH->cctk_timefac);\
-        CCTK_DECLARE_INIT(int,cctk_convlevel,cctkGH->cctk_convlevel);\
-        CCTK_DECLARE_INIT(int,cctk_convfac,cctkGH->cctk_convfac);\
-        CCTK_DECLARE_INIT(int,*cctk_nghostzones,cctkGH->cctk_nghostzones);\
-        CCTK_DECLARE_INIT(int,cctk_iteration,cctkGH->cctk_iteration);\
+        CCTK_DECLARE_INIT(int const,cctk_dim,cctkGH->cctk_dim);\
+        CCTK_DECLARE_INIT(int const *CCTK_RESTRICT const,cctk_gsh,cctkGH->cctk_gsh);\
+        CCTK_DECLARE_INIT(int const *CCTK_RESTRICT const,cctk_lsh,cctkGH->cctk_lsh);\
+        CCTK_DECLARE_INIT(int const *CCTK_RESTRICT const,cctk_lbnd,cctkGH->cctk_lbnd);\
+        CCTK_DECLARE_INIT(int const *CCTK_RESTRICT const,cctk_ubnd,cctkGH->cctk_ubnd);\
+        CCTK_DECLARE_INIT(int const *CCTK_RESTRICT const,cctk_lssh,cctkGH->cctk_lssh);\
+        CCTK_DECLARE_INIT(int const *CCTK_RESTRICT const,cctk_from,cctkGH->cctk_from);\
+        CCTK_DECLARE_INIT(int const *CCTK_RESTRICT const,cctk_to,cctkGH->cctk_to);\
+        CCTK_DECLARE_INIT(int const *CCTK_RESTRICT const,cctk_bbox,cctkGH->cctk_bbox);\
+        CCTK_DECLARE_INIT(CCTK_REAL const,cctk_delta_time,cctkGH->cctk_delta_time);\
+        CCTK_DECLARE_INIT(CCTK_REAL const,cctk_time,cctkGH->cctk_time);\
+        CCTK_DECLARE_INIT(CCTK_REAL const *CCTK_RESTRICT const,cctk_delta_space,cctkGH->cctk_delta_space);\
+        CCTK_DECLARE_INIT(CCTK_REAL const *CCTK_RESTRICT const,cctk_origin_space,cctkGH->cctk_origin_space);\
+        CCTK_DECLARE_INIT(int const *CCTK_RESTRICT const,cctk_levfac,cctkGH->cctk_levfac);\
+        CCTK_DECLARE_INIT(int const *CCTK_RESTRICT const,cctk_levoff,cctkGH->cctk_levoff);\
+        CCTK_DECLARE_INIT(int const *CCTK_RESTRICT const,cctk_levoffdenom,cctkGH->cctk_levoffdenom);\
+        CCTK_DECLARE_INIT(int const,cctk_timefac,cctkGH->cctk_timefac);\
+        CCTK_DECLARE_INIT(int const,cctk_convlevel,cctkGH->cctk_convlevel);\
+        CCTK_DECLARE_INIT(int const,cctk_convfac,cctkGH->cctk_convfac);\
+        CCTK_DECLARE_INIT(int const *CCTK_RESTRICT const,cctk_nghostzones,cctkGH->cctk_nghostzones);\
+        CCTK_DECLARE_INIT(int const,cctk_iteration,cctkGH->cctk_iteration);\
 
 #define _INITIALISE_CCTK_C2F
 #define _DECLARE_CCTK_C2F
@@ -475,9 +474,8 @@ static inline int CCTK_VECTGFINDEX4D (const cGH *GH,
                             (xGH)->cctk_lssh,\
                             (xGH)->cctk_from,(xGH)->cctk_to,\
                             (xGH)->cctk_bbox,\
-                            &((xGH)->cctk_delta_time),\
-                            &((xGH)->cctk_time), (xGH)->cctk_delta_space,\
-                            (xGH)->cctk_origin_space,\
+                            &((xGH)->cctk_delta_time), &((xGH)->cctk_time),\
+                            (xGH)->cctk_delta_space, (xGH)->cctk_origin_space,\
                             (xGH)->cctk_levfac,\
                             (xGH)->cctk_levoff,\
                             (xGH)->cctk_levoffdenom,\
@@ -490,23 +488,26 @@ static inline int CCTK_VECTGFINDEX4D (const cGH *GH,
                             &(xGH)->cctk_lsh[0],\
                             &(xGH)->cctk_lsh[1],\
                             &(xGH)->cctk_lsh[2]
-#define _CCTK_C2F_PROTO     int *,\
-                            int *,\
-                            int *,int *, int *, int *, int *,int *,int *,\
-                            CCTK_REAL *, CCTK_REAL *, CCTK_REAL *,\
-                            CCTK_REAL *,\
-                            int *,\
-                            int *,\
-                            int *,\
-                            int *,\
-                            int *,\
-                            int *,\
-                            int *,\
-                            int *,\
-                            cGH **,\
-                            int *,\
-                            int *,\
-                            int *
+#define _CCTK_C2F_PROTO     int const *,\
+                            int const *, int const *,\
+                            int const *, int const *,\
+                            int const *,\
+                            int const *, int const *,\
+                            int const *,\
+                            CCTK_REAL const *, CCTK_REAL const *,\
+                            CCTK_REAL const *, CCTK_REAL const *,\
+                            int const *,\
+                            int const *,\
+                            int const *,\
+                            int const *,\
+                            int const *,\
+                            int const *,\
+                            int const *,\
+                            int const *,\
+                            cGH const *const *,\
+                            int const *,\
+                            int const *,\
+                            int const *
 
 #define CCTK_EQUALS(a,b) (CCTK_Equals((a),(b)))
 
