@@ -97,6 +97,7 @@ while ($choice !~ /^Q/i)
     
     if ($choice =~ /^[EIO]/i) 
     {
+      print "  Processes: $config_data->{'NPROCS'}\n\n";
 
       # Reset/Initialise Test Statistics
       $rundata = &ResetTestStatistics($rundata,$testdata);

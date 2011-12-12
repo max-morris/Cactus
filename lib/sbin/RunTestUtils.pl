@@ -816,6 +816,7 @@ sub WriteFullResults
 
   push (@summary, "    Time                     -> $date");
   push (@summary, "    Host                     -> $hostname");
+  push (@summary, "    Processes                -> $config_data->{'NPROCS'}");
   push (@summary, "    User                     -> ".getpwuid($<));
   push (@summary, '');
 
