@@ -569,10 +569,10 @@ sub ScheduleBlock
   # add check on number of timelevels in case we were using a parameter
   for($i=0; $i < @$tlist; $i++)
   {
-    $buffer .= "    if(!($$tlist[$i] > 0 && $$tlist[$i]  <= CCTK_MaxTimeLevels(\"$$mem_groups[$i]\")))\n";
+    $buffer .= "    if(!($$tlist[$i] >= 0 && $$tlist[$i]  <= CCTK_MaxTimeLevels(\"$$mem_groups[$i]\")))\n";
     $buffer .= "        CCTK_VWarn(0, __LINE__, __FILE__, CCTK_THORNSTRING,\n";
     $buffer .= "                   \"Tried to schedule %d timelevels for group '%s' in schedule.ccl.\\n\"\n";
-    $buffer .= "                   \"Value must be between 1 and %d (inclusive)\",\n";
+    $buffer .= "                   \"Value must be between 0 and %d (inclusive)\",\n";
     $buffer .= "                   $$tlist[$i], \"$$mem_groups[$i]\", CCTK_MaxTimeLevels(\"$$mem_groups[$i]\"));\n";
     $buffer .= "\n";
   }
@@ -703,10 +703,10 @@ sub ScheduleStatement
     # add check on number of timelevels in case we were using a parameter
     for($i=0; $i < @$groups; $i++)
     {
-      $buffer .= "  if(!($$misc[$i] > 0 && $$misc[$i]  <= CCTK_MaxTimeLevels(\"$$groups[$i]\")))\n";
+      $buffer .= "  if(!($$misc[$i] >= 0 && $$misc[$i]  <= CCTK_MaxTimeLevels(\"$$groups[$i]\")))\n";
       $buffer .= "      CCTK_VWarn(0, __LINE__, __FILE__, CCTK_THORNSTRING,\n";
       $buffer .= "                 \"Tried to schedule %d timelevels for group '%s' in schedule.ccl.\\n\"\n";
-      $buffer .= "                 \"Value must be between 1 and %d (inclusive)\",\n";
+      $buffer .= "                 \"Value must be between 0 and %d (inclusive)\",\n";
       $buffer .= "                 $$misc[$i], \"$$groups[$i]\", CCTK_MaxTimeLevels(\"$$groups[$i]\"));\n";
       $buffer .= "\n";
     }

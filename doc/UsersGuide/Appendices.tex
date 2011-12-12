@@ -840,7 +840,9 @@ file. If the maximum number of timelevels is 1 (the default), this
 number may be omitted. Alternatively \var{timelevels} can be the name of a
 parameter accessible to the thorn. The parameter name is the same as used in C
 routines of the thorn, fully qualified parameter names of the form
-\texttt{\var{thorn}::\var{parameter}} are not allowed.
+\texttt{\var{thorn}::\var{parameter}} are not allowed. In this case 0 (zero)
+\var{timelevels} can be requested, which is equivalent to the {\tt STORAGE}
+statement being absent.
 
 The behaviour of an assignment statement is independent of its
 position in the schedule file (so long as it is outside a schedule
@@ -919,7 +921,9 @@ schedule [GROUP] <\var{function name}|\var{group name}> AT|IN <\var{time}> \verb
   this number may be omitted. Alternatively \var{timelevels} can be the
   name of a parameter accessible to the thorn. The parameter name is the
   same as used in C routines of the thorn, fully qualified parameter names
-  of the form \texttt{\var{thorn}::\var{parameter}} are not allowed.
+  of the form \texttt{\var{thorn}::\var{parameter}} are not allowed. In this
+  case 0 (zero) \var{timelevels} can be requested, which is equivalent to
+  the {\tt STORAGE} statement being absent.
 
   \item[{\tt TRIGGER}] List of grid variables or groups to be used as
   triggers for causing an {\tt ANALYSIS} function or group to be

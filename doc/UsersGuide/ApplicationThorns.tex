@@ -523,7 +523,9 @@ the number of timelevels of each group for which storage should be activated.
 Alternatively \var{timelevels} can be the name of a parameter accessible
 to the thorn. The parameter name is the same as used in C routines of the
 thorn, fully qualified parameter names of the form
-\texttt{\var{thorn}::\var{parameter}} are not allowed.
+\texttt{\var{thorn}::\var{parameter}} are not allowed. In this case 0 (zero)
+\var{timelevels} can be requested, which is equivalent to the {\tt STORAGE}
+statement being absent.
 
 \item[\texttt{TRIGGERS}] \texttt{TRIGGERS} is used when the routine is
 registered at \texttt{ANALYSIS}.  This is a special time bin; a routine
@@ -1504,7 +1506,10 @@ defining {\tt interface.ccl} file. If the maximum is 1 (the default)
 this number may be omitted. Alternatively \var{timelevels} can be the
 name of a parameter accessible to the thorn. The parameter name is the
 same as used in C routines of the thorn, fully qualified parameter names
-of the form \texttt{\var{thorn}::\var{parameter}} are not allowed.
+of the form \texttt{\var{thorn}::\var{parameter}} are not allowed. In this
+case 0 (zero) \var{timelevels} can be requested, which is equivalent to
+the {\tt STORAGE} statement being absent.
+
 \item[\texttt{TRIGGER}]
 This is only used for items scheduled at timebin \texttt{CCTK\_ANALYSIS}.
 The item will only be executed if output is due for at least one
