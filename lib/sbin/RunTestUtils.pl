@@ -831,6 +831,20 @@ sub WriteFullResults
   push (@summary, "               set tolerance -> $rundata->{'NPASSEDTOTOL'}");
   push (@summary, "    Number failed            -> $rundata->{'NFAILED'}");
 
+  if ($rundata->{'NPASSED'})
+  {
+    push (@summary, '');
+    push (@summary, '  Tests passed:');
+    push (@summary, '');
+    foreach $thorn (sort split(' ',$testdata->{'THORNS'}))
+    {
+      foreach $file (sort split(' ',$rundata->{"$thorn PASSED"}))
+      {
+        push (@summary, "    $file (from $thorn)");
+      }
+    }
+  }
+
   if ($rundata->{'NFAILED'})
   {
     push (@summary, '');
@@ -1390,6 +1404,7 @@ sub ReportOnTest
   {
     $summary = "Success: $testdata->{\"$thorn $test NDATAFILES\"} files identical";
     printf("\n  $summary\n");
+    $rundata->{"$thorn PASSED"} .= "$test ";
     $rundata->{"NPASSED"}++;
   }
   else
@@ -1398,6 +1413,7 @@ sub ReportOnTest
     {
       $summary = "Success: $testdata->{\"$thorn $test NDATAFILES\"} files compared, $rundata->{\"$thorn $test NFAILWEAK\"} differ in the last digits";
       printf "\n  $summary\n";
+      $rundata->{"$thorn PASSED"} .= "$test ";
       $rundata->{"NPASSED"}++;
       $rundata->{"NPASSEDTOTOL"}++;
     }
