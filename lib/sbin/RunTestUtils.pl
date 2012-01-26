@@ -110,6 +110,7 @@ sub ParseParFile
   while (<IN>)
   {
     $line = $_;
+    $line =~ s/#.*//g;
 
     if($processing_active == 1)
     {
