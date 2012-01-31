@@ -46,10 +46,19 @@ typedef struct
   int loop_singlemap;
   int loop_local;
 
+  int tags;
+
   /* The last items should be considered volatile and may not stay here */
 
   int n_TriggerGroups;
   int *TriggerGroups;
+
+#define CACTUS_HAS_READS_CLAUSES
+  int n_WritesClauses;
+  const char **WritesClauses;
+  int n_ReadsClauses;
+  const char **ReadsClauses;
+
   char *where;
   char *routine;
   char *thorn;
@@ -88,6 +97,8 @@ int CCTK_ScheduleFunction(void *function,
                           int n_trigger_groups,
                           int n_before,
                           int n_after,
+                          int n_writes,
+                          int n_reads,
                           int n_while,
                           int n_if,
                           ...);

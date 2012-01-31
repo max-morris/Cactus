@@ -499,8 +499,11 @@ sub ScheduleBlock
   my($trigger_groups);
   my($sync_groups);
   my(@options);
+  my($tags);
   my(@before_list);
   my(@after_list);
+  my(@writes_list);
+  my(@reads_list);
   my(@while_list);
   my(@if_list);
 
@@ -532,6 +535,8 @@ sub ScheduleBlock
                                          $rhinterface_db);
 
   @options = split(/,/, $rhschedule_db->{"\U$thorn\E BLOCK_$block OPTIONS"});
+  $tags = $rhschedule_db->{"\U$thorn\E BLOCK_$block TAGS"};
+  $tags = '' if ! defined $tags;
 
   @before_list = &ScheduleSelectRoutines($thorn, $implementation,
                                          $rhschedule_db->{"\U$thorn\E BLOCK_$block BEFORE"},
@@ -539,6 +544,14 @@ sub ScheduleBlock
 
   @after_list = &ScheduleSelectRoutines($thorn, $implementation,
                                         $rhschedule_db->{"\U$thorn\E BLOCK_$block AFTER"},
+                                        $rhschedule_db);
+
+  @writes_list = &ScheduleSelectRoutines($thorn, $implementation,
+                                         $rhschedule_db->{"\U$thorn\E BLOCK_$block WRITES"},
+                                         $rhschedule_db);
+
+  @reads_list = &ScheduleSelectRoutines($thorn, $implementation,
+                                        $rhschedule_db->{"\U$thorn\E BLOCK_$block READS"},
                                         $rhschedule_db);
 
   @while_list = &ScheduleSelectVars($thorn, $implementation,
@@ -648,16 +661,25 @@ sub ScheduleBlock
 #    $help .= 'IO methods to decide whether of not execution should happen.';
 #    &CST_error(0,$mess,$help,__LINE__,__FILE__);
 #  }
-  $buffer .= $indent . scalar(@$sync_groups) . ",  /* Number of SYNC     groups   */\n";
-  $buffer .= $indent . scalar(@options) . ",  /* Number of Options           */\n";
-  $buffer .= $indent . scalar(@before_list) . ",  /* Number of BEFORE  routines  */\n";
-  $buffer .= $indent . scalar(@after_list) . ",  /* Number of AFTER   routines  */\n";
-  $buffer .= $indent . scalar(@while_list) . ",  /* Number of WHILE   variables */\n";
-  $buffer .= $indent . scalar(@if_list) . ",  /* Number of IF   variables */\n";
+  $buffer .= $indent . scalar(@$sync_groups)  . ", /* Number of SYNC     groups    */\n";
+  $buffer .= $indent . scalar(@writes_list)   . ", /* Number of WRITES clauses     */\n";
+  $buffer .= $indent . scalar(@reads_list)    . ", /* Number of READS clauses      */\n";
+  $buffer .= $indent . scalar(@options)       . ", /* Number of Options            */\n";
+  $buffer .= $indent . scalar(@before_list)   . ", /* Number of BEFORE   routines  */\n";
+  $buffer .= $indent . scalar(@after_list)    . ", /* Number of AFTER    routines  */\n";
+  $buffer .= $indent . scalar(@while_list)    . ", /* Number of WHILE    variables */\n";
+  $buffer .= $indent . scalar(@if_list)       . ", /* Number of IF       variables */\n";
   $buffer .= $indent . "cctkschedulei_tlevelarray  /* Array of timelevel data for storage groups */";
 
   foreach $item (@$mem_groups, @$comm_groups, @$trigger_groups, @$sync_groups,
-                 @options, @before_list, @after_list, @while_list, @if_list)
+                 @writes_list, @reads_list, @options)
+  {
+    $buffer .= ",\n$indent\"$item\"";
+  }
+
+  $buffer .= ",\n$indent\"$tags\"";
+
+  foreach $item (@before_list, @after_list, @while_list, @if_list)
   {
     $buffer .= ",\n$indent\"$item\"";
   }
