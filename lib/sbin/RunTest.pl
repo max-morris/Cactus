@@ -80,6 +80,7 @@ while ($choice !~ /^Q/i)
     print "  Choose test from [T]horn or [A]rrangement\n";
     print "  Rerun previous test [R]\n";
     print "  Rerun previous test and show run output on screen [S]\n";
+    print "  Print tolerance table for data in previous test [P]\n";
     print "  Compare all files in the test output directories [O]\n";
     print "  Customize testsuite checking [C]\n";
     print "  Quit [Q]\n\n";
@@ -171,6 +172,17 @@ while ($choice !~ /^Q/i)
 	print "  No previous test has been run\n";
       }
     }
+    elsif ($choice =~ /^P/i)
+    {
+      if ($thorn && $test)
+      {
+        &PrintToleranceTable($test,$thorn,$testdata,\%runconfig);
+      }
+      else
+      {
+	print "  No previous test has been run\n";
+      }
+    }
     elsif ($choice =~ /^C/i)
     {
       print "  Options for customization\n";
@@ -183,11 +195,11 @@ while ($choice !~ /^Q/i)
 	  $choice = &defprompt("  Select choice: ","");
 	  if ($choice =~ /A/i)
 	  {
-	    $runconfig{"$thorn $test ABSTOL"} = &defprompt("  New absolute tolerance: ","$runconfig{\"$thorn $test ABSTOL\"}");
+	    $runconfig{"$thorn $test ABSTOL"}{".*"} = &defprompt("  New absolute tolerance: ","$runconfig{\"$thorn $test ABSTOL\"}{\".*\"}");
 	  }
 	  elsif ($choice =~ /R/i)
 	  {
-	    $runconfig{"$thorn $test RELTOL"} = &defprompt("  New relative tolerance: ","$runconfig{\"$thorn $test RELTOL\"}");
+	    $runconfig{"$thorn $test RELTOL"}{".*"} = &defprompt("  New relative tolerance: ","$runconfig{\"$thorn $test RELTOL\"}{\".*\"}");
 	  }
 	}
       }

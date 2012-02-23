@@ -170,14 +170,31 @@ sub ParseTestConfigs
       {
         $line = $config[$line_number];
 
+        my @insorder_thornabstol_keys, @insorder_thornreltol_keys;
+        my $insorder_thornabstol_counter=0; 
+        my $insorder_thornreltol_counter=0;
         # Parse tokens
-        if ($line =~ m/^\s*ABSTOL\s*(.*)/i)
+        if ($line =~ m/^\s*ABSTOL\s*(\S*)\s*(\S*)\s*$/i)
         {
-        $ABSTOL = $rundata->{"$thorn ABSTOL"}=$1;
+          my $newtol=$1;
+          my $varRegex=$2;
+          if ( $varRegex =~ m/^$/i ) {
+             # No regular expression given. Setting default tolerance ".*"
+             $varRegex=".*";
+          }
+          $rundata->{"$thorn ABSTOL"}{$varRegex}=$newtol;
+          $ABSTOL=$$rundata{"$thorn ABSTOL"};
         }
-        elsif ($line =~ m/^\s*RELTOL\s*(.*)/i)
+        elsif ($line =~ m/^\s*RELTOL\s*(\S*)\s*(\S*)\s*$/i)
         {
-          $RELTOL = $rundata->{"$thorn RELTOL"}=$1;
+          my $newtol=$1;
+          my $varRegex=$2;
+          if ( $varRegex =~ m/^$/i ) {
+             # No regular expression given. Setting default tolerance ".*"
+             $varRegex=".*";
+          }
+          $rundata->{"$thorn RELTOL"}{$varRegex}= $newtol;
+          $RELTOL=$$rundata{"$thorn RELTOL"};
         }
         elsif ($line =~ m/^\s*NPROCS\s+(\d+)\s*$/i)
         {
@@ -209,7 +226,8 @@ sub ParseTestConfigs
 sub ParseTestBlock
 {
   my ($line_number, $data) = @_;
-  my ($Test, $ABSTOL, $RELTOL, $NPROCS) = ();
+  my ($Test, $NPROCS) = ();
+  my (%ABSTOL, %RELTOL) = (); 
 
   $data->[$line_number] =~ m/^\s*PROVIDES\s*(.*)/i;
 
@@ -226,14 +244,26 @@ sub ParseTestBlock
     while($data->[$line_number] !~ m:\s*\}\s*:)
     {
       $line_number++;
-      if($data->[$line_number] =~ m/^\s*ABSTOL\s*(.*)$/i)
+      if ($data->[$line_number] =~ m/^\s*ABSTOL\s*(\S*)\s*(\S*)\s*$/i)
       {
-        $ABSTOL = $1;
+        my $newtol=$1;
+        my $varRegex=$2;
+        if ( $varRegex =~ m/^$/i ) {
+           # No regular expression given. Setting default tolerance ".*"
+           $varRegex=".*";
+        }
+        $ABSTOL{$varRegex} = $newtol;
         next;
       }
-      elsif($data->[$line_number] =~ m/^\s*RELTOL[^\s]*\s*(.*)$/i)
+      elsif ($data->[$line_number] =~ m/^\s*RELTOL\s*(\S*)\s*(\S*)\s*$/i)
       {
-        $RELTOL = $1;
+        my $newtol=$1;
+        my $varRegex=$2;
+        if ( $varRegex =~ m/^$/i ) {
+           # No regular expression given. Setting default tolerance ".*"
+           $varRegex=".*";
+        }
+        $RELTOL{$varRegex} = $newtol;
         next;
       }
       elsif ($data->[$line_number] =~ m/^\s*NPROCS\s+(\d+)\s*$/i)
@@ -251,7 +281,7 @@ sub ParseTestBlock
       }
     }
   }
-  return ($Test, $ABSTOL, $RELTOL, $NPROCS, $line_number);
+  return ($Test, \%ABSTOL, \%RELTOL, $NPROCS, $line_number);
 }
 
 # Find archive files for one particular test
@@ -543,8 +573,168 @@ sub PrintDataBase
 
   foreach $field ( sort keys %$database )
   {
-    print "$field has value\n   $database->{$field}\n";
+    # If field is a hash table reference, descend into hash
+    if ( ref $database->{$field} eq "HASH" )
+    {
+       my $subhashfield;
+       my $reftoSubhash=$$database{$field};
+       my $hashSize = scalar( keys %$reftoSubhash );
+       if ( $hashSize == 0 )
+       {
+         print "$field is an empty hash.\n";
+         next;
+       }
+       print "$field is a hash.  Descending into it.\n";
+       foreach $subhashfield ( sort keys %$reftoSubhash )
+       {
+         print "    Field $subhashfield has value \n       $database->{$field}->{$subhashfield}\n";
+       }
+    }
+    else
+    {
+       print "$field has value\n   $database->{$field}\n";
+    }
   }
+}
+
+sub PrintToleranceTable
+{
+  my($test,$thorn,$testdata,$runconfig) = @_;
+  my($fileabstol,$filereltol);
+
+  # Get default tolerances for the test
+  if (defined($runconfig{"$thorn $test ABSTOL"}->{".*"}))
+  {
+     $testabstol=$runconfig{"$thorn $test ABSTOL"}->{".*"};
+  }
+  elsif (defined($runconfig{"$thorn ABSTOL"}->{".*"}) )
+  {
+     $testabstol=$runconfig{"$thorn ABSTOL"}->{".*"};
+  }
+  else
+  {
+     $testabstol=$runconfig{"ABSTOL"};
+  }
+
+  if (defined($runconfig{"$thorn $test RELTOL"}->{".*"}))
+  {
+     $testreltol=$runconfig{"$thorn $test RELTOL"}->{".*"};
+  }
+  elsif (defined($runconfig{"$thorn RELTOL"}->{".*"}) )
+  { 
+     $testreltol=$runconfig{"$thorn RELTOL"}->{".*"};
+  }
+  else
+  {
+     $testreltol=$runconfig{"RELTOL"};
+  }
+    
+  # Print test's default tolerances and any deviations
+  print "------------------------------------------------------------------------\n\n";
+  print "  Test $thorn: $test \n";
+  print "    \"$testdata->{\"$thorn $test DESC\"}\"\n";
+
+  print "    File\t\tAbs Tol\t\tRel Tol\n";
+  print "    --------------------------------------------------------------------\n";
+  print "    (.*)\t\t$testabstol\t\t$testreltol\n";
+  foreach $file (split(" ",$testdata->{"$thorn $test DATAFILES"}))
+  {
+     ($fileabstol, $filereltol)=&GetFileTolerances($test,$thorn,\%runconfig,$file);
+     if ( $fileabstol == $testabstol ) { $fileabstol="--"; }
+     if ( $filereltol == $testreltol ) { $filereltol="--"; }
+     if ( $fileabstol ne "--" || $filereltol ne "--" )
+     {
+        print "    $file\t\t$fileabstol\t\t$filereltol\n";
+     }
+  }
+  print "\n";
+}
+
+sub GetFileTolerances
+{
+  my($test,$thorn,$runconfig,$file) = @_;
+
+  # Initialize to global tolerances
+  my $fileabstol = $runconfig->{"ABSTOL"};
+  my $filereltol = $runconfig->{"RELTOL"};
+
+  # References to tolerance hashes
+  my $refAbsTolThorn=$$runconfig{"$thorn ABSTOL"};
+  my $refRelTolThorn=$$runconfig{"$thorn RELTOL"};
+  my $refAbsTolTest=$$runconfig{"$thorn $test ABSTOL"};
+  my $refRelTolTest=$$runconfig{"$thorn $test RELTOL"};
+
+  # Cycle through thorn-wide tolerance hashes for file-matching expressions
+  my $countmatches;
+  if ( scalar( keys %$refAbsTolThorn ) )
+  {
+     $countmatches=0;
+     foreach $varRegex ( sort keys %$refAbsTolThorn )
+     {
+        if ( $file =~ m/$varRegex/i )
+        {
+           $fileabstol=$refAbsTolThorn->{$varRegex};
+           if ( $varRegex ne ".*" ) { $countmatches++; }
+        }
+        if ( $countmatches > 1 ) {
+           warn "ERROR: Data file $file of thorn $thorn matches more than one regular expression for ABSTOL.\n";
+           die  "ABORTING: Please adjust test.ccl of $thorn to avoid multiple matches at the thorn-wide tolerance level (ABSTOL).\n"
+        }
+     }
+  }
+  if ( scalar( keys %$refRelTolThorn ) )
+  {
+     $countmatches=0;
+     foreach $varRegex ( sort keys %$refRelTolThorn )
+     {
+        if ( $file =~ m/$varRegex/i )
+        { 
+           $filereltol=$refRelTolThorn->{$varRegex}; 
+           if ( $varRegex ne ".*" ) { $countmatches++; }
+        }
+        if ( $countmatches > 1 ) {
+           warn "ERROR: Data file $file of thorn $thorn matches more than one regular expression for RELTOL.\n";
+           die  "ABORTING: Please adjust test.ccl of $thorn to avoid multiple matches at the thorn-wide tolerance level (RELTOL).\n"
+        }
+     }
+  }
+
+  # Cycle through test-specific tolerance hashes for file-matching expressions
+  if ( scalar( keys %$refAbsTolTest ) )
+  {
+     $countmatches=0;
+     foreach $varRegex ( sort keys %$refAbsTolTest )
+     {
+        if ( $file =~ m/$varRegex/i ) 
+            {
+           $fileabstol=$refAbsTolTest->{$varRegex}; 
+           if ( $varRegex ne ".*" ) { $countmatches++; }
+        }
+        if ( $countmatches > 1 ) {
+           warn "ERROR: Data file $file of test $thorn -- $test matches more than one regular expression for ABSTOL.\n";
+           die  "ABORTING: Please adjust test.ccl of $thorn to avoid multiple matches at the $test tolerance level (ABSTOL).\n"
+        }
+     }
+  }
+  if ( scalar( keys %$refRelTolTest ) )
+  {
+     $countmatches=0;
+     foreach $varRegex ( sort keys %$refRelTolTest )
+     {
+        if ( $file =~ m/$varRegex/i ) 
+        {
+           $filereltol=$refRelTolTest->{$varRegex};
+           if ( $varRegex ne ".*" ) { $countmatches++; }
+        }
+        if ( $countmatches > 1 ) {
+           warn "ERROR: Data file $file of test $thorn -- $test matches more than one regular expression for RELTOL.\n";
+           die  "ABORTING: Please adjust test.ccl of $thorn to avoid multiple matches at the $test tolerance level (RELTOL).\n"
+        }
+     }
+  }
+
+  return ($fileabstol, $filereltol);
+
 }
 
 sub CleanDir
@@ -1061,38 +1251,17 @@ sub CompareTestFiles
   $rundata->{"$thorn $test NFAILWEAK"}=0;
   $rundata->{"$thorn $test NFAILSTRONG"}=0;
 
+  $abstol = $runconfig->{"ABSTOL"};
+  $reltol = $runconfig->{"RELTOL"};
+
   if ($rundata->{"$thorn $test NTESTFILES"})
   {
-    if ($runconfig->{"$thorn $test ABSTOL"})
-    {
-      $abstol = $runconfig->{"$thorn $test ABSTOL"};
-    }
-    elsif ($runconfig->{"$thorn ABSTOL"})
-    {
-      $abstol = $runconfig->{"$thorn ABSTOL"};
-    }
-    else 
-    {
-      $abstol = $runconfig->{"ABSTOL"};
-    }
-
-    if ($runconfig->{"$thorn $test RELTOL"})
-    {
-      $reltol = $runconfig->{"$thorn $test RELTOL"};
-    }
-    elsif ($runconfig->{"$thorn RELTOL"})
-    {
-      $reltol = $runconfig->{"$thorn RELTOL"};
-    }
-    else 
-    {
-      $reltol = $runconfig->{"RELTOL"};
-    }
 
     # Compare each file in the archived test directory
     foreach $file (split(" ",$testdata->{"$thorn $test DATAFILES"}))
     {
       my (@maxabsdiff, @absdiff, @valmax) = ();
+      my ($filereltol, $fileabstol);
 
       $newfile = "$test_dir$sep$file";
       # This is the standard location of test data files
@@ -1113,6 +1282,8 @@ sub CompareTestFiles
       $rundata->{"$thorn $test $file NNANNOTFOUND"}=0;
       $rundata->{"$thorn $test $file NFAILSTRONG"}=0;
       $rundata->{"$thorn $test $file NFAILWEAK"}=0;
+
+      ($fileabstol, $filereltol)=&GetFileTolerances($test,$thorn,$runconfig,$file);
 
       if ( -s $newfile && -s $oldfile)
       {
@@ -1178,8 +1349,8 @@ sub CompareTestFiles
 
             for ($count = 0; $count < $nold; $count++)
             {
-              my $vreltol = $reltol * $valmax[$count];
-              my $vtol = $abstol > $vreltol ? $abstol : $vreltol;
+              my $vreltol = $filereltol * $valmax[$count];
+              my $vtol = $fileabstol > $vreltol ? $fileabstol : $vreltol;
               if ($absdiff[$count] >= $vtol) {
                 $rundata->{"$thorn $test $file NFAILSTRONG"}++;
                 last;
