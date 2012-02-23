@@ -3581,15 +3581,15 @@ specific absolute and relative tolerances, the number of procesors required
 to run, and file extensions. The configuration file has the form:
 
 \begin{alltt}
-ABSTOL  <\var{thorn_absolute_tolerance}>
-RELTOL  <\var{thorn_relative_tolerance}>
+ABSTOL  <\var{thorn_absolute_tolerance}> [\var{filename_pattern}]
+RELTOL  <\var{thorn_relative_tolerance}> [\var{filename_pattern}]
 NPROCS  <\var{thorn_nprocs}>
 EXTENSIONS  <\var{extension_1} \var{extension_2} \var{extension_3}>
 
 TEST <\var{test_example}>
 \{
-  ABSTOL <\var{absolute_tol}>
-  RELTOL <\var{relative_tol}>
+  ABSTOL <\var{absolute_tol}> [\var{filename_pattern}]
+  RELTOL <\var{relative_tol}> [\var{filename_pattern}]
   NPROCS <\var{nprocs}>
 \}
 \end{alltt}
@@ -3599,6 +3599,25 @@ which states that when comparing files of test \verb|test_example|, both
 the absolute and relative tolerances. For all other tests in the
 thorn, the default value of absolute and relative tolerances are set
 to \verb|thorn_absolute_tolerance| and \verb|thorn_relative_tolerance|.
+%%% from Track ticket #114, after text by Tanja Bode
+Both absolute and relative tolerances can be specified on a per-file
+bases by supplying an optional \verb|filename_pattern| regular expression
+to match against a filename and the tolerance value. The specified
+tolerances override more general tolerances for data files whose name
+matches these regular expressions. Any set of characters can be used for
+matching as long as there are no whitespaces in the regular expression.
+
+For example:
+
+\begin{alltt}
+ABSTOL ^Psi4.[xy] 1e-8
+RELTOL gxx 1e-12
+\end{alltt}
+
+More specific tolerances can be specified for all the tests of a thorn
+or just within a test's block. It is an error if a regular expression
+matches more than one filename.
+%%%
 The \texttt{NPROCS} option specifies the number of processors required to
 run a given testsuite \var{test\_example} or all testsuites of a thorn
 successfully. If no \texttt{NPROCS} option is present, the testsuite(s)
