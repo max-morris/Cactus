@@ -786,6 +786,7 @@ else
 fi
 
 CCTK_CHECK_FUNCS(sched_getaffinity)
+CCTK_CHECK_FUNCS(getpid)
 
 
 # Check if we have __int64
