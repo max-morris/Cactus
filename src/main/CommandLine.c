@@ -51,6 +51,8 @@ static void CommandLinePrintParameter (const cParamData *properties);
 static char* logdir = NULL;
 static int requested_stdout_redirection = 0;
 static int requested_stderr_redirection = 0;
+static int buffering_type = 0;
+/* buffering: 0=default, 1=unbuffered, 2=line, 3=fully */
 static int paramchecking = 0;
 
 
@@ -497,17 +499,17 @@ void CCTKi_CommandLineSetBuffering (const char *argument)
   if (! strcmp (argument, "no"))
   {
     /* Switch to unbuffered mode (best for debugging) */
-    setvbuf (stdout, NULL, _IONBF, 0);
+    buffering_type = 1;
   }
   else if (! strcmp (argument, "line"))
   {
     /* Switch to line buffered mode (good for screen output) */
-    setvbuf (stdout, NULL, _IOLBF, 0);
+    buffering_type = 2;
   }
   else if (! strcmp (argument, "full"))
   {
     /* Switch to fully buffered mode (fastest) */
-    setvbuf (stdout, NULL, _IOFBF, 0);
+    buffering_type = 3;
   }
   else
   {
@@ -747,6 +749,26 @@ void CCTKi_CommandLineFinished (void)
     free (logfilename);
   }
   free (logdir);
+  
+  /* if requested, change buffering mode of stdout */
+  switch (buffering_type)
+  {
+  case 0:
+    /* Keep default */
+    break;
+  case 1:
+    /* Switch to unbuffered mode (best for debugging) */
+    setvbuf (stdout, NULL, _IONBF, 0);
+    break;
+  case 2:
+    /* Switch to line buffered mode (good for screen output) */
+    setvbuf (stdout, NULL, _IOLBF, 0);
+    break;
+  case 3:
+    /* Switch to fully buffered mode (fastest) */
+    setvbuf (stdout, NULL, _IOFBF, 0);
+    break;
+  }
 }
 
 
