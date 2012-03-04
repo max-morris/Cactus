@@ -769,6 +769,9 @@ void CCTKi_CommandLineFinished (void)
     setvbuf (stdout, NULL, _IOFBF, 0);
     break;
   }
+  
+  /* ensure that stderr is unbuffered (best for debugging) */
+  setvbuf (stderr, NULL, _IONBF, 0);
 }
 
 
