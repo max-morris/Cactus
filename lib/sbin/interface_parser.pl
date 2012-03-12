@@ -746,7 +746,7 @@ sub parse_interface_ccl
       $funcname = $1;
       $provided_by = $2;
 
-      if($provided_by =~ m/(.*)\s*LANGUAGE\s*(.+)/i)
+      if($provided_by =~ m/^(.*)\s+LANGUAGE\s+(.*\S)\s*$/i)
       {
         $provided_by          = $1;
         $provided_by_language = "\U$2";
