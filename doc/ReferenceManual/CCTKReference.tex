@@ -1256,14 +1256,14 @@ it must be called by all processors otherwise the code will hang.
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
-int istat = CCTK_Barrier(int cGH, const cGH *cctkGH)
+int istat = CCTK_Barrier(const cGH *cctkGH)
 \end{verbatim}
 \end{Synopsis}
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
-subroutine CCTK_Barrier(cGH, cctkGH)
-   integer       cGH
-   CCTK_Pointer  cctkGH
+subroutine CCTK_Barrier (istat, cctkGH)
+  integer               itat
+  CCTK_POINTER_TO_CONST cctkGH
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
