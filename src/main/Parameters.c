@@ -14,6 +14,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include <math.h>
+#include <assert.h>
 
 #include "cctk_Flesh.h"
 #include "cctk_ActiveThorns.h"
@@ -183,6 +185,7 @@ static int ParameterSetSentence (t_param *param, const char *value);
 static int ParameterSetInteger  (t_param *param, const char *value);
 static int ParameterSetReal     (t_param *param, const char *value);
 static int ParameterSetBoolean  (t_param *param, const char *value);
+static int SetVarEvaluator(int nvars, const char * const *vars, uExpressionValue *vals, void *data);
 
 static void GetBaseName(const char *name, char **basename, int *array_index);
 static char *ArrayParamName(const char *basename,int array_index);
@@ -2185,10 +2188,47 @@ static int ParameterSetInteger (t_param *param, const char *value)
   const t_range *range;
   char *endptr;
 
-  retval = -1;
+  retval = 0;
+
+  /* try parsing as number */
   inval = strtol (value, &endptr, 0);
 
-  if(!*endptr)
+  if(*endptr) /* if we could not parse as a number, try an expression */
+  {
+    int type = PARAMETER_INT;
+    int ierr;
+    uExpressionValue val;
+    uExpression *expr;
+
+    expr = Util_ExpressionParse(value);
+    assert(expr);
+    ierr = Util_ExpressionEvaluate(expr, &val, SetVarEvaluator, &type);
+    Util_ExpressionFree(expr);
+
+    if (ierr == 0)
+    {
+      assert(val.type == ival || val.type == rval);
+
+      if(val.type == ival)
+      {
+        inval =(int)val.value.ival;
+      }
+      else if(fabs(round(val.value.rval) - val.value.rval) < 1e-12) /* enforce integer result */
+      {
+        inval = (int)round(val.value.rval);
+      }
+      else
+      {
+        retval = -6;
+      }
+    }
+    else
+    {
+      retval = -6;
+    }
+  }
+
+  if (!retval)
   {
     for (range = param->props->range; range; range = range->next)
     {
@@ -2207,10 +2247,6 @@ static int ParameterSetInteger (t_param *param, const char *value)
 #endif
       }
     }
-  }
-  else
-  {
-    retval = -6;
   }
 
   if (retval == -1)
@@ -2235,12 +2271,12 @@ static int ParameterSetInteger (t_param *param, const char *value)
 static int ParameterSetReal (t_param *param, const char *value)
 {
   int retval;
-  unsigned int p;
   const t_range *range;
   double inval;
   char *temp;
   char *endptr;
 
+  retval = 0;
 
   /*
    * Canonicalize the string by converting all exponent letters
@@ -2248,7 +2284,7 @@ static int ParameterSetReal (t_param *param, const char *value)
    * to do the actual conversion) only groks [eE].
    */
   temp = strdup (value);
-  for (p = 0; p < strlen (temp); p++)
+  for (unsigned int p = 0; p < strlen (temp); p++)
   {
     if (temp[p] == 'E' || temp[p] == 'd' || temp[p] == 'D')
     {
@@ -2257,11 +2293,40 @@ static int ParameterSetReal (t_param *param, const char *value)
     }
   }
 
-  retval = -1;
+  /* try parsing as number */
   inval = strtod (temp, &endptr);
+  free(temp);
 
-  if(!*endptr)
+  if (*endptr) /* if we cannot parse as a number, try expression */
   {
+    int type = PARAMETER_REAL;
+    int ierr;
+    uExpressionValue val;
+    uExpression *expr;
+
+    expr = Util_ExpressionParse(value);
+    assert(expr);
+    ierr = Util_ExpressionEvaluate(expr, &val, SetVarEvaluator, &type);
+    Util_ExpressionFree(expr);
+
+    if (ierr == 0)
+    {
+      assert(val.type == ival || val.type == rval);
+
+      if (val.type == ival)
+        inval =(int)val.value.ival;
+      else
+        inval = val.value.rval;
+    }
+    else
+    {
+      retval = -6;
+    }
+  }
+
+  if (!retval)
+  {
+    retval = -1;
     for (range = param->props->range; range; range = range->next)
     {
       if (CCTK_IsThornActive (range->origin) ||
@@ -2280,12 +2345,6 @@ static int ParameterSetReal (t_param *param, const char *value)
       }
     }
   }
-  else
-  {
-    retval = -6;
-  }
-
-  free (temp);
 
   if (retval == -1)
   {
@@ -2308,10 +2367,48 @@ static int ParameterSetReal (t_param *param, const char *value)
 
 static int ParameterSetBoolean (t_param *param, const char *value)
 {
-  int retval;
+  const int type = PARAMETER_BOOLEAN;
+  int retval, inval;
+  uExpressionValue val;
+  uExpression *expr;
 
+  /* first try parsing as yes/no/true/false */
+  retval = CCTK_SetBoolean (&inval, value);
 
-  retval = CCTK_SetBoolean (param->data, value);
+  if(retval) /* if we cannot parse as a boolean, try expression */ 
+  {
+    expr = Util_ExpressionParse(value);
+    assert(expr);
+    int ierr = Util_ExpressionEvaluate(expr, &val, SetVarEvaluator, (void *)&type);
+    Util_ExpressionFree(expr);
+
+    if (!ierr)
+    {
+      assert(val.type == ival || val.type == rval);
+      if (val.type == ival)
+      {
+        inval =(int)val.value.ival;
+        retval = 0;
+      }
+      else if(fabs(round(val.value.rval) - val.value.rval) < 1e-12) /* enforce integer result */
+      {
+        inval = (int)round(val.value.rval);
+        retval = 0;
+      }
+      else
+      {
+        retval = -1;
+      }
+    }
+    else
+    {
+      retval = -1;
+    }
+  }
+
+  if (!retval)
+    *(CCTK_INT *)param->data = inval != 0;
+
   if (retval == -1)
   {
     CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
@@ -2490,6 +2587,173 @@ static int AccVarEvaluator(int nvars, const char * const *vars, uExpressionValue
   }
 
   return 0;
+}
+
+ /*@@
+   @routine    SetVarEvaluator
+   @date       Wed Oct 26 16:25:49 PDT 2011
+   @author     Roland Haas
+   @desc
+   Routine called from the expression parser to evaluate
+   the vars in an parameter expression
+   @enddesc
+
+   @var     nvars
+   @vdesc   Number of variables to evaluate
+   @vtype   int
+   @vio     in
+   @vcomment
+
+   @endvar
+   @var     vars
+   @vdesc   an array of variable names
+   @vtype   const char * const *
+   @vio     in
+   @vcomment
+   Can be anything that GetParamter will recognize. Must be of type CCTK_INT,
+   CCTK_BOOLEAN or CCTK_REAL.
+   @endvar
+   @var     vals
+   @vdesc   Output array to hold values
+   @vtype   uExpressionValue *
+   @vio     out
+   @vcomment
+
+   @endvar
+   @var     data
+   @vdesc   Data passed from expression evaluator
+   @vtype   void *
+   @vio     in
+   @vcomment
+   Not used.
+   @endvar
+
+   @returntype int
+   @returndesc
+   0
+   @endreturndesc
+ @@*/
+static int SetVarEvaluator(int nvars, const char * const *vars, uExpressionValue *vals, void *data)
+{
+  const int restype = *(int *)data;
+  int retval = 0;
+
+  for (int i=0; i < nvars; i++)
+  {
+    int ierr;
+
+    if (strstr(vars[i], "::")) /* a variable [parameter] */
+    {
+      const void *paramval;
+      int type;
+      char *name, *thorn;
+
+      ierr = Util_SplitString(&thorn, &name, vars[i], "::");
+      if (!ierr)
+      {
+        paramval = CCTK_ParameterGet(name, thorn, &type);
+        if (paramval)
+        {
+          switch(type)
+          {
+            case PARAMETER_REAL:
+              vals[i].type = rval;
+              vals[i].value.rval = *(CCTK_REAL *)paramval;
+              ierr = 0;
+              break;
+            case PARAMETER_INT:
+              vals[i].type = ival;
+              vals[i].value.ival = *(CCTK_INT *)paramval;
+              ierr = 0;
+              break;
+            case PARAMETER_BOOLEAN:
+              vals[i].type = ival;
+              vals[i].value.ival = *(CCTK_INT *)paramval;
+              ierr = 0;
+              break;
+            default:
+              CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                          "SetVarEvaluator: cannot handle type %d for parameter '%s::%s'. Only REAL, INT and BOOLEAN are supported.",
+                          type, thorn, name);
+              ierr = -1;
+              break;
+          }
+        }
+        else
+        {
+          CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+                      "SetVarEvaluator: could not find '%s::%s'",
+                      thorn, name);
+          ierr = -1;
+        }
+
+        free(thorn);
+        free(name);
+      }
+      else
+      {
+        CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+                    "SetVarEvaluator: cannot split '%s' into thorn::parameter: %d",
+                    vars[i], ierr);
+        ierr = -1;
+      }
+    }
+    else /* a direct value */
+    {
+      char *endptr, *temp;
+      if(restype == PARAMETER_BOOLEAN && CCTK_SetBoolean(&vals[i].value.ival, vars[i]) == 0)
+      {
+          vals[i].type = ival;
+          ierr = 0;
+      }
+      else if (strpbrk(vars[i], "eDdD."))
+      {
+        /*
+         * Canonicalize the string by converting all exponent letters
+         * (we allow [eEdD]) to 'e', since strtod(3) (which we will use
+         * to do the actual conversion) only groks [eE].
+         */
+        temp = strdup (vars[i]);
+        for (unsigned int p = 0; p < strlen (temp); p++)
+        {
+          if (temp[p] == 'E' || temp[p] == 'd' || temp[p] == 'D')
+          {
+            temp[p] = 'e';
+            break;
+          }
+        }
+
+        vals[i].type = rval;
+        vals[i].value.rval = (CCTK_REAL)strtod (temp, &endptr);
+        if (!*endptr)
+          ierr = 0;
+        else
+          ierr = -1;
+      }
+      else
+      {
+          vals[i].type = ival;
+          vals[i].value.ival = (CCTK_INT)strtol (vars[i], &endptr, 0);
+          if (!*endptr)
+            ierr = 0;
+          else
+            ierr = -1;
+      }
+    }
+
+    if (ierr)
+    {
+      CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
+                  "SetVarEvaluator: Unable to set value - '%s' "
+                  "does not evaluate to a real or integer or boolean",
+                  vars[i]);
+      vals[i].type = rval;
+      vals[i].value.rval = (double)atof("nan");
+      retval = ierr;
+    }
+  }
+
+  return retval;
 }
 
  /*@@
