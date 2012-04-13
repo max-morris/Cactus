@@ -42,7 +42,7 @@ static void CheckBuf(int, int);
 static void removeSpaces(char *stripMe);
 static char *ReadFile(FILE *file, unsigned long *filesize);
 static char *ParseDefines(char *buffer, unsigned long *buffersize);
-static char *convert_crlf_to_lf(const char *buffer);
+static void convert_crlf_to_lf(char *buffer);
 int ParseBuffer(char *buffer,
                 int (*set_function)(const char *, const char *, int),
                 tFleshConfig *ConfigData);
@@ -128,14 +128,11 @@ int ParseFile(FILE *ifp,
   int retval;
   unsigned long buffersize;
   char *buffer = ReadFile(ifp, &buffersize);
-  char *buffer2 = NULL;
   if (!buffer)
     return 1;
 
   /* Ensure Unix line endings */
-  buffer2 = convert_crlf_to_lf(buffer);
-  free(buffer);
-  buffer = buffer2;
+  convert_crlf_to_lf(buffer);
   buffersize = strlen(buffer);
 
   buffer = ParseDefines(buffer, &buffersize);
@@ -224,51 +221,27 @@ static void CheckBuf(int p, int l)
 @@*/
 static void removeSpaces(char *stripMe)
 {
-  char *s;
-  unsigned int i,j;
-  s = (char *)malloc((strlen(stripMe)+2)*sizeof(char));
-
-  if(s)
-  {
-    strcpy(s,stripMe);
-    for (i=0,j=0;i<strlen(s);i++)
-    {
-      if (s[i] != ' ' && s[i] != '\t' && s[i] != '\n' && s[i] != '\r')
-      {
-        stripMe[j++] = s[i];
-      }
-      stripMe[j] = '\0';
+  char *to = stripMe;
+  for (char *from = stripMe; *from; ++from) {
+    if (!isspace(*from)) {
+      *to++ = *from;
     }
   }
-
-  free(s);
+  *to = '\0';
 }
 
 /* Convert string CRLF line endings to LF */
-char *convert_crlf_to_lf(const char *buffer)
+static void convert_crlf_to_lf(char *buffer)
 {
-  int dropped = 0;
-  int len = strlen(buffer);
-  char *buffer2 = malloc(len+1);
-  assert(buffer2);
-  char *to = buffer2;
-  const char *p = NULL;
-
-  for (p = buffer; p < buffer+len+1; p++)
-  {
-    int is_crlf = (*p == '\r' && p < buffer + len && *(p+1) == '\n');
-    if (!is_crlf)
-    {
-      *to = *p;
-      to++;
-    }
-    else
-    {
-      dropped++;
+  char *to = buffer;
+  for (char *from = buffer; *from; ++from) {
+    if (*from == '\r' && *(from+1) == '\n') {
+      // do nothing -- skip the \r
+    } else {
+      *to++ = *from;
     }
   }
-
-  return buffer2;
+  *to = '\0';
 }
 
 
