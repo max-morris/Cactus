@@ -11,6 +11,8 @@
 
 /*#define DEBUG*/
 
+#include <assert.h>
+#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -21,10 +23,6 @@
 #include "cctk_Flesh.h"
 #include "cctk_CommandLine.h"
 #include "util_String.h"
-
-#ifdef HAVE_ASSERT_H
-#include <assert.h>
-#endif
 
 static const char *rcsid = "$Header$";
 
