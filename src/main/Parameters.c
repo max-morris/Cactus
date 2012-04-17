@@ -2295,7 +2295,6 @@ static int ParameterSetReal (t_param *param, const char *value)
 
   /* try parsing as number */
   inval = strtod (temp, &endptr);
-  free(temp);
 
   if (*endptr) /* if we cannot parse as a number, try expression */
   {
@@ -2323,6 +2322,8 @@ static int ParameterSetReal (t_param *param, const char *value)
       retval = -6;
     }
   }
+
+  free(temp); /* must be after last access to *endptr */
 
   if (!retval)
   {
