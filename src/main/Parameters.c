@@ -2730,6 +2730,8 @@ static int SetVarEvaluator(int nvars, const char * const *vars, uExpressionValue
           ierr = 0;
         else
           ierr = -1;
+
+        free(temp);
       }
       else
       {
