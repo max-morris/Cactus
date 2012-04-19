@@ -19,6 +19,7 @@ extern "C"
   /* Defined operators */
 typedef enum {OP_NONE,
               OP_EQUALS,
+              OP_NOTEQUALS,
               OP_LESS_THAN,
               OP_GREATER_THAN,
               OP_LEQUALS,
@@ -28,6 +29,7 @@ typedef enum {OP_NONE,
               OP_PLUS,
               OP_MINUS,
               OP_DIV,
+              OP_REMAINDER,
               OP_TIMES,
               OP_POWER,
               OP_NOT,
@@ -48,7 +50,8 @@ typedef enum {OP_NONE,
               OP_SINH,
               OP_SQRT,
               OP_TAN,
-              OP_TANH}
+              OP_TANH,
+              OP_TRUNC}
   uExpressionOpcode;
 
   /* What sort of expression types we have. */

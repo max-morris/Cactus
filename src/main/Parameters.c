@@ -2193,19 +2193,24 @@ static int ParameterSetInteger (t_param *param, const char *value)
   /* try parsing as number */
   inval = strtol (value, &endptr, 0);
 
-  if(*endptr) /* if we could not parse as a number, try an expression */
+  if (*endptr) /* if we could not parse as a number, try an expression */
   {
     int type = PARAMETER_INT;
-    int ierr;
     uExpressionValue val;
     uExpression *expr;
 
     expr = Util_ExpressionParse(value);
-    assert(expr);
-    ierr = Util_ExpressionEvaluate(expr, &val, SetVarEvaluator, &type);
-    Util_ExpressionFree(expr);
+    if (expr != NULL)
+    {
+      retval = Util_ExpressionEvaluate(expr, &val, SetVarEvaluator, &type);
+      Util_ExpressionFree(expr);
+    }
+    else
+    {
+      retval = -6;
+    }
 
-    if (ierr == 0)
+    if (retval == 0)
     {
       assert(val.type == ival || val.type == rval);
 
@@ -2260,7 +2265,7 @@ static int ParameterSetInteger (t_param *param, const char *value)
   {
     CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
                 "ParameterSetInteger: Unable to set integer '%s::%s' - '%s' "
-                "is not a valid integer",
+                "does not evaluate to a valid integer",
                 param->props->thorn, param->props->name, value);
   }
 
@@ -2299,16 +2304,21 @@ static int ParameterSetReal (t_param *param, const char *value)
   if (*endptr) /* if we cannot parse as a number, try expression */
   {
     int type = PARAMETER_REAL;
-    int ierr;
     uExpressionValue val;
     uExpression *expr;
 
     expr = Util_ExpressionParse(value);
-    assert(expr);
-    ierr = Util_ExpressionEvaluate(expr, &val, SetVarEvaluator, &type);
-    Util_ExpressionFree(expr);
+    if (expr != NULL)
+    {
+      retval = Util_ExpressionEvaluate(expr, &val, SetVarEvaluator, &type);
+      Util_ExpressionFree(expr);
+    }
+    else
+    {
+      retval = -6;
+    }
 
-    if (ierr == 0)
+    if (retval == 0)
     {
       assert(val.type == ival || val.type == rval);
 
@@ -2357,8 +2367,8 @@ static int ParameterSetReal (t_param *param, const char *value)
   else if (retval == -6)
   {
     CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
-                "ParameterSetInteger: Unable to set integer '%s::%s' - '%s' "
-                "is not a valid floating point number",
+                "ParameterSetInteger: Unable to set real '%s::%s' - '%s' "
+                "does not evaluate to a valid floating point number",
                 param->props->thorn, param->props->name, value);
   }
 
@@ -2376,14 +2386,20 @@ static int ParameterSetBoolean (t_param *param, const char *value)
   /* first try parsing as yes/no/true/false */
   retval = CCTK_SetBoolean (&inval, value);
 
-  if(retval) /* if we cannot parse as a boolean, try expression */ 
+  if (retval < 0) /* if we cannot parse as a boolean, try expression */ 
   {
     expr = Util_ExpressionParse(value);
-    assert(expr);
-    int ierr = Util_ExpressionEvaluate(expr, &val, SetVarEvaluator, (void *)&type);
-    Util_ExpressionFree(expr);
+    if(expr != NULL)
+    {
+      retval = Util_ExpressionEvaluate(expr, &val, SetVarEvaluator, &type);
+      Util_ExpressionFree(expr);
+    }
+    else
+    {
+      retval = -6;
+    }
 
-    if (!ierr)
+    if (retval == 0)
     {
       assert(val.type == ival || val.type == rval);
       if (val.type == ival)
@@ -2409,12 +2425,11 @@ static int ParameterSetBoolean (t_param *param, const char *value)
 
   if (!retval)
     *(CCTK_INT *)param->data = inval != 0;
-
-  if (retval == -1)
+  else
   {
     CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
                 "ParameterSetBoolean: Unable to set boolean '%s::%s' = '%s' "
-                "not recognised",
+                "not recognised as boolean",
                 param->props->thorn, param->props->name, value);
   }
 
@@ -2707,7 +2722,9 @@ static int SetVarEvaluator(int nvars, const char * const *vars, uExpressionValue
           vals[i].type = ival;
           ierr = 0;
       }
-      else if (strpbrk(vars[i], "eDdD."))
+      else if (strpbrk(vars[i], "eDdD.") ||
+               Util_StrCmpi(vars[i], "nan") == 0 ||
+               Util_StrCmpi(vars[i], "inf") == 0)
       {
         /*
          * Canonicalize the string by converting all exponent letters

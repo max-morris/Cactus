@@ -34,7 +34,7 @@ CCTK_FILEVERSION(util_Expression_c);
 #include "util_String.h"
 #define strdup(a) Util_Strdup(a)
 #else
-#define CCTK_VWarn(lvl, line, file, thorn, fmt, ...)  printf("(%s) L%d at %s line %d: "fmt"\n", thorn, lvl, file, line, ## __VA_ARGS__)
+#define CCTK_VWarn(lvl, line, file, thorn, fmt, ...)  do { printf("(%s) L%d at %s line %d: "fmt"\n", thorn, lvl, file, line, ## __VA_ARGS__); if(lvl == 0) exit(1); } while(0)
 #endif
 
 /********************************************************************
@@ -99,40 +99,43 @@ static struct
   uExpressionOpcode opcode;
 } operators[] = {
   /* Binary operators. */
-  {"=",  binary, 1,OP_EQUALS},
-  {"<",  binary, 1,OP_LESS_THAN},
-  {">",  binary, 1,OP_GREATER_THAN},
-  {"<=", binary, 1,OP_LEQUALS},
-  {">=", binary, 1,OP_GEQUALS},
+  {"||", binary, 1,OP_OR},
   {"&&", binary, 2,OP_AND},
-  {"||", binary, 2,OP_OR},
-  /* Sign change. */
-  {"_",  unary, 3,OP_NEGATE}, /* unary '-' */
-  {"@",  unary, 3,OP_PASS},   /* unary '+' */
+  {"==", binary, 3,OP_EQUALS},
+  {"!=", binary, 3,OP_NOTEQUALS},
+  {"<",  binary, 4,OP_LESS_THAN},
+  {">",  binary, 4,OP_GREATER_THAN},
+  {"<=", binary, 4,OP_LEQUALS},
+  {">=", binary, 4,OP_GEQUALS},
   /* Binary operators. */
-  {"+",  binary, 3,OP_PLUS},
-  {"-",  binary, 3,OP_MINUS},
-  {"/",  binary, 4,OP_DIV},
-  {"*",  binary, 4,OP_TIMES},
-  {"^",  binary, 5,OP_POWER},
+  {"+",  binary, 5,OP_PLUS},
+  {"-",  binary, 5,OP_MINUS},
+  {"/",  binary, 6,OP_DIV},
+  {"%",  binary, 6,OP_REMAINDER},
+  {"*",  binary, 6,OP_TIMES},
+  {"**", binary, 7,OP_POWER},
+  /* Sign change */
+  {"_",     unary, 8,OP_NEGATE}, /* unary '-' */
+  {"@",     unary, 8,OP_PASS},   /* unary '+' */
   /* Unary Operators - these must have the highest precedence. */
-  {"!",     unary, 6, OP_NOT},
-  {"acos",  unary, 6, OP_ACOS},
-  {"asin",  unary, 6, OP_ASIN},
-  {"atan",  unary, 6, OP_ATAN},
-  {"ceil",  unary, 6, OP_CEIL},
-  {"cos" ,  unary, 6, OP_COS},  
-  {"cosh",  unary, 6, OP_COSH},
-  {"exp",   unary, 6, OP_EXP},
-  {"fabs",  unary, 6, OP_FABS},  
-  {"floor", unary, 6, OP_FLOOR},  
-  {"log",   unary, 6, OP_LOG},  
-  {"log10", unary, 6, OP_LOG10},
-  {"sin",   unary, 6, OP_SIN},  
-  {"sinh",  unary, 6, OP_SINH},  
-  {"sqrt",  unary, 6, OP_SQRT},  
-  {"tan",   unary, 6, OP_TAN},  
-  {"tanh",  unary, 6, OP_TANH},  
+  {"!",     unary, 8, OP_NOT},
+  {"acos",  unary, 9, OP_ACOS},
+  {"asin",  unary, 9, OP_ASIN},
+  {"atan",  unary, 9, OP_ATAN},
+  {"ceil",  unary, 9, OP_CEIL},
+  {"cos" ,  unary, 9, OP_COS},  
+  {"cosh",  unary, 9, OP_COSH},
+  {"exp",   unary, 9, OP_EXP},
+  {"fabs",  unary, 9, OP_FABS},  
+  {"floor", unary, 9, OP_FLOOR},  
+  {"log",   unary, 9, OP_LOG},  
+  {"log10", unary, 9, OP_LOG10},
+  {"sin",   unary, 9, OP_SIN},  
+  {"sinh",  unary, 9, OP_SINH},  
+  {"sqrt",  unary, 9, OP_SQRT},  
+  {"tan",   unary, 9, OP_TAN},  
+  {"tanh",  unary, 9, OP_TANH},  
+  {"trunc", unary, 9, OP_TRUNC},  
   {NULL, binary, -1,OP_NONE}
 };
 
@@ -469,7 +472,7 @@ static pToken *Tokenise(const char *expression)
 
   /* class '@' below is "everything else", "e" can be either scientific
    * notation or the literal character 'e' */
-  const char *classes[] = {"-+", "0123456789", ".", "eEdD", "*/^=&|<>!", "(", ")", " \t", "@"};
+  const char *classes[] = {"-+", "0123456789", ".", "eEdD", "*/%=&|<>!", "(", ")", " \t\n", "@"};
   /* if we are in state s and read a charcter of class c we transition to state
    * states[s][c] */
   /* if this is -1 then this is a transition that does not happen in well
@@ -477,7 +480,7 @@ static pToken *Tokenise(const char *expression)
   int states[][sizeof(classes)/sizeof(classes[0])] = {
       /* -   0   .   e   *   (   )  ' '  @ */
 /* 0*/ {10,  2,  3,  9, -1,  0, -1,  0,  9}, /* beginning of subexpression */
-/* 1*/ {-1,  2,  3,  9,  1,  0, -1,  1,  9}, /* after binary operator or '!' */
+/* 1*/ { 1,  2,  3,  9,  1,  0, -1, 11,  9}, /* after first character of binary operator or '!' */
 /* 2*/ { 1,  2,  3,  4,  1, -1,  5,  5, -1}, /* after first digit of integer */
 /* 3*/ {-1,  7, -1,  4,  1, -1,  5,  5, -1}, /* after decimal point */
 /* 4*/ { 8,  8, -1, -1, -1, -1, -1, -1, -1}, /* after 'e' of exponent */
@@ -487,13 +490,14 @@ static pToken *Tokenise(const char *expression)
 /* 8*/ {-1,  9, -1, -1,  1, -1,  5,  5, -1}, /* after first digit of exponent */
 /* 9*/ { 1,  9, -1,  9,  1,  0,  5,  6,  9}, /* after first letter of name */
 /*10*/ {-1,  2,  3,  9, -1,  0, -1, 10,  9}, /* after unary operator */
+/*11*/ {10,  2,  3, -1,  1,  0, -1, 11,  9}, /* after space after binary op */
   };
-  /* we terminate a token whenever we transition out of a state we check here
-   * is this transition could be a termination of a token */
+  /* we possibly terminate a token when we transition out of a state. we check here
+   * if this transition is a termination of a token */
   int end_of_token[][sizeof(classes)/sizeof(classes[0])] = {
       /* -   0   .   e   *   (   )  ' '  @ */
-/* 0*/ { 1,  1,  1,  1, -1,  1, -1,  0,  1}, /* beginning of subexpression */
-/* 1*/ {-1,  1,  1,  1,  0,  1, -1,  0,  1}, /* after binary operator or '!' */
+/* 0*/ { 1,  1,  1,  1, -1,  1, -1,  0,  1}, /* after beginning of subexpression */
+/* 1*/ { 1,  1,  1,  1,  0,  1, -1,  0,  1}, /* after binary operator or '!' */
 /* 2*/ { 1,  0,  0,  0,  1,  1,  1,  1, -1}, /* after first digit of integer */
 /* 3*/ {-1,  0, -1,  0,  1, -1,  1,  1, -1}, /* after decimal point */
 /* 4*/ { 0,  0, -1, -1, -1, -1, -1, -1, -1}, /* after 'e' of exponent */
@@ -502,7 +506,8 @@ static pToken *Tokenise(const char *expression)
 /* 7*/ {-1,  0, -1,  0,  1, -1,  1,  1, -1}, /* after first digit of fraction */
 /* 8*/ {-1,  0, -1, -1,  1, -1,  1,  1, -1}, /* after first digit of exponent */
 /* 9*/ { 1,  0, -1,  0,  1,  1,  1,  1,  0}, /* after first letter of name */
-/*10*/ {-1,  0,  0,  0, -1,  1, -1,  1,  0}, /* after unary operator */
+/*10*/ {-1,  0,  0,  1, -1,  1, -1,  1,  1}, /* after unary operator */
+/*11*/ { 1,  1,  3, -1,  1,  1, -1,  0,  1}, /* after space after binary op */
   };
   int tokenstate, state, class, error;
 
@@ -511,7 +516,7 @@ static pToken *Tokenise(const char *expression)
 
   tokenstart = expression;
   state = 0;
-  while(*tokenstart)
+  while(*tokenstart) /* as long as we have tokens left */
   {
 
     /* Remove leading whitespace */ 
@@ -520,7 +525,7 @@ static pToken *Tokenise(const char *expression)
     tokenend = NULL;
     tokenstate = -1;
 
-    /* classify first input character */
+    /* classify first input character of token*/
     for(class = 0; class < (int)(sizeof(classes)/sizeof(classes[0]))-1; class++)
     {
       if(strchr(classes[class], *tokenstart))
@@ -534,6 +539,7 @@ static pToken *Tokenise(const char *expression)
     printf("Initial state: %d, token '%c', class '%c'\n", state, *tokenstart, classes[class][0]);
 #endif
 
+    /* collect remainder of token */
     error = 0;
     for(position = tokenstart+1; *position && *tokenstart; position++)
     {
@@ -544,21 +550,20 @@ static pToken *Tokenise(const char *expression)
           break;
       }
 
-      /* see if transition closes the previous token */
-      if(end_of_token[state][class])
-      {
-        tokenend = position-1;
-        tokenstate = state;
-      }
-
 #ifdef TEST_EXPRESSION_PARSER
       printf("read '%c', current state: %d, class '%c', will transition to %d, token = '%.*s', will %sappend token\n",
           *position, state, classes[class][0], states[state][class], (int)(position-tokenstart), tokenstart, end_of_token[state][class] ? "" : "not ");
 #endif
 
-      /* transition to new state or state 0 upon errors */
-      if(states[state][class] >= 0)
+      /* see if transition closes the current token */
+      if(end_of_token[state][class])
       {
+        tokenend = position-1;
+        tokenstate = state;
+      }
+      else if(states[state][class] >= 0)
+      {
+        /* transition to new state or state 0 upon errors */
         state = states[state][class];
       }
       else
@@ -579,7 +584,7 @@ static pToken *Tokenise(const char *expression)
       }
     }
 
-    /* Have we reached the end of the string ? */
+    /* Have we reached the end of the string ? If so, make sure to add last token */
     if(!tokenend)
     {
       tokenend = position;
@@ -622,8 +627,8 @@ static pToken *Tokenise(const char *expression)
     }
     else
     {
-      fprintf(stderr, "Unable to allocate memory for new token !\n");
-      abort();
+      CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                  "Unable to allocate memory for new token !\n");
     }
   }
     
@@ -826,10 +831,16 @@ static int VerifyParsedExpression(const uExpressionInternals *buffer)
   {
     if(buffer->tokens[position].type == val)
     {
+#if TEST_EXPRESSION_PARSER
+      printf("%s ",buffer->vars[buffer->tokens[position].token.varnum]);
+#endif
       stackpointer++;
     }
     else
     {
+#if TEST_EXPRESSION_PARSER
+      printf("%s ",opname(buffer->tokens[position].token.opcode));
+#endif
       /* Evaluate operation, clear operands from stack and add the result to the stack. */
       switch(buffer->tokens[position].type)
       {
@@ -875,6 +886,10 @@ static int VerifyParsedExpression(const uExpressionInternals *buffer)
   {
     retcode = 0;
   }
+
+#if TEST_EXPRESSION_PARSER
+      printf("\n");
+#endif
 
   return retcode;
 }
@@ -946,6 +961,9 @@ static int EvaluateBinary(uExpressionValue *retval,
     case OP_DIV :                                      \
       (retval) = ((val1)/(val2));                      \
       break;                                           \
+    case OP_REMAINDER :                                \
+      (retval) = (fmod(val1,val2));                    \
+      break;                                           \
     case OP_TIMES :                                    \
       (retval) = ((val1)*(val2));                      \
       break;                                           \
@@ -960,6 +978,9 @@ static int EvaluateBinary(uExpressionValue *retval,
       break;                                           \
     case OP_EQUALS :                                   \
       (retval) = ( (val1) == (val2));                  \
+      break;                                           \
+    case OP_NOTEQUALS :                                \
+      (retval) = ( (val1) != (val2));                  \
       break;                                           \
     case OP_LESS_THAN :                                \
       (retval) = ((val1) < (val2));                    \
@@ -1111,6 +1132,9 @@ static int EvaluateUnary(uExpressionValue *retval,
       break;                                           \
     case OP_TANH :                                     \
       (retval) = tanh(val);                            \
+      break;                                           \
+    case OP_TRUNC :                                    \
+      (retval) = trunc(val);                           \
       break;                                           \
     default :                                          \
       fprintf(stderr, "Unknown operation %d", opcode); \
@@ -1604,7 +1628,17 @@ int evaluator(int nvars, const char * const *vars, uExpressionValue *vals, void 
 
   for(i = 0; i < nvars; i++)
   {
-    if(strchr(vars[i],'.') || strchr(vars[i],'e'))
+    if (strcmp(vars[i], "pi") == 0)
+    {
+      vals[i].type = rval;
+      vals[i].value.rval = M_PI;
+    }
+    else if (strcmp(vars[i], "one") == 0)
+    {
+      vals[i].type = ival;
+      vals[i].value.ival = 1;
+    }
+    else if(strchr(vars[i],'.') || strchr(vars[i],'e') || strcasecmp(vars[i], "nan") == 0 || strcasecmp(vars[i], "inf") == 0)
     {
       vals[i].type = rval;
       vals[i].value.rval = strtod(vars[i], &endp);
@@ -1649,7 +1683,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-      printf("Value is %g\n", value.value.rval); 
+      printf("Value is %#g\n", value.value.rval); 
     }
     
     Util_ExpressionFree(buffer);
