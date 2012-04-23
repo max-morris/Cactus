@@ -11095,6 +11095,69 @@ if (CCTK_MyProc(cctkGH)==3)
 
 
 
+% ScheduleInterface.c
+\begin{FunctionDescription}{CCTK\_ScheduleQueryCurrentFunction}
+  \label{CCTK-ScheduleQueryCurrentFunction}
+   Return the cFunctionData of the function currently executing via
+   \texttt{CCTK\_CallFunction}.
+  
+  \begin{SynopsisSection}
+    \begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+const cFunctionData *CCTK_ScheduleQueryCurrentFunction(const cGH *GH)
+\end{verbatim}
+    \end{Synopsis}
+  \end{SynopsisSection}
+  
+  \begin{ResultSection}
+    \begin{ResultNote}
+      Data of last call to \texttt{CCTK\_CallFunction}, or
+    \end{ResultNote}
+    \begin{Result}{NULL}
+      if not within a scheduled function.
+    \end{Result}
+  \end{ResultSection}
+  
+  \begin{ParameterSection}
+    \begin{Parameter}{cctkGH}
+      Pointer to a Cactus grid hierarchy.
+    \end{Parameter}
+  \end{ParameterSection}
+  
+  \begin{Discussion}
+    Returns a data structure containing the thorn and routine name of the
+    currently executing function as well as the Cactus bin name. If no
+    function is currently executing, returns \code{NULL}. This is intended to
+    be used by thorns providing callable functions to identify their caller
+    when reporting errors.
+  \end{Discussion}
+  
+  \begin{SeeAlsoSection}
+    \begin{SeeAlso}{CCTK\_CallFunction}
+      Calls a function depending upon the data passed in the the fdata
+      structure.
+    \end{SeeAlso}
+  \end{SeeAlsoSection}
+
+  \begin{ExampleSection}
+    \begin{Example}{C}
+      Output the name of the currently scheduled function:
+\begin{verbatim}
+#include <stdio.h>
+#include "cctk.h"
+const cFunctionData *fdata = CCTK_QueryScheduledFunction(cctkGH);
+printf("scheduled function: %s::%s AT %s\n",
+       fdata->thorn, fdata->routine, fdata->where);
+\end{verbatim}
+\end{Example}
+  \end{ExampleSection}
+  
+\end{FunctionDescription}
+
+
+
+
 % CommOverloadables.c
 \begin{FunctionDescription}{CCTK\_SetupGH}{Setup a new GH}
 \label{CCTK-SetupGH}

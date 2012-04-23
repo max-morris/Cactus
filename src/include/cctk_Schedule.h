@@ -74,6 +74,8 @@ int CCTK_CallFunction(void *function,
                       cFunctionData *fdata,
                       void *data);
 
+const cFunctionData *CCTK_ScheduleQueryCurrentFunction(const cGH *GH);
+
 int CCTK_ScheduleTraverse(const char *where,
                           void *GH,
                           int (*CallFunction)(void *, cFunctionData *, void *));

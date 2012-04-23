@@ -233,6 +233,8 @@ static int *scheduled_storage_groups_timelevels = NULL;
 static cTimerData *timerinfo = NULL;
 static int total_timer = -1;
 
+static const cFunctionData *current_scheduled_function = NULL;
+
 
 /********************************************************************
  *********************     External Routines   **********************
@@ -279,6 +281,18 @@ int CCTK_CallFunction(void *function,
 
   int (*oneargfunc)(void *);
 
+  if(current_scheduled_function != NULL)
+  {
+    CCTK_VWarn(CCTK_WARN_PICKY, __LINE__, __FILE__, "Cactus",
+               "CCTK_CallFunction: recursive call, calling "
+               "'%s: %s::%s' while within '%s: %s::%s'",
+               fdata->where, fdata->thorn, fdata->routine,
+               current_scheduled_function->where,
+               current_scheduled_function->thorn,
+               current_scheduled_function->routine);
+  }
+  current_scheduled_function = fdata;
+
   switch(fdata->type)
   {
     case FunctionNoArgs:
@@ -299,6 +313,9 @@ int CCTK_CallFunction(void *function,
         case LangFortran:
           fdata->FortranCaller(data, function);
           break;
+        case LangNone:
+          /* this should never happen */
+          /* fall through */
         default :
           CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
                     "CCTK_CallFunction: Unknown language.");
@@ -309,8 +326,37 @@ int CCTK_CallFunction(void *function,
                 "CCTK_CallFunction: Unknown function type.");
   }
 
+  current_scheduled_function = NULL;
+
   /* Return 0, meaning didn't synchronise */
   return 0;
+}
+
+ /*@@
+   @routine    CCTK_ScheduleQueryCurrentFunction
+   @date       Fri Apr 20 08:57:49 PDT 2012
+   @author     Roland Haas
+   @desc
+   Returns the cFunctionData of the function currenlty executing via
+   CCTK_CallFunction.
+   @enddesc
+   @calls
+
+   @var     GH
+   @vdesc   GH data
+   @vtype   const cGH *
+   @vio     in
+   @endvar
+
+   @returntype cFunctionData *
+   @returndesc
+   Data about the function. NULL if no function is currently executing via
+   CCTK_CallFunction.
+   @endreturndesc
+@@*/
+const cFunctionData *CCTK_ScheduleQueryCurrentFunction(const cGH * CCTK_ATTRIBUTE_UNUSED GH)
+{
+  return current_scheduled_function;
 }
 
 /*@@
