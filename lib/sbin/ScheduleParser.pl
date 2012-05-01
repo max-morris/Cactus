@@ -444,7 +444,7 @@ sub ParseScheduleBlock
   if($data[$line_number] !~ m:\s*\{\s*:)
   {
     &CST_error(0,"Error parsing schedule block line '$data[$line_number]'\nMissing { at start of block","",__LINE__,__FILE__);
-    $line_number++ while($data[$line_number] !~ m:\s*\}\s*:);
+    $line_number++ while($line_number<scalar(@data) and $data[$line_number] !~ m:\s*\}\s*:);
   }
   else
   {
