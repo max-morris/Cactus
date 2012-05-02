@@ -744,15 +744,16 @@ The following extensions are understood:
 \hline
 Extension           & Language   & Format & Preprocess \\
 \hline
-{\t .F}             & Fortran 90 & fixed  & yes \\
-{\t .f}             & Fortran 90 & fixed  & no  \\
-{\t .F90}           & Fortran 90 & free   & yes \\
-{\t .f90}           & Fortran 90 & free   & no  \\
-{\t .F77}           & Fortran 77 & fixed  & yes \\
-{\t .f77}           & Fortran 77 & fixed  & no  \\
 {\t .c}             & C          & -      & yes \\
 {\t .cc} or {\t .C} & C++        & -      & yes \\
+{\t .cl}            & OpenCL     & -      & yes \\
 {\t .cu}            & CUDA       & -      & yes \\
+{\t .F90}           & Fortran 90 & free   & yes \\
+{\t .f90}           & Fortran 90 & free   & no  \\
+{\t .F}             & Fortran 90 & fixed  & yes \\
+{\t .f}             & Fortran 90 & fixed  & no  \\
+{\t .F77}           & Fortran 77 & fixed  & yes \\
+{\t .f77}           & Fortran 77 & fixed  & no  \\
 \hline
 \end{tabular}
 \end{center}
@@ -858,15 +859,15 @@ and has a working directory of
   \texttt{CC}, and to \texttt{CXX}
 \item \texttt{FPPFLAGS}: Flags which are passed to \texttt{FPP}
 \item \texttt{CC}: The C compiler
-\item \texttt{CUDA}: The CUDA compiler
 \item \texttt{CXX}: The C++ compiler
+\item \texttt{CUCC}: The CUDA compiler
 \item \texttt{F77}: The Fortran 77 compiler.  This is only used if
   there is no Fortran 90 compiler
 \item \texttt{F90}: The Fortran 90 compiler.  If this variable is
   set, it is also used to compile Fortran 77 files
 \item \texttt{CFLAGS}: Flags which are passed to \texttt{CC}
-\item \texttt{CUDAFLAGS}: Flags which are passed to \texttt{CUDA}
 \item \texttt{CXXFLAGS}: Flags which are passed to \texttt{CXX}
+\item \texttt{CUCCFLAGS}: Flags which are passed to \texttt{CUDA}
 \item \texttt{F77FLAGS}: Flags which are passed to \texttt{F77}
 \item \texttt{F90FLAGS}: Flags which are passed to \texttt{F90}
 \item \texttt{LD}: The binder.  This should not be directly
@@ -874,6 +875,18 @@ and has a working directory of
   Often, \texttt{LD} is the same as \texttt{CXX}
 \item \texttt{LDFLAGS}: Flags which are passed to \texttt{LD}
 \end{itemize}
+
+Note that there are no makefile variables to specify an OpenCL
+compiler or its flags. OpenCL is implemented as a library, and code is
+compiled at run time via library functions to which the source code is
+passed as a string. OpenCL source code (files with the extension
+\texttt{.cl}) are thus not compiled when a Cactus configuration is
+built. Instead, the content of \texttt{.cl} files is converted into a
+string and placed into the executable. These strings have the type
+\texttt{char~const~*} in C, and can be accessed at run time under a
+(globally visible) name \texttt{OpenCL\_source\_THORN\_FILE}, where
+\texttt{THORN} and \texttt{FILE} and are the thorn name and file name,
+respectively.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

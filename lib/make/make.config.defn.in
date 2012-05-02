@@ -146,6 +146,7 @@ export CACTUSLIBLINKLINE = @CACTUSLIBLINKLINE@
 # Dependency file generation
 export C_DEPEND             = @C_DEPEND@
 export CXX_DEPEND           = @CXX_DEPEND@
+export CL_DEPEND            = @CL_DEPEND@
 export F77_DEPEND           = @F77_DEPEND@
 export F_DEPEND             = @F_DEPEND@
 export F_DEPEND_MODULES     = @F_DEPEND_MODULES@
@@ -153,6 +154,7 @@ export CU_DEPEND            = @CU_DEPEND@
 
 export C_DEPEND_OUT         = @C_DEPEND_OUT@
 export CXX_DEPEND_OUT       = @CXX_DEPEND_OUT@
+export CL_DEPEND_OUT        = @CL_DEPEND_OUT@
 export F77_DEPEND_OUT       = @F77_DEPEND_OUT@
 export F_DEPEND_OUT         = @F_DEPEND_OUT@
 export F_DEPEND_MODULES_OUT = @F_DEPEND_MODULES_OUT@
@@ -167,6 +169,7 @@ export F90_SUFFIX = @F90_SUFFIX@
 # How to postprocess object files
 export C_POSTPROCESSING   = @C_POSTPROCESSING@
 export CXX_POSTPROCESSING = @CXX_POSTPROCESSING@
+export CL_POSTPROCESSING   = @CL_POSTPROCESSING@
 export F77_POSTPROCESSING = @F77_POSTPROCESSING@
 export F_POSTPROCESSING   = @F_POSTPROCESSING@
 export F90_POSTPROCESSING = @F90_POSTPROCESSING@

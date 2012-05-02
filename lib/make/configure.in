@@ -1186,6 +1186,14 @@ if test "$host_os" = 'cygwin' ; then
   PERL_CONFIGURE_SCRIPT=`echo $PERL_CONFIGURE_SCRIPT | sed 's,^/cygdrive/\(.\)/,\1:/,' | sed 's,^//\(.\)/,\1:/,'`
 fi
 
+# An OpenCL source file has no external dependencies
+AC_SUBST(CL_DEPEND)
+# This command will not output a correct dependency by itself (it
+# does not output a target), but the Cactus dependency fixer will
+# overwrite the target anyway with the correct information.
+: ${CL_DEPEND='echo :'}
+AC_SUBST(CL_DEPEND_OUT)
+: ${CL_DEPEND_OUT=' > $@'}
 
 AC_SUBST(BUILD_ACTIVETHORNS)
 BUILD_ACTIVETHORNS='$(CCTK_HOME)/lib/sbin/BuildActiveThorns.pl'
@@ -1208,6 +1216,14 @@ AC_SUBST(FCOMPILEONLY)
 : ${CCOMPILEONLY='-c -o'}
 : ${FCOMPILEONLY='-c -o'}
 
+# An OpenCL source file has no external dependencies
+AC_SUBST(CL_DEPEND)
+# This command will not output a correct dependency by itself (it
+# does not output a target), but the Cactus dependency fixer will
+# overwrite the target anyway with the correct information.
+: ${CL_DEPEND='echo :'}
+AC_SUBST(CL_DEPEND_OUT)
+: ${CL_DEPEND_OUT=' > $@'}
 
 # Set the createexe flag if it's not been set by now
 AC_SUBST(CREATEEXE)
@@ -1268,6 +1284,8 @@ AC_SUBST(C_POSTPROCESSING)
 : ${C_POSTPROCESSING=''}
 AC_SUBST(CXX_POSTPROCESSING)
 : ${CXX_POSTPROCESSING=''}
+AC_SUBST(CL_POSTPROCESSING)
+: ${CL_POSTPROCESSING=''}
 AC_SUBST(CU_POSTPROCESSING)
 : ${CU_POSTPROCESSING=''}
 AC_SUBST(F77_POSTPROCESSING)

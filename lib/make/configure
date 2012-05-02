@@ -6865,10 +6865,10 @@ cat > conftest.$ac_ext <<EOF
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
     builtin and then its argument prototype would still apply.  */
-char bAuCWJ;
+char a88VAc;
 
 int main() {
-ondO02
+rLztEw
 ; return 0; }
 EOF
 if { (eval echo configure:6875: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
@@ -7353,6 +7353,14 @@ if test "$host_os" = 'cygwin' ; then
   PERL_CONFIGURE_SCRIPT=`echo $PERL_CONFIGURE_SCRIPT | sed 's,^/cygdrive/\(.\)/,\1:/,' | sed 's,^//\(.\)/,\1:/,'`
 fi
 
+# An OpenCL source file has no external dependencies
+
+# This command will not output a correct dependency by itself (it
+# does not output a target), but the Cactus dependency fixer will
+# overwrite the target anyway with the correct information.
+: ${CL_DEPEND='echo :'}
+
+: ${CL_DEPEND_OUT=' > $@'}
 
 
 BUILD_ACTIVETHORNS='$(CCTK_HOME)/lib/sbin/BuildActiveThorns.pl'
@@ -7375,6 +7383,14 @@ LDFLAGS="$LDFLAGS $KNOWN_LDFLAGS"
 : ${CCOMPILEONLY='-c -o'}
 : ${FCOMPILEONLY='-c -o'}
 
+# An OpenCL source file has no external dependencies
+
+# This command will not output a correct dependency by itself (it
+# does not output a target), but the Cactus dependency fixer will
+# overwrite the target anyway with the correct information.
+: ${CL_DEPEND='echo :'}
+
+: ${CL_DEPEND_OUT=' > $@'}
 
 # Set the createexe flag if it's not been set by now
 
@@ -7435,6 +7451,8 @@ LDFLAGS="$LDFLAGS $KNOWN_LDFLAGS"
 : ${C_POSTPROCESSING=''}
 
 : ${CXX_POSTPROCESSING=''}
+
+: ${CL_POSTPROCESSING=''}
 
 : ${CU_POSTPROCESSING=''}
 
@@ -7527,7 +7545,7 @@ if test "x$CCTK_NEED_X" = 'xyes' ; then
 # Uses ac_ vars as temps to allow command line to override cache and checks.
 # --without-x overrides everything else, but does not touch the cache.
 echo $ac_n "checking for X""... $ac_c" 1>&6
-echo "configure:7531: checking for X" >&5
+echo "configure:7549: checking for X" >&5
 
 # Check whether --with-x or --without-x was given.
 if test "${with_x+set}" = set; then
@@ -7589,12 +7607,12 @@ if test "$ac_x_includes" = NO; then
 
   # First, try using that file with no special directory specified.
 cat > conftest.$ac_ext <<EOF
-#line 7593 "configure"
+#line 7611 "configure"
 #include "confdefs.h"
 #include <$x_direct_test_include>
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:7598: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:7616: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   rm -rf conftest*
@@ -7663,14 +7681,14 @@ if test "$ac_x_libraries" = NO; then
   ac_save_LIBS="$LIBS"
   LIBS="-l$x_direct_test_library $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 7667 "configure"
+#line 7685 "configure"
 #include "confdefs.h"
 
 int main() {
 ${x_direct_test_function}()
 ; return 0; }
 EOF
-if { (eval echo configure:7674: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:7692: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   LIBS="$ac_save_LIBS"
 # We can link X programs with no special library path.
@@ -7998,6 +8016,8 @@ s%@EXE@%$EXE%g
 s%@C_LINE_DIRECTIVES@%$C_LINE_DIRECTIVES%g
 s%@F_LINE_DIRECTIVES@%$F_LINE_DIRECTIVES%g
 s%@MKDIRFLAGS@%$MKDIRFLAGS%g
+s%@CL_DEPEND@%$CL_DEPEND%g
+s%@CL_DEPEND_OUT@%$CL_DEPEND_OUT%g
 s%@BUILD_ACTIVETHORNS@%$BUILD_ACTIVETHORNS%g
 s%@CST@%$CST%g
 s%@F_FILE_PROCESSOR@%$F_FILE_PROCESSOR%g
@@ -8024,6 +8044,7 @@ s%@F_DEPEND_MODULES@%$F_DEPEND_MODULES%g
 s%@F_DEPEND_MODULES_OUT@%$F_DEPEND_MODULES_OUT%g
 s%@C_POSTPROCESSING@%$C_POSTPROCESSING%g
 s%@CXX_POSTPROCESSING@%$CXX_POSTPROCESSING%g
+s%@CL_POSTPROCESSING@%$CL_POSTPROCESSING%g
 s%@CU_POSTPROCESSING@%$CU_POSTPROCESSING%g
 s%@F77_POSTPROCESSING@%$F77_POSTPROCESSING%g
 s%@F_POSTPROCESSING@%$F_POSTPROCESSING%g

@@ -30,3 +30,4 @@
 30 Mar 2011: Add variables MAKE, TAR, GZIP_CMD, PATCH, GIT
 26 Apr 2011: Add CCTK_BUILTIN_EXPECT
 27 Jun 2011: Add HAVE_SCHED_H
+01 May 2012: Add OpenCL support

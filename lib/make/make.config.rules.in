@@ -83,6 +83,12 @@ define CXX_DEPENDENCIES
 	$(DEPENDENCY_FIXER)
 endef
 
+define CL_DEPENDENCIES
+# An OpenCL source file has no external dependencies
+	$(CL_DEPEND) $< $(CL_DEPEND_OUT)
+	$(DEPENDENCY_FIXER)
+endef
+
 define CU_DEPENDENCIES
         $(CU_DEPEND) $< $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DCCODE $(CU_DEPEND_OUT)
         $(DEPENDENCY_FIXER)
@@ -147,6 +153,26 @@ endef
 
 define POSTPROCESS_CXX
 $(CXX_POSTPROCESSING)
+endef
+
+# Define how to do an OpenCL compilation
+define PREPROCESS_CL
+# Wrap the OpenCL source code into a string, using the thorn name and
+# file name to create a variable name, and create a C file
+{								\
+    echo 'char const *const OpenCL_source_$(THORN)_$* =';	\
+    sed -e 's/\\/\\\\/g;s/"/\\"/g;s/\(.*\)/"\1\\n"/g';		\
+    echo ';';							\
+} < $^ > $(notdir $<).c
+endef
+
+define COMPILE_CL
+# Basically a C compile, but with a different source file name
+current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(CC) $(CPPFLAGS) $(CFLAGS) $(CCOMPILEONLY)$(OPTIONSEP)$$current_wd$(DIRSEP)$@ $$current_wd$(DIRSEP)$(notdir $<).c $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DCCODE
+endef
+
+define POSTPROCESS_CL
+$(CL_POSTPROCESSING)
 endef
 
 # Define how to do a CUDA compilation
@@ -282,6 +308,20 @@ endef
 
 %.cxx.d: $(SRCDIR)/%.cxx
 	$(CXX_DEPENDENCIES)
+
+# Build rules for OpenCL
+
+%.cl.o: $(SRCDIR)/%.cl
+	$(NOTIFY_PREPROCESSING)
+	$(PREPROCESS_CL)
+	$(NOTIFY_COMPILING)
+	$(COMPILE_CL)
+	$(NOTIFY_POSTPROCESSING)
+	$(POSTPROCESS_CL)
+	$(NOTIFY_DIVIDER)
+
+%.cl.d: $(SRCDIR)/%.cl
+	$(CL_DEPENDENCIES)
 
 # Build rules for CUDA
 
