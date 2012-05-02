@@ -533,7 +533,7 @@ ifneq ($strip($(CONFIGURATIONS)),)
 
 $(addsuffix -cleandeps,$(CONFIGURATIONS)):
 	$(NOTIFY_DIVIDER)
-	@echo Cleaning configuration $(@:%-cleandeps=%)
+	@echo Cleaning dependencies in configuration $(@:%-cleandeps=%)
 	cd $(CONFIGS_DIR)/$(@:%-cleandeps=%)
 	$(MAKE) -f $(CCTK_HOME)/lib/make/make.configuration TOP=$(CONFIGS_DIR)/$(@:%-cleandeps=%) CCTK_HOME=$(CCTK_HOME) cleandeps
 	$(NOTIFY_DIVIDER)
