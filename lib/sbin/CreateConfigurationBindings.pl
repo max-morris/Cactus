@@ -21,7 +21,7 @@ require "$sbin_dir/CSTUtils.pl";
 sub CreateConfigurationBindings
 {
   my($bindings_dir, $cfg, $thorns)=@_;
-  my($field, $providedcap, $providedcaplist, $thorn, $temp,$defs,$incs,$deps,$linkerflagdirs,$linkerflaglibs);
+  my($field, $providedcap, $thorn, $temp,$defs,$incs,$deps,$linkerflagdirs,$linkerflaglibs);
   my(%linker_thorns, %linker_cfg, $linker_list, $linkerdirs, $linkerlibs);
 
   if(! $build_dir)
@@ -59,12 +59,38 @@ sub CreateConfigurationBindings
     mkdir('Thorns', 0755) || die "Unable to create Thorns directory";
   }
 
+  # Turn optional capabilities into required capabilities, if the
+  # capability is provided. This way we don't have to treat required
+  # and optional requirements differently.
+  my %providedcaps;
+  foreach my $thorn (sort keys %thorns)
+  {
+      if ($cfg->{"\U$thorn\E PROVIDES"})
+      {
+          foreach my $providedcap (split (' ', $cfg->{"\U$thorn\E PROVIDES"}))
+          {
+              $providedcaps{$providedcap} = 1;
+          }
+      }
+  }
+  foreach my $thorn (sort keys %thorns)
+  {
+      if ($cfg->{"\U$thorn\E OPTIONAL"})
+      {
+          foreach my $optionalcap (split (' ', $cfg->{"\U$thorn\E OPTIONAL"}))
+          {
+              if ($providedcaps{$optionalcap})
+              {
+                  $cfg->{"\U$thorn\E REQUIRES"} .= "$optionalcap ";
+              }
+          }
+      }
+  }
 
   # These strings go directly into the Cactus executable
   my $linkerflagdirs = '';
   my $linkerflaglibs = '';
 
-  my $providedcaplist = '';
   # Put all the provided capabilities where they belong
   foreach my $thorn (sort keys %thorns)
   {
@@ -75,11 +101,19 @@ sub CreateConfigurationBindings
           foreach my $providedcap (split (' ', $cfg->{"\U$thorn\E PROVIDES"}))
           {
               die if $providedcap !~ m{^[A-Za-z0-9_.]+$};
-              $providedcaplist .= "$providedcap ";
               
               my $defs = '';
               my $incs = '';
               my $deps = '';
+
+              # Add requirements recursively
+              foreach my $requiredcap (split (' ', $cfg->{"\U$thorn\E REQUIRES"}))
+              {
+                  next if $requiredcap eq $providedcap;
+                  $defs .= "include $bindings_dir/Configuration/Capabilities/make.\U$requiredcap\E.defn\n";
+                  $incs .= "#include \"cctki_\U$requiredcap\E.h\"\n";
+                  $deps .= "include $bindings_dir/Configuration/Capabilities/make.\U$requiredcap\E.deps\n";
+              }
               
               # Put include_dirs and make.definition in one file:
               # make.capability.defn
@@ -143,22 +177,6 @@ sub CreateConfigurationBindings
               }
           }
       }
-  }
-
-  # turn optional capabilities into required capabilities, if the
-  # capability is provided
-  foreach $thorn (sort keys %thorns)
-  {
-    if ($cfg->{"\U$thorn\E OPTIONAL"})
-    {
-      foreach $cap (split (' ', $cfg->{"\U$thorn\E OPTIONAL"}))
-      {
-        if ($providedcaplist =~ m/\b$cap\b/i)
-        {
-          $cfg->{"\U$thorn\E REQUIRES"} .= "$cap ";
-        }
-      }
-    }
   }
 
   # here we add the files to the thorns that require capabilities
