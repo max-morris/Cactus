@@ -169,6 +169,18 @@ sub ParseConfigurationCCL
     {
       $lang = $script = '';
       ($provides, $script, $lang, $options, $line_number) = &ParseProvidesBlock($line_number, \@data);
+      if ($provides !~ m{^[A-Za-z0-9_.]+$}) {
+        &CST_error (0, "Illegal capability name '$provides' line '$line' in
+ configure.ccl of thorn '$thorn'");
+      }
+      if ($script !~ m{^[A-Za-z0-9_.]*$}) {
+        &CST_error (0, "Illegal script name '$script' line '$line' in configure
+.ccl of thorn '$thorn'");
+      }
+      if ($lang !~ m{^[A-Za-z0-9_.]*$}) {
+        &CST_error (0, "Illegal script language '$lang' line '$line' in configu
+re.ccl of thorn '$thorn'");
+      }
       $cfg->{"\U$thorn\E PROVIDES"} .= "$provides ";
       if($script)
       {
@@ -205,11 +217,18 @@ sub ParseConfigurationCCL
     }
     elsif($line =~ m/^\s*REQUIRES\s*(.*)/i)
     {
-      $cfg->{"\U$thorn\E REQUIRES"} .= "$1 ";
+      my $cap = $1;
+      if ($cap !~ m{^[A-Za-z0-9_. ]+$}) {
+        &CST_error (0, "Illegal required capability '$cap' line '$line' in configure.ccl of thorn '$thorn'");
+      }
+      $cfg->{"\U$thorn\E REQUIRES"} .= "$cap ";
     }
     elsif($line =~ m/^\s*OPTIONAL\s*/i)
     {
       ($optional, $define, $line_number) = &ParseOptionalBlock($filename, $line_number, \@data);
+      if ($optional !~ m{^[A-Za-z0-9_. ]+$}) {
+        &CST_error (0, "Illegal optional capability '$optional' line '$line' in configure.ccl of thorn '$thorn'");
+      }
       $cfg->{"\U$thorn\E OPTIONAL"} .= "$optional ";
       $cfg->{"\U$thorn\E OPTIONAL \U$optional\E DEFINE"} = $define;
     }
