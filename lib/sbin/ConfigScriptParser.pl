@@ -57,6 +57,20 @@ sub ParseConfigScript
 
       }
     }
+    elsif($line =~ m/^\s*BEGIN\s+INCLUDE\s*/i)
+    {
+      $line_number++;
+      $line = $data[$line_number];
+      chomp $line;
+      while($line !~ m/^\s*END\s+INCLUDE\s*/i)
+      {
+        $cfg->{"\U$thorn $provides\E INCLUDE"} .= $line . "\n";
+        $line_number++;
+        $line = $data[$line_number];
+        chomp $line;
+
+      }
+    }
     elsif($line =~ m/^\s*BEGIN\s+ERROR\s*/i)
     {
       $line_number++;
