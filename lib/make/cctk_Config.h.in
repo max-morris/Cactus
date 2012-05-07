@@ -381,13 +381,9 @@ typedef enum {false, true} bool;
 /* Some C++ compilers recognise the restrict keyword */
 #undef HAVE_CCTK_CXX_RESTRICT
 #undef CCTK_CXX_RESTRICT
-
-/* Since this is non-standard leave commented out for the moment */
-#if 0
 /* Define to empty if the keyword does not work. */
 #ifdef CCTK_CXX_RESTRICT
 #  define restrict CCTK_CXX_RESTRICT
-#endif
 #endif
 
 /* Allow the use of CCTK_RESTRICT as a qualifier always. */
