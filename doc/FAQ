@@ -1657,11 +1657,9 @@ Documentation:
 G1  How can I build the ThornGuide documentation for single thorns or
     arrangements?
 
-    Give the names of the thorns or arrangements on the make line, e.g.
+    gmake ThornDoc
 
-    gmake ThornGuide THORNS="CactusBase/Boundary"
-
-    gmake ThornGuide ARRANGEMENTS="CactusBase"
+    gmake ArrangementDoc
 
 G2  I have a configuration with over ten thorns, but when I make the 
     ThornGuide I only see the first few of them.

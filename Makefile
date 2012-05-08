@@ -429,8 +429,6 @@ endif
 	@echo "  ReferenceManual     - create reference manual doc/ReferenceManual.pdf."
 	@echo "  ReferenceManualHTML - create reference manual in HTML format in"
 	@echo "                        doc/HTML/ReferenceManual/."
-	@echo "  ThornGuide          - create the thorn manual doc/ThornGuide.pdf."
-	@echo "  ThornGuideHTML      - create the thorn manual in HTML format in"
 	@echo "                        doc/HTML/ThornGuide/."
 	@echo "  ThornDoc            - create documentation for all thorns in doc/ThornDoc."
 	@echo "  ThornDocHTML        - create documentation for all thorns in HTML format"
@@ -1193,50 +1191,9 @@ MaintGuideHTML:
 	@echo "  Done."
 	$(NOTIFY_DIVIDER)
 
-# Make the ThornGuide
-DOCDIR		= $(CCTK_HOME)/doc
-THORNBUILD	= $(DOCDIR)/ThornGuide/build
-
-.PHONY: ThornGuide.pdf
-ThornGuide.pdf: ThornGuide
-
-.PHONY: ThornGuide
-ThornGuide:
-	$(NOTIFY_DIVIDER)
-	@echo Creating thorn documentation ThornGuide.pdf
-	rm -rf $(THORNBUILD);
-	mkdir $(THORNBUILD);
-	cd $(THORNBUILD); \
-	$(MAKE) -f $(DOCDIR)/ThornGuide/Makefile DOCBUILDDIR=$(THORNBUILD)
-	if test -e "$(THORNBUILD)/ThornGuide.pdf"; then \
-	  mv "$(THORNBUILD)/ThornGuide.pdf" $(DOCDIR)/ThornGuide.pdf; \
-	  echo "  ThornGuide.pdf created in doc directory."; \
-	  echo "  Done."; \
-	fi
-	$(NOTIFY_DIVIDER)
-
-.PHONY: ThornGuideHTML
-
-ThornGuideHTML: doc/UsersGuide/bincactus2.ps
-	$(NOTIFY_DIVIDER)
-	@echo "Creating thorn documentation ThornGuide (HTML)"
-	rm -rf $(THORNBUILD);
-	mkdir $(THORNBUILD);
-	cd $(THORNBUILD); \
-	$(CCTK_HOME)/lib/sbin/ConvertFigures;             \
-	$(MAKE) ThornGuideHTML -f $(DOCDIR)/ThornGuide/Makefile DOCBUILDDIR=doc/ThornGuide/build MASTER_FILE=ThornGuide
-	if test -e "$(THORNBUILD)/ThornGuide.html"; then \
-	  mkdir -p "$(DOCDIR)/HTML/ThornGuide"; \
-	  mv "$(THORNBUILD)/ThornGuide"*".png" $(DOCDIR)/HTML/ThornGuide; \
-	  mv "$(THORNBUILD)/ThornGuide"*".html" $(DOCDIR)/HTML/ThornGuide; \
-	  mv "$(THORNBUILD)/ThornGuide.css" $(DOCDIR)/HTML/ThornGuide; \
-	  echo "  Thorn Guide (HTML) created in doc/HTML/ThornGuide directory."; \
-	  echo "  Done."; \
-	fi
-	$(NOTIFY_DIVIDER)
-
 # Run ThornGuide on a configuration
 
+DOCDIR		= $(CCTK_HOME)/doc
 CONFIGNAME	= $(@:%-ThornGuide=%)
 CONFIGDIR	= $(CONFIGS_DIR)/$(CONFIGNAME)
 CONFIGOCDIR	= $(CONFIGDIR)/doc
