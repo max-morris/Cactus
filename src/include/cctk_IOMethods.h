@@ -23,6 +23,9 @@ struct IOMethod
   int (*OutputVarAs)   (const cGH *GH, const char *vname, const char *alias);
   int (*TriggerOutput) (const cGH *GH, int vindex);
   int (*TimeToOutput)  (const cGH *GH, int vindex);
+
+  /* Timer data */
+  int timer_handle;
 };
 
 #define CCTK_RegisterIOMethod(a) CCTKi_RegisterIOMethod (CCTK_THORNSTRING, a)

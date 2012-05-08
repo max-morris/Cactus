@@ -10,6 +10,7 @@
 
 /* #define DEBUG_IO 1 */
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -21,6 +22,7 @@
 #include "cctk_FortranString.h"
 #include "cctk_WarnLevel.h"
 #include "cctk_IO.h"
+#include "cctk_Timers.h"
 #include "util_String.h"
 
 static const char *rcsid = "$Header$";
@@ -108,6 +110,7 @@ int CCTKi_RegisterIOMethod (const char *thorn, const char *name)
 {
   int handle;
   struct IOMethod *new_method;
+  char *timername;
 
 
   /* Check that the method hasn't already been registered */
@@ -130,6 +133,13 @@ int CCTKi_RegisterIOMethod (const char *thorn, const char *name)
       new_method->OutputVarAs    = DummyOutputVarAs;
       new_method->TriggerOutput  = DummyTriggerOutput;
       new_method->TimeToOutput   = DummyTimeToOutput;
+
+      /* Create timer */
+      Util_asprintf (&timername, "IO method %s", name);
+      assert (timername);
+      new_method->timer_handle = CCTK_TimerCreate (timername);
+      assert (new_method->timer_handle >= 0);
+      free (timername);
 
       /* Remember how many methods there are */
       num_methods++;
@@ -377,9 +387,14 @@ int CCTK_OutputVarAs (const cGH *GH, const char *var, const char *alias)
     for (handle = retval = 0; handle < num_methods; handle++)
     {
       method = (struct IOMethod *) Util_GetHandledData (IOMethods, handle);
-      if (method && method->OutputVarAs (GH, var, alias) == 0)
+      if (method)
       {
-        retval++;
+        CCTK_TimerStartI (method->timer_handle);
+        if (method->OutputVarAs (GH, var, alias) == 0)
+        {
+          retval++;
+        }
+        CCTK_TimerStopI (method->timer_handle);
       }
     }
   }
@@ -712,7 +727,9 @@ int CactusDefaultOutputGH (const cGH *GH)
       method = (struct IOMethod *) Util_GetHandledData (IOMethods, handle);
       if (method)
       {
+        CCTK_TimerStartI (method->timer_handle);
         retval += method->OutputGH (GH);
+        CCTK_TimerStopI (method->timer_handle);
       }
     }
   }
@@ -767,13 +784,17 @@ int CactusDefaultOutputVarAsByMethod (const cGH *GH,
                                       const char *alias)
 {
   int retval;
+  void *tmp;
   struct IOMethod *method;
 
 
-  Util_GetHandle (IOMethods, methodname, (void **) &method);
+  Util_GetHandle (IOMethods, methodname, &tmp);
+  method = tmp;
   if (method)
   {
+    CCTK_TimerStartI (method->timer_handle);
     retval = method->OutputVarAs (GH, var, alias);
+    CCTK_TimerStopI (method->timer_handle);
   }
   else
   {
