@@ -832,7 +832,7 @@ The makefile is passed the following variables
 
 \item [\texttt{\$(THORN)}]   the thorn name
 
-\item [\texttt{\$(SCRATCH\_BUILD)}]  the scratch directory where Fortran 90 module
+\item [\texttt{\$(SCRATCH\_BUILD)}]  the scratch directory where Fortran module
 files should end up if they need to be seen by other thorns.
 
 \item [\texttt{\$(NAME)}] the name of the library to be built
@@ -1571,22 +1571,14 @@ returned to the original state.
 
 When you start writing a new thorn, the first decision to make is
 which programming language to use. The source code in Cactus thorns
-can be written in any mixture of Fortran 77, Fortran 90,
-C or C++. The following points should be considered when
-choosing a language to work in
+can be written in any mixture of C, C++, CUDA, or Fortran.
+The following points should be considered when
+choosing a language to work in:
 \begin{itemize}
 
 \item All functions designed for application thorn writers are available
       in all languages, however, some interfaces for infrastructure
       thorn writing are only available from C or C++.
-
-% This is no longer relevant?
-%\item If you are writing in Fortran, use \texttt{F77} if you want
-%      to distribute your code to people who may not be able to afford
-%      to buy proprietary Fortran 90 compilers.
-
-\item Stick to C rather than C++, unless you really need
-      features from C++, this will help you with portability.
 
 \end{itemize}
 
