@@ -640,11 +640,6 @@ timelevels to activate storage for.
 \subsubsection{The \texttt{configuration.ccl}}
 \label{subsec:configuration_ccl}
 
-[{\bf NOTE:} the \texttt{configuration.ccl} is a new feature, and not all the
-features described in this section have been fully implemented yet.
-PROVIDES, REQUIRES and SCRIPT should work, but OPTIONAL is still
-being developed.]
-
 The \texttt{configuration.ccl} file is optional.  It can be used for two
 purposes: to detect certain features of the host system, such as the
 presence or absence of libraries, variable types, etc, or the
@@ -682,7 +677,7 @@ REQUIRES  <\var{Another_Capability}>
 
 OPTIONAL <\var{Yet_Another_Capability}>
 \{
-  DEFINE <\var{macro}>
+%  DEFINE <\var{macro}>
 \}
 
 \end{alltt}
@@ -693,36 +688,36 @@ to detect features of this capability; the script is in language
 \verb|My_Language|---the CST will use the appropriate environment or
 interpreter to invoke the script.
 
-The example requires a thorn providing \verb|Another_Capability| to be
-in the \texttt{ThornList}, and, if a thorn providing
-\verb|Yet_Another_Capability| is in the \texttt{ThornList}, the preprocessor
-macro \verb|macro| will be defined, and set to 1.
-
-As an example, a thorn A may be able to use PVM for parallelism if it is
-present, but can still work in the absence of it.  There could be a
-thorn providing PVM, and thorn A would then have
-
-\begin{alltt}
-OPTIONAL PVM
-\{
-  DEFINE HAVE_PVM
-\}
-
-\end{alltt}
-
-The code in thorn A could then have
-
-\begin{alltt}
-
-#ifdef HAVE_PVM
-  do something
-#else
-  do something else
-#endif
-
-\end{alltt}
-
-to pick the appropriate mode.
+% The example requires a thorn providing \verb|Another_Capability| to be
+% in the \texttt{ThornList}, and, if a thorn providing
+% \verb|Yet_Another_Capability| is in the \texttt{ThornList}, the preprocessor
+% macro \verb|macro| will be defined, and set to 1.
+% 
+% As an example, a thorn A may be able to use PVM for parallelism if it is
+% present, but can still work in the absence of it.  There could be a
+% thorn providing PVM, and thorn A would then have
+% 
+% \begin{alltt}
+% OPTIONAL PVM
+% \{
+%   DEFINE HAVE_PVM
+% \}
+% 
+% \end{alltt}
+% 
+% The code in thorn A could then have
+% 
+% \begin{alltt}
+% 
+% #ifdef HAVE_PVM
+%   do something
+% #else
+%   do something else
+% #endif
+% 
+% \end{alltt}
+% 
+% to pick the appropriate mode.
 
 The syntax of the output of the configure script is described in
 Appendix \ref{sec:Appendix.configuration.ccl.configscript}.
