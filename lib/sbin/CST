@@ -487,7 +487,7 @@ sub CreateThornsHeaders
   my($header1,$header2,$header3,$thorn,$nthorns);
 
   $header1 = "\/* List of compiled thorns in the code. *\/\n\n";
-  $header1 .= "static char *thorn_name[] = {\n";
+  $header1 .= "static char const *const thorn_name[] = {\n";
   $header2 = "\/* Defines for compiled thorns in the code. *\/\n\n";
   $header3 = "\/* Defines for thorn this file is part of *\/\n\n";
 
@@ -514,7 +514,7 @@ sub CreateThornsHeaders
   }
 
   $header1 .= "\"\"};\n\n";
-  $header1 .= "static int nthorns = $nthorns;\n\n";
+  $header1 .= "static int const nthorns = $nthorns;\n\n";
 
   return ($header1, $header2, $header3);
 }
