@@ -14,7 +14,7 @@ for arr in `cd arrangements; echo *`; do
     if test -d arrangements/$arr; then
         for th in `cd arrangements/$arr; echo *`; do
             if test -d arrangements/$arr/$th; then
-                if test -z "$selection" || test "$th" == "$selection"; then
+                if test -z "$selection" || test "$th" = "$selection"; then
                     if test -e arrangements/$arr/$th/doc/documentation.tex; then
                         echo "  Processing thorn $arr/$th..."
                         

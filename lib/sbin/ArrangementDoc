@@ -12,7 +12,7 @@ abspath=$PWD
 
 for arr in `cd arrangements; echo *`; do
     if test -d arrangements/$arr; then
-        if test -z "$selection" || test "$arr" == "$selection"; then
+        if test -z "$selection" || test "$arr" = "$selection"; then
             if test -e arrangements/$arr/doc/documentation.tex; then
                 echo "  Processing arrangement $arr..."
                 
