@@ -451,7 +451,11 @@ consists of lines of the form
 schedule <\var{name}> at <\var{time bin}> [\var{other options}]
 \{
   LANG:     <FORTRAN|C>
+  OPTIONS:  [\var{list of options}]
+  TAGS:     [\var{list of keyword=value definitions}]
   STORAGE:  [\var{group list with timelevels}]
+  READS:    [\var{group list}]
+  WRITES:   [\var{group list}]
   TRIGGERS: [\var{group list}]
   SYNC:     [\var{group list}]
 \} "\var{A description}"
@@ -509,6 +513,19 @@ which determines how to call it from the scheduler.
 C and Fortran linkage are possible here. C++ routines should be defined as
 \texttt{extern "C"} and registered as \texttt{LANG: C}.
 
+\item[\texttt{OPTIONS}] Schedule options are used for mesh refinement
+  and multi-block simulations, and they determine ``where'' a routine
+  executes. Often used schedule options are \texttt{local} (also the
+  default, may be omitted), \texttt{level}, or \texttt{global}.
+  Routines scheduled in \emph{local mode} can access individual grid
+  points, routines scheduled in \emph{level mode} are used e.g.\ to
+  select boundary conditions, and routines schedule in \emph{global
+    mode} are e.g.\ used to calculate reductions (norms).
+
+\item[\texttt{TAGS}] Schedule tags, e.g.\ \texttt{Device=1} to specify
+  that a routine executes on an OpenCL or CUDA device instead of on
+  the host.
+
 \item[\texttt{STORAGE}] The \texttt{STORAGE} keyword specifies any groups for
 which memory should be allocated for the duration of the routine.  The
 storage status reverts to its previous status after the routine
@@ -527,6 +544,20 @@ thorn, fully qualified parameter names of the form
 \var{timelevels} can be requested, which is equivalent to the {\tt STORAGE}
 statement being absent.
 
+\item[\texttt{READS}] \texttt{READS} is used to declare which grid
+  variables are read by the routine. This information is used e.g.\ to
+  determine which variables need to be copied between host and device
+  for OpenCL or CUDA kernel. This information can also be used to
+  ensure that all variables that are read have previously been written
+  by another routine.
+
+\item[\texttt{WRITES}] \texttt{WRITES} is used to declare which grid
+  variables are written by the routine. This information is used e.g.\ to
+  determine which variables need to be copied between host and device
+  for OpenCL or CUDA kernel. This information can also be used to
+  ensure that all variables that are read have previously been written
+  by another routine.
+
 \item[\texttt{TRIGGERS}] \texttt{TRIGGERS} is used when the routine is
 registered at \texttt{ANALYSIS}.  This is a special time bin; a routine
 registered here will only be called if one of the variables from a
@@ -542,6 +573,8 @@ functions \texttt{CCTK\_SyncGroup()} or \texttt{CCTK\_SyncGroupsI()}
 (see the Reference Manual) from inside a routine. Using the \texttt{SYNC}
 keyword in the \texttt{schedule.ccl} is the preferred method, since it
 provides the flesh with more information about the behaviour of your code.
+
+
 
 \end{Lentry}
 

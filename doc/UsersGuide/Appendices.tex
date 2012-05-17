@@ -859,7 +859,11 @@ schedule [GROUP] <\var{function name}|\var{group name}> AT|IN <\var{time}> \verb
      [BEFORE|AFTER <\var{function name}>|(<\var{function name}> <\var{function name}> ...)] \verb|\|
 \{
   [LANG: <\var{language}>]
+  [OPTIONS:       <\var{option}>,<\var{option}>...]
+  [TAGS:          <\var{keyword=value}>,<\var{keyword=value}>...]
   [STORAGE:       <\var{group}>[\var{timelevels}],<\var{group}>[\var{timelevels}]...]
+  [READS:         <\var{group}>,<\var{group}>...]
+  [WRITES:        <\var{group}>,<\var{group}>...]
   [TRIGGER:       <\var{group}>,<\var{group}>...]
   [SYNCHRONISE:   <\var{group}>,<\var{group}>...]
   [OPTIONS:       <\var{option}>,<\var{option}>...]
@@ -913,6 +917,35 @@ schedule [GROUP] <\var{function name}|\var{group name}> AT|IN <\var{time}> \verb
   \item[{\tt LANG}] The code language for the function (either {\tt C} or {\tt
     FORTRAN}). No language should be specified for a schedule group.
 
+  \item[\texttt{OPTIONS}] Schedule options are used for mesh
+    refinement and multi-block simulations, and they determine
+    ``where'' a routine executes. Possible options are:
+    \begin{description}
+    \item[\texttt{meta}]
+    \item[\texttt{meta\_early}]
+    \item[\texttt{meta\_late}]
+    \item[\texttt{global}]
+    \item[\texttt{global\_early}]
+    \item[\texttt{global\_late}]
+    \item[\texttt{level}]
+    \item[\texttt{singlemap}]
+    \item[\texttt{local}] (default, may be omitted)
+    \end{description}
+    (Only one of these options may be used.)
+    These options can be combined with the following:
+    \begin{description}
+    \item[\texttt{loop\_meta}]
+    \item[\texttt{loop\_global}]
+    \item[\texttt{loop\_level}]
+    \item[\texttt{loop\_singlemap}]
+    \item[\texttt{loop\_local}]
+    \end{description}
+    (At most one of the \texttt{loop\_...} options may be used.)
+
+  \item[\texttt{TAGS}] Schedule tags. These tags must have the form
+    \texttt{keyword=value}, and must be in a syntax accepted by
+    \texttt{Util\_TableCreateFromString}.
+
   \item[{\tt STORAGE}] List of variable groups which should have storage
   switched on for the duration of the function or schedule group.
   Each group must specify how many timelevels to activate storage for,
@@ -924,6 +957,20 @@ schedule [GROUP] <\var{function name}|\var{group name}> AT|IN <\var{time}> \verb
   of the form \texttt{\var{thorn}::\var{parameter}} are not allowed. In this
   case 0 (zero) \var{timelevels} can be requested, which is equivalent to
   the {\tt STORAGE} statement being absent.
+
+\item[\texttt{READS}] \texttt{READS} is used to declare which grid
+  variables are read by the routine. This information is used e.g.\ to
+  determine which variables need to be copied between host and device
+  for OpenCL or CUDA kernel. This information can also be used to
+  ensure that all variables that are read have previously been written
+  by another routine.
+
+\item[\texttt{WRITES}] \texttt{WRITES} is used to declare which grid
+  variables are written by the routine. This information is used e.g.\ to
+  determine which variables need to be copied between host and device
+  for OpenCL or CUDA kernel. This information can also be used to
+  ensure that all variables that are read have previously been written
+  by another routine.
 
   \item[{\tt TRIGGER}] List of grid variables or groups to be used as
   triggers for causing an {\tt ANALYSIS} function or group to be
