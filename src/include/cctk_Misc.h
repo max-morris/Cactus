@@ -13,6 +13,8 @@
 #ifndef _CCTK_MISC_H_
 #define _CCTK_MISC_H_
 
+#include "cctk_GNU.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -32,6 +34,11 @@ int Util_IntInRange(int inval, const char *range);
 int Util_DoubleInRange(double inval, const char *range);
 int Util_IntInRangeList(int inval, int n_elements, ...);
 int Util_DoubleInRangeList(double inval, int n_elements, ...);
+
+int CCTK_RegexMatch (const char *string,
+                     const char *pattern,
+                     const int nmatch,
+                     regmatch_t *pmatch);
 
 int CCTK_SetDoubleInRangeList(CCTK_REAL *data, const char *value, 
                               int n_elements, ...);

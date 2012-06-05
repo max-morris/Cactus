@@ -659,6 +659,9 @@ from Fortran.
 \item[\code{CCTK\_ReductionHandle}] [\pageref{CCTK-ReductionHandle}]
   Get the handle for a registered reduction operator
 
+\item[\code{CCTK\_RegexMatch}] [\pageref{CCTK-RegexMatch}]
+  Perform a regular expression match of string against pattern
+
 \item[\code{CCTK\_RegisterBanner}] [\pageref{CCTK-RegisterBanner}]
   Register a banner for a thorn
 
@@ -10642,6 +10645,72 @@ handle = CCTK_ReductionHandle("maximum");
 \begin{Example}{Fortran}
 \begin{verbatim}
 call CCTK_ReductionHandle(handle,"maximum")
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
+
+% Misc.c
+\begin{FunctionDescription}{CCTK\_RegexMatch}{Perform a regular expression match of string against pattern}
+\label{CCTK-RegexMatch}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}success = CCTK_RegexMatch( const char *string, const char *pattern,
+                          const int nmatch, regmatch_t *pmatch)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{string}
+String to match against
+\end{Parameter}
+\begin{Parameter}{pattern}
+Regex pattern
+\end{Parameter}
+\begin{Parameter}{nmatch}
+The size of the pmatch array
+\end{Parameter}
+\begin{Parameter}{pmatch}
+Array in which to place the matches
+\end{Parameter}
+\end{ParameterSection}
+\begin{ResultSection}
+\begin{Result}{0} pattern does not match\end{Result}
+\begin{Result}{1} pattern matches\end{Result}
+\begin{Result}{< 0} indicates an error condition (pattern did not compile as a
+    regular expression) \end{Result}
+\end{ResultSection}
+\begin{Discussion}
+Perform a regular expression match of string against pattern.
+Also returns the specified number of matched substrings as
+give by regexec.
+This is a modified form of the example routine given in the SGI
+man page for regcomp.
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+#define R_BEGIN "(\\[|\\()?"
+#define R_VALUE "([^]):]*)"
+#define R_SEP   ":"
+#define R_END   "(\\]|\\))?"
+#define R_MAYBE(x) "(" x ")?"
+
+  int matched;
+  const char pattern[] =
+    R_BEGIN
+    R_VALUE
+    R_MAYBE(R_SEP R_VALUE R_MAYBE(R_SEP R_VALUE))
+    R_END;
+
+  if( (matched = CCTK_RegexMatch(range, pattern, 8, pmatch)) > 0) {
+      CCTK_VInfo(CCTK_THORNSTRING, "'%s' is a valid range specifier",
+                 range);
+  } else if(!matched) {
+      CCTK_VInfo(CCTK_THORNSTRING, "'%s' is not a valid range specifier",
+                 range);
+  } else {
+      CCTK_VInfo(CCTK_THORNSTRING, "invalid pattern '%s'", pattern);
+  }
 \end{verbatim}
 \end{Example}
 \end{ExampleSection}

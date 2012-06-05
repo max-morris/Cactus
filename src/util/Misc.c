@@ -19,8 +19,6 @@
 #include <math.h>
 #include <float.h>
 
-#include "cctk_GNU.h"
-
 #include "cctk_Flesh.h"
 #include "cctk_Misc.h"
 #include "cctk_FortranString.h"
@@ -40,10 +38,6 @@ CCTK_FILEVERSION(util_Misc_c);
  ********************* Local Routine Prototypes *********************
  ********************************************************************/
 
-int CCTK_RegexMatch(const char *string,
-                    const char *pattern,
-                    const int nmatch,
-                    regmatch_t *pmatch);
 int CCTK_SetStringInRegexList(char **data, const char *value,
                               int n_elements, ...);
 void CCTK_PrintString(const char *data);
@@ -367,6 +361,7 @@ int Util_IntInRange(int inval, const char *range)
   regmatch_t pmatch[8];
   int start_closed, end_closed;
   int start, end, step;
+  int matched;
 
   /* Valid ranges are of the form start:end:step
    * possibly preceeded by a [ or ( and ended by a ) or ] to indicate
@@ -407,7 +402,8 @@ int Util_IntInRange(int inval, const char *range)
 
 #undef R_MAYBE
 
-  if(CCTK_RegexMatch(range, pattern, 8, pmatch) != 0)
+  matched = CCTK_RegexMatch(range, pattern, 8, pmatch);
+  if(matched > 0)
   {
     /* First work out if the range is closed at the lower end. */
     if(pmatch[1].rm_so != -1)
@@ -528,9 +524,14 @@ int Util_IntInRange(int inval, const char *range)
     }
 
   }
-  else
+  else if(!matched)
   {
     CCTK_Warn(1, __LINE__, __FILE__, "Flesh", "Invalid range");
+  }
+  else
+  {
+    CCTK_VWarn(0, __LINE__, __FILE__, "Flesh",
+               "Invalid patten '%s' used to parse range", pattern);
   }
 
   return retval;
@@ -609,7 +610,7 @@ int Util_DoubleInRange(double inval, const char *range)
 
 #undef R_MAYBE
 
-  if(CCTK_RegexMatch(range, pattern, 8, pmatch) != 0)
+  if(CCTK_RegexMatch(range, pattern, 8, pmatch) > 0)
   {
     /* First work out if the range is closed at the lower end. */
     if(pmatch[1].rm_so != -1)
@@ -1170,7 +1171,7 @@ int CCTK_SetStringInRegexList(char **data, const char *value,
   {
     element = va_arg(ap, char *);
 
-    if(CCTK_RegexMatch(value, element, 0, NULL))
+    if(CCTK_RegexMatch(value, element, 0, NULL) > 0)
     {
       retval = CCTK_SetString(data, value);
       break;
@@ -1312,6 +1313,7 @@ int CCTK_SetBoolean(CCTK_INT *data, const char *value)
    @returndesc
    1 - pattern matches
    0 - pattern doesn't match
+   <0 - pattern is invalid
    @endreturndesc
 @@*/
 
@@ -1347,7 +1349,7 @@ int CCTK_RegexMatch(const char *string,
     }
     else
     {
-      retval = 0;
+      retval = -1;       /* repost error */
     }
   }
 

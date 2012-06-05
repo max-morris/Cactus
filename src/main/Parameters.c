@@ -203,11 +203,6 @@ static void ParameterActivate(t_param *param);
  ********************* Other Routine Prototypes *********************
  ********************************************************************/
 
-int CCTK_RegexMatch (const char *string,
-                     const char *pattern,
-                     const int nmatch,
-                     regmatch_t *pmatch);
-
 extern void CCTKi_SetParameterSetMask (int mask);
 
 /********************************************************************
@@ -2107,12 +2102,19 @@ static int ParameterSetString (t_param *param, const char *value)
         CCTK_Equals (param->props->thorn, range->origin))
     {
 #ifndef CCTK_PARAMUNCHECKED
-      if (CCTK_RegexMatch (value, range->range, 0, NULL))
+      const int matched = CCTK_RegexMatch (value, range->range, 0, NULL);
+      if (matched > 0)
       {
 #endif
         retval = CCTK_SetString (param->data, value);
         break;
 #ifndef CCTK_PARAMUNCHECKED
+      }
+      else if (matched < 0)
+      {
+        CCTK_VWarn(CCTK_WARN_ALERT, __LINE__, __FILE__, "Cactus",
+                   "Invalid regular expression '%s' used as range for string %s::%s",
+                   range->range, param->props->thorn, param->props->name);
       }
 #endif
     }
@@ -2151,12 +2153,19 @@ static int ParameterSetSentence (t_param *param, const char *value)
         CCTK_Equals (param->props->thorn, range->origin))
     {
 #ifndef CCTK_PARAMUNCHECKED
-      if (CCTK_RegexMatch (value, range->range, 0, NULL))
+      const int matched = CCTK_RegexMatch (value, range->range, 0, NULL);
+      if (matched > 0)
       {
 #endif
         retval = CCTK_SetString (param->data, value);
         break;
 #ifndef CCTK_PARAMUNCHECKED
+      }
+      else if (matched < 0)
+      {
+        CCTK_VWarn(CCTK_WARN_ALERT, __LINE__, __FILE__, "Cactus",
+                   "Invalid regular expression '%s' used as range for sequence %s::%s",
+                   range->range, param->props->thorn, param->props->name);
       }
 #endif
     }
