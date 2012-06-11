@@ -790,7 +790,14 @@ static int ScheduleSortGroup(t_sched_group *group)
     printf("\n");
 #endif
 
-    CCTKi_ScheduleAddRow(group->n_scheditems, array, order, item, thisorders);
+    errcode = CCTKi_ScheduleAddRow(group->n_scheditems, array, order, item, thisorders);
+    if(errcode)
+    {
+      CCTK_VWarn(CCTK_WARN_ABORT, __LINE__, __FILE__, "Cactus",
+      "Adding item %s to group %s failed due to a circular dependency on %s.\n",
+      group->scheditems[item].name, group->name,
+      group->scheditems[-errcode-1].name );  /*NOTREACHED*/
+    }
 
     /* Clear the array for the next item. */
     for(i=0; i < group->n_scheditems; i++)
@@ -1047,8 +1054,29 @@ static int ScheduleSetupIfs(t_sched_item *item)
 
 #ifdef TEST_SCHEDULECREATOR
 
+#include <stdarg.h>
+
 #define func_x(x) \
 int func_ ## x (void) { return printf("I'm func " #x "\n"); }
+
+int CCTK_VWarn(int level, int line, const char *file, 
+    const char *thorn, const char *fmt, ...)
+{
+  va_list ap;
+
+  va_start(ap, fmt);
+
+  fprintf(stdout, "WARNING[L%d,P0] (%s) in line %d of %s: ", level, thorn, line, file);
+  vfprintf(stdout, fmt, ap);
+  fputc('\n', stdout);
+
+  va_end(ap);
+
+  if(level == 0)
+    exit(1);
+
+  return 0;
+}
 
 func_x(a)
 func_x(b)

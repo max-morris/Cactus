@@ -166,7 +166,8 @@ int CCTKi_ScheduleSort(int size, signed char **array, int *order)
 
    @returntype int
    @returndesc 
-   0 - success
+   0  - success
+   <0 - -error_column
    @endreturndesc
 @@*/
 int CCTKi_ScheduleAddRow(int size, 
@@ -190,7 +191,11 @@ int CCTKi_ScheduleAddRow(int size,
   {
     if(thisorders[column])
     {
-      if(array[row][column] && array[row][column] != (signed char)thisorders[column]) retval--;
+      if(array[row][column] && array[row][column] != (signed char)thisorders[column])
+      {
+        retval = -(1+column);
+        break;
+      }
       array[row][column] = (signed char)(  thisorders[column]);
       array[column][row] = (signed char)( -thisorders[column]);
     }
