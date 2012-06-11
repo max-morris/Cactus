@@ -18,6 +18,8 @@ typedef struct GROUPDYNAMICDATA
   const int *lsh;
   const int *lbnd;
   const int *ubnd;
+#define CCTK_GROUPDYNAMICDATA_HAS_LSSH
+  const int *lssh;
   const int *bbox;
   const int *nghostzones;
   int activetimelevels;
@@ -52,6 +54,11 @@ int CCTK_GrouplshGN(const cGH *GH, int dim, int *lsh, const char *groupname);
 int CCTK_GrouplshVN(const cGH *GH, int dim, int *lsh, const char *varname);
 int CCTK_GrouplshGI(const cGH *GH, int dim, int *lsh, int groupindex);
 int CCTK_GrouplshVI(const cGH *GH, int dim, int *lsh, int varindex);
+
+int CCTK_GrouplsshGN(const cGH *GH, int dim, int *lssh, const char *groupname);
+int CCTK_GrouplsshVN(const cGH *GH, int dim, int *lssh, const char *varname);
+int CCTK_GrouplsshGI(const cGH *GH, int dim, int *lssh, int groupindex);
+int CCTK_GrouplsshVI(const cGH *GH, int dim, int *lssh, int varindex);
 
 int CCTK_GroupgshGN(const cGH *GH, int dim, int *gsh, const char *groupname);
 int CCTK_GroupgshVN(const cGH *GH, int dim, int *gsh, const char *varname);
