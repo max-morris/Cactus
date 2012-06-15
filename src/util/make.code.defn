@@ -1,7 +1,6 @@
 # $Header$
 
 SRCS=\
-BinaryTree.c\
 CactusTimers.c\
 File.c\
 ParseFile.c\
