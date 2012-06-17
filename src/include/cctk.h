@@ -209,31 +209,31 @@ cctk_lsh1,cctk_lsh2,cctk_lsh3
  * Without CCTK_DEBUG, define the calculations directly
  */
 
-static inline int CCTK_GFINDEX0D (const cGH *CCTK_RESTRICT cctkGH)
+static inline int CCTK_GFINDEX0D (const cGH *restrict cctkGH)
 {
   return 0;
 }
 
-static inline int CCTK_GFINDEX1D (const cGH *CCTK_RESTRICT cctkGH,
+static inline int CCTK_GFINDEX1D (const cGH *restrict cctkGH,
                                   int i)
 {
   return i;
 }
 
-static inline int CCTK_GFINDEX2D (const cGH *CCTK_RESTRICT cctkGH,
+static inline int CCTK_GFINDEX2D (const cGH *restrict cctkGH,
                                   int i, int j)
 {
   return i + cctkGH->cctk_lsh[0] * j;
 }
 
-static inline int CCTK_GFINDEX3D (const cGH *CCTK_RESTRICT cctkGH,
+static inline int CCTK_GFINDEX3D (const cGH *restrict cctkGH,
                                   int i, int j, int k)
 {
   return (i + cctkGH->cctk_lsh[0] *
           (j + cctkGH->cctk_lsh[1] * k));
 }
 
-static inline int CCTK_GFINDEX4D (const cGH *CCTK_RESTRICT cctkGH,
+static inline int CCTK_GFINDEX4D (const cGH *restrict cctkGH,
                                   int i, int j, int k, int l)
 {
   return (i + cctkGH->cctk_lsh[0] *
@@ -241,26 +241,26 @@ static inline int CCTK_GFINDEX4D (const cGH *CCTK_RESTRICT cctkGH,
            (k + cctkGH->cctk_lsh[2] * l)));
 }
 
-static inline int CCTK_VECTGFINDEX0D (const cGH *CCTK_RESTRICT cctkGH,
+static inline int CCTK_VECTGFINDEX0D (const cGH *restrict cctkGH,
                                       int n)
 {
   return n;
 }
 
-static inline int CCTK_VECTGFINDEX1D (const cGH *CCTK_RESTRICT cctkGH,
+static inline int CCTK_VECTGFINDEX1D (const cGH *restrict cctkGH,
                                       int i, int n)
 {
   return i + cctkGH->cctk_lsh[0] * n;
 }
 
-static inline int CCTK_VECTGFINDEX2D (const cGH *CCTK_RESTRICT cctkGH,
+static inline int CCTK_VECTGFINDEX2D (const cGH *restrict cctkGH,
                                       int i, int j, int n)
 {
   return (i + cctkGH->cctk_lsh[0] *
           (j + cctkGH->cctk_lsh[1] * n));
 }
 
-static inline int CCTK_VECTGFINDEX3D (const cGH *CCTK_RESTRICT cctkGH,
+static inline int CCTK_VECTGFINDEX3D (const cGH *restrict cctkGH,
                                       int i, int j, int k, int n)
 {
   return (i + cctkGH->cctk_lsh[0] *
@@ -268,7 +268,7 @@ static inline int CCTK_VECTGFINDEX3D (const cGH *CCTK_RESTRICT cctkGH,
            (k + cctkGH->cctk_lsh[2] * n)));
 }
 
-static inline int CCTK_VECTGFINDEX4D (const cGH *CCTK_RESTRICT cctkGH,
+static inline int CCTK_VECTGFINDEX4D (const cGH *restrict cctkGH,
                                       int i, int j, int k, int l, int n)
 {
   return (i + cctkGH->cctk_lsh[0] *
@@ -289,25 +289,25 @@ static inline int CCTK_VECTGFINDEX4D (const cGH *CCTK_RESTRICT cctkGH,
 #define _DECLARE_CCTK_CARGUMENTS \
         CCTK_DECLARE_INIT(ptrdiff_t,cctki_dummy_int,0);\
         CCTK_DECLARE_INIT(int const,cctk_dim,cctkGH->cctk_dim);\
-        CCTK_DECLARE_INIT(int const *CCTK_RESTRICT const,cctk_gsh,cctkGH->cctk_gsh);\
-        CCTK_DECLARE_INIT(int const *CCTK_RESTRICT const,cctk_lsh,cctkGH->cctk_lsh);\
-        CCTK_DECLARE_INIT(int const *CCTK_RESTRICT const,cctk_lbnd,cctkGH->cctk_lbnd);\
-        CCTK_DECLARE_INIT(int const *CCTK_RESTRICT const,cctk_ubnd,cctkGH->cctk_ubnd);\
-        CCTK_DECLARE_INIT(int const *CCTK_RESTRICT const,cctk_lssh,cctkGH->cctk_lssh);\
-        CCTK_DECLARE_INIT(int const *CCTK_RESTRICT const,cctk_from,cctkGH->cctk_from);\
-        CCTK_DECLARE_INIT(int const *CCTK_RESTRICT const,cctk_to,cctkGH->cctk_to);\
-        CCTK_DECLARE_INIT(int const *CCTK_RESTRICT const,cctk_bbox,cctkGH->cctk_bbox);\
+        CCTK_DECLARE_INIT(int const *restrict const,cctk_gsh,cctkGH->cctk_gsh);\
+        CCTK_DECLARE_INIT(int const *restrict const,cctk_lsh,cctkGH->cctk_lsh);\
+        CCTK_DECLARE_INIT(int const *restrict const,cctk_lbnd,cctkGH->cctk_lbnd);\
+        CCTK_DECLARE_INIT(int const *restrict const,cctk_ubnd,cctkGH->cctk_ubnd);\
+        CCTK_DECLARE_INIT(int const *restrict const,cctk_lssh,cctkGH->cctk_lssh);\
+        CCTK_DECLARE_INIT(int const *restrict const,cctk_from,cctkGH->cctk_from);\
+        CCTK_DECLARE_INIT(int const *restrict const,cctk_to,cctkGH->cctk_to);\
+        CCTK_DECLARE_INIT(int const *restrict const,cctk_bbox,cctkGH->cctk_bbox);\
         CCTK_DECLARE_INIT(CCTK_REAL const,cctk_delta_time,cctkGH->cctk_delta_time);\
         CCTK_DECLARE_INIT(CCTK_REAL const,cctk_time,cctkGH->cctk_time);\
-        CCTK_DECLARE_INIT(CCTK_REAL const *CCTK_RESTRICT const,cctk_delta_space,cctkGH->cctk_delta_space);\
-        CCTK_DECLARE_INIT(CCTK_REAL const *CCTK_RESTRICT const,cctk_origin_space,cctkGH->cctk_origin_space);\
-        CCTK_DECLARE_INIT(int const *CCTK_RESTRICT const,cctk_levfac,cctkGH->cctk_levfac);\
-        CCTK_DECLARE_INIT(int const *CCTK_RESTRICT const,cctk_levoff,cctkGH->cctk_levoff);\
-        CCTK_DECLARE_INIT(int const *CCTK_RESTRICT const,cctk_levoffdenom,cctkGH->cctk_levoffdenom);\
+        CCTK_DECLARE_INIT(CCTK_REAL const *restrict const,cctk_delta_space,cctkGH->cctk_delta_space);\
+        CCTK_DECLARE_INIT(CCTK_REAL const *restrict const,cctk_origin_space,cctkGH->cctk_origin_space);\
+        CCTK_DECLARE_INIT(int const *restrict const,cctk_levfac,cctkGH->cctk_levfac);\
+        CCTK_DECLARE_INIT(int const *restrict const,cctk_levoff,cctkGH->cctk_levoff);\
+        CCTK_DECLARE_INIT(int const *restrict const,cctk_levoffdenom,cctkGH->cctk_levoffdenom);\
         CCTK_DECLARE_INIT(int const,cctk_timefac,cctkGH->cctk_timefac);\
         CCTK_DECLARE_INIT(int const,cctk_convlevel,cctkGH->cctk_convlevel);\
         CCTK_DECLARE_INIT(int const,cctk_convfac,cctkGH->cctk_convfac);\
-        CCTK_DECLARE_INIT(int const *CCTK_RESTRICT const,cctk_nghostzones,cctkGH->cctk_nghostzones);\
+        CCTK_DECLARE_INIT(int const *restrict const,cctk_nghostzones,cctkGH->cctk_nghostzones);\
         CCTK_DECLARE_INIT(int const,cctk_iteration,cctkGH->cctk_iteration);\
 
 #define _INITIALISE_CCTK_C2F
