@@ -59,34 +59,6 @@ sub CreateConfigurationBindings
     mkdir('Thorns', 0755) || die "Unable to create Thorns directory";
   }
 
-  # Turn optional capabilities into required capabilities, if the
-  # capability is provided. This way we don't have to treat required
-  # and optional requirements differently.
-  my %providedcaps;
-  foreach my $thorn (sort keys %thorns)
-  {
-      if ($cfg->{"\U$thorn\E PROVIDES"})
-      {
-          foreach my $providedcap (split (' ', $cfg->{"\U$thorn\E PROVIDES"}))
-          {
-              $providedcaps{$providedcap} = 1;
-          }
-      }
-  }
-  foreach my $thorn (sort keys %thorns)
-  {
-      if ($cfg->{"\U$thorn\E OPTIONAL"})
-      {
-          foreach my $optionalcap (split (' ', $cfg->{"\U$thorn\E OPTIONAL"}))
-          {
-              if ($providedcaps{$optionalcap})
-              {
-                  $cfg->{"\U$thorn\E REQUIRES"} .= "$optionalcap ";
-              }
-          }
-      }
-  }
-
   # These strings go directly into the Cactus executable
   my $linkerflagdirs = '';
   my $linkerflaglibs = '';
@@ -202,7 +174,7 @@ sub CreateConfigurationBindings
       }
     }
 
-    if ($cfg->{"\U$thorn\E REQUIRES"} || $cfg->{"\U$thorn\E OPTIONAL"})
+    if ($cfg->{"\U$thorn\E REQUIRES"})
     {
       # write everything to file
       # (write the files even if they are empty)
@@ -242,7 +214,7 @@ sub CreateConfigurationBindings
   $temp = '';
   foreach $thorn (sort keys %thorns)
   {
-    if ($cfg->{"\U$thorn\E REQUIRES"} || $cfg->{"\U$thorn\E OPTIONAL"})
+    if ($cfg->{"\U$thorn\E REQUIRES"})
     {
       $temp .= "#ifdef THORN_IS_$thorn\n";
       $temp .= "#include \"../Configuration/Thorns/cctki_$thorn.h\"\n";

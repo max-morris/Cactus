@@ -30,6 +30,9 @@
 #include "cctk_Loop.h"
 #include "cctk_WarnLevel.h"
 
+/* Include definitions provided by capabilities */
+#include "cctk_Capabilities.h"
+
 #define CCTK_PRINTSEPARATOR\
   print '("--------------------------------------------------------------------------------")'
 

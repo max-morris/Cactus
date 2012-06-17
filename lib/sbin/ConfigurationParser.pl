@@ -73,6 +73,34 @@ sub CreateConfigurationDatabase
     $cfg{"\U$thorn\E USES THORNS"} .= $cfg{"\U$thorn\E REQUIRES THORNS"} . ' ';
   }
 
+  # Turn optional capabilities into required capabilities, if the
+  # capability is provided. This way we don't have to treat required
+  # and optional requirements differently.
+  my %providedcaps;
+  foreach my $thorn (sort keys %thorns)
+  {
+      if ($cfg{"\U$thorn\E PROVIDES"})
+      {
+          foreach my $providedcap (split (' ', $cfg{"\U$thorn\E PROVIDES"}))
+          {
+              $providedcaps{$providedcap} = 1;
+          }
+      }
+  }
+  foreach my $thorn (sort keys %thorns)
+  {
+      if ($cfg{"\U$thorn\E OPTIONAL"})
+      {
+          foreach my $optionalcap (split (' ', $cfg{"\U$thorn\E OPTIONAL"}))
+          {
+              if ($providedcaps{$optionalcap})
+              {
+                  $cfg{"\U$thorn\E REQUIRES"} .= "$optionalcap ";
+              }
+          }
+      }
+  }
+
   foreach my $thorn (sort keys %thorns)
   {
     # verify that all required capabilities are there in the ThornList
@@ -128,6 +156,34 @@ sub CreateConfigurationDatabase
     $message =~ s/\s+/->/g;
     $message = "Found a cyclic dependency in configuration requirements:".$message."\n";
     &CST_error(0, $message);
+  }
+
+  # Turn optional capabilities into required capabilities, if the
+  # capability is provided. This way we don't have to treat required
+  # and optional requirements differently.
+  my %providedcaps;
+  foreach my $thorn (sort keys %thorns)
+  {
+      if ($cfg{"\U$thorn\E PROVIDES"})
+      {
+          foreach my $providedcap (split (' ', $cfg{"\U$thorn\E PROVIDES"}))
+          {
+              $providedcaps{$providedcap} = 1;
+          }
+      }
+  }
+  foreach my $thorn (sort keys %thorns)
+  {
+      if ($cfg{"\U$thorn\E OPTIONAL"})
+      {
+          foreach my $optionalcap (split (' ', $cfg{"\U$thorn\E OPTIONAL"}))
+          {
+              if ($providedcaps{$optionalcap})
+              {
+                  $cfg{"\U$thorn\E REQUIRES"} .= " $optionalcap";
+              }
+          }
+      }
   }
 
   return \%cfg;
