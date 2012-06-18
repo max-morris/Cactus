@@ -9,8 +9,8 @@
    @version   $Header$
  @@*/
 
-#ifndef _CCTK_H_
-#define _CCTK_H_ 1
+#ifndef _CCTK_CORE_H_
+#define _CCTK_CORE_H_ 1
 
 /* Grab the main configuration info. */
 #include "cctk_Config.h"
@@ -29,9 +29,6 @@
 #include "cctk_Interp.h"
 #include "cctk_Loop.h"
 #include "cctk_WarnLevel.h"
-
-/* Include definitions provided by capabilities */
-#include "cctk_Capabilities.h"
 
 #define CCTK_PRINTSEPARATOR\
   print '("--------------------------------------------------------------------------------")'
