@@ -2345,6 +2345,94 @@ is a parallel unigrid driver.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\subsection{Iterating Over Grid Points}
+\label{sec:CactusAPI.gridpoints}
+
+A grid function consists of a multi-dimensional array of grid points.
+These grid points fall into several types:
+\begin{description}
+\item[interior] regular grid point, presumably evolved in time
+\item[ghost] inter-process boundary, containing copies of values owned
+  by another process
+\item[physical boundary] outer boundary, presumably defined via a
+  boundary condition
+\item[symmetry boundary] defined via a symmetry, e.g.\ a reflection
+  symmetry or periodicity
+\end{description}
+Grid points in the edges and corners may combine several types. For
+example, a point in a corner may be a ghost point in the $x$
+direction, a physical boundary point in the $y$ direction, and a
+symmetry point in the $z$ direction.
+
+The size of the physical boundary depends on the application. The
+number of ghost points is defined by the driver; the number of
+symmetry points is in principle defined by the thorn implementing the
+respective symmetry condition, but will in general be the same as the
+number of ghost points to avoid inconsistencies.
+
+When iterating over grid points, one usually needs to know about the
+boundary sizes and boundary types present. Details about this is
+explained in thorn CactusBase/CoordBase.
+
+The flesh provides a set of macros to iterate over particular types of
+grid points:
+\begin{description}
+\item[\texttt{CCTK\_LOOP\_ALL}] Loop over all grid points
+\item[\texttt{CCTK\_LOOP\_INT}] Loop over all interior grid points
+\item[\texttt{CCTK\_LOOP\_BND}] Loop over all physical boundary points
+\item[\texttt{CCTK\_LOOP\_INTBND}] Loop over all ``interior'' physical
+  boundary points, i.e.\ over all those physical boundary points that
+  are not also ghost or symmetry points
+\end{description}
+
+As described above, points on edges and corners can have several
+boundary types at once, e.g.\ can be both a physical and a symmetry
+point. \texttt{LOOP\_BND} and \texttt{LOOP\_INTBND} treat these
+different: \texttt{LOOP\_BND} loops over all points that are physical
+boundaries (independent of whether they also are symmetry or ghost
+boundaries), while \texttt{LOOP\_INTBND} loops over those points that
+are only physical boundaries (and excludes any points that belongs to
+a symmetry or ghost boundary). \texttt{LOOP\_BND} does not require
+applying a symmetry condition or synchronisation afterwards (but does
+not allow taking tangential derivatives); \texttt{LOOP\_INTBND} allows
+taking tangential derivatives (but requires applying symmetry
+boundaries and synchronising afterwards).
+
+In 3 dimensions, these macros should be called as follows:
+\begin{verbatim}
+CCTK_LOOP3_ALL(name, cctkGH, i,j,k) {
+  ... body of the loop
+} CCTK_ENDLOOP3_ALL(name);
+\end{verbatim}
+
+\begin{verbatim}
+CCTK_LOOP3_INT(name, cctkGH, i,j,k) {
+  ... body of the loop
+} CCTK_ENDLOOP3_INT(name);
+\end{verbatim}
+
+\begin{verbatim}
+CCTK_LOOP3_BND(name, cctkGH, i,j,k, ni,nj,nk) {
+  ... body of the loop
+} CCTK_ENDLOOP3_BND(name);
+\end{verbatim}
+
+\begin{verbatim}
+CCTK_LOOP3_INTBND(name, cctkGH, i,j,k, ni,nj,nk) {
+  ... body of the loop
+} CCTK_ENDLOOP3_INTBND(name);
+\end{verbatim}
+
+In all cases, \texttt{name} should be replaced by a unique name for
+the loop. \texttt{i}, \texttt{j}, and \texttt{k} are names of
+variables that will be declared and defined by these macros,
+containing the index of the current grid point. Similarly \texttt{ni},
+\texttt{nj}, and \texttt{nk} are names of variables describing the
+(outwards pointing) normal direction to the boundary as well as the
+distance to the boundary.
+
+
+
 \subsection{Coordinates}
 \label{sec:CactusAPI.coordinates}
 
