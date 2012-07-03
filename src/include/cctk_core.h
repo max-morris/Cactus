@@ -15,9 +15,6 @@
 /* Grab the main configuration info. */
 #include "cctk_Config.h"
 
-/* Define which thorn the file is in */
-#include "definethisthorn.h"
-
 /* Include the constants */
 #include "cctk_Constants.h"
 
@@ -164,12 +161,6 @@ cctk_lsh1,cctk_lsh2,cctk_lsh3
 #include "cctk_Timers.h"
 #include "cctk_Termination.h"
 #include "cctk_WarnLevel.h"
-
-/* Include prototypes for scheduled functions */
-#include "cctk_ScheduleFunctions.h"
-
-/* Include prototypes for scheduled functions */
-#include "cctk_ScheduleFunctions.h"
 
 /* Include definitions provided by capabilities */
 #include "cctk_Capabilities.h"
