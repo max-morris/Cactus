@@ -31,11 +31,11 @@
   print '("--------------------------------------------------------------------------------")'
 
 #define _CCTK_FARGUMENTS \
-cctk_dim,cctk_gsh,cctk_lsh,cctk_lbnd,cctk_ubnd,cctk_lssh,cctk_from,cctk_to,\
+cctk_dim,cctk_gsh,cctk_lsh,cctk_lbnd,cctk_ubnd,cctk_ash,cctk_from,cctk_to,\
 cctk_bbox,cctk_delta_time,cctk_time,cctk_delta_space,cctk_origin_space,\
 cctk_levfac,cctk_levoff,cctk_levoffdenom,cctk_timefac,cctk_convlevel,\
 cctk_convfac,cctk_nghostzones,cctk_iteration,cctkGH,\
-cctk_lsh1,cctk_lsh2,cctk_lsh3
+cctk_ash1,cctk_ash2,cctk_ash3
 
 #define _DECLARE_CCTK_ARGUMENTS _DECLARE_CCTK_FARGUMENTS
 #define _DECLARE_CCTK_FARGUMENTS &&\
@@ -44,7 +44,7 @@ cctk_lsh1,cctk_lsh2,cctk_lsh3
         CCTK_DECLARE(INTEGER,cctk_lsh,(cctk_dim))&&\
         CCTK_DECLARE(INTEGER,cctk_lbnd,(cctk_dim))&&\
         CCTK_DECLARE(INTEGER,cctk_ubnd,(cctk_dim))&&\
-        CCTK_DECLARE(INTEGER,cctk_lssh,(CCTK_NSTAGGER*cctk_dim))&&\
+        CCTK_DECLARE(INTEGER,cctk_ash,(cctk_dim))&&\
         CCTK_DECLARE(INTEGER,cctk_from,(cctk_dim))&&\
         CCTK_DECLARE(INTEGER,cctk_to,(cctk_dim))&&\
         CCTK_DECLARE(INTEGER,cctk_bbox,(2*cctk_dim))&&\
@@ -61,9 +61,9 @@ cctk_lsh1,cctk_lsh2,cctk_lsh3
         CCTK_DECLARE(INTEGER,cctk_nghostzones,(cctk_dim))&&\
         CCTK_DECLARE(INTEGER,cctk_iteration,)&&\
         CCTK_DECLARE(CCTK_POINTER,cctkGH,)&&\
-        CCTK_DECLARE(INTEGER,cctk_lsh1,)&&\
-        CCTK_DECLARE(INTEGER,cctk_lsh2,)&&\
-        CCTK_DECLARE(INTEGER,cctk_lsh3,)&&
+        CCTK_DECLARE(INTEGER,cctk_ash1,)&&\
+        CCTK_DECLARE(INTEGER,cctk_ash2,)&&\
+        CCTK_DECLARE(INTEGER,cctk_ash3,)&&
 
 #define CCTK_WARN(a,b) CCTK_Warn(a,__LINE__,__FORTRANFILE__,CCTK_THORNSTRING,b)
 
@@ -79,10 +79,6 @@ cctk_lsh1,cctk_lsh2,cctk_lsh3
 #define CCTK_ORIGIN_SPACE(x) (cctk_origin_space(x)+cctk_delta_space(x)/cctk_levfac(x)*cctk_levoff(x)/cctk_levoffdenom(x))
 #define CCTK_DELTA_SPACE(x) (cctk_delta_space(x)/cctk_levfac(x))
 #define CCTK_DELTA_TIME (cctk_delta_time/cctk_timefac)
-/* The "stagger index" stag is zero-based (0,1,...), the direction dim
-   is one-based in Fortran (1,2,3,...) */
-#define CCTK_LSSH(stag,dim) cctk_lssh(CCTK_LSSH_IDX(stag,dim))
-#define CCTK_LSSH_IDX(stag,dim) (1+(stag)+CCTK_NSTAGGER*((dim)-1))
 
 #ifdef F90CODE
 
@@ -156,7 +152,6 @@ cctk_lsh1,cctk_lsh2,cctk_lsh3
 #include "cctk_Misc.h"
 #include "cctk_Parameter.h"
 #include "cctk_Reduction.h"
-#include "cctk_Stagger.h"
 #include "cctk_Sync.h"
 #include "cctk_Timers.h"
 #include "cctk_Termination.h"
@@ -211,22 +206,22 @@ static inline int CCTK_GFINDEX1D (const cGH *restrict cctkGH,
 static inline int CCTK_GFINDEX2D (const cGH *restrict cctkGH,
                                   int i, int j)
 {
-  return i + cctkGH->cctk_lsh[0] * j;
+  return i + cctkGH->cctk_ash[0] * j;
 }
 
 static inline int CCTK_GFINDEX3D (const cGH *restrict cctkGH,
                                   int i, int j, int k)
 {
-  return (i + cctkGH->cctk_lsh[0] *
-          (j + cctkGH->cctk_lsh[1] * k));
+  return (i + cctkGH->cctk_ash[0] *
+          (j + cctkGH->cctk_ash[1] * k));
 }
 
 static inline int CCTK_GFINDEX4D (const cGH *restrict cctkGH,
                                   int i, int j, int k, int l)
 {
-  return (i + cctkGH->cctk_lsh[0] *
-          (j + cctkGH->cctk_lsh[1] *
-           (k + cctkGH->cctk_lsh[2] * l)));
+  return (i + cctkGH->cctk_ash[0] *
+          (j + cctkGH->cctk_ash[1] *
+           (k + cctkGH->cctk_ash[2] * l)));
 }
 
 static inline int CCTK_VECTGFINDEX0D (const cGH *restrict cctkGH,
@@ -238,31 +233,31 @@ static inline int CCTK_VECTGFINDEX0D (const cGH *restrict cctkGH,
 static inline int CCTK_VECTGFINDEX1D (const cGH *restrict cctkGH,
                                       int i, int n)
 {
-  return i + cctkGH->cctk_lsh[0] * n;
+  return i + cctkGH->cctk_ash[0] * n;
 }
 
 static inline int CCTK_VECTGFINDEX2D (const cGH *restrict cctkGH,
                                       int i, int j, int n)
 {
-  return (i + cctkGH->cctk_lsh[0] *
-          (j + cctkGH->cctk_lsh[1] * n));
+  return (i + cctkGH->cctk_ash[0] *
+          (j + cctkGH->cctk_ash[1] * n));
 }
 
 static inline int CCTK_VECTGFINDEX3D (const cGH *restrict cctkGH,
                                       int i, int j, int k, int n)
 {
-  return (i + cctkGH->cctk_lsh[0] *
-          (j + cctkGH->cctk_lsh[1] *
-           (k + cctkGH->cctk_lsh[2] * n)));
+  return (i + cctkGH->cctk_ash[0] *
+          (j + cctkGH->cctk_ash[1] *
+           (k + cctkGH->cctk_ash[2] * n)));
 }
 
 static inline int CCTK_VECTGFINDEX4D (const cGH *restrict cctkGH,
                                       int i, int j, int k, int l, int n)
 {
-  return (i + cctkGH->cctk_lsh[0] *
-          (j + cctkGH->cctk_lsh[1] *
-           (k + cctkGH->cctk_lsh[2] *
-            (l + cctkGH->cctk_lsh[3] * n))));
+  return (i + cctkGH->cctk_ash[0] *
+          (j + cctkGH->cctk_ash[1] *
+           (k + cctkGH->cctk_ash[2] *
+            (l + cctkGH->cctk_ash[3] * n))));
 }
 
 #endif
@@ -281,7 +276,7 @@ static inline int CCTK_VECTGFINDEX4D (const cGH *restrict cctkGH,
         CCTK_DECLARE_INIT(int const *restrict const,cctk_lsh,cctkGH->cctk_lsh);\
         CCTK_DECLARE_INIT(int const *restrict const,cctk_lbnd,cctkGH->cctk_lbnd);\
         CCTK_DECLARE_INIT(int const *restrict const,cctk_ubnd,cctkGH->cctk_ubnd);\
-        CCTK_DECLARE_INIT(int const *restrict const,cctk_lssh,cctkGH->cctk_lssh);\
+        CCTK_DECLARE_INIT(int const *restrict const,cctk_ash,cctkGH->cctk_ash);\
         CCTK_DECLARE_INIT(int const *restrict const,cctk_from,cctkGH->cctk_from);\
         CCTK_DECLARE_INIT(int const *restrict const,cctk_to,cctkGH->cctk_to);\
         CCTK_DECLARE_INIT(int const *restrict const,cctk_bbox,cctkGH->cctk_bbox);\
@@ -303,7 +298,7 @@ static inline int CCTK_VECTGFINDEX4D (const cGH *restrict cctkGH,
 #define _PASS_CCTK_C2F(xGH) &((xGH)->cctk_dim),\
                             (xGH)->cctk_gsh,(xGH)->cctk_lsh,\
                             (xGH)->cctk_lbnd,(xGH)->cctk_ubnd,\
-                            (xGH)->cctk_lssh,\
+                            (xGH)->cctk_ash,\
                             (xGH)->cctk_from,(xGH)->cctk_to,\
                             (xGH)->cctk_bbox,\
                             &((xGH)->cctk_delta_time), &((xGH)->cctk_time),\
@@ -317,9 +312,9 @@ static inline int CCTK_VECTGFINDEX4D (const cGH *restrict cctkGH,
                             (xGH)->cctk_nghostzones,\
                             &((xGH)->cctk_iteration),\
                             &(xGH),\
-                            &(xGH)->cctk_lsh[0],\
-                            &(xGH)->cctk_lsh[1],\
-                            &(xGH)->cctk_lsh[2]
+                            &(xGH)->cctk_ash[0],\
+                            &(xGH)->cctk_ash[1],\
+                            &(xGH)->cctk_ash[2]
 #define _CCTK_C2F_PROTO     int const *,\
                             int const *, int const *,\
                             int const *, int const *,\
@@ -348,10 +343,6 @@ static inline int CCTK_VECTGFINDEX4D (const cGH *restrict cctkGH,
 #define CCTK_ORIGIN_SPACE(x) (cctk_origin_space[x]+cctk_delta_space[x]/cctk_levfac[x]*cctk_levoff[x]/cctk_levoffdenom[x])
 #define CCTK_DELTA_SPACE(x) (cctk_delta_space[x]/cctk_levfac[x])
 #define CCTK_DELTA_TIME (cctk_delta_time/cctk_timefac)
-/* The "stagger index" stag is zero-based (0,1,...), the direction dim
-   is zero-based in C (0,1,2,...) */
-#define CCTK_LSSH(stag,dim) cctk_lssh[CCTK_LSSH_IDX(stag,dim)]
-#define CCTK_LSSH_IDX(stag,dim) ((stag)+CCTK_NSTAGGER*(dim))
 
 #define CCTK_WARN(a,b) CCTK_Warn(a,__LINE__,__FILE__,CCTK_THORNSTRING,b)
 

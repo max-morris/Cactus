@@ -35,7 +35,6 @@ ScheduleInterface.c\
 SetParams.c\
 SetupCache.c\
 ShutdownCactus.c\
-Stagger.c\
 Subsystems.c\
 Termination.c\
 Traverse.c\

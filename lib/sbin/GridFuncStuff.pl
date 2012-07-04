@@ -374,11 +374,11 @@ sub GetThornArguments
             my $dim1=$dim+1;
             if ($dim<3)
             {
-              $type .= "${sep}cctk_lsh$dim1";
+              $type .= "${sep}cctk_ash$dim1";
             }
             else
             {
-              $type .= "${sep}cctk_lsh($dim1)";
+              $type .= "${sep}cctk_ash($dim1)";
             }
           }
           $sep = ',';
@@ -1004,8 +1004,6 @@ sub CreateThornGroupInitialisers
           . ',';
     push(@data, $line);
     $line = '                         "'
-          . $rhinterface_db->{"\U$thorn GROUP $group\E STYPE"}
-          . '", "'
           . $rhinterface_db->{"\U$thorn GROUP $group\E DISTRIB"}
           . '",';
     push(@data, $line);

@@ -30,8 +30,8 @@ typedef struct _cGH
   int *cctk_lbnd;
   int *cctk_ubnd;
 
-  /* local stagger shape lssh[3*dim] (3 staggerings) */
-  int *cctk_lssh;
+  /* allocated shape */
+  int *cctk_ash;
 
   /* unused */
   int *cctk_to;

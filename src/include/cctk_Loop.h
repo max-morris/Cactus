@@ -27,14 +27,14 @@
                           idir, \
                           imin, \
                           imax, \
-                          ilsh) \
+                          iash) \
   CCTK_LOOP1STR_NORMAL(name, \
                        i, \
                        ni, \
                        (idir), \
                        (imin), \
                        (imax), \
-                       (ilsh), \
+                       (iash), \
                        1) \
 
 #define CCTK_ENDLOOP1_NORMAL(name) \
@@ -46,7 +46,7 @@
                              idir, \
                              imin, \
                              imax, \
-                             ilsh, \
+                             iash, \
                              istr) \
   do { \
     typedef int cctki0_loop1_normal_##name; \
@@ -72,12 +72,12 @@
                    i, \
                    imin, \
                    imax, \
-                   ilsh) \
+                   iash) \
   CCTK_LOOP1STR(name, \
                 i, \
                 (imin), \
                 (imax), \
-                (ilsh), \
+                (iash), \
                 1) \
 
 #define CCTK_ENDLOOP1(name) \
@@ -87,7 +87,7 @@
                       i, \
                       imin, \
                       imax, \
-                      ilsh, \
+                      iash, \
                       istr) \
   CCTK_LOOP1STR_NORMAL(name, \
                        i, \
@@ -95,7 +95,7 @@
                        0, \
                        imin, \
                        imax, \
-                       ilsh, \
+                       iash, \
                        istr) \
 
 #define CCTK_ENDLOOP1STR(name) \
@@ -134,8 +134,8 @@
     CCTK_LOOP1STR(name##_interior, \
                   i, \
                   (iblo), \
-                  cctki2_cctkGH->CCTK_LSSH(0,0)-(ibhi), \
-                  cctki2_cctkGH->cctk_lsh[0], \
+                  cctki2_cctkGH->cctk_lsh[0]-(ibhi), \
+                  cctki2_cctkGH->cctk_ash[0], \
                   (istr)) { \
 
 #define CCTK_ENDLOOP1STR_INTERIOR(name) \
@@ -185,7 +185,7 @@
     int const cctki2_blo[] = { (iblo) }; \
     int const cctki2_bhi[] = { (ibhi) }; \
     int const cctki2_bbox[] = { (ibboxlo), (ibboxhi) }; \
-    int const cctki2_lssh[] = { cctki2_cctkGH->CCTK_LSSH(0,0) }; \
+    int const cctki2_lsh[] = { cctki2_cctkGH->cctk_lsh[0] }; \
     int const cctki2_istr1 CCTK_ATTRIBUTE_UNUSED = (istr); \
     /* Loop over all faces, edges, and corners */ \
     for (int cctki2_idir=-1; cctki2_idir<=+1; ++cctki2_idir) { \
@@ -193,10 +193,10 @@
         (cctki2_idir==-1 ? cctki2_bbox[0] : 0) || (cctki2_idir==+1 ? cctki2_bbox[1] : 0); \
       if (cctki2_any_bbox) { \
         int const cctki2_bmin[] = { \
-          cctki2_idir==-1 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lssh[0] - cctki2_bhi[0], \
+          cctki2_idir==-1 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0], \
         }; \
         int const cctki2_bmax[] = { \
-          cctki2_idir==-1 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lssh[0] - cctki2_bhi[0] : cctki2_lssh[0], \
+          cctki2_idir==-1 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0], \
         }; \
         CCTK_LOOP1STR_NORMAL(name##_boundaries, \
                              i, \
@@ -204,7 +204,7 @@
                              cctki2_idir, \
                              cctki2_bmin[0], \
                              cctki2_bmax[0], \
-                             cctki2_cctkGH->cctk_lsh[0], \
+                             cctki2_cctkGH->cctk_ash[0], \
                              cctki2_istr1) { \
 
 #define CCTK_ENDLOOP1STR_BOUNDARIES(name) \
@@ -256,7 +256,7 @@
     int const cctki2_blo[] = { (iblo) }; \
     int const cctki2_bhi[] = { (ibhi) }; \
     int const cctki2_bbox[] = { (ibboxlo), (ibboxhi) }; \
-    int const cctki2_lssh[] = { cctki2_cctkGH->CCTK_LSSH(0,0) }; \
+    int const cctki2_lsh[] = { cctki2_cctkGH->cctk_lsh[0] }; \
     int const cctki2_istr1 CCTK_ATTRIBUTE_UNUSED = (istr); \
     /* Loop over all faces, edges, and corners */ \
     for (int cctki2_idir=-1; cctki2_idir<=+1; ++cctki2_idir) { \
@@ -266,10 +266,10 @@
         (cctki2_idir==-1 ? cctki2_bbox[0] : 1) && (cctki2_idir==+1 ? cctki2_bbox[1] : 1); \
       if (cctki2_all_bbox && cctki2_any_bbox) { \
         int const cctki2_bmin[] = { \
-          cctki2_idir==-1 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lssh[0] - cctki2_bhi[0], \
+          cctki2_idir==-1 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0], \
         }; \
         int const cctki2_bmax[] = { \
-          cctki2_idir==-1 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lssh[0] - cctki2_bhi[0] : cctki2_lssh[0], \
+          cctki2_idir==-1 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0], \
         }; \
         CCTK_LOOP1STR_NORMAL(name##_intboundaries, \
                              i, \
@@ -277,7 +277,7 @@
                              cctki2_idir, \
                              cctki2_bmin[0], \
                              cctki2_bmax[0], \
-                             cctki2_cctkGH->cctk_lsh[0], \
+                             cctki2_cctkGH->cctk_ash[0], \
                              cctki2_istr1) { \
 
 #define CCTK_ENDLOOP1STR_INTBOUNDARIES(name) \
@@ -314,8 +314,8 @@
     CCTK_LOOP1STR(name##_all, \
                   i, \
                   0, \
-                  cctki3_cctkGH->CCTK_LSSH(0,0), \
                   cctki3_cctkGH->cctk_lsh[0], \
+                  cctki3_cctkGH->cctk_ash[0], \
                   (istr)) { \
 
 #define CCTK_ENDLOOP1STR_ALL(name) \
@@ -483,19 +483,19 @@
                    i, \
                    imin, \
                    imax, \
-                   ilsh) \
+                   iash) \
   CCTK_LOOP1STR(name, \
              i, \
              imin, \
              imax, \
-             ilsh, \
+             iash, \
              1) \
 
 #define CCTK_LOOP1STR(name, \
                       i, \
                       imin, \
                       imax, \
-                      ilsh, \
+                      iash, \
                       istr) \
    && name/**/_imin = imin \
    && name/**/_imax = imax \
@@ -530,8 +530,8 @@
    CCTK_LOOP1STR(name, \
                  i, \
                  1, \
-                 CCTK_LSSH(0,1), \
                  cctk_lsh(1), \
+                 cctk_ash(1), \
                  istr) \
 
 #define CCTK_ENDLOOP1_ALL(name) \
@@ -568,8 +568,8 @@
    CCTK_LOOP1STR(name, \
                  i, \
                  (iblo), \
-                 CCTK_LSSH(0,1)-(ibhi), \
-                 cctk_lsh(1), \
+                 cctk_lsh(1)-(ibhi), \
+                 cctk_ash(1), \
                  istr) \
 
 #define CCTK_ENDLOOP1_INTERIOR(name) \
@@ -615,7 +615,7 @@
    &&    do lc_face=1,2 \
    &&       do lc_d=1,1 \
    &&          lc_bmin(lc_d) = 1 \
-   &&          lc_bmax(lc_d) = CCTK_LSSH(0,lc_d) \
+   &&          lc_bmax(lc_d) = cctk_lsh(lc_d) \
    &&          if (lc_d<lc_dir) then \
    &&             lc_bmin(lc_d) = lc_bmin(lc_d)+lc_blo(lc_d) \
    &&             lc_bmax(lc_d) = lc_bmax(lc_d)-lc_bhi(lc_d) \
@@ -630,7 +630,7 @@
                           i, \
                           lc_bmin(1), \
                           lc_bmax(1), \
-                          cctk_lsh(1), \
+                          cctk_ash(1), \
                           lc_istr) \
 
 #define CCTK_ENDLOOP1_BOUNDARIES(name) \
@@ -657,14 +657,14 @@
                           idir,jdir, \
                           imin,jmin, \
                           imax,jmax, \
-                          ilsh,jlsh) \
+                          iash,jash) \
   CCTK_LOOP2STR_NORMAL(name, \
                        i,j, \
                        ni,nj, \
                        (idir),(jdir), \
                        (imin),(jmin), \
                        (imax),(jmax), \
-                       (ilsh),(jlsh), \
+                       (iash),(jash), \
                        1) \
 
 #define CCTK_ENDLOOP2_NORMAL(name) \
@@ -676,7 +676,7 @@
                              idir,jdir, \
                              imin,jmin, \
                              imax,jmax, \
-                             ilsh,jlsh, \
+                             iash,jash, \
                              istr) \
   do { \
     typedef int cctki0_loop2_normal_##name; \
@@ -708,12 +708,12 @@
                    i,j, \
                    imin,jmin, \
                    imax,jmax, \
-                   ilsh,jlsh) \
+                   iash,jash) \
   CCTK_LOOP2STR(name, \
                 i,j, \
                 (imin),(jmin), \
                 (imax),(jmax), \
-                (ilsh),(jlsh), \
+                (iash),(jash), \
                 1) \
 
 #define CCTK_ENDLOOP2(name) \
@@ -723,7 +723,7 @@
                       i,j, \
                       imin,jmin, \
                       imax,jmax, \
-                      ilsh,jlsh, \
+                      iash,jash, \
                       istr) \
   CCTK_LOOP2STR_NORMAL(name, \
                        i,j, \
@@ -731,7 +731,7 @@
                        0,0, \
                        imin,jmin, \
                        imax,jmax, \
-                       ilsh,jlsh, \
+                       iash,jash, \
                        istr) \
 
 #define CCTK_ENDLOOP2STR(name) \
@@ -770,10 +770,10 @@
     CCTK_LOOP2STR(name##_interior, \
                   i,j, \
                   (iblo),(jblo), \
-                  cctki2_cctkGH->CCTK_LSSH(0,0)-(ibhi), \
-                  cctki2_cctkGH->CCTK_LSSH(0,1)-(jbhi), \
-                  cctki2_cctkGH->cctk_lsh[0], \
-                  cctki2_cctkGH->cctk_lsh[1], \
+                  cctki2_cctkGH->cctk_lsh[0]-(ibhi), \
+                  cctki2_cctkGH->cctk_lsh[1]-(jbhi), \
+                  cctki2_cctkGH->cctk_ash[0], \
+                  cctki2_cctkGH->cctk_ash[1], \
                   (istr)) { \
 
 #define CCTK_ENDLOOP2STR_INTERIOR(name) \
@@ -823,7 +823,7 @@
     int const cctki2_blo[] = { (iblo),(jblo) }; \
     int const cctki2_bhi[] = { (ibhi),(jbhi) }; \
     int const cctki2_bbox[] = { (ibboxlo), (ibboxhi),(jbboxlo), (jbboxhi) }; \
-    int const cctki2_lssh[] = { cctki2_cctkGH->CCTK_LSSH(0,0),cctki2_cctkGH->CCTK_LSSH(0,1) }; \
+    int const cctki2_lsh[] = { cctki2_cctkGH->cctk_lsh[0],cctki2_cctkGH->cctk_lsh[1] }; \
     int const cctki2_istr1 CCTK_ATTRIBUTE_UNUSED = (istr); \
     /* Loop over all faces, edges, and corners */ \
     for (int cctki2_jdir=-1; cctki2_jdir<=+1; ++cctki2_jdir) { \
@@ -833,12 +833,12 @@
         (cctki2_jdir==-1 ? cctki2_bbox[2] : 0) || (cctki2_jdir==+1 ? cctki2_bbox[3] : 0); \
       if (cctki2_any_bbox) { \
         int const cctki2_bmin[] = { \
-          cctki2_idir==-1 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lssh[0] - cctki2_bhi[0], \
-          cctki2_jdir==-1 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lssh[1] - cctki2_bhi[1], \
+          cctki2_idir==-1 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0], \
+          cctki2_jdir==-1 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1], \
         }; \
         int const cctki2_bmax[] = { \
-          cctki2_idir==-1 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lssh[0] - cctki2_bhi[0] : cctki2_lssh[0], \
-          cctki2_jdir==-1 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lssh[1] - cctki2_bhi[1] : cctki2_lssh[1], \
+          cctki2_idir==-1 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0], \
+          cctki2_jdir==-1 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1], \
         }; \
         CCTK_LOOP2STR_NORMAL(name##_boundaries, \
                              i,j, \
@@ -846,8 +846,8 @@
                              cctki2_idir,cctki2_jdir, \
                              cctki2_bmin[0],cctki2_bmin[1], \
                              cctki2_bmax[0],cctki2_bmax[1], \
-                             cctki2_cctkGH->cctk_lsh[0], \
-                             cctki2_cctkGH->cctk_lsh[1], \
+                             cctki2_cctkGH->cctk_ash[0], \
+                             cctki2_cctkGH->cctk_ash[1], \
                              cctki2_istr1) { \
 
 #define CCTK_ENDLOOP2STR_BOUNDARIES(name) \
@@ -900,7 +900,7 @@
     int const cctki2_blo[] = { (iblo),(jblo) }; \
     int const cctki2_bhi[] = { (ibhi),(jbhi) }; \
     int const cctki2_bbox[] = { (ibboxlo), (ibboxhi),(jbboxlo), (jbboxhi) }; \
-    int const cctki2_lssh[] = { cctki2_cctkGH->CCTK_LSSH(0,0),cctki2_cctkGH->CCTK_LSSH(0,1) }; \
+    int const cctki2_lsh[] = { cctki2_cctkGH->cctk_lsh[0],cctki2_cctkGH->cctk_lsh[1] }; \
     int const cctki2_istr1 CCTK_ATTRIBUTE_UNUSED = (istr); \
     /* Loop over all faces, edges, and corners */ \
     for (int cctki2_jdir=-1; cctki2_jdir<=+1; ++cctki2_jdir) { \
@@ -913,12 +913,12 @@
         (cctki2_jdir==-1 ? cctki2_bbox[2] : 1) && (cctki2_jdir==+1 ? cctki2_bbox[3] : 1); \
       if (cctki2_all_bbox && cctki2_any_bbox) { \
         int const cctki2_bmin[] = { \
-          cctki2_idir==-1 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lssh[0] - cctki2_bhi[0], \
-          cctki2_jdir==-1 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lssh[1] - cctki2_bhi[1], \
+          cctki2_idir==-1 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0], \
+          cctki2_jdir==-1 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1], \
         }; \
         int const cctki2_bmax[] = { \
-          cctki2_idir==-1 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lssh[0] - cctki2_bhi[0] : cctki2_lssh[0], \
-          cctki2_jdir==-1 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lssh[1] - cctki2_bhi[1] : cctki2_lssh[1], \
+          cctki2_idir==-1 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0], \
+          cctki2_jdir==-1 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1], \
         }; \
         CCTK_LOOP2STR_NORMAL(name##_intboundaries, \
                              i,j, \
@@ -926,8 +926,8 @@
                              cctki2_idir,cctki2_jdir, \
                              cctki2_bmin[0],cctki2_bmin[1], \
                              cctki2_bmax[0],cctki2_bmax[1], \
-                             cctki2_cctkGH->cctk_lsh[0], \
-                             cctki2_cctkGH->cctk_lsh[1], \
+                             cctki2_cctkGH->cctk_ash[0], \
+                             cctki2_cctkGH->cctk_ash[1], \
                              cctki2_istr1) { \
 
 #define CCTK_ENDLOOP2STR_INTBOUNDARIES(name) \
@@ -965,10 +965,10 @@
     CCTK_LOOP2STR(name##_all, \
                   i,j, \
                   0,0, \
-                  cctki3_cctkGH->CCTK_LSSH(0,0), \
-                  cctki3_cctkGH->CCTK_LSSH(0,1), \
                   cctki3_cctkGH->cctk_lsh[0], \
                   cctki3_cctkGH->cctk_lsh[1], \
+                  cctki3_cctkGH->cctk_ash[0], \
+                  cctki3_cctkGH->cctk_ash[1], \
                   (istr)) { \
 
 #define CCTK_ENDLOOP2STR_ALL(name) \
@@ -1136,19 +1136,19 @@
                    i,j, \
                    imin,jmin, \
                    imax,jmax, \
-                   ilsh,jlsh) \
+                   iash,jash) \
   CCTK_LOOP2STR(name, \
              i,j, \
              imin,jmin, \
              imax,jmax, \
-             ilsh,jlsh, \
+             iash,jash, \
              1) \
 
 #define CCTK_LOOP2STR(name, \
                       i,j, \
                       imin,jmin, \
                       imax,jmax, \
-                      ilsh,jlsh, \
+                      iash,jash, \
                       istr) \
    && name/**/_imin = imin \
    && name/**/_jmin = jmin \
@@ -1187,8 +1187,8 @@
    CCTK_LOOP2STR(name, \
                  i,j, \
                  1,1, \
-                 CCTK_LSSH(0,1),CCTK_LSSH(0,2), \
                  cctk_lsh(1),cctk_lsh(2), \
+                 cctk_ash(1),cctk_ash(2), \
                  istr) \
 
 #define CCTK_ENDLOOP2_ALL(name) \
@@ -1225,9 +1225,9 @@
    CCTK_LOOP2STR(name, \
                  i,j, \
                  (iblo),(jblo), \
-                 CCTK_LSSH(0,1)-(ibhi), \
-                 CCTK_LSSH(0,2)-(jbhi), \
-                 cctk_lsh(1),cctk_lsh(2), \
+                 cctk_lsh(1)-(ibhi), \
+                 cctk_lsh(2)-(jbhi), \
+                 cctk_ash(1),cctk_ash(2), \
                  istr) \
 
 #define CCTK_ENDLOOP2_INTERIOR(name) \
@@ -1273,7 +1273,7 @@
    &&    do lc_face=1,2 \
    &&       do lc_d=1,2 \
    &&          lc_bmin(lc_d) = 1 \
-   &&          lc_bmax(lc_d) = CCTK_LSSH(0,lc_d) \
+   &&          lc_bmax(lc_d) = cctk_lsh(lc_d) \
    &&          if (lc_d<lc_dir) then \
    &&             lc_bmin(lc_d) = lc_bmin(lc_d)+lc_blo(lc_d) \
    &&             lc_bmax(lc_d) = lc_bmax(lc_d)-lc_bhi(lc_d) \
@@ -1288,7 +1288,7 @@
                           i,j, \
                           lc_bmin(1),lc_bmin(2), \
                           lc_bmax(1),lc_bmax(2), \
-                          cctk_lsh(1),cctk_lsh(2), \
+                          cctk_ash(1),cctk_ash(2), \
                           lc_istr) \
 
 #define CCTK_ENDLOOP2_BOUNDARIES(name) \
@@ -1315,14 +1315,14 @@
                           idir,jdir,kdir, \
                           imin,jmin,kmin, \
                           imax,jmax,kmax, \
-                          ilsh,jlsh,klsh) \
+                          iash,jash,kash) \
   CCTK_LOOP3STR_NORMAL(name, \
                        i,j,k, \
                        ni,nj,nk, \
                        (idir),(jdir),(kdir), \
                        (imin),(jmin),(kmin), \
                        (imax),(jmax),(kmax), \
-                       (ilsh),(jlsh),(klsh), \
+                       (iash),(jash),(kash), \
                        1) \
 
 #define CCTK_ENDLOOP3_NORMAL(name) \
@@ -1334,7 +1334,7 @@
                              idir,jdir,kdir, \
                              imin,jmin,kmin, \
                              imax,jmax,kmax, \
-                             ilsh,jlsh,klsh, \
+                             iash,jash,kash, \
                              istr) \
   do { \
     typedef int cctki0_loop3_normal_##name; \
@@ -1372,12 +1372,12 @@
                    i,j,k, \
                    imin,jmin,kmin, \
                    imax,jmax,kmax, \
-                   ilsh,jlsh,klsh) \
+                   iash,jash,kash) \
   CCTK_LOOP3STR(name, \
                 i,j,k, \
                 (imin),(jmin),(kmin), \
                 (imax),(jmax),(kmax), \
-                (ilsh),(jlsh),(klsh), \
+                (iash),(jash),(kash), \
                 1) \
 
 #define CCTK_ENDLOOP3(name) \
@@ -1387,7 +1387,7 @@
                       i,j,k, \
                       imin,jmin,kmin, \
                       imax,jmax,kmax, \
-                      ilsh,jlsh,klsh, \
+                      iash,jash,kash, \
                       istr) \
   CCTK_LOOP3STR_NORMAL(name, \
                        i,j,k, \
@@ -1395,7 +1395,7 @@
                        0,0,0, \
                        imin,jmin,kmin, \
                        imax,jmax,kmax, \
-                       ilsh,jlsh,klsh, \
+                       iash,jash,kash, \
                        istr) \
 
 #define CCTK_ENDLOOP3STR(name) \
@@ -1434,12 +1434,12 @@
     CCTK_LOOP3STR(name##_interior, \
                   i,j,k, \
                   (iblo),(jblo),(kblo), \
-                  cctki2_cctkGH->CCTK_LSSH(0,0)-(ibhi), \
-                  cctki2_cctkGH->CCTK_LSSH(0,1)-(jbhi), \
-                  cctki2_cctkGH->CCTK_LSSH(0,2)-(kbhi), \
-                  cctki2_cctkGH->cctk_lsh[0], \
-                  cctki2_cctkGH->cctk_lsh[1], \
-                  cctki2_cctkGH->cctk_lsh[2], \
+                  cctki2_cctkGH->cctk_lsh[0]-(ibhi), \
+                  cctki2_cctkGH->cctk_lsh[1]-(jbhi), \
+                  cctki2_cctkGH->cctk_lsh[2]-(kbhi), \
+                  cctki2_cctkGH->cctk_ash[0], \
+                  cctki2_cctkGH->cctk_ash[1], \
+                  cctki2_cctkGH->cctk_ash[2], \
                   (istr)) { \
 
 #define CCTK_ENDLOOP3STR_INTERIOR(name) \
@@ -1489,7 +1489,7 @@
     int const cctki2_blo[] = { (iblo),(jblo),(kblo) }; \
     int const cctki2_bhi[] = { (ibhi),(jbhi),(kbhi) }; \
     int const cctki2_bbox[] = { (ibboxlo), (ibboxhi),(jbboxlo), (jbboxhi),(kbboxlo), (kbboxhi) }; \
-    int const cctki2_lssh[] = { cctki2_cctkGH->CCTK_LSSH(0,0),cctki2_cctkGH->CCTK_LSSH(0,1),cctki2_cctkGH->CCTK_LSSH(0,2) }; \
+    int const cctki2_lsh[] = { cctki2_cctkGH->cctk_lsh[0],cctki2_cctkGH->cctk_lsh[1],cctki2_cctkGH->cctk_lsh[2] }; \
     int const cctki2_istr1 CCTK_ATTRIBUTE_UNUSED = (istr); \
     /* Loop over all faces, edges, and corners */ \
     for (int cctki2_kdir=-1; cctki2_kdir<=+1; ++cctki2_kdir) { \
@@ -1501,14 +1501,14 @@
         (cctki2_kdir==-1 ? cctki2_bbox[4] : 0) || (cctki2_kdir==+1 ? cctki2_bbox[5] : 0); \
       if (cctki2_any_bbox) { \
         int const cctki2_bmin[] = { \
-          cctki2_idir==-1 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lssh[0] - cctki2_bhi[0], \
-          cctki2_jdir==-1 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lssh[1] - cctki2_bhi[1], \
-          cctki2_kdir==-1 ? 0 : cctki2_kdir==0 ? cctki2_blo[2] : cctki2_lssh[2] - cctki2_bhi[2], \
+          cctki2_idir==-1 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0], \
+          cctki2_jdir==-1 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1], \
+          cctki2_kdir==-1 ? 0 : cctki2_kdir==0 ? cctki2_blo[2] : cctki2_lsh[2] - cctki2_bhi[2], \
         }; \
         int const cctki2_bmax[] = { \
-          cctki2_idir==-1 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lssh[0] - cctki2_bhi[0] : cctki2_lssh[0], \
-          cctki2_jdir==-1 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lssh[1] - cctki2_bhi[1] : cctki2_lssh[1], \
-          cctki2_kdir==-1 ? cctki2_blo[2] : cctki2_kdir==0 ? cctki2_lssh[2] - cctki2_bhi[2] : cctki2_lssh[2], \
+          cctki2_idir==-1 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0], \
+          cctki2_jdir==-1 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1], \
+          cctki2_kdir==-1 ? cctki2_blo[2] : cctki2_kdir==0 ? cctki2_lsh[2] - cctki2_bhi[2] : cctki2_lsh[2], \
         }; \
         CCTK_LOOP3STR_NORMAL(name##_boundaries, \
                              i,j,k, \
@@ -1516,9 +1516,9 @@
                              cctki2_idir,cctki2_jdir,cctki2_kdir, \
                              cctki2_bmin[0],cctki2_bmin[1],cctki2_bmin[2], \
                              cctki2_bmax[0],cctki2_bmax[1],cctki2_bmax[2], \
-                             cctki2_cctkGH->cctk_lsh[0], \
-                             cctki2_cctkGH->cctk_lsh[1], \
-                             cctki2_cctkGH->cctk_lsh[2], \
+                             cctki2_cctkGH->cctk_ash[0], \
+                             cctki2_cctkGH->cctk_ash[1], \
+                             cctki2_cctkGH->cctk_ash[2], \
                              cctki2_istr1) { \
 
 #define CCTK_ENDLOOP3STR_BOUNDARIES(name) \
@@ -1572,7 +1572,7 @@
     int const cctki2_blo[] = { (iblo),(jblo),(kblo) }; \
     int const cctki2_bhi[] = { (ibhi),(jbhi),(kbhi) }; \
     int const cctki2_bbox[] = { (ibboxlo), (ibboxhi),(jbboxlo), (jbboxhi),(kbboxlo), (kbboxhi) }; \
-    int const cctki2_lssh[] = { cctki2_cctkGH->CCTK_LSSH(0,0),cctki2_cctkGH->CCTK_LSSH(0,1),cctki2_cctkGH->CCTK_LSSH(0,2) }; \
+    int const cctki2_lsh[] = { cctki2_cctkGH->cctk_lsh[0],cctki2_cctkGH->cctk_lsh[1],cctki2_cctkGH->cctk_lsh[2] }; \
     int const cctki2_istr1 CCTK_ATTRIBUTE_UNUSED = (istr); \
     /* Loop over all faces, edges, and corners */ \
     for (int cctki2_kdir=-1; cctki2_kdir<=+1; ++cctki2_kdir) { \
@@ -1588,14 +1588,14 @@
         (cctki2_kdir==-1 ? cctki2_bbox[4] : 1) && (cctki2_kdir==+1 ? cctki2_bbox[5] : 1); \
       if (cctki2_all_bbox && cctki2_any_bbox) { \
         int const cctki2_bmin[] = { \
-          cctki2_idir==-1 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lssh[0] - cctki2_bhi[0], \
-          cctki2_jdir==-1 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lssh[1] - cctki2_bhi[1], \
-          cctki2_kdir==-1 ? 0 : cctki2_kdir==0 ? cctki2_blo[2] : cctki2_lssh[2] - cctki2_bhi[2], \
+          cctki2_idir==-1 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0], \
+          cctki2_jdir==-1 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1], \
+          cctki2_kdir==-1 ? 0 : cctki2_kdir==0 ? cctki2_blo[2] : cctki2_lsh[2] - cctki2_bhi[2], \
         }; \
         int const cctki2_bmax[] = { \
-          cctki2_idir==-1 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lssh[0] - cctki2_bhi[0] : cctki2_lssh[0], \
-          cctki2_jdir==-1 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lssh[1] - cctki2_bhi[1] : cctki2_lssh[1], \
-          cctki2_kdir==-1 ? cctki2_blo[2] : cctki2_kdir==0 ? cctki2_lssh[2] - cctki2_bhi[2] : cctki2_lssh[2], \
+          cctki2_idir==-1 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0], \
+          cctki2_jdir==-1 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1], \
+          cctki2_kdir==-1 ? cctki2_blo[2] : cctki2_kdir==0 ? cctki2_lsh[2] - cctki2_bhi[2] : cctki2_lsh[2], \
         }; \
         CCTK_LOOP3STR_NORMAL(name##_intboundaries, \
                              i,j,k, \
@@ -1603,9 +1603,9 @@
                              cctki2_idir,cctki2_jdir,cctki2_kdir, \
                              cctki2_bmin[0],cctki2_bmin[1],cctki2_bmin[2], \
                              cctki2_bmax[0],cctki2_bmax[1],cctki2_bmax[2], \
-                             cctki2_cctkGH->cctk_lsh[0], \
-                             cctki2_cctkGH->cctk_lsh[1], \
-                             cctki2_cctkGH->cctk_lsh[2], \
+                             cctki2_cctkGH->cctk_ash[0], \
+                             cctki2_cctkGH->cctk_ash[1], \
+                             cctki2_cctkGH->cctk_ash[2], \
                              cctki2_istr1) { \
 
 #define CCTK_ENDLOOP3STR_INTBOUNDARIES(name) \
@@ -1644,12 +1644,12 @@
     CCTK_LOOP3STR(name##_all, \
                   i,j,k, \
                   0,0,0, \
-                  cctki3_cctkGH->CCTK_LSSH(0,0), \
-                  cctki3_cctkGH->CCTK_LSSH(0,1), \
-                  cctki3_cctkGH->CCTK_LSSH(0,2), \
                   cctki3_cctkGH->cctk_lsh[0], \
                   cctki3_cctkGH->cctk_lsh[1], \
                   cctki3_cctkGH->cctk_lsh[2], \
+                  cctki3_cctkGH->cctk_ash[0], \
+                  cctki3_cctkGH->cctk_ash[1], \
+                  cctki3_cctkGH->cctk_ash[2], \
                   (istr)) { \
 
 #define CCTK_ENDLOOP3STR_ALL(name) \
@@ -1817,19 +1817,19 @@
                    i,j,k, \
                    imin,jmin,kmin, \
                    imax,jmax,kmax, \
-                   ilsh,jlsh,klsh) \
+                   iash,jash,kash) \
   CCTK_LOOP3STR(name, \
              i,j,k, \
              imin,jmin,kmin, \
              imax,jmax,kmax, \
-             ilsh,jlsh,klsh, \
+             iash,jash,kash, \
              1) \
 
 #define CCTK_LOOP3STR(name, \
                       i,j,k, \
                       imin,jmin,kmin, \
                       imax,jmax,kmax, \
-                      ilsh,jlsh,klsh, \
+                      iash,jash,kash, \
                       istr) \
    && name/**/_imin = imin \
    && name/**/_jmin = jmin \
@@ -1872,8 +1872,8 @@
    CCTK_LOOP3STR(name, \
                  i,j,k, \
                  1,1,1, \
-                 CCTK_LSSH(0,1),CCTK_LSSH(0,2),CCTK_LSSH(0,3), \
                  cctk_lsh(1),cctk_lsh(2),cctk_lsh(3), \
+                 cctk_ash(1),cctk_ash(2),cctk_ash(3), \
                  istr) \
 
 #define CCTK_ENDLOOP3_ALL(name) \
@@ -1910,10 +1910,10 @@
    CCTK_LOOP3STR(name, \
                  i,j,k, \
                  (iblo),(jblo),(kblo), \
-                 CCTK_LSSH(0,1)-(ibhi), \
-                 CCTK_LSSH(0,2)-(jbhi), \
-                 CCTK_LSSH(0,3)-(kbhi), \
-                 cctk_lsh(1),cctk_lsh(2),cctk_lsh(3), \
+                 cctk_lsh(1)-(ibhi), \
+                 cctk_lsh(2)-(jbhi), \
+                 cctk_lsh(3)-(kbhi), \
+                 cctk_ash(1),cctk_ash(2),cctk_ash(3), \
                  istr) \
 
 #define CCTK_ENDLOOP3_INTERIOR(name) \
@@ -1959,7 +1959,7 @@
    &&    do lc_face=1,2 \
    &&       do lc_d=1,3 \
    &&          lc_bmin(lc_d) = 1 \
-   &&          lc_bmax(lc_d) = CCTK_LSSH(0,lc_d) \
+   &&          lc_bmax(lc_d) = cctk_lsh(lc_d) \
    &&          if (lc_d<lc_dir) then \
    &&             lc_bmin(lc_d) = lc_bmin(lc_d)+lc_blo(lc_d) \
    &&             lc_bmax(lc_d) = lc_bmax(lc_d)-lc_bhi(lc_d) \
@@ -1974,7 +1974,7 @@
                           i,j,k, \
                           lc_bmin(1),lc_bmin(2),lc_bmin(3), \
                           lc_bmax(1),lc_bmax(2),lc_bmax(3), \
-                          cctk_lsh(1),cctk_lsh(2),cctk_lsh(3), \
+                          cctk_ash(1),cctk_ash(2),cctk_ash(3), \
                           lc_istr) \
 
 #define CCTK_ENDLOOP3_BOUNDARIES(name) \
@@ -2001,14 +2001,14 @@
                           idir,jdir,kdir,ldir, \
                           imin,jmin,kmin,lmin, \
                           imax,jmax,kmax,lmax, \
-                          ilsh,jlsh,klsh,llsh) \
+                          iash,jash,kash,lash) \
   CCTK_LOOP4STR_NORMAL(name, \
                        i,j,k,l, \
                        ni,nj,nk,nl, \
                        (idir),(jdir),(kdir),(ldir), \
                        (imin),(jmin),(kmin),(lmin), \
                        (imax),(jmax),(kmax),(lmax), \
-                       (ilsh),(jlsh),(klsh),(llsh), \
+                       (iash),(jash),(kash),(lash), \
                        1) \
 
 #define CCTK_ENDLOOP4_NORMAL(name) \
@@ -2020,7 +2020,7 @@
                              idir,jdir,kdir,ldir, \
                              imin,jmin,kmin,lmin, \
                              imax,jmax,kmax,lmax, \
-                             ilsh,jlsh,klsh,llsh, \
+                             iash,jash,kash,lash, \
                              istr) \
   do { \
     typedef int cctki0_loop4_normal_##name; \
@@ -2064,12 +2064,12 @@
                    i,j,k,l, \
                    imin,jmin,kmin,lmin, \
                    imax,jmax,kmax,lmax, \
-                   ilsh,jlsh,klsh,llsh) \
+                   iash,jash,kash,lash) \
   CCTK_LOOP4STR(name, \
                 i,j,k,l, \
                 (imin),(jmin),(kmin),(lmin), \
                 (imax),(jmax),(kmax),(lmax), \
-                (ilsh),(jlsh),(klsh),(llsh), \
+                (iash),(jash),(kash),(lash), \
                 1) \
 
 #define CCTK_ENDLOOP4(name) \
@@ -2079,7 +2079,7 @@
                       i,j,k,l, \
                       imin,jmin,kmin,lmin, \
                       imax,jmax,kmax,lmax, \
-                      ilsh,jlsh,klsh,llsh, \
+                      iash,jash,kash,lash, \
                       istr) \
   CCTK_LOOP4STR_NORMAL(name, \
                        i,j,k,l, \
@@ -2087,7 +2087,7 @@
                        0,0,0,0, \
                        imin,jmin,kmin,lmin, \
                        imax,jmax,kmax,lmax, \
-                       ilsh,jlsh,klsh,llsh, \
+                       iash,jash,kash,lash, \
                        istr) \
 
 #define CCTK_ENDLOOP4STR(name) \
@@ -2126,14 +2126,14 @@
     CCTK_LOOP4STR(name##_interior, \
                   i,j,k,l, \
                   (iblo),(jblo),(kblo),(lblo), \
-                  cctki2_cctkGH->CCTK_LSSH(0,0)-(ibhi), \
-                  cctki2_cctkGH->CCTK_LSSH(0,1)-(jbhi), \
-                  cctki2_cctkGH->CCTK_LSSH(0,2)-(kbhi), \
-                  cctki2_cctkGH->CCTK_LSSH(0,3)-(lbhi), \
-                  cctki2_cctkGH->cctk_lsh[0], \
-                  cctki2_cctkGH->cctk_lsh[1], \
-                  cctki2_cctkGH->cctk_lsh[2], \
-                  cctki2_cctkGH->cctk_lsh[3], \
+                  cctki2_cctkGH->cctk_lsh[0]-(ibhi), \
+                  cctki2_cctkGH->cctk_lsh[1]-(jbhi), \
+                  cctki2_cctkGH->cctk_lsh[2]-(kbhi), \
+                  cctki2_cctkGH->cctk_lsh[3]-(lbhi), \
+                  cctki2_cctkGH->cctk_ash[0], \
+                  cctki2_cctkGH->cctk_ash[1], \
+                  cctki2_cctkGH->cctk_ash[2], \
+                  cctki2_cctkGH->cctk_ash[3], \
                   (istr)) { \
 
 #define CCTK_ENDLOOP4STR_INTERIOR(name) \
@@ -2183,7 +2183,7 @@
     int const cctki2_blo[] = { (iblo),(jblo),(kblo),(lblo) }; \
     int const cctki2_bhi[] = { (ibhi),(jbhi),(kbhi),(lbhi) }; \
     int const cctki2_bbox[] = { (ibboxlo), (ibboxhi),(jbboxlo), (jbboxhi),(kbboxlo), (kbboxhi),(lbboxlo), (lbboxhi) }; \
-    int const cctki2_lssh[] = { cctki2_cctkGH->CCTK_LSSH(0,0),cctki2_cctkGH->CCTK_LSSH(0,1),cctki2_cctkGH->CCTK_LSSH(0,2),cctki2_cctkGH->CCTK_LSSH(0,3) }; \
+    int const cctki2_lsh[] = { cctki2_cctkGH->cctk_lsh[0],cctki2_cctkGH->cctk_lsh[1],cctki2_cctkGH->cctk_lsh[2],cctki2_cctkGH->cctk_lsh[3] }; \
     int const cctki2_istr1 CCTK_ATTRIBUTE_UNUSED = (istr); \
     /* Loop over all faces, edges, and corners */ \
     for (int cctki2_ldir=-1; cctki2_ldir<=+1; ++cctki2_ldir) { \
@@ -2197,16 +2197,16 @@
         (cctki2_ldir==-1 ? cctki2_bbox[6] : 0) || (cctki2_ldir==+1 ? cctki2_bbox[7] : 0); \
       if (cctki2_any_bbox) { \
         int const cctki2_bmin[] = { \
-          cctki2_idir==-1 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lssh[0] - cctki2_bhi[0], \
-          cctki2_jdir==-1 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lssh[1] - cctki2_bhi[1], \
-          cctki2_kdir==-1 ? 0 : cctki2_kdir==0 ? cctki2_blo[2] : cctki2_lssh[2] - cctki2_bhi[2], \
-          cctki2_ldir==-1 ? 0 : cctki2_ldir==0 ? cctki2_blo[3] : cctki2_lssh[3] - cctki2_bhi[3], \
+          cctki2_idir==-1 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0], \
+          cctki2_jdir==-1 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1], \
+          cctki2_kdir==-1 ? 0 : cctki2_kdir==0 ? cctki2_blo[2] : cctki2_lsh[2] - cctki2_bhi[2], \
+          cctki2_ldir==-1 ? 0 : cctki2_ldir==0 ? cctki2_blo[3] : cctki2_lsh[3] - cctki2_bhi[3], \
         }; \
         int const cctki2_bmax[] = { \
-          cctki2_idir==-1 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lssh[0] - cctki2_bhi[0] : cctki2_lssh[0], \
-          cctki2_jdir==-1 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lssh[1] - cctki2_bhi[1] : cctki2_lssh[1], \
-          cctki2_kdir==-1 ? cctki2_blo[2] : cctki2_kdir==0 ? cctki2_lssh[2] - cctki2_bhi[2] : cctki2_lssh[2], \
-          cctki2_ldir==-1 ? cctki2_blo[3] : cctki2_ldir==0 ? cctki2_lssh[3] - cctki2_bhi[3] : cctki2_lssh[3], \
+          cctki2_idir==-1 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0], \
+          cctki2_jdir==-1 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1], \
+          cctki2_kdir==-1 ? cctki2_blo[2] : cctki2_kdir==0 ? cctki2_lsh[2] - cctki2_bhi[2] : cctki2_lsh[2], \
+          cctki2_ldir==-1 ? cctki2_blo[3] : cctki2_ldir==0 ? cctki2_lsh[3] - cctki2_bhi[3] : cctki2_lsh[3], \
         }; \
         CCTK_LOOP4STR_NORMAL(name##_boundaries, \
                              i,j,k,l, \
@@ -2214,10 +2214,10 @@
                              cctki2_idir,cctki2_jdir,cctki2_kdir,cctki2_ldir, \
                              cctki2_bmin[0],cctki2_bmin[1],cctki2_bmin[2],cctki2_bmin[3], \
                              cctki2_bmax[0],cctki2_bmax[1],cctki2_bmax[2],cctki2_bmax[3], \
-                             cctki2_cctkGH->cctk_lsh[0], \
-                             cctki2_cctkGH->cctk_lsh[1], \
-                             cctki2_cctkGH->cctk_lsh[2], \
-                             cctki2_cctkGH->cctk_lsh[3], \
+                             cctki2_cctkGH->cctk_ash[0], \
+                             cctki2_cctkGH->cctk_ash[1], \
+                             cctki2_cctkGH->cctk_ash[2], \
+                             cctki2_cctkGH->cctk_ash[3], \
                              cctki2_istr1) { \
 
 #define CCTK_ENDLOOP4STR_BOUNDARIES(name) \
@@ -2272,7 +2272,7 @@
     int const cctki2_blo[] = { (iblo),(jblo),(kblo),(lblo) }; \
     int const cctki2_bhi[] = { (ibhi),(jbhi),(kbhi),(lbhi) }; \
     int const cctki2_bbox[] = { (ibboxlo), (ibboxhi),(jbboxlo), (jbboxhi),(kbboxlo), (kbboxhi),(lbboxlo), (lbboxhi) }; \
-    int const cctki2_lssh[] = { cctki2_cctkGH->CCTK_LSSH(0,0),cctki2_cctkGH->CCTK_LSSH(0,1),cctki2_cctkGH->CCTK_LSSH(0,2),cctki2_cctkGH->CCTK_LSSH(0,3) }; \
+    int const cctki2_lsh[] = { cctki2_cctkGH->cctk_lsh[0],cctki2_cctkGH->cctk_lsh[1],cctki2_cctkGH->cctk_lsh[2],cctki2_cctkGH->cctk_lsh[3] }; \
     int const cctki2_istr1 CCTK_ATTRIBUTE_UNUSED = (istr); \
     /* Loop over all faces, edges, and corners */ \
     for (int cctki2_ldir=-1; cctki2_ldir<=+1; ++cctki2_ldir) { \
@@ -2291,16 +2291,16 @@
         (cctki2_ldir==-1 ? cctki2_bbox[6] : 1) && (cctki2_ldir==+1 ? cctki2_bbox[7] : 1); \
       if (cctki2_all_bbox && cctki2_any_bbox) { \
         int const cctki2_bmin[] = { \
-          cctki2_idir==-1 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lssh[0] - cctki2_bhi[0], \
-          cctki2_jdir==-1 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lssh[1] - cctki2_bhi[1], \
-          cctki2_kdir==-1 ? 0 : cctki2_kdir==0 ? cctki2_blo[2] : cctki2_lssh[2] - cctki2_bhi[2], \
-          cctki2_ldir==-1 ? 0 : cctki2_ldir==0 ? cctki2_blo[3] : cctki2_lssh[3] - cctki2_bhi[3], \
+          cctki2_idir==-1 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0], \
+          cctki2_jdir==-1 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1], \
+          cctki2_kdir==-1 ? 0 : cctki2_kdir==0 ? cctki2_blo[2] : cctki2_lsh[2] - cctki2_bhi[2], \
+          cctki2_ldir==-1 ? 0 : cctki2_ldir==0 ? cctki2_blo[3] : cctki2_lsh[3] - cctki2_bhi[3], \
         }; \
         int const cctki2_bmax[] = { \
-          cctki2_idir==-1 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lssh[0] - cctki2_bhi[0] : cctki2_lssh[0], \
-          cctki2_jdir==-1 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lssh[1] - cctki2_bhi[1] : cctki2_lssh[1], \
-          cctki2_kdir==-1 ? cctki2_blo[2] : cctki2_kdir==0 ? cctki2_lssh[2] - cctki2_bhi[2] : cctki2_lssh[2], \
-          cctki2_ldir==-1 ? cctki2_blo[3] : cctki2_ldir==0 ? cctki2_lssh[3] - cctki2_bhi[3] : cctki2_lssh[3], \
+          cctki2_idir==-1 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0], \
+          cctki2_jdir==-1 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1], \
+          cctki2_kdir==-1 ? cctki2_blo[2] : cctki2_kdir==0 ? cctki2_lsh[2] - cctki2_bhi[2] : cctki2_lsh[2], \
+          cctki2_ldir==-1 ? cctki2_blo[3] : cctki2_ldir==0 ? cctki2_lsh[3] - cctki2_bhi[3] : cctki2_lsh[3], \
         }; \
         CCTK_LOOP4STR_NORMAL(name##_intboundaries, \
                              i,j,k,l, \
@@ -2308,10 +2308,10 @@
                              cctki2_idir,cctki2_jdir,cctki2_kdir,cctki2_ldir, \
                              cctki2_bmin[0],cctki2_bmin[1],cctki2_bmin[2],cctki2_bmin[3], \
                              cctki2_bmax[0],cctki2_bmax[1],cctki2_bmax[2],cctki2_bmax[3], \
-                             cctki2_cctkGH->cctk_lsh[0], \
-                             cctki2_cctkGH->cctk_lsh[1], \
-                             cctki2_cctkGH->cctk_lsh[2], \
-                             cctki2_cctkGH->cctk_lsh[3], \
+                             cctki2_cctkGH->cctk_ash[0], \
+                             cctki2_cctkGH->cctk_ash[1], \
+                             cctki2_cctkGH->cctk_ash[2], \
+                             cctki2_cctkGH->cctk_ash[3], \
                              cctki2_istr1) { \
 
 #define CCTK_ENDLOOP4STR_INTBOUNDARIES(name) \
@@ -2351,14 +2351,14 @@
     CCTK_LOOP4STR(name##_all, \
                   i,j,k,l, \
                   0,0,0,0, \
-                  cctki3_cctkGH->CCTK_LSSH(0,0), \
-                  cctki3_cctkGH->CCTK_LSSH(0,1), \
-                  cctki3_cctkGH->CCTK_LSSH(0,2), \
-                  cctki3_cctkGH->CCTK_LSSH(0,3), \
                   cctki3_cctkGH->cctk_lsh[0], \
                   cctki3_cctkGH->cctk_lsh[1], \
                   cctki3_cctkGH->cctk_lsh[2], \
                   cctki3_cctkGH->cctk_lsh[3], \
+                  cctki3_cctkGH->cctk_ash[0], \
+                  cctki3_cctkGH->cctk_ash[1], \
+                  cctki3_cctkGH->cctk_ash[2], \
+                  cctki3_cctkGH->cctk_ash[3], \
                   (istr)) { \
 
 #define CCTK_ENDLOOP4STR_ALL(name) \
@@ -2526,19 +2526,19 @@
                    i,j,k,l, \
                    imin,jmin,kmin,lmin, \
                    imax,jmax,kmax,lmax, \
-                   ilsh,jlsh,klsh,llsh) \
+                   iash,jash,kash,lash) \
   CCTK_LOOP4STR(name, \
              i,j,k,l, \
              imin,jmin,kmin,lmin, \
              imax,jmax,kmax,lmax, \
-             ilsh,jlsh,klsh,llsh, \
+             iash,jash,kash,lash, \
              1) \
 
 #define CCTK_LOOP4STR(name, \
                       i,j,k,l, \
                       imin,jmin,kmin,lmin, \
                       imax,jmax,kmax,lmax, \
-                      ilsh,jlsh,klsh,llsh, \
+                      iash,jash,kash,lash, \
                       istr) \
    && name/**/_imin = imin \
    && name/**/_jmin = jmin \
@@ -2585,8 +2585,8 @@
    CCTK_LOOP4STR(name, \
                  i,j,k,l, \
                  1,1,1,1, \
-                 CCTK_LSSH(0,1),CCTK_LSSH(0,2),CCTK_LSSH(0,3),CCTK_LSSH(0,4), \
                  cctk_lsh(1),cctk_lsh(2),cctk_lsh(3),cctk_lsh(4), \
+                 cctk_ash(1),cctk_ash(2),cctk_ash(3),cctk_ash(4), \
                  istr) \
 
 #define CCTK_ENDLOOP4_ALL(name) \
@@ -2623,11 +2623,11 @@
    CCTK_LOOP4STR(name, \
                  i,j,k,l, \
                  (iblo),(jblo),(kblo),(lblo), \
-                 CCTK_LSSH(0,1)-(ibhi), \
-                 CCTK_LSSH(0,2)-(jbhi), \
-                 CCTK_LSSH(0,3)-(kbhi), \
-                 CCTK_LSSH(0,4)-(lbhi), \
-                 cctk_lsh(1),cctk_lsh(2),cctk_lsh(3),cctk_lsh(4), \
+                 cctk_lsh(1)-(ibhi), \
+                 cctk_lsh(2)-(jbhi), \
+                 cctk_lsh(3)-(kbhi), \
+                 cctk_lsh(4)-(lbhi), \
+                 cctk_ash(1),cctk_ash(2),cctk_ash(3),cctk_ash(4), \
                  istr) \
 
 #define CCTK_ENDLOOP4_INTERIOR(name) \
@@ -2673,7 +2673,7 @@
    &&    do lc_face=1,2 \
    &&       do lc_d=1,4 \
    &&          lc_bmin(lc_d) = 1 \
-   &&          lc_bmax(lc_d) = CCTK_LSSH(0,lc_d) \
+   &&          lc_bmax(lc_d) = cctk_lsh(lc_d) \
    &&          if (lc_d<lc_dir) then \
    &&             lc_bmin(lc_d) = lc_bmin(lc_d)+lc_blo(lc_d) \
    &&             lc_bmax(lc_d) = lc_bmax(lc_d)-lc_bhi(lc_d) \
@@ -2688,7 +2688,7 @@
                           i,j,k,l, \
                           lc_bmin(1),lc_bmin(2),lc_bmin(3),lc_bmin(4), \
                           lc_bmax(1),lc_bmax(2),lc_bmax(3),lc_bmax(4), \
-                          cctk_lsh(1),cctk_lsh(2),cctk_lsh(3),cctk_lsh(4), \
+                          cctk_ash(1),cctk_ash(2),cctk_ash(3),cctk_ash(4), \
                           lc_istr) \
 
 #define CCTK_ENDLOOP4_BOUNDARIES(name) \

@@ -16,7 +16,6 @@ typedef struct
   int grouptype;
   int vartype;
   int disttype;
-  int stagtype;
   int dim;
   int numvars;
   int numtimelevels;
@@ -33,8 +32,6 @@ extern "C"
 #endif
 
 #include "cctk_Types.h"
-
-int         CCTK_StaggerVars(void);
 
 int         CCTK_DecomposeName(const char *fullname, 
                                char **implementation, 

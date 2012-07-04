@@ -469,9 +469,7 @@ sub ExpandGroupName
 {
    my $name = shift;
 
-   if ($name eq "stype") {
-       return "stagger type";
-    } elsif ($name eq "gtype") {
+   if ($name eq "gtype") {
        return "group type";
     } elsif ($name eq "dim") { 
        return "dimensions";

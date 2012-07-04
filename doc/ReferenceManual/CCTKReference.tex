@@ -332,20 +332,20 @@ from Fortran.
   Given a variable name, return an array of the local size
   of the variable in each dimension
 
-\item[\code{CCTK\_GrouplsshGI}] [\pageref{CCTK-GrouplsshGI}]
-  Given a group index, return an array of the local stagger size
+\item[\code{CCTK\_GroupashGI}] [\pageref{CCTK-GroupashGI}]
+  Given a group index, return an array of the local allocated size
   of the group in each dimension
 
-\item[\code{CCTK\_GrouplsshGN}] [\pageref{CCTK-GrouplsshGN}]
-  Given a group name, return an array of the local stagger size
+\item[\code{CCTK\_GroupashGN}] [\pageref{CCTK-GroupashGN}]
+  Given a group name, return an array of the local allocated size
   of the group in each dimension
 
-\item[\code{CCTK\_GrouplsshVI}] [\pageref{CCTK-GrouplsshVI}]
-  Given a variable index, return an array of the local stagger size
+\item[\code{CCTK\_GroupashVI}] [\pageref{CCTK-GroupashVI}]
+  Given a variable index, return an array of the local allocated size
   of the variable in each dimension
 
-\item[\code{CCTK\_GrouplsshVN}] [\pageref{CCTK-GrouplsshVN}]
-  Given a variable name, return an array of the local stagger size
+\item[\code{CCTK\_GroupashVN}] [\pageref{CCTK-GroupashVN}]
+  Given a variable name, return an array of the local allocated size
   of the variable in each dimension
 
 \item[\code{CCTK\_GroupName}] [\pageref{CCTK-GroupName}]
@@ -3762,7 +3762,6 @@ The {\t cGroup} structure%%%
   int vartype;        /* variable type, as returned by CCTK_VarTypeNumber() */
   int disttype;       /* distribution type, */
                       /* as returned by CCTK_GroupDistribNumber() */
-  int stagtype;       /* stagger type, as accepted by CCTK_StaggerDirName() */
   int dim;            /* dimension (rank) of the group */
                       /* e.g. 3 for a group of 3-D variables */
   int numvars;        /* number of variables in the group */
@@ -3976,7 +3975,7 @@ The members of this structure that are set are:
 \begin{itemize}
 \item{dim:} The number of dimensions in this group.
 \item{lsh:} The (process-)local size.
-\item{lssh:} The (process-)local stagger size.
+\item{ash:} The (process-)local allocated size.
 \item{gsh:} The global grid size.
 \item{lbnd:} The lowest index of the local grid as seen on the global
   grid. (These use zero based indexing.)
@@ -4103,11 +4102,11 @@ Returns the local size for a given group.
 \begin{SeeAlso}{CCTK\_GrouplshVI, CCTK\_GrouplshVN}
 Returns the local size for a given variable.
 \end{SeeAlso}
-\begin{SeeAlso}{CCTK\_GrouplsshGI, CCTK\_GrouplsshGN}
-Returns the local stagger size for a given group.
+\begin{SeeAlso}{CCTK\_GroupashGI, CCTK\_GroupashGN}
+Returns the local allocated size for a given group.
 \end{SeeAlso}
-\begin{SeeAlso}{CCTK\_GrouplsshVI, CCTK\_GrouplsshVN}
-Returns the local stagger size for a given variable.
+\begin{SeeAlso}{CCTK\_GroupashVI, CCTK\_GroupashVN}
+Returns the local allocated size for a given variable.
 \end{SeeAlso}
 \end{SeeAlsoSection}
 \end{FunctionDescription}
@@ -4182,10 +4181,10 @@ Returns the local size for a given group.
 \begin{SeeAlso}{CCTK\_GrouplshVI, CCTK\_GrouplshVN}
 Returns the local size for a given variable.
 \end{SeeAlso}
-\begin{SeeAlso}{CCTK\_GrouplsshGI, CCTK\_GrouplsshGN}
+\begin{SeeAlso}{CCTK\_GroupashGI, CCTK\_GroupashGN}
 Returns the local size for a given group.
 \end{SeeAlso}
-\begin{SeeAlso}{CCTK\_GrouplsshVI, CCTK\_GrouplsshVN}
+\begin{SeeAlso}{CCTK\_GroupashVI, CCTK\_GroupashVN}
 Returns the local size for a given variable.
 \end{SeeAlso}
 \end{SeeAlsoSection}
@@ -4524,11 +4523,11 @@ Returns the global size for a given variable.
 \begin{SeeAlso}{CCTK\_GrouplshVI, CCTK\_GrouplshVN}
 Returns the local size for a given variable.
 \end{SeeAlso}
-\begin{SeeAlso}{CCTK\_GrouplsshGI, CCTK\_GrouplsshGN}
-Returns the local stagger size for a given group.
+\begin{SeeAlso}{CCTK\_GroupashGI, CCTK\_GroupashGN}
+Returns the local allocated size for a given group.
 \end{SeeAlso}
-\begin{SeeAlso}{CCTK\_GrouplsshVI, CCTK\_GrouplsshVN}
-Returns the local stagger size for a given variable.
+\begin{SeeAlso}{CCTK\_GroupashVI, CCTK\_GroupashVN}
+Returns the local allocated size for a given variable.
 \end{SeeAlso}
 \end{SeeAlsoSection}
 \end{FunctionDescription}
@@ -4603,49 +4602,49 @@ Returns the global size for a given variable.
 \begin{SeeAlso}{CCTK\_GrouplshGI, CCTK\_GrouplshGN}
 Returns the local size for a given group.
 \end{SeeAlso}
-\begin{SeeAlso}{CCTK\_GrouplsshGI, CCTK\_GrouplsshGN}
-Returns the local stagger size for a given group.
+\begin{SeeAlso}{CCTK\_GroupashGI, CCTK\_GroupashGN}
+Returns the local allocated size for a given group.
 \end{SeeAlso}
-\begin{SeeAlso}{CCTK\_GrouplsshVI, CCTK\_GrouplsshVN}
-Returns the local stagger size for a given variable.
+\begin{SeeAlso}{CCTK\_GroupashVI, CCTK\_GroupashVN}
+Returns the local allocated size for a given variable.
 \end{SeeAlso}
 \end{SeeAlsoSection}
 \end{FunctionDescription}
 
 
-%Entering a function description for CCTK\_GrouplsshGI, CCTK\_GrouplsshGN
-\begin{FunctionDescription}{CCTK\_GrouplsshGI, CCTK\_GrouplsshGN}
-\label{CCTK-GrouplsshGI}
-\label{CCTK-GrouplsshGN}
-Given a group index or name, return an array of the local stagger size
-of the group in each dimension for each stagger type
+%Entering a function description for CCTK\_GroupashGI, CCTK\_GroupashGN
+\begin{FunctionDescription}{CCTK\_GroupashGI, CCTK\_GroupashGN}
+\label{CCTK-GroupashGI}
+\label{CCTK-GroupashGN}
+Given a group index or name, return an array of the local allocated size
+of the group in each dimension
 
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "cctk.h"
 
-int status = CCTK_GrouplsshGI(const cGH *cctkGH,
+int status = CCTK_GroupashGI(const cGH *cctkGH,
                               int size,
-                              int *lssh,
+                              int *ash,
                               int groupindex);
 
-int status = CCTK_GrouplsshGN(const cGH *cctkGH,
+int status = CCTK_GroupashGN(const cGH *cctkGH,
                               int size,
-                              int *lssh,
+                              int *ash,
                               const char *groupname);
 \end{verbatim}
 \end{Synopsis}
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
-call CCTK_GrouplsshGI(status, cctkGH, size, lssh, groupindex)
+call CCTK_GroupashGI(status, cctkGH, size, ash, groupindex)
 
-call CCTK_GrouplsshGN(status, cctkGH, size, lssh, groupname)
+call CCTK_GroupashGN(status, cctkGH, size, ash, groupname)
 
 integer       status
 CCTK_POINTER  cctkGH
 integer       size
-integer       lssh(size)
+integer       ash(size)
 integer       groupindex
 character*(*) groupname
 \end{verbatim}
@@ -4663,14 +4662,14 @@ character*(*) groupname
 \begin{ParameterSection}
 \begin{Parameter}{cctkGH ($\ne$ NULL)} Pointer to a valid Cactus grid hierarchy. \end{Parameter}
 \begin{Parameter}{size ($\ge 1$)} Size of output array, should be at
-least CCTK_NSTAGGER * dimensions of group. \end{Parameter}
-\begin{Parameter}{lssh ($\ne$ NULL)} Pointer to array which will hold the return values. \end{Parameter}
+least dimension of group. \end{Parameter}
+\begin{Parameter}{ash ($\ne$ NULL)} Pointer to array which will hold the return values. \end{Parameter}
 \begin{Parameter}{groupindex} Index of the group. \end{Parameter}
 \begin{Parameter}{groupname} Name of the group. \end{Parameter}
 \end{ParameterSection}
 
 \begin{Discussion}
-The local stagger size in each dimension for each stagger type for a given group is returned in a user-supplied array buffer.
+The local allocated size in each dimension for a given group is returned in a user-supplied array buffer.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
@@ -4686,46 +4685,46 @@ Returns the local size for a given group.
 \begin{SeeAlso}{CCTK\_GrouplshVI, CCTK\_GrouplshVN}
 Returns the local size for a given variable.
 \end{SeeAlso}
-\begin{SeeAlso}{CCTK\_GrouplsshVI, CCTK\_GrouplsshVN}
-Returns the local stagger size for a given variable.
+\begin{SeeAlso}{CCTK\_GroupashVI, CCTK\_GroupashVN}
+Returns the local allocated size for a given variable.
 \end{SeeAlso}
 \end{SeeAlsoSection}
 \end{FunctionDescription}
 
 
-%Entering a function description for CCTK\_GrouplsshVI, CCTK\_GrouplsshVN
-\begin{FunctionDescription}{CCTK\_GrouplsshVI, CCTK\_GrouplsshVN}
-\label{CCTK-GrouplsshVI}
-\label{CCTK-GrouplsshVN}
+%Entering a function description for CCTK\_GroupashVI, CCTK\_GroupashVN
+\begin{FunctionDescription}{CCTK\_GroupashVI, CCTK\_GroupashVN}
+\label{CCTK-GroupashVI}
+\label{CCTK-GroupashVN}
 Given a variable index or its full name, return an array of the local
-stagger size of the variable in each dimension for each stagger type
+allocated size of the variable in each dimension
 
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "cctk.h"
 
-int status = CCTK_GrouplsshVI(const cGH *cctkGH,
+int status = CCTK_GroupashVI(const cGH *cctkGH,
                               int size,
-                              int *lssh,
+                              int *ash,
                               int varindex);
 
-int status = CCTK_GrouplsshVN(const cGH *cctkGH,
+int status = CCTK_GroupashVN(const cGH *cctkGH,
                               int size,
-                              int *lssh,
+                              int *ash,
                               const char *varname);
 \end{verbatim}
 \end{Synopsis}
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
-call CCTK_GrouplsshVI(status, cctkGH, size, lssh, varindex)
+call CCTK_GroupashVI(status, cctkGH, size, ash, varindex)
 
-call CCTK_GrouplsshVN(status, cctkGH, size, lssh, varname)
+call CCTK_GroupashVN(status, cctkGH, size, ash, varname)
 
 integer       status
 CCTK_POINTER  cctkGH
 integer       size
-integer       lssh(size)
+integer       ash(size)
 integer       varindex
 character*(*) varname
 \end{verbatim}
@@ -4744,14 +4743,14 @@ character*(*) varname
 \begin{Parameter}{status} Return value. \end{Parameter}
 \begin{Parameter}{cctkGH ($\ne$ NULL)} Pointer to a valid Cactus grid hierarchy. \end{Parameter}
 \begin{Parameter}{size ($\ge 1$)} Size of output array, should be at
-least CCTK_NSTAGGER * dimensions of group. \end{Parameter}
-\begin{Parameter}{lssh ($\ne$ NULL)} Pointer to array which will hold the return values. \end{Parameter}
+least dimension of group. \end{Parameter}
+\begin{Parameter}{ash ($\ne$ NULL)} Pointer to array which will hold the return values. \end{Parameter}
 \begin{Parameter}{varindex} Variable index. \end{Parameter}
 \begin{Parameter}{varname} Variable's full name. \end{Parameter}
 \end{ParameterSection}
 
 \begin{Discussion}
-The local stagger size in each dimension for each stagger type for a given variable is returned in a user-supplied array buffer.
+The local allocated size in each dimension for a given variable is returned in a user-supplied array buffer.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
@@ -4767,8 +4766,8 @@ Returns the local size for a given group.
 \begin{SeeAlso}{CCTK\_GrouplshVI, CCTK\_GrouplshVN}
 Returns the local size for a given variable.
 \end{SeeAlso}
-\begin{SeeAlso}{CCTK\_GrouplsshGI, CCTK\_GrouplsshGN}
-Returns the local stagger size for a given group.
+\begin{SeeAlso}{CCTK\_GroupashGI, CCTK\_GroupashGN}
+Returns the local allocated size for a given group.
 \end{SeeAlso}
 \end{SeeAlsoSection}
 \end{FunctionDescription}

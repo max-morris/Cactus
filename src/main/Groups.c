@@ -24,7 +24,6 @@
 #include "cctk_Types.h"
 #include "cctk_ActiveThorns.h"
 
-#include "cctki_Stagger.h"
 #include "cctki_Groups.h"
 
 #include "util_Expression.h"
@@ -159,8 +158,7 @@ typedef struct
   /* The types. */
   int gtype,
       vtype,
-      dtype,
-      staggertype;
+      dtype;
 
   int gscope;
 
@@ -209,15 +207,12 @@ static int *group_of_variable = NULL;
 static int maxdim = 0;
 static int gfdim = 0;
 
-static int staggered = 0;
-
 
 /********************************************************************
  ********************    Internal Routines   ************************
  ********************************************************************/
 static cGroupDefinition *CCTKi_SetupGroup (const char *implementation,
                                            const char *name,
-                                           int staggercode,
                                            int n_variables,
                                            int vectorlength);
 static CCTK_INT **CCTKi_ExtractSize (int dimension,
@@ -226,24 +221,6 @@ static CCTK_INT **CCTKi_ExtractSize (int dimension,
                                      const char *gname);
 
 static int CCTKi_ParamExpressionToInt(const char *expression, const char *thorn);
-
- /*@@
-   @routine    CCTK_StaggerVars
-   @date
-   @author     Gerd Lanfermann
-   @desc
-               Checks if staggered group(s) exist
-   @enddesc
-
-   @returntype int
-   @returndesc
-               0 if no staggered group exists, non-zero otherwise
-   @endreturndesc
-@@*/
-int CCTK_StaggerVars (void)
-{
-  return (staggered);
-}
 
 
  /*@@
@@ -1119,7 +1096,6 @@ int CCTK_GroupData (int group, cGroup *gp)
       gp->numvars       = groups[group].n_variables;
       gp->vectorlength  = groups[group].vectorlength;
       gp->numtimelevels = groups[group].n_timelevels;
-      gp->stagtype      = groups[group].staggertype;
       gp->tagstable     = groups[group].tags_table;
 
       if(groups[group].vararraysize)
@@ -2340,11 +2316,10 @@ void CCTKi_PrintGroupInfo (void)
 
   for (group_num = 0; group_num < n_groups; group_num++)
   {
-    printf ("GROUP INFO: GrpNo./imp_name/name/stag %d   >%s<   >%s<  %d\n",
+    printf ("GROUP INFO: GrpNo./imp_name/name %d   >%s<   >%s<\n",
            group_num,
            groups[group_num].implementation,
-           groups[group_num].name,
-           groups[group_num].staggertype);
+           groups[group_num].name);
   }
 }
 #endif
@@ -2371,7 +2346,6 @@ int CCTKi_CreateGroup (const char *gname,
                        const char *gscope,
                        int         dimension,
                        int         ntimelevels,
-                       const char *stype,
                        const char *dtype,
                        const char *size,
                        const char *ghostsize,
@@ -2383,7 +2357,6 @@ int CCTKi_CreateGroup (const char *gname,
 {
   int retval;
   int groupscope;
-  int staggercode;
   int variable;
 
   int vectorlength;
@@ -2404,9 +2377,6 @@ int CCTKi_CreateGroup (const char *gname,
 
   va_start (ap, n_basevars);
 
-  /* get the staggercode */
-  staggercode = CCTKi_ParseStaggerString (dimension, imp, gname, stype);
-
   if (vararraysize)
   {
     vararraysize = Util_Strdup(vararraysize);
@@ -2426,12 +2396,12 @@ int CCTKi_CreateGroup (const char *gname,
   groupscope = CCTK_GroupScopeNumber (gscope);
   if (groupscope == CCTK_PUBLIC || groupscope == CCTK_PROTECTED)
   {
-    group = CCTKi_SetupGroup (imp, gname, staggercode,
+    group = CCTKi_SetupGroup (imp, gname,
                               n_basevars * vectorlength, vectorlength);
   }
   else if (groupscope == CCTK_PRIVATE)
   {
-    group = CCTKi_SetupGroup (thorn, gname, staggercode,
+    group = CCTKi_SetupGroup (thorn, gname,
                               n_basevars * vectorlength, vectorlength);
   }
   else
@@ -2447,7 +2417,6 @@ int CCTKi_CreateGroup (const char *gname,
     group->gtype        = CCTK_GroupTypeNumber (gtype);
     group->vtype        = CCTK_VarTypeNumber (vtype);
     group->gscope       = groupscope;
-    group->staggertype  = staggercode;
     group->dtype        = CCTK_GroupDistribNumber (dtype);
     group->n_timelevels = ntimelevels;
     group->tags_string  = Util_Strdup(tags);
@@ -2490,10 +2459,6 @@ int CCTKi_CreateGroup (const char *gname,
     if (dimension > maxdim)
     {
       maxdim    = dimension;
-    }
-    if (staggercode > 0)
-    {
-      staggered = 1;
     }
     group->size      = CCTKi_ExtractSize (dimension, thorn, size, gname);
     group->ghostsize = CCTKi_ExtractSize (dimension, thorn, ghostsize, gname);
@@ -2572,7 +2537,6 @@ const char *CCTK_GroupImplementationI(int group)
 @@*/
 static cGroupDefinition *CCTKi_SetupGroup (const char *implementation,
                                            const char *name,
-                                           int staggercode,
                                            int n_variables,
                                            int vectorlength)
 {
@@ -2625,7 +2589,6 @@ static cGroupDefinition *CCTKi_SetupGroup (const char *implementation,
         strcpy (groups[n_groups].name, name);
 
         groups[n_groups].number       = n_groups;
-        groups[n_groups].staggertype  = staggercode;
         groups[n_groups].n_variables  = n_variables;
         groups[n_groups].vectorlength = vectorlength;
 

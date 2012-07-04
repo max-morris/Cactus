@@ -79,7 +79,7 @@ int CCTK_GFIndex2D (const cGH *GH, int i, int j)
                 i, j, GH->cctk_lsh[0], GH->cctk_lsh[1]);
   }
 #endif
-  return (i + GH->cctk_lsh[0]*j);
+  return (i + GH->cctk_ash[0]*j);
 }
 
 int CCTK_GFIndex3D (const cGH *GH, int i, int j, int k)
@@ -95,7 +95,7 @@ int CCTK_GFIndex3D (const cGH *GH, int i, int j, int k)
                 i, j, k, GH->cctk_lsh[0], GH->cctk_lsh[1], GH->cctk_lsh[2]);
   }
 #endif
-  return (i + GH->cctk_lsh[0]*(j + GH->cctk_lsh[1]*k));
+  return (i + GH->cctk_ash[0]*(j + GH->cctk_ash[1]*k));
 }
 
 int CCTK_GFIndex4D (const cGH *GH, int i, int j, int k, int l)
@@ -112,7 +112,7 @@ int CCTK_GFIndex4D (const cGH *GH, int i, int j, int k, int l)
                 i, j, k, l, GH->cctk_lsh[0], GH->cctk_lsh[1], GH->cctk_lsh[2], GH->cctk_lsh[3]);
   }
 #endif
-  return (i + GH->cctk_lsh[0]*(j + GH->cctk_lsh[1]*(k + GH->cctk_lsh[2] * l)));
+  return (i + GH->cctk_ash[0]*(j + GH->cctk_ash[1]*(k + GH->cctk_ash[2] * l)));
 }
 
 int CCTK_VectGFIndex0D (const cGH *GH, int n)
@@ -147,7 +147,7 @@ int CCTK_VectGFIndex1D (const cGH *GH, int i, int n)
                 n);
   }
 #endif
-  return (i + GH->cctk_lsh[0]*n);
+  return (i + GH->cctk_ash[0]*n);
 }
 
 int CCTK_VectGFIndex2D (const cGH *GH, int i, int j, int n)
@@ -169,7 +169,7 @@ int CCTK_VectGFIndex2D (const cGH *GH, int i, int j, int n)
                 n);
   }
 #endif
-  return (i + GH->cctk_lsh[0]*(j + GH->cctk_lsh[1]*n));
+  return (i + GH->cctk_ash[0]*(j + GH->cctk_ash[1]*n));
 }
 
 int CCTK_VectGFIndex3D (const cGH *GH, int i, int j, int k, int n)
@@ -192,7 +192,7 @@ int CCTK_VectGFIndex3D (const cGH *GH, int i, int j, int k, int n)
                 n);
   }
 #endif
-  return (i + GH->cctk_lsh[0]*(j + GH->cctk_lsh[1]*(k + GH->cctk_lsh[2]*n)));
+  return (i + GH->cctk_ash[0]*(j + GH->cctk_ash[1]*(k + GH->cctk_ash[2]*n)));
 }
 
 int CCTK_VectGFIndex4D (const cGH *GH, int i, int j, int k, int l, int n)
@@ -216,6 +216,6 @@ int CCTK_VectGFIndex4D (const cGH *GH, int i, int j, int k, int l, int n)
                 n);
   }
 #endif
-  return (i + GH->cctk_lsh[0]*(j + GH->cctk_lsh[1]*(k + GH->cctk_lsh[2]*
-                                                    (l + GH->cctk_lsh[3]*n))));
+  return (i + GH->cctk_ash[0]*(j + GH->cctk_ash[1]*(k + GH->cctk_ash[2]*
+                                                    (l + GH->cctk_ash[3]*n))));
 }

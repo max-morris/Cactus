@@ -40,9 +40,6 @@
 #define CCTK_STEERABLE_ALWAYS  201
 #define CCTK_STEERABLE_RECOVER 202
 
-/* number of staggerings */
-#define CCTK_NSTAGGER      3
-
 /* group distributions */
 #define CCTK_DISTRIB_CONSTANT 301
 #define CCTK_DISTRIB_DEFAULT  302

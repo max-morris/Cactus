@@ -535,23 +535,6 @@ sub check_implementation_consistency
         {
           $attributes{"DIM"} = $interface_data_ref->{"\U$thorn GROUP $group\E DIM"};
         }
-
-        # Check the staggering are consistant
-        if($attributes{"STYPE"})
-        {
-          if($attributes{"STYPE"} ne $interface_data_ref->{"\U$thorn GROUP $group\E STYPE"})
-          {
-            $message  = "Inconsistent implementations of $implementation\n";
-            $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
-            $message .= "Group $group has inconsistent staggering type";
-            &CST_error(0,$message,"",__LINE__,__FILE__);
-            $n_errors++;
-          }
-        }
-        else
-        {
-          $attributes{"STYPE"} = $interface_data_ref->{"\U$thorn GROUP $group\E STYPE"};
-        }
       }
     }
   }
@@ -881,10 +864,6 @@ sub parse_interface_ccl
         {
           $interface_data_ref->{"\U$thorn GROUP $current_group\E DIM"} = $options{$option};
         }
-        elsif($option =~ m:STAGGER:i)
-        {
-          $interface_data_ref->{"\U$thorn GROUP $current_group\E STYPE"} = "\U$options{$option}\E";
-        }
         elsif($option =~ m:TYPE:i)
         {
           $interface_data_ref->{"\U$thorn GROUP $current_group\E GTYPE"} = "\U$options{$option}\E";
@@ -948,11 +927,6 @@ sub parse_interface_ccl
       if(! $interface_data_ref->{"\U$thorn GROUP $current_group\E TIMELEVELS"})
       {
         $interface_data_ref->{"\U$thorn GROUP $current_group\E TIMELEVELS"} = 1;
-      }
-
-      if(! $interface_data_ref->{"\U$thorn GROUP $current_group\E STYPE"})
-      {
-        $interface_data_ref->{"\U$thorn GROUP $current_group\E STYPE"} = "NONE";
       }
 
       if(! $interface_data_ref->{"\U$thorn GROUP $current_group\E DISTRIB"})

@@ -109,29 +109,29 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GrouplshVN)
                             const int *dim,
                             int *lsh,
                             ONE_FORTSTRING_ARG);
-void CCTK_FCALL CCTK_FNAME (CCTK_GrouplsshGI)
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupashGI)
                            (int *ierr,
                             const cGH **cctkGH,
                             const int *dim,
-                            int *lssh,
+                            int *ash,
                             const int *groupindex);
-void CCTK_FCALL CCTK_FNAME (CCTK_GrouplsshGN)
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupashGN)
                            (int *ierr,
                             const cGH **cctkGH,
                             const int *dim,
-                            int *lssh,
+                            int *ash,
                             ONE_FORTSTRING_ARG);
-void CCTK_FCALL CCTK_FNAME (CCTK_GrouplsshVI)
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupashVI)
                            (int *ierr,
                             const cGH **cctkGH,
                             const int *dim,
-                            int *lssh,
+                            int *ash,
                             const int *varindex);
-void CCTK_FCALL CCTK_FNAME (CCTK_GrouplsshVN)
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupashVN)
                            (int *ierr,
                             const cGH **cctkGH,
                             const int *dim,
-                            int *lssh,
+                            int *ash,
                             ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupgshGI)
                            (int *ierr,
@@ -1226,21 +1226,21 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GrouplshVN)
 
 
 /********************************************************************
- ********************    Group local stagger shape    ***************
+ ********************    Group local allocated shape    *************
  ********************************************************************/
 
  /*@@
-   @routine    CCTK_GrouplsshGI
+   @routine    CCTK_GroupashGI
    @date       2011-03-16
    @author     Erik Schnetter
    @desc
-   Returns the lssh for a variable group
+   Returns the ash for a variable group
    @enddesc
 @@*/
-int CCTK_GrouplsshGI(const cGH *cctkGH,
-                     int size,
-                     int *lssh,
-                     int groupindex)
+int CCTK_GroupashGI(const cGH *cctkGH,
+                    int size,
+                    int *ash,
+                    int groupindex)
 {
   int retval = 0;
   int ierr;
@@ -1250,144 +1250,144 @@ int CCTK_GrouplsshGI(const cGH *cctkGH,
 
   ierr = CCTK_GroupDynamicData(cctkGH,groupindex,&data);
 
-  if (ierr == 0 && (data.dim == 0 || data.lssh))
+  if (ierr == 0 && (data.dim == 0 || data.ash))
   {
-    if (CCTK_NSTAGGER*data.dim != size)
+    if (data.dim != size)
     {
       retval = -1;
-      usesize = (CCTK_NSTAGGER*data.dim < size) ? CCTK_NSTAGGER*data.dim : size;
+      usesize = (data.dim < size) ? data.dim : size;
       groupname = CCTK_GroupName (groupindex);
       CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-                 "CCTK_GrouplsshGI: Incorrect size %d supplied, "
+                 "CCTK_GroupashGI: Incorrect size %d supplied, "
                  "group '%s' has dimension %d, copying %d integers",
                  size,groupname,data.dim,usesize);
       free (groupname);
     }
-    memcpy(lssh,(const int *)data.lssh,usesize*sizeof(int));
+    memcpy(ash,(const int *)data.ash,usesize*sizeof(int));
   }
   else
   {
     retval = -2;
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-               "CCTK_GrouplsshGI: Data not available from driver thorn");
+               "CCTK_GroupashGI: Data not available from driver thorn");
   }
   return retval;
 }
 
-void CCTK_FCALL CCTK_FNAME (CCTK_GrouplsshGI)
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupashGI)
                            (int *ierr,
                             const cGH **cctkGH,
                             const int *size,
-                            int *lssh,
+                            int *ash,
                             const int *groupindex)
 {
-  *ierr = CCTK_GrouplsshGI (*cctkGH, *size, lssh, *groupindex);
+  *ierr = CCTK_GroupashGI (*cctkGH, *size, ash, *groupindex);
 }
 
 
 
-int CCTK_GrouplsshGN(const cGH *cctkGH,
-                           int size,
-                           int *lssh,
-                           const char *groupname)
+int CCTK_GroupashGN(const cGH *cctkGH,
+                    int size,
+                    int *ash,
+                    const char *groupname)
 {
   int retval;
   int gindex = CCTK_GroupIndex(groupname);
 
   if (gindex > -1)
   {
-    retval = CCTK_GrouplsshGI(cctkGH,size,lssh,gindex);
+    retval = CCTK_GroupashGI(cctkGH,size,ash,gindex);
   }
   else
   {
     retval = -4;
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-               "CCTK_GrouplsshGN: Group index not found for %s",groupname);
+               "CCTK_GroupashGN: Group index not found for %s",groupname);
   }
 
   return retval;
 }
 
-void CCTK_FCALL CCTK_FNAME (CCTK_GrouplsshGN)
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupashGN)
                            (int *ierr,
                             const cGH **cctkGH,
                             const int *size,
-                            int *lssh,
+                            int *ash,
                             ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (groupname)
-  *ierr = CCTK_GrouplsshGN (*cctkGH, *size, lssh, groupname);
+  *ierr = CCTK_GroupashGN (*cctkGH, *size, ash, groupname);
   free (groupname);
 }
 
 
 
-int CCTK_GrouplsshVI(const cGH *cctkGH,
-                            int size,
-                            int *lssh,
-                            int varindex)
+int CCTK_GroupashVI(const cGH *cctkGH,
+                    int size,
+                    int *ash,
+                    int varindex)
 {
   int retval;
   int gindex = CCTK_GroupIndexFromVarI(varindex);
 
   if (gindex > -1)
   {
-    retval = CCTK_GrouplsshGI(cctkGH,size,lssh,gindex);
+    retval = CCTK_GroupashGI(cctkGH,size,ash,gindex);
   }
   else
   {
     retval = -4;
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-               "CCTK_GrouplsshVI: Group index not found for variable index %d",
+               "CCTK_GroupashVI: Group index not found for variable index %d",
                varindex);
   }
 
   return retval;
 }
 
-void CCTK_FCALL CCTK_FNAME (CCTK_GrouplsshVI)
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupashVI)
                            (int *ierr,
                             const cGH **cctkGH,
                             const int *size,
-                            int *lssh,
+                            int *ash,
                             const int *varindex)
 {
-  *ierr = CCTK_GrouplsshVI (*cctkGH, *size, lssh, *varindex);
+  *ierr = CCTK_GroupashVI (*cctkGH, *size, ash, *varindex);
 }
 
 
 
-int CCTK_GrouplsshVN(const cGH *cctkGH,
-                           int size,
-                           int *lssh,
-                           const char *varname)
+int CCTK_GroupashVN(const cGH *cctkGH,
+                    int size,
+                    int *ash,
+                    const char *varname)
 {
   int retval;
   int gindex = CCTK_GroupIndexFromVar(varname);
 
   if (gindex > -1)
   {
-    retval = CCTK_GrouplsshGI(cctkGH,size,lssh,gindex);
+    retval = CCTK_GroupashGI(cctkGH,size,ash,gindex);
   }
   else
   {
     retval = -4;
     CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-               "CCTK_GrouplsshVN: Group index not found for %s",varname);
+               "CCTK_GroupashVN: Group index not found for %s",varname);
   }
 
   return retval;
 }
 
-void CCTK_FCALL CCTK_FNAME (CCTK_GrouplsshVN)
+void CCTK_FCALL CCTK_FNAME (CCTK_GroupashVN)
                            (int *ierr,
                             const cGH **cctkGH,
                             const int *size,
-                            int *lssh,
+                            int *ash,
                             ONE_FORTSTRING_ARG)
 {
   ONE_FORTSTRING_CREATE (varname)
-  *ierr = CCTK_GrouplsshVN (*cctkGH, *size, lssh, varname);
+  *ierr = CCTK_GroupashVN (*cctkGH, *size, ash, varname);
   free (varname);
 }
 
