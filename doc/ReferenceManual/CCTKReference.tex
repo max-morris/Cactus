@@ -12478,6 +12478,8 @@ The name of the variable.
 The variable name should be the given in its fully qualified form,
 that is \code{<implementation>::<variable>} for a public or protected
 variable, and \code{<thornname>::<variable>} for a private variable.
+For vector variables, the zero-based component index should be included
+in square brackets after the variable name.
 \end{Discussion}
 
 %\begin{SeeAlsoSection}
@@ -12500,11 +12502,13 @@ memory allocation failed
 \begin{Example}{C}
 \begin{verbatim}
 index = CCTK_VarIndex("evolve::phi");
+index = CCTK_VarIndex("evolve::vect[0]");
 \end{verbatim}
 \end{Example}
 \begin{Example}{Fortran}
 \begin{verbatim}
 call CCTK_VarIndex(index,"evolve::phi")
+call CCTK_VarIndex(index,"evolve::vect[0]")
 \end{verbatim}
 \end{Example}
 \end{ExampleSection}
