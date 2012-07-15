@@ -59,16 +59,19 @@ define NOTIFY_DIVIDER
 endef
 endif
 
-# Define how to do dependencies
+# Define how to do dependencies.
+# Correct the dependency target (i.e. the item on the LHS of a make
+# rule). The name of the object file is wrong, and the dependency file
+# (.d file) is missing. To simplify things, we don't try to match the
+# object file name -- we assume that any file ending in .o is the
+# object file.
 ifeq ($(strip $(PERL_BACKUP_NECESSARY)),)
 define DEPENDENCY_FIXER
-	#$(PERL) -pi -e "s,([^:]*),$(basename $@).o $(basename $@).d, if(m/: /);\
-	 s:\s+\S*[/\\\]($(DEP_EXCLUDE_FILES))\b::g" $@
+	$(PERL) -pi -e 's{^\Q$(basename $(basename $@)).o:\E}{$(basename $@).o $(basename $@).d:}' $@
 endef
 else
 define DEPENDENCY_FIXER
-	#$(PERL) -pi.bak -e "s,([^:]*),$(basename $@).o $(basename $@).d, if(m/: /);\
-	 s:\s+\S*[/\\\]($(DEP_EXCLUDE_FILES))\b::g" $@
+	$(PERL) -pi.bak -e 's{^\Q$(basename $(basename $@)).o:\E}{$(basename $@).o $(basename $@).d:}' $@
 	rm $@.bak
 endef
 endif
