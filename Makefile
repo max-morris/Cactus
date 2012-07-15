@@ -830,7 +830,9 @@ $(addsuffix -reconfig,$(CONFIGURATIONS)): int_version
 	  echo "to see what these are."; \
 	  exit 2; \
 	fi; \
-	if ($(SETUP_ENV) $(PERL) -s $(SETUP) -config_file=$(CONFIGS_DIR)/$(@:%-reconfig=%)/config-info $(@:%-reconfig=%)) ; then : ; else \
+	if ($(SETUP_ENV) $(PERL) -s $(SETUP) -config_file=$(CONFIGS_DIR)/$(@:%-reconfig=%)/config-info $(@:%-reconfig=%)) ; then \
+	  $(MAKE) $(@:%-reconfig=%)-cleandeps ; \
+        else \
           echo "" ;                                                      \
           echo "Error reconfiguring $@" ;                                \
           rm -f "$(CONFIGS_DIR)/$(@:%-reconfig=%)/config-data/cctk_Config.h";\
