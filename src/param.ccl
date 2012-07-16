@@ -91,6 +91,18 @@ KEYWORD recovery_mode "How to behave when recovering from a checkpoint" STEERABL
   "relaxed" :: "Recover variables if possible, after INITIAL timebins have been scheduled"
 } "strict"
 
+# these options are intended to help debugging schedule files. Do not rely on
+# them to ensure any particular ordering.
+KEYWORD schedule_sort_mode "How to behave when no explicit ordering is prescribed between itemse" STEERABLE=RECOVER
+{
+  "none"       :: "no special ordering is enforced"
+  "ascending"  :: "sorted alphabetically by thorn name and item name"
+  "descending" :: "sorted in reverse alphabetical order by thorn name and item name"
+} "none"
+
+BOOLEAN schedule_sort_warnings "Output warnings if a schedule item refers to a non-existing item for ordering"
+{
+} "no"
 
 restricted:
 

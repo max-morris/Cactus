@@ -12,8 +12,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "cctk.h"
 #include "cctk_WarnLevel.h"
+#include "cctk_Parameters.h"
 #include "cctk_Flesh.h"
+
+#include "util_String.h"
 
 #include "cctki_Schedule.h"
 #include "StoreHandledData.h"
@@ -43,9 +47,15 @@ static int ScheduleSortGroup(t_sched_group *group);
 
 static t_sched_modifier_type ScheduleTranslateModifierType(const char *modifier);
 
+static const char * ScheduleModifierTypeName(t_sched_modifier_type type);
+
 static int ScheduleItemNumber(t_sched_group *group, 
                               const char *name);
 
+static t_sort_order ScheduleTranslateSortOrder(const char *order);
+
+static int ScheduleCompareAscending(const void *a, const void *b);
+static int ScheduleCompareDescending(const void *a, const void *b);
 
 static int ScheduleSetupWhiles(t_sched_item *item);
 static int ScheduleSetupIfs(t_sched_item *item);
@@ -693,6 +703,112 @@ static t_sched_modifier_type ScheduleTranslateModifierType(const char *modifier)
 }
 
  /*@@
+   @routine    ScheduleTranslateSortOrder
+   @date       Sun Jul 15 20:29:29 PDT 2012
+   @author     Roland Haas
+   @desc 
+   Translates a sorting order type from a string to an enum.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     order
+   @vdesc   The order string
+   @vtype   const char *
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype t_sort_order
+   @returndesc 
+   The enumerated sort order.
+   @endreturndesc
+@@*/
+static t_sort_order ScheduleTranslateSortOrder(const char *order)
+{
+  t_sort_order retval;
+
+  if(CCTK_Equals(order, "none"))
+  {
+    retval = sort_order_none;
+  }
+  else if(CCTK_Equals(order, "ascending"))
+  {
+    retval = sort_order_ascending;
+  }
+  else if(CCTK_Equals(order, "descending"))
+  {
+    retval = sort_order_descending;
+  }
+  else
+  {
+    CCTK_VWarn(CCTK_WARN_ABORT, __LINE__, __FILE__, "Cactus",
+        "Unknown sort ordering type '%s'", order);
+    retval = -1; /* NOTREACHED */
+  }
+
+#ifdef DEBUG_SCHEDULAR
+  printf("Translated sort order %s to %d\n", order, retval);
+#endif
+
+  return retval;
+}
+
+
+ /*@@
+   @routine    ScheduleModifierTypeName
+   @date       Sun Jul 15 18:42:48 PDT 2012
+   @author     Roland Haas
+   @desc 
+   Translates a modifier type from an enum to a string.
+   @enddesc 
+   @calls     
+   @calledby   
+   @history 
+ 
+   @endhistory 
+   @var     type
+   @vdesc   The modifier type
+   @vtype   t_sched_modifier_type
+   @vio     in
+   @vcomment 
+ 
+   @endvar 
+
+   @returntype const char *
+   @returndesc 
+   The named schedule modifier type.
+   @endreturndesc
+@@*/
+static const char *ScheduleModifierTypeName(t_sched_modifier_type type)
+{
+  switch(type)
+  {
+    case sched_before:
+      return "before";
+      break;
+    case sched_after:
+      return "after";
+      break;
+    case sched_while:
+      return "while";
+      break;
+    case sched_if:
+      return "if";
+      break;
+    default:
+      CCTK_VWarn(CCTK_WARN_ABORT, __LINE__, __FILE__, "Cactus",
+          "Internal error: Unknown schedule modifier type %d",
+          (int)type);
+      break;
+  }
+  return NULL; /* NOTREACHED */
+}
+
+ /*@@
    @routine    ScheduleSortGroup
    @date       Mon Sep 13 11:30:19 1999
    @author     Tom Goodale
@@ -729,6 +845,8 @@ static t_sched_modifier_type ScheduleTranslateModifierType(const char *modifier)
 @@*/
 static int ScheduleSortGroup(t_sched_group *group)
 {
+  DECLARE_CCTK_PARAMETERS;
+
   int item;
   int *order;
   int *thisorders;
@@ -738,6 +856,7 @@ static int ScheduleSortGroup(t_sched_group *group)
   int mod;
   int i;
   int errcode;
+  int sort_order;
 
 #ifdef DEBUG_SCHEDULAR
   int j;
@@ -747,6 +866,18 @@ static int ScheduleSortGroup(t_sched_group *group)
   array      = CCTKi_ScheduleCreateArray(group->n_scheditems);
   order      = CCTKi_ScheduleCreateIVec(group->n_scheditems);
   thisorders = CCTKi_ScheduleCreateIVec(group->n_scheditems);
+
+  sort_order = ScheduleTranslateSortOrder(schedule_sort_mode);
+  if(sort_order == sort_order_ascending)
+  {
+    qsort(group->scheditems, group->n_scheditems,
+        sizeof(*group->scheditems), ScheduleCompareAscending);
+  }
+  else if(sort_order == sort_order_descending)
+  {
+    qsort(group->scheditems, group->n_scheditems,
+        sizeof(*group->scheditems), ScheduleCompareDescending);
+  }
   
   for(item=0; item < group->n_scheditems; item++)
   {
@@ -761,11 +892,19 @@ static int ScheduleSortGroup(t_sched_group *group)
       }
       number = ScheduleItemNumber(group, modifier->argument);
 
-#ifdef DEBUG_SCHEDULAR
-      printf("Scheduling against item %d '%s' - mod-type %d\n", number, group->scheditems[number].name, modifier->type);
-#endif
+      if(number < 0 && schedule_sort_warnings)
+      {
+        CCTK_VWarn(CCTK_WARN_ALERT, __LINE__, __FILE__, "Cactus",
+            "Modifier '%s' of schedule item '%s' in group '%s' refers to non-existing item '%s'.",
+            ScheduleModifierTypeName(modifier->type), group->scheditems[item].name,
+            group->name, modifier->argument);
+      }
+
       if(number >= 0 && number < group->n_scheditems)
       {
+#ifdef DEBUG_SCHEDULAR
+        printf("Scheduling against item %d '%s' - mod-type %d\n", number, group->scheditems[number].name, modifier->type);
+#endif
         switch(modifier->type)
         {
           case sched_before : mod = -1;  break;
@@ -1046,6 +1185,79 @@ static int ScheduleSetupIfs(t_sched_item *item)
   }
 
   return retval;
+}
+
+ /*@@
+   @routine    ScheduleCompareAscending
+   @date       Mon Jul 16 07:27:39 PDT 2012
+   @author     Roland Haas
+   @desc
+   Compare two schedule items based on their thorn and routine names
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
+   @var     a
+   @vdesc   The first schedule items to work on
+   @vtype   t_sched_item *
+   @vio     ino
+   @vcomment
+
+   @var     b
+   @vdesc   The first schedule items to work on
+   @vtype   t_sched_item *
+   @vio     ino
+   @vcomment
+
+   @returntype int
+   @returndesc
+   Returns +strcmpi(a->name, b->name)
+   @endreturndesc
+@@*/
+static int ScheduleCompareAscending(const void *a_, const void *b_)
+{
+  const t_sched_item *a = a_;
+  const t_sched_item *b = b_;
+  return +Util_StrCmpi(a->name, b->name);
+}
+
+ /*@@
+   @routine    ScheduleCompareDescending
+   @date       Mon Jul 16 07:27:39 PDT 2012
+   @author     Roland Haas
+   @desc
+   Compare (in reverse alphabetical order) two schedule items based on their
+   thorn and routine names
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
+   @var     a
+   @vdesc   The first schedule items to work on
+   @vtype   t_sched_item *
+   @vio     ino
+   @vcomment
+
+   @var     b
+   @vdesc   The first schedule items to work on
+   @vtype   t_sched_item *
+   @vio     ino
+   @vcomment
+
+   @returntype int
+   @returndesc
+   Returns -strcmpi(a->name, b->name)
+   @endreturndesc
+@@*/
+static int ScheduleCompareDescending(const void *a_, const void *b_)
+{
+  const t_sched_item *a = a_;
+  const t_sched_item *b = b_;
+  return -Util_StrCmpi(a->name, b->name);
 }
 
 /********************************************************************

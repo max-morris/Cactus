@@ -44,6 +44,8 @@ cHandledData *CCTKi_DoScheduleGetGroups(void);
 
 typedef enum {sched_item_none, sched_group, sched_function} t_sched_item_type;
 
+typedef enum {sort_order_none, sort_order_ascending, sort_order_descending} t_sort_order;
+
 typedef struct
 {
   char *name;
