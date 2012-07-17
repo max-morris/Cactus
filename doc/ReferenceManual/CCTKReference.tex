@@ -804,6 +804,9 @@ from Fortran.
 \item[\code{CCTK\_TimerStopI}] [\pageref{CCTK-TimerStopI}]
   Gets current values for all clocks of the timer with a given index.
 
+\item[\code{CCTK\_TraverseString}] [\pageref{CCTK-TraverseString}]
+  Traverse through all variables and/or groups whose names appear in the given string.
+
 \item[\code{CCTK\_VarDataPtr}] [\pageref{CCTK-VarDataPtr}]
   Returns the data pointer for a grid variable
 
@@ -12337,6 +12340,70 @@ Call this before getting the values from any of the timer's clocks.
 \begin{ErrorSection}
 \begin{Error}{< 0}
 A negative return value indicates an error.
+\end{Error}
+\end{ErrorSection}
+\end{FunctionDescription}
+
+\begin{FunctionDescription}{CCTK\_TraverseString}
+\label{CCTK-TraverseString}
+Traverse through all variables and/or groups whose names appear in the given
+string, and call the callback routine with those indices and an optional
+option string appended to the variable/group name enclosed in square braces.
+The special keyword "all" in the string can be used to indicate that the
+callback should be called for all variables/groups.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+int err = CCTK_TraverseString(traverse_string, callback, callback_arg,
+                              selection)
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+   \begin{Parameter} {const char * traverse\_string}
+   List of variable and/or group names
+   \end{Parameter}
+   \begin{Parameter} {int (*callback) (int idx, const char *optstring, void *callback\_arg)}
+   Routine to call for every variable and/or group found. \code{idx} is the
+   Cactus variable index, \code{optstring} is the optional `\verb|{}|'
+   enclosed option string after the variable name, and \code{callback\_arg} is
+   the arbitrary argument passed to \code{CCTK\_TraverseString}.
+   \end{Parameter}
+   \begin{Parameter} {void *callback\_arg}
+   An arbitrary argument which gets passed to the callback routine
+   \end{Parameter}
+   \begin{Parameter} {int selection}
+   Decides whether group and/or variable names are accepted in the string
+   \end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Use this to loop over a list of variables passed in by the user.
+\end{Discussion}
+
+\begin{ResultSection}
+\begin{Result}{number of variables}
+positive for the number of traversed variables
+\end{Result}
+\end{ResultSection}
+
+\begin{ErrorSection}
+\begin{Error}{-1}
+no callback routine was given
+\end{Error}
+\begin{Error}{-2}
+option string is not associated with a group or variable
+\end{Error}
+\begin{Error}{-3}
+unterminated option string
+\end{Error}
+\begin{Error}{-4}
+garbage found at end of option string
+\end{Error}
+\begin{Error}{-5}
+invalid token in traversed string found
 \end{Error}
 \end{ErrorSection}
 \end{FunctionDescription}
