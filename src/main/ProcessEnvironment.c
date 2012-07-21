@@ -11,10 +11,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "cctk_Capabilities.h"
 #include "cctk_Flesh.h"
 
 #ifdef CCTK_MPI
-#include "mpi.h"
+#  include <mpi.h>
 #endif
 
 static const char *rcsid = "$Header$";

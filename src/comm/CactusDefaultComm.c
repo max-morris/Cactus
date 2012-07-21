@@ -9,6 +9,7 @@
  @@*/
 
 
+#include "cctk_Capabilities.h"
 #include "cctk_Flesh.h"
 #include "cctk_Groups.h"
 #include "cctk_Constants.h"
@@ -29,7 +30,7 @@
 #endif
 
 #ifdef CCTK_MPI
-#include "mpi.h"
+#  include <mpi.h>
 #endif
 
 static const char *rcsid = "$Header$";

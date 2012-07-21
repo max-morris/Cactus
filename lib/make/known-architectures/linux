@@ -9,12 +9,6 @@
 #   @version   $Header$
 # @@*/
 
-if test -e "/usr/bin/aprun" ; then
- echo "This is probably a Cray XT4 series system."
- echo "Using known-architectures xt4-cray-linux"
- . $srcdir/known-architectures/xt4-cray-linux
-else
-
 
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
 
@@ -609,7 +603,5 @@ else
 #
 # Linux has no native MPI, so we don't set any NATIVE_MPI_XXX variables.
 # This is caught by lib/make/extras/MPI/NATIVE then.
-
-fi
 
 fi

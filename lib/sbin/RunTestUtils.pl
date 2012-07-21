@@ -512,13 +512,14 @@ sub defprompt
 sub ParseExtras
 {
   my($config_data) = @_;
-  my($mpi,$dir,$sep,$extradir);
+  my($mpi,$dir,$sep,$extradir,$capabilitydir);
 
   $dir = $config_data->{"CCTK_DIR"};
   $sep = $config_data->{"SEPARATOR"};
   $config = $config_data->{"CONFIG"};
 
   $extradir = "$dir${sep}configs${sep}$config${sep}config-data${sep}cctk_Extradefs.h";
+  $capabilitydir = "$dir${sep}configs${sep}$config${sep}bindings${sep}Configuration${sep}Capabilities${sep}cctki_MPI.h";
 
   $mpi = 0;
 
@@ -533,6 +534,19 @@ sub ParseExtras
       }
     }
     close(EXTRA);
+  }
+
+  if (-e "$capabilitydir")
+  {
+    open(CAP,"<$capabilitydir");
+    while(<CAP>)
+    {
+      if (/\#define CCTK_MPI/)
+      {
+        $mpi = 1;
+      }
+    }
+    close(CAP);
   }
 
   return $mpi;
