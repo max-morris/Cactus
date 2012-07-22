@@ -213,7 +213,7 @@ sub CreateVariableBindings
     push(@data, '');
     push(@data, "static int CCTKi_BindingsFortranWrapper$thorn(void *_GH, void *fpointer)");
     push(@data, '{');
-    push(@data, '  cGH *GH = _GH;');
+    push(@data, '  cGH const *const GH = _GH;');
     push(@data, '  const int _cctk_zero = 0;');
     push(@data, "  void (*function)(\U$thorn\E_C2F_PROTO);");
     push(@data, "  DECLARE_\U$thorn\E_C2F");
