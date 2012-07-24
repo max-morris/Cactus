@@ -1137,6 +1137,25 @@ int CCTKi_SetErrorLevel (int level)
 }
 
 
+int CCTK_ExitAfterParamCheck();
+ /*@@
+   @routine    ExitIfParamCheckOnly
+   @date       Mon May 16 2012
+   @author     Steven R. Brandt
+   @desc
+               Responsible for exiting after paramcheck
+   @enddesc
+
+@@*/
+void CCTK_ExitIfParamCheckOnly()
+{
+    if(CCTK_ExitAfterParamCheck()) {
+        printf("Exit after param check requested using the --exit-after-param-check option.\n");
+        CCTK_Exit(NULL, 0);
+    }
+}
+
+
 /*@@
    @routine    CCTKi_FinaliseParamWarn
    @date       June 1999
@@ -1191,6 +1210,7 @@ void CCTKi_FinaliseParamWarn (void)
       }
     }
   }
+  CCTK_ExitIfParamCheckOnly();
 }
 
 

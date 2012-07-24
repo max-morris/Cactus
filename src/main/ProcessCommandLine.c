@@ -41,6 +41,8 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ParameterFilename)
  *********************     Local Data   *****************************
  ********************************************************************/
 
+static int exit_after_param_check = 0;
+
 static char *parameter_file_name=NULL;
 
 static int argc = 0;
@@ -129,6 +131,7 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
     list_thorns_option            = 'T',
     test_thorns_compiled_option   = 't',
     version_option                = 'v',
+    exit_after_param_check_option = 'p',
     ignore_next_option            = 'i'
   };
   /* the longopts argument passed into getopt_long_only() */
@@ -148,6 +151,7 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
     {"print-schedule",          no_argument,       NULL, print_schedule_option},
     {"list-thorns",             no_argument,       NULL, list_thorns_option},
     {"test-thorn-compiled",     required_argument, NULL, test_thorns_compiled_option},
+    {"exit-after-param-check",  no_argument,       NULL, exit_after_param_check_option},
     {"version",                 no_argument,       NULL, version_option},
     {"ignore-next",             no_argument,       NULL, ignore_next_option},
     {0, 0, 0, 0}
@@ -203,6 +207,8 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
             CCTKi_CommandLineVersion(); break;
           case ignore_next_option:
             ignore = 1; break;
+          case exit_after_param_check_option:
+            exit_after_param_check = 1; break;
           case help_option: 
           case '?':
             CCTKi_CommandLineHelp(); break;
@@ -332,6 +338,11 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ParameterFilename)
      (int *retval, int *len, char *name)
 {
   *retval = CCTK_ParameterFilename(*len,name);
+}
+
+int CCTK_ExitAfterParamCheck()
+{
+    return exit_after_param_check;
 }
 
 /********************************************************************
