@@ -1712,7 +1712,7 @@ fi
 
 # nvcc itself doesn't have warning flags. warnings will be given by C compilers.
 
-  : ${CUCC_WARN_FLAGS=''}
+: ${CUCC_WARN_FLAGS=''}
 
 
 if test "$F77" = 'g77' ; then
@@ -6865,10 +6865,10 @@ cat > conftest.$ac_ext <<EOF
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
     builtin and then its argument prototype would still apply.  */
-char a88VAc;
+char 6Okejz;
 
 int main() {
-rLztEw
+1xVIuB
 ; return 0; }
 EOF
 if { (eval echo configure:6875: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
@@ -7426,9 +7426,9 @@ LDFLAGS="$LDFLAGS $KNOWN_LDFLAGS"
 : ${CXX_DEPEND_OUT=' > $@'}
 
 
-: ${CU_DEPEND='$(CUCC) -M'}
+: ${CUCC_DEPEND='$(CUCC) -M $(CUCCFLAGS)'}
 
-: ${CU_DEPEND_OUT=' > $@'}
+: ${CUCC_DEPEND_OUT=' > $@'}
 
 
 : ${F77_DEPEND='$(FPP) -M $(FPPFLAGS)'}
@@ -7454,7 +7454,7 @@ LDFLAGS="$LDFLAGS $KNOWN_LDFLAGS"
 
 : ${CL_POSTPROCESSING=''}
 
-: ${CU_POSTPROCESSING=''}
+: ${CUCC_POSTPROCESSING=''}
 
 : ${F77_POSTPROCESSING=''}
 
@@ -8034,8 +8034,8 @@ s%@C_DEPEND@%$C_DEPEND%g
 s%@C_DEPEND_OUT@%$C_DEPEND_OUT%g
 s%@CXX_DEPEND@%$CXX_DEPEND%g
 s%@CXX_DEPEND_OUT@%$CXX_DEPEND_OUT%g
-s%@CU_DEPEND@%$CU_DEPEND%g
-s%@CU_DEPEND_OUT@%$CU_DEPEND_OUT%g
+s%@CUCC_DEPEND@%$CUCC_DEPEND%g
+s%@CUCC_DEPEND_OUT@%$CUCC_DEPEND_OUT%g
 s%@F77_DEPEND@%$F77_DEPEND%g
 s%@F77_DEPEND_OUT@%$F77_DEPEND_OUT%g
 s%@F_DEPEND@%$F_DEPEND%g
@@ -8045,7 +8045,7 @@ s%@F_DEPEND_MODULES_OUT@%$F_DEPEND_MODULES_OUT%g
 s%@C_POSTPROCESSING@%$C_POSTPROCESSING%g
 s%@CXX_POSTPROCESSING@%$CXX_POSTPROCESSING%g
 s%@CL_POSTPROCESSING@%$CL_POSTPROCESSING%g
-s%@CU_POSTPROCESSING@%$CU_POSTPROCESSING%g
+s%@CUCC_POSTPROCESSING@%$CUCC_POSTPROCESSING%g
 s%@F77_POSTPROCESSING@%$F77_POSTPROCESSING%g
 s%@F_POSTPROCESSING@%$F_POSTPROCESSING%g
 s%@F90_POSTPROCESSING@%$F90_POSTPROCESSING%g

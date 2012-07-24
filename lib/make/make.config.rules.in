@@ -67,7 +67,7 @@ endif
 # object file.
 ifeq ($(strip $(PERL_BACKUP_NECESSARY)),)
 define DEPENDENCY_FIXER
-	$(PERL) -pi -e 's{^\Q$(basename $(basename $@)).o:\E}{$(basename $@).o $(basename $@).d:}' $@
+	$(PERL) -pi -e 's{^\s*\Q$(basename $(basename $@)).o\E\s*:}{$(basename $@).o $(basename $@).d:}' $@
 endef
 else
 define DEPENDENCY_FIXER
@@ -86,15 +86,15 @@ define CXX_DEPENDENCIES
 	$(DEPENDENCY_FIXER)
 endef
 
+define CUCC_DEPENDENCIES
+        $(CUCC_DEPEND) $< $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DCCODE $(CUCC_DEPEND_OUT)
+        $(DEPENDENCY_FIXER)
+endef
+
 define CL_DEPENDENCIES
 # An OpenCL source file has no external dependencies
 	$(CL_DEPEND) $< $(CL_DEPEND_OUT)
 	$(DEPENDENCY_FIXER)
-endef
-
-define CU_DEPENDENCIES
-        $(CU_DEPEND) $< $(INCLUDE_LINE) $(EXTRA_DEFINES:%=-D%) -DCCODE $(CU_DEPEND_OUT)
-        $(DEPENDENCY_FIXER)
 endef
 
 define F77_DEPENDENCIES
@@ -188,7 +188,7 @@ current_wd=`$(GET_WD)` ; cd $(SCRATCH_BUILD) ; $(CUCC) $(CUCCFLAGS) $(CCOMPILEON
 endef
 
 define POSTPROCESS_CU
-$(CU_POSTPROCESSING)
+$(CUCC_POSTPROCESSING)
 endef
 
 # Define how to do a F77 compilation
@@ -338,7 +338,7 @@ endef
 	$(NOTIFY_DIVIDER)
 
 %.cu.d: $(SRCDIR)/%.cu
-	$(CU_DEPENDENCIES)
+	$(CUCC_DEPENDENCIES)
 
 # Build rules for F77
 
