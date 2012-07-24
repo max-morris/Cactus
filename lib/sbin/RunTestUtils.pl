@@ -457,12 +457,22 @@ sub FindRunCommand
 
   # Look to see if MPI is dfined
   my $have_mpi = ParseExtras($config_data);
+
+  my $nprocs = (defined ($ENV{'CCTK_TESTSUITE_RUN_PROCESSORS'}) ?
+                $ENV{'CCTK_TESTSUITE_RUN_PROCESSORS'} : 2);
+
   if ($have_mpi)
   {
-    my $nprocs = (defined ($ENV{'CCTK_TESTSUITE_RUN_PROCESSORS'}) ?
-                 $ENV{'CCTK_TESTSUITE_RUN_PROCESSORS'} : 2);
     $config_data->{'NPROCS'} =
       &defprompt('  Enter number of processors ($nprocs)', $nprocs);
+  }
+  else
+  {
+      print "No MPI available\n";
+      if ($nprocs > 1)
+      {
+          die("Cannot run on $nprocs processes without an MPI implementation\n");
+      }
   }
 
   my $command;
