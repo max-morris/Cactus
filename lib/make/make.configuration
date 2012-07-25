@@ -291,7 +291,9 @@ clean:
 
 cleandeps:
 	@echo Deleting all dependency files in $(TOP)
-	find $(TOP)/build \( -name '*.[d]' -o -name '*.a' \) -exec rm {} \;
+	if test -d $(TOP)/build; then \
+          find $(TOP)/build \( -name '*.[d]' -o -name '*.a' \) -exec rm {} \; ; \
+        fi
 
 cleanobjs:
 	@echo Deleting all object files in $(TOP)
