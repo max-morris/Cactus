@@ -11,7 +11,8 @@
 
 if test -n "$MPI" -a "$MPI" != 'none' ; then
 
-echo 'Configuring with MPI'
+echo 'Configuring with flesh MPI'
+echo '  Warning: use of flesh MPI via MPI option is deprecated and should be replaced with the thorn ExternalLibraries/MPI and its MPI_DIR option'
 
 # Work out which variation of MPI is installed
 
@@ -38,9 +39,5 @@ CCTK_WriteLine make.extra.defn ''
 CCTK_WriteLine make.extra.defn 'LIBS         += $(MPI_LIBS)'
 CCTK_WriteLine make.extra.defn 'LIBDIRS      += $(MPI_LIB_DIRS)'
 CCTK_WriteLine make.extra.defn 'SYS_INC_DIRS += $(MPI_INC_DIRS)'
-
-else
-
-echo 'Configuring without MPI'
 
 fi
