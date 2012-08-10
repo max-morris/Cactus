@@ -591,12 +591,26 @@ sub TopoSort
     {
       $thorn_ancestor{"\U$thorn\E"} .= $interface->{"IMPLEMENTATION \U$ancestor_imp\E THORNS"}. ' ';
     }
+    $thorn_requires{"\U$thorn\E"} = '';
+    foreach $capability (split(' ', $cfg->{"\U$thorn REQUIRES\E"}))
+    {
+        foreach $thorn2 (sort keys %thorns)
+        {
+            foreach $capability2 (split(' ', $cfg->{"\U$thorn2 PROVIDES\E"}))
+            {
+                if ("\U$capability\E" eq "\U$capability2\E")
+                {
+                    $thorn_requires{"\U$thorn\E"} .= " $thorn2";
+                }
+            }
+        }
+    }
 
-    my @uses_thorns = split (' ', $cfg->{"\U$thorn\E USES THORNS"} . ' ' . $thorn_ancestor{"\U$thorn\E"});
+    my @uses_thorns = split (' ', $cfg->{"\U$thorn\E USES THORNS"} . ' ' . $cfg->{"\U$thorn\E REQUIRES THORNS"} . ' ' . $thorn_requires{"\U$thorn\E"} . ' ' . $thorn_ancestor{"\U$thorn\E"});
     my $uses_thorns = '';
     foreach (@uses_thorns)
     {
-      # ignore if a thorn wants to use only itself
+      # ignore if a thorn wants to use itself
       # otherwise we'll get a cyclic list later in the topological sort
       $uses_thorns .= "$thorn $_\n" if ($thorn ne $_);
     }

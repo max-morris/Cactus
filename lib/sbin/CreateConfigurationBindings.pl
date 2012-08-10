@@ -134,18 +134,18 @@ sub CreateConfigurationBindings
               &WriteFile("Capabilities/cctki_\U$providedcap\E.h",\$incs);
               &WriteFile("Capabilities/make.\U$providedcap\E.deps",\$deps);
               
-              # ES 2011-11-25: I don't understand these lines, so I'm
-              # leaving them alone
+              # Create a list of thorns that provide a capability with
+              # a library (or library search paths)
               if ($cfg->{"\U$thorn $providedcap\E LIBRARY"})
               {
                   $linker_thorns{"$thorn"} = $thorn;
-                  $linker_cfg{"\U$thorn\E USES"} = $cfg->{"\U$thorn\E USES THORNS"};
+                  #$linker_cfg{"\U$thorn\E USES"} = $cfg->{"\U$thorn\E USES THORNS"};
               }
               
               if ($cfg->{"\U$thorn $providedcap\E LIBRARY_DIRECTORY"})
               {
                   $linker_thorns{"$thorn"} = $thorn;
-                  $linker_cfg{"\U$thorn\E USES"} = $cfg->{"\U$thorn\E USES THORNS"};
+                  #$linker_cfg{"\U$thorn\E USES"} = $cfg->{"\U$thorn\E USES THORNS"};
               }
           }
       }
@@ -197,7 +197,7 @@ sub CreateConfigurationBindings
   $linkerdirs = 'LIBDIRS +=';
   $linkerlibs = 'LIBS +=';
 
-  $linker_list = &TopoSort(\%linker_thorns, \%linker_cfg);
+  $linker_list = &TopoSort(\%linker_thorns, \%linker_cfg, $cfg);
   foreach $thorn (split (' ', $linker_list))
   {
     foreach $providedcap (split (' ', $cfg->{"\U$thorn\E PROVIDES"}))
