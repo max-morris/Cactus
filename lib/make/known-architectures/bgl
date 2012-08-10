@@ -65,7 +65,7 @@ else
   # C/C++ compilers
   case "$CC" in
     blrts_xlc)
-     : ${C_DEPEND='$(CC) -M $(CPPFLAGS)'}
+     : ${C_DEPEND='$(CC) -M $(CPPFLAGS) $(CFLAGS)'}
      : ${C_DEPEND_OUT=' 2> /dev/null; mv $(basename $(basename $@)).d $@'}
      : ${CFLAGS="-qmaxmem=64000 -qlanglvl=stdc99"}
      : ${C_OPTIMISE_FLAGS='-O2 -qarch=440'}
@@ -77,7 +77,7 @@ else
 
   case "$CXX" in
     blrts_xlC)
-     : ${CXX_DEPEND='$(CXX) -M $(CPPFLAGS)'}
+     : ${CXX_DEPEND='$(CXX) -M $(CPPFLAGS) $(CXXFLAGS)'}
      : ${CXX_DEPEND_OUT=' 2> /dev/null; mv $(basename $(basename $@)).d $@'}
      : ${CXXFLAGS="-qmaxmem=64000 -qlanglvl=stdc99"}
      : ${CXX_OPTIMISE_FLAGS='-O2 -qarch=440'}

@@ -32,7 +32,7 @@ else
 
   if test "$CC" = "cc" ; then
     if test "X$PTHREADS" = "Xyes" ; then
-      : ${C_DEPEND='$(CC) -pthread -E -M $(CPPFLAGS)'}
+      : ${C_DEPEND='$(CC) -pthread -E -M $(CPPFLAGS) $(CFLAGS)'}
     fi
     : ${CFLAGS="$STD_FLAGS"}
     : ${C_OPTIMISE_FLAGS='-O5 -fast -writable_strings'}
@@ -41,9 +41,9 @@ else
 
   if test "$CXX" = "cxx" ; then
     if test "X$PTHREADS" = "Xyes" ; then
-      : ${CXX_DEPEND='$(CXX) -pthread -noimplicit_include -E -M $(CPPFLAGS)'}
+      : ${CXX_DEPEND='$(CXX) -pthread -noimplicit_include -E -M $(CPPFLAGS) $(CXXFLAGS)'}
     else
-      : ${CXX_DEPEND='$(CXX) -noimplicit_include -E -M $(CPPFLAGS)'}
+      : ${CXX_DEPEND='$(CXX) -noimplicit_include -E -M $(CPPFLAGS) $(CXXFLAGS)'}
     fi
     : ${CXXFLAGS="$STD_FLAGS"}
     : ${CXX_OPTIMISE_FLAGS='-O5 -fast -writable_strings'}

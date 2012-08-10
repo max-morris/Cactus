@@ -37,13 +37,13 @@ else
   fi
 
 
-  : ${C_DEPEND='$(CPP) -M $(CPPFLAGS)'}
-  : ${CXX_DEPEND='$(CPP) -M $(CPPFLAGS)'}
+  : ${C_DEPEND='$(CPP) -M $(CPPFLAGS) $(CFLAGS)'}
+  : ${CXX_DEPEND='$(CPP) -M $(CPPFLAGS) $(CXXFLAGS)'}
 
   if test "`basename $CC`" = 'cc' ; then
     : ${C_OPTIMISE_FLAGS='-fast'}
   fi
-  if test "basename $CXX`" = 'CC' ; then
+  if test "`basename $CXX`" = 'CC' ; then
     : ${CXX_OPTIMISE_FLAGS='-fast'}
   fi
   : ${F90_OPTIMISE_FLAGS='-fast'}

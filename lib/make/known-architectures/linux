@@ -409,7 +409,7 @@ else
        icc_c99='-c99'
      fi
      : ${CFLAGS="$icc_opt $icc_c99"}
-     : ${C_DEPEND='$(CC) -M $(CPPFLAGS)'}
+     : ${C_DEPEND='$(CC) -M $(CPPFLAGS) $(CFLAGS)'}
      if test $icc_version -ge 8; then
        c_warn_flags='-Wall -w1 -Wcheck'
      else
@@ -486,7 +486,7 @@ else
        cxx_warn_flags='-Wall -w1'
      fi
      : ${CXX_WARN_FLAGS="$cxx_warn_flags"}
-     : ${CXX_DEPEND='$(CXX) -M $(CPPFLAGS)'}
+     : ${CXX_DEPEND='$(CXX) -M $(CPPFLAGS) $(CXXFLAGS)'}
      CXX_VERSION="`$CXX -V 2>&1 | grep -i version | head -n1`"
      : ${CXX_OPENMP_FLAGS='-openmp'}
      ;;

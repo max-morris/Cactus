@@ -6865,10 +6865,10 @@ cat > conftest.$ac_ext <<EOF
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
     builtin and then its argument prototype would still apply.  */
-char 6Okejz;
+char ztM5Ye;
 
 int main() {
-1xVIuB
+BKDkue
 ; return 0; }
 EOF
 if { (eval echo configure:6875: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
@@ -7416,12 +7416,12 @@ LDFLAGS="$LDFLAGS $KNOWN_LDFLAGS"
 
 # How to generate dependency info
 
-: ${C_DEPEND='$(CC) -E -M $(CPPFLAGS)'}
+: ${C_DEPEND='$(CC) -E -M $(CPPFLAGS) $(CFLAGS)'}
 
 : ${C_DEPEND_OUT=' > $@'}
 
 
-: ${CXX_DEPEND='$(CXX) -E -M $(CPPFLAGS)'}
+: ${CXX_DEPEND='$(CXX) -E -M $(CPPFLAGS) $(CXXFLAGS)'}
 
 : ${CXX_DEPEND_OUT=' > $@'}
 

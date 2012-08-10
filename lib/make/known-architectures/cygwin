@@ -163,8 +163,8 @@ else
 
 # The -nostdinc stops it picking stdio.h, etc, from the GNU headers.
 # The -x c++ is because some of the Windows headers contain C++ comments
-  C_DEPEND='$(CPP) -x c++ -E -MM -nostdinc -D_WIN32 $(CPPFLAGS) '
-  CXX_DEPEND='$(CPP) -x c++ -E -MM -nostdinc -D_WIN32 $(CPPFLAGS) '
+  C_DEPEND='$(CPP) -x c++ -E -MM -nostdinc -D_WIN32 $(CPPFLAGS) $(CFLAGS) '
+  CXX_DEPEND='$(CPP) -x c++ -E -MM -nostdinc -D_WIN32 $(CPPFLAGS) $(CXXFLAGS) '
 
 # Add in system include dirs from $(INCLUDE).  These may contain spaces.
 # The -D_M_IX86 is necessary for things like winnt.h.  Since this is

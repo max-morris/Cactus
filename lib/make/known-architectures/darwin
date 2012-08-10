@@ -70,11 +70,11 @@ else
   fi
 
   if test "$MAC_C_COMP" = "gcc" ; then
-    : ${C_DEPEND='$(CC) -M -MP $(CPPFLAGS)'}
-    : ${CXX_DEPEND='$(CXX) -M -MP $(CPPFLAGS)'}
+    : ${C_DEPEND='$(CC) -M -MP $(CPPFLAGS) $(CFLAGS)'}
+    : ${CXX_DEPEND='$(CXX) -M -MP $(CPPFLAGS) $(CXXFLAGS)'}
   elif test "$MAC_C_COMP" = "intel" ; then
-    : ${C_DEPEND='$(CC) -M $(CPPFLAGS)'}
-    : ${CXX_DEPEND='$(CXX) -M $(CPPFLAGS)'}
+    : ${C_DEPEND='$(CC) -M $(CPPFLAGS) $(CFLAGS)'}
+    : ${CXX_DEPEND='$(CXX) -M $(CPPFLAGS) $(CXXFLAGS)'}
   else
     : ${C_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'}
     : ${CXX_DEPEND='$(PERL) $(CCTK_HOME)/lib/sbin/cpp.pl -M $(CPPFLAGS)'}

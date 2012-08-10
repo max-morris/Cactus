@@ -76,8 +76,8 @@ else
   fi
 
   # /lib/cpp cannot generate dependencies on this machine but we have gcc.
-  : ${C_DEPEND='gcc -E -M $(CPPFLAGS)'}
-  : ${CXX_DEPEND='$(C_DEPEND)'}
+  : ${C_DEPEND='gcc -E -M $(CPPFLAGS) $(CFLAGS)'}
+  : ${CXX_DEPEND='$(C_DEPEND) $(CXXFLAGS)'}
   : ${F_DEPEND='$(C_DEPEND) -x c'}
   : ${F77_DEPEND='$(F_DEPEND)'}
 

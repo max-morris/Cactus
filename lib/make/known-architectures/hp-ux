@@ -17,8 +17,8 @@ else
 
   : ${LIBS="cl F90 m"}
   : ${LIBDIRS="/opt/fortran90/lib/"}
-  : ${C_DEPEND='$(CPP) -M$@ $(CPPFLAGS)'}
-  : ${CXX_DEPEND='$(CPP) -M$@ $(CPPFLAGS)'}
+  : ${C_DEPEND='$(CPP) -M$@ $(CPPFLAGS) $(CFLAGS)'}
+  : ${CXX_DEPEND='$(CPP) -M$@ $(CPPFLAGS) $(CXXFLAGS)'}
   : ${F77_DEPEND='$(CPP) -M$@ $(CPPFLAGS)'}
   : ${C_DEPEND_OUT='> /dev/null'}
   : ${CXX_DEPEND_OUT='> /dev/null'}
