@@ -32,3 +32,4 @@
 27 Jun 2011: Add HAVE_SCHED_H
 01 May 2012: Add OpenCL support
 15 Jul 2012: Correct error in determining make dependencies
+09 Aug 2012: Take CFLAGS/CXXFLAGS into account when determining dependencies
