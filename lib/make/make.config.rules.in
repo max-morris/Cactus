@@ -67,11 +67,13 @@ endif
 # object file.
 ifeq ($(strip $(PERL_BACKUP_NECESSARY)),)
 define DEPENDENCY_FIXER
-	$(PERL) -pi -e 's{^\s*\Q$(basename $(basename $@)).o\E\s*:}{$(basename $@).o $(basename $@).d:}' $@
+	$(PERL) -pi -e 's{^\s*\Q$(basename $(basename $@)).o\E\s*:}{$(basename $@).o $(basename $@).d:};\
+                        s{\s+\S*[/\\]($(DEP_EXCLUDE_FILES))\b}{}g' $@
 endef
 else
 define DEPENDENCY_FIXER
-	$(PERL) -pi.bak -e 's{^\Q$(basename $(basename $@)).o:\E}{$(basename $@).o $(basename $@).d:}' $@
+	$(PERL) -pi.bak -e 's{^\Q$(basename $(basename $@)).o:\E}{$(basename $@).o $(basename $@).d:}\
+                            s{\s+\S*[/\\]($(DEP_EXCLUDE_FILES))\b}{}g' $@
 	rm $@.bak
 endef
 endif
