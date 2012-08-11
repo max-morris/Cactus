@@ -11422,7 +11422,7 @@ const cFunctionData *CCTK_ScheduleQueryCurrentFunction(const cGH *GH)
 \begin{verbatim}
 #include <stdio.h>
 #include "cctk.h"
-const cFunctionData *fdata = CCTK_QueryScheduledFunction(cctkGH);
+const cFunctionData *fdata = CCTK_ScheduleQueryCurrentFunction(cctkGH);
 printf("scheduled function: %s::%s AT %s\n",
        fdata->thorn, fdata->routine, fdata->where);
 \end{verbatim}
@@ -12425,8 +12425,20 @@ invalid token in traversed string found
 \begin{Synopsis}{C}
 \begin{verbatim}void * ptr = CCTK_VarDataPtr( const cGH * cctkGH, int timelevel, char * name)\end{verbatim}
 \end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_VarDataPtr(ptr, cctkGH, timelevel, varname)
+                     CCTK_POINTER vardataptr
+                     CCTK_POINTER_TO_CONST cctkGH
+                     integer timelevel
+                     character*(*) varname
+\end{verbatim}
+\end{Synopsis}
 \end{SynopsisSection}
 \begin{ParameterSection}
+\begin{Parameter}{ptr}
+a void pointer to the grid variable data
+\end{Parameter}
 \begin{Parameter}{cctkGH}
 pointer to CCTK grid hierarchy
 \end{Parameter}
@@ -12446,6 +12458,14 @@ The variable name should be in the form \code{<implementation>::<variable>}.
 myVar = (CCTK_REAL *)(CCTK_VarDataPtr(GH,0,"imp::realvar"))
 \end{verbatim}
 \end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+CCTK_REAL, dimension(cctk_ash(1),cctk_ash(2),cctk_ash(3)) :: var
+CCTK_POINTER myVar
+pointer (myVar, var)
+call CCTK_VarDataPtr(myVar,GH,0,"imp::realvar")
+\end{verbatim}
+\end{Example}
 \end{ExampleSection}
 \end{FunctionDescription}
 
@@ -12461,7 +12481,7 @@ myVar = (CCTK_REAL *)(CCTK_VarDataPtr(GH,0,"imp::realvar"))
 a void pointer to the grid variable data
 \end{Parameter}
 \begin{Parameter}{cctkGH}
-
+pointer to CCTK grid hierarchy
 \end{Parameter}
 \begin{Parameter}{timelevel}
 The timelevel of the grid variable
@@ -12492,6 +12512,15 @@ myVar = (CCTK_REAL *)(CCTK_VarDataPtrB(GH,0,CCTK_VarIndex("imp::realvar"),NULL))
 \begin{Synopsis}{C}
 \begin{verbatim}void * ptr = CCTK_VarDataPtrI( const cGH * cctkGH, int timelevel, int index)\end{verbatim}
 \end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_VarDataPtrI(ptr, cctkGH, timelevel, index)
+                      CCTK_POINTER vardataptr
+                      CCTK_POINTER_TO_CONST cctkGH
+                      integer timelevel
+                      integer index
+\end{verbatim}
+\end{Synopsis}
 \end{SynopsisSection}
 \begin{ParameterSection}
 \begin{Parameter}{cctkGH}
@@ -12509,6 +12538,14 @@ The index of the variable
 \begin{Example}{C}
 \begin{verbatim}
 myVar = (CCTK_REAL *)(CCTK_VarDataPtr(GH,0,CCTK_VarIndex("imp::realvar")));
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+CCTK_REAL, dimension(cctk_ash(1),cctk_ash(2),cctk_ash(3)) :: var
+CCTK_POINTER myVar
+pointer (myVar, var)
+call CCTK_VarDataPtr(myVar,GH,0,CCTK_VarIndex("imp::realvar"))
 \end{verbatim}
 \end{Example}
 \end{ExampleSection}
