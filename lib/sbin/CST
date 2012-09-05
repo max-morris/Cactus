@@ -665,6 +665,7 @@ sub  CheckCrossConsistency
       if ( $flag==0 )
       {
         $restricted = join(' ',sort(split(' ', $parameterDB->{"\U$thorn\E RESTRICTED variables"})));
+        $thorn0 = $thorn;
         $flag =1;
       }
 
@@ -675,9 +676,82 @@ sub  CheckCrossConsistency
         {
           CST_error (0, "Thorns: " . $interfaceDB->{"IMPLEMENTATION \U$implementation\E THORNS"} . "provide the same implementation but have different restricted parameters" );          
         }
+        $vflag = 0;
+        $variables = "";
+        foreach $variable (split(' ', $restricted))
+        {
+          if ( !&CompareValues($parameterDB, $thorn0, $thorn, $variable) )
+          {
+            $vflag = 1;
+            $variables .= ($variables ? ", " : "") . $variable;
+          }
+        }
+        if ( $vflag==1 )
+        {
+          CST_error (0, "Thorns: " . $interfaceDB->{"IMPLEMENTATION \U$implementation\E THORNS"} . "provide the same implementation but have different default values for restricted parameters $variables" );
+        }
       }
     }
   }
   return "";
 }
  
+#/*@@
+#  @routine    CompareValues
+#  @date       
+#  @author     Roland Haas
+#  @desc
+#  Compare two Parameter values taking Cactus' interpration of strings into
+#  account 
+#  @enddesc
+#@@*/
+sub  CompareValues
+{
+  my($parameter_db, $thorn1, $thorn2, $variable) = @_;
+  my($retval) = 1;
+
+  # we check that types and values aggree between the thorns
+  # this assumes that the values are valid for their type
+  $retval = $parameter_db->{"\U$thorn1 $variable\E type"} == $parameter_db->{"\U$thorn2 $variable\E type"};
+
+  if ( $retval )
+  {
+    $default1 = $parameter_db->{"\U$thorn1 $variable\E default"};
+    $default2 = $parameter_db->{"\U$thorn2 $variable\E default"};
+
+    # canonicalize default values
+    if ($parameter_db->{"\U$thorn1 $variable\E type"} =~ /BOOLEAN/)
+    {
+      $default1 = $default1 =~ m:^yes|y|1|t|true$:i;
+      $default2 = $default2 =~ m:^yes|y|1|t|true$:i;
+    }
+    elsif ($parameter_db->{"\U$thorn1 $variable\E type"} =~ /KEYWORD/)
+    {
+      $default1 = lc ( $default1 );
+      $default2 = lc ( $default2 );
+    }
+    elsif ($parameter_db->{"\U$thorn1 $variable\E type"} =~ /STRING/)
+    {
+      $default1 = lc ( $default1 );
+      $default2 = lc ( $default2 );
+    }
+    elsif ($parameter_db->{"\U$thorn1 $variable\E type"} =~ /INT/)
+    {
+      $default1 = int ( $default1 );
+      $default2 = int ( $default2 );
+    }
+    elsif ($parameter_db->{"\U$thorn1 $variable\E type"} =~ /REAL/)
+    {
+      $default1 = $default1 + 0.;
+      $default2 = $default2 + 0.;
+    }
+    else
+    {
+      &CST_error(0, "Unknown parameter type " . $parameter_db->{"\U$thorn1 $variable\E type"} . " in thorn $thorn1");
+    }
+    
+    $retval = $default1 == $default2;
+  }
+
+  return $retval;
+}
