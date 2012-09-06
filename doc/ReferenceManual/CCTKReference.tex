@@ -12365,7 +12365,7 @@ int err = CCTK_TraverseString(traverse_string, callback, callback_arg,
    \begin{Parameter} {const char * traverse\_string}
    List of variable and/or group names
    \end{Parameter}
-   \begin{Parameter} {int (*callback) (int idx, const char *optstring, void *callback\_arg)}
+   \begin{Parameter} {void (*callback) (int idx, const char *optstring, void *callback\_arg)}
    Routine to call for every variable and/or group found. \code{idx} is the
    Cactus variable index, \code{optstring} is the optional `\verb|{}|'
    enclosed option string after the variable name, and \code{callback\_arg} is
@@ -12375,7 +12375,9 @@ int err = CCTK_TraverseString(traverse_string, callback, callback_arg,
    An arbitrary argument which gets passed to the callback routine
    \end{Parameter}
    \begin{Parameter} {int selection}
-   Decides whether group and/or variable names are accepted in the string
+   Decides whether group and/or variable names are accepted in the string.
+   Possible values are: \code{CCTK\_VAR}, \code{CCTK\_GROUP} or
+   \code{CCTK\_GROUP\_OR\_VAR}.
    \end{Parameter}
 \end{ParameterSection}
 
