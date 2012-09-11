@@ -517,8 +517,8 @@ sub CreateThornsHeaders
     # Ignore the main sources for the other headers - they may confuse
     next if ($thorn eq 'Cactus');
 
-    $header1 .= "\"$1/$2\",\n";
-    $header2 .= "#define \U$1_$2\E\n";
+    $header1 .= "\"${arr}/${th}\",\n";
+    $header2 .= "#define \U${arr}_${th}\E\n";
 
     $nthorns++;
   }
