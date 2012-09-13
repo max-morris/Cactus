@@ -125,7 +125,7 @@
                                istr) \
   do { \
     typedef int cctki2_loop1_interior_##name; \
-    cGH const *CCTK_RESTRICT const cctki2_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki2_cctkGH = (cctkGH); \
     if (cctki2_cctkGH->cctk_dim != 1) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -176,7 +176,7 @@
                                  istr) \
   do { \
     typedef int cctki2_loop1_boundaries_##name; \
-    cGH const *CCTK_RESTRICT const cctki2_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki2_cctkGH = (cctkGH); \
     if (cctki2_cctkGH->cctk_dim != 1) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -247,7 +247,7 @@
                                     istr) \
   do { \
     typedef int cctki2_loop1_intboundaries_##name; \
-    cGH const *CCTK_RESTRICT const cctki2_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki2_cctkGH = (cctkGH); \
     if (cctki2_cctkGH->cctk_dim != 1) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -305,7 +305,7 @@
                           istr) \
   do { \
     typedef int cctki3_loop1_all_##name; \
-    cGH const *CCTK_RESTRICT const cctki3_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki3_cctkGH = (cctkGH); \
     if (cctki3_cctkGH->cctk_dim != 1) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -341,7 +341,7 @@
                           istr) \
   do { \
     typedef int cctki3_loop1_int_##name; \
-    cGH const *CCTK_RESTRICT const cctki3_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki3_cctkGH = (cctkGH); \
     if (cctki3_cctkGH->cctk_dim != 1) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -387,7 +387,7 @@
                           istr) \
   do { \
     typedef int cctki3_loop1_bnd_##name; \
-    cGH const *CCTK_RESTRICT const cctki3_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki3_cctkGH = (cctkGH); \
     if (cctki3_cctkGH->cctk_dim != 1) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -436,7 +436,7 @@
                               istr) \
   do { \
     typedef int cctki3_loop1_intbnd_##name; \
-    cGH const *CCTK_RESTRICT const cctki3_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki3_cctkGH = (cctkGH); \
     if (cctki3_cctkGH->cctk_dim != 1) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -761,7 +761,7 @@
                                istr) \
   do { \
     typedef int cctki2_loop2_interior_##name; \
-    cGH const *CCTK_RESTRICT const cctki2_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki2_cctkGH = (cctkGH); \
     if (cctki2_cctkGH->cctk_dim != 2) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -814,7 +814,7 @@
                                  istr) \
   do { \
     typedef int cctki2_loop2_boundaries_##name; \
-    cGH const *CCTK_RESTRICT const cctki2_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki2_cctkGH = (cctkGH); \
     if (cctki2_cctkGH->cctk_dim != 2) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -891,7 +891,7 @@
                                     istr) \
   do { \
     typedef int cctki2_loop2_intboundaries_##name; \
-    cGH const *CCTK_RESTRICT const cctki2_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki2_cctkGH = (cctkGH); \
     if (cctki2_cctkGH->cctk_dim != 2) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -956,7 +956,7 @@
                           istr) \
   do { \
     typedef int cctki3_loop2_all_##name; \
-    cGH const *CCTK_RESTRICT const cctki3_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki3_cctkGH = (cctkGH); \
     if (cctki3_cctkGH->cctk_dim != 2) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -994,7 +994,7 @@
                           istr) \
   do { \
     typedef int cctki3_loop2_int_##name; \
-    cGH const *CCTK_RESTRICT const cctki3_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki3_cctkGH = (cctkGH); \
     if (cctki3_cctkGH->cctk_dim != 2) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -1040,7 +1040,7 @@
                           istr) \
   do { \
     typedef int cctki3_loop2_bnd_##name; \
-    cGH const *CCTK_RESTRICT const cctki3_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki3_cctkGH = (cctkGH); \
     if (cctki3_cctkGH->cctk_dim != 2) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -1089,7 +1089,7 @@
                               istr) \
   do { \
     typedef int cctki3_loop2_intbnd_##name; \
-    cGH const *CCTK_RESTRICT const cctki3_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki3_cctkGH = (cctkGH); \
     if (cctki3_cctkGH->cctk_dim != 2) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -1425,7 +1425,7 @@
                                istr) \
   do { \
     typedef int cctki2_loop3_interior_##name; \
-    cGH const *CCTK_RESTRICT const cctki2_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki2_cctkGH = (cctkGH); \
     if (cctki2_cctkGH->cctk_dim != 3) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -1480,7 +1480,7 @@
                                  istr) \
   do { \
     typedef int cctki2_loop3_boundaries_##name; \
-    cGH const *CCTK_RESTRICT const cctki2_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki2_cctkGH = (cctkGH); \
     if (cctki2_cctkGH->cctk_dim != 3) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -1563,7 +1563,7 @@
                                     istr) \
   do { \
     typedef int cctki2_loop3_intboundaries_##name; \
-    cGH const *CCTK_RESTRICT const cctki2_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki2_cctkGH = (cctkGH); \
     if (cctki2_cctkGH->cctk_dim != 3) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -1635,7 +1635,7 @@
                           istr) \
   do { \
     typedef int cctki3_loop3_all_##name; \
-    cGH const *CCTK_RESTRICT const cctki3_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki3_cctkGH = (cctkGH); \
     if (cctki3_cctkGH->cctk_dim != 3) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -1675,7 +1675,7 @@
                           istr) \
   do { \
     typedef int cctki3_loop3_int_##name; \
-    cGH const *CCTK_RESTRICT const cctki3_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki3_cctkGH = (cctkGH); \
     if (cctki3_cctkGH->cctk_dim != 3) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -1721,7 +1721,7 @@
                           istr) \
   do { \
     typedef int cctki3_loop3_bnd_##name; \
-    cGH const *CCTK_RESTRICT const cctki3_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki3_cctkGH = (cctkGH); \
     if (cctki3_cctkGH->cctk_dim != 3) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -1770,7 +1770,7 @@
                               istr) \
   do { \
     typedef int cctki3_loop3_intbnd_##name; \
-    cGH const *CCTK_RESTRICT const cctki3_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki3_cctkGH = (cctkGH); \
     if (cctki3_cctkGH->cctk_dim != 3) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -2117,7 +2117,7 @@
                                istr) \
   do { \
     typedef int cctki2_loop4_interior_##name; \
-    cGH const *CCTK_RESTRICT const cctki2_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki2_cctkGH = (cctkGH); \
     if (cctki2_cctkGH->cctk_dim != 4) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -2174,7 +2174,7 @@
                                  istr) \
   do { \
     typedef int cctki2_loop4_boundaries_##name; \
-    cGH const *CCTK_RESTRICT const cctki2_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki2_cctkGH = (cctkGH); \
     if (cctki2_cctkGH->cctk_dim != 4) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -2263,7 +2263,7 @@
                                     istr) \
   do { \
     typedef int cctki2_loop4_intboundaries_##name; \
-    cGH const *CCTK_RESTRICT const cctki2_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki2_cctkGH = (cctkGH); \
     if (cctki2_cctkGH->cctk_dim != 4) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -2342,7 +2342,7 @@
                           istr) \
   do { \
     typedef int cctki3_loop4_all_##name; \
-    cGH const *CCTK_RESTRICT const cctki3_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki3_cctkGH = (cctkGH); \
     if (cctki3_cctkGH->cctk_dim != 4) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -2384,7 +2384,7 @@
                           istr) \
   do { \
     typedef int cctki3_loop4_int_##name; \
-    cGH const *CCTK_RESTRICT const cctki3_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki3_cctkGH = (cctkGH); \
     if (cctki3_cctkGH->cctk_dim != 4) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -2430,7 +2430,7 @@
                           istr) \
   do { \
     typedef int cctki3_loop4_bnd_##name; \
-    cGH const *CCTK_RESTRICT const cctki3_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki3_cctkGH = (cctkGH); \
     if (cctki3_cctkGH->cctk_dim != 4) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
@@ -2479,7 +2479,7 @@
                               istr) \
   do { \
     typedef int cctki3_loop4_intbnd_##name; \
-    cGH const *CCTK_RESTRICT const cctki3_cctkGH = (cctkGH); \
+    cGH const *restrict const cctki3_cctkGH = (cctkGH); \
     if (cctki3_cctkGH->cctk_dim != 4) { \
       _Pragma("omp critical") \
       CCTK_WARN(CCTK_WARN_ABORT, \
