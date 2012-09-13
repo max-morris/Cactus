@@ -150,7 +150,9 @@ extern int _getopt_internal (int __argc, char *const *__argv,
 			     int __long_only);
 # endif
 #else /* not __STDC__ */
-extern int getopt ();
+/* The declaration below leads to a prototype mismatch with
+   IBM XL C/C++ for AIX, V11.1 (5724-X13), Version: 11.01.0000.0005 */
+/* extern int getopt (); */
 # ifndef __need_getopt
 extern int getopt_long ();
 extern int getopt_long_only ();
