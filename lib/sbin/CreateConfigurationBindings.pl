@@ -211,17 +211,17 @@ sub CreateConfigurationBindings
 
   # write cctk_Capabilities.h file to bindings/include
   # this file adds the if_i_am_thorn stuff
-  $temp = '';
   foreach $thorn (sort keys %thorns)
   {
+    $temp = '';
     if ($cfg->{"\U$thorn\E REQUIRES"})
     {
       $temp .= "#include \"../Configuration/Thorns/cctki_$thorn.h\"\n";
-      $temp .= "\n";
     }
     &WriteFile("../include/$thorn/cctk_Capabilities.h",\$temp);
   }
-  &WriteFile("../include/CactusBindings/cctk_Capabilities.h","#include \"../Configuration/Thorns/cctki_Cactus.h\"\n\n");
+  &WriteFile("../include/CactusBindings/cctk_Capabilities.h",
+             "#include \"../Configuration/Thorns/cctki_Cactus.h\"\n");
 }
 
 return 1;
