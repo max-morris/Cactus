@@ -585,7 +585,7 @@ sub InitialiseRunData
   my(%runconfig);
 
   $runconfig{"ABSTOL"} = 1e-12;
-  $runconfig{"RELTOL"} = 0;
+  $runconfig{"RELTOL"} = 1e-12;
 
   return %runconfig;
 }
