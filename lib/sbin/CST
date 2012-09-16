@@ -231,6 +231,15 @@ sub CreateThornList
       $package = $1;
       $thorn_name = $2;
 
+      # Check valid arrangement name
+      if (!TestName(1,$package))
+      {
+        &CST_error(0, "Arrangement name $package is not valid",
+                   'Arrangement names must begin with a letter, can only contain ' .
+                   'letters, numbers and underscores, and must contain at most 27 ' .
+                   'characters', __LINE__, __FILE__);
+      }
+
       # Check valid thornname
       if (!TestName(1,$thorn_name))
       {
