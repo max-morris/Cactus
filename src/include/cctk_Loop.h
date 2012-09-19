@@ -3,7 +3,7 @@
 
 /* WARNING: This file is auto-generated. Do not edit. */
 /* Edit cctk_Loop.h.pl instead, and then re-generate this file via */
-/*    perl cctk_Loop.h.pl.pl */
+/*    perl cctk_Loop.h.pl */
 /* Documentation can also be found in "cctk_Loop.h.pl". */
 
 #ifdef CCODE
@@ -186,7 +186,7 @@
     int const cctki2_bhi[] = { (ibhi) }; \
     int const cctki2_bbox[] = { (ibboxlo), (ibboxhi) }; \
     int const cctki2_lsh[] = { cctki2_cctkGH->cctk_lsh[0] }; \
-    int const cctki2_istr1 CCTK_ATTRIBUTE_UNUSED = (istr); \
+    int const cctki2_istr CCTK_ATTRIBUTE_UNUSED = (istr); \
     /* Loop over all faces, edges, and corners */ \
     for (int cctki2_idir=-1; cctki2_idir<=+1; ++cctki2_idir) { \
       int cctki2_any_bbox = \
@@ -205,7 +205,7 @@
                              cctki2_bmin[0], \
                              cctki2_bmax[0], \
                              cctki2_cctkGH->cctk_ash[0], \
-                             cctki2_istr1) { \
+                             cctki2_istr) { \
 
 #define CCTK_ENDLOOP1STR_BOUNDARIES(name) \
         } CCTK_ENDLOOP1STR_NORMAL(name##_boundaries); \
@@ -257,7 +257,7 @@
     int const cctki2_bhi[] = { (ibhi) }; \
     int const cctki2_bbox[] = { (ibboxlo), (ibboxhi) }; \
     int const cctki2_lsh[] = { cctki2_cctkGH->cctk_lsh[0] }; \
-    int const cctki2_istr1 CCTK_ATTRIBUTE_UNUSED = (istr); \
+    int const cctki2_istr CCTK_ATTRIBUTE_UNUSED = (istr); \
     /* Loop over all faces, edges, and corners */ \
     for (int cctki2_idir=-1; cctki2_idir<=+1; ++cctki2_idir) { \
       int cctki2_any_bbox = \
@@ -278,7 +278,7 @@
                              cctki2_bmin[0], \
                              cctki2_bmax[0], \
                              cctki2_cctkGH->cctk_ash[0], \
-                             cctki2_istr1) { \
+                             cctki2_istr) { \
 
 #define CCTK_ENDLOOP1STR_INTBOUNDARIES(name) \
         } CCTK_ENDLOOP1STR_NORMAL(name##_intboundaries); \
@@ -472,24 +472,91 @@
 
 /* LOOP */
 
+#define CCTK_LOOP1_NORMAL_DECLARE(name) \
+   CCTK_LOOP1STR_NORMAL_DECLARE(name) \
+
+#define CCTK_LOOP1_NORMAL_OMP_PRIVATE(name) \
+   CCTK_LOOP1STR_NORMAL_OMP_PRIVATE(name) \
+
+#define CCTK_LOOP1_NORMAL(name, \
+                          i, \
+                          ni, \
+                          idir, \
+                          imin, \
+                          imax, \
+                          iash) \
+   CCTK_LOOP1STR_NORMAL(name, \
+                        i, \
+                        ni, \
+                        idir, \
+                        imin, \
+                        imax, \
+                        iash, \
+                        1) \
+
+#define CCTK_ENDLOOP1_NORMAL(name) \
+   CCTK_ENDLOOP1STR_NORMAL(name) \
+
+#define CCTK_LOOP1STR_NORMAL_DECLARE(name) \
+   && integer :: name/**/0_idir \
+   && integer :: name/**/0_imin \
+   && integer :: name/**/0_imax \
+   && integer :: name/**/0_istr \
+
+#define CCTK_LOOP1STR_NORMAL_OMP_PRIVATE(name) \
+   && !$omp private (i) \
+   && !$omp private (ni) \
+
+#define CCTK_LOOP1STR_NORMAL(name, \
+                             i, \
+                             ni, \
+                             idir, \
+                             imin, \
+                             imax, \
+                             iash, \
+                             istr) \
+   && name/**/0_idir = idir \
+   && name/**/0_imin = imin \
+   && name/**/0_imax = imax \
+   && name/**/0_istr = istr \
+   && !$omp do \
+   && do i = name/**/0_imin, name/**/0_imax \
+   &&    if (name/**/0_idir< 0) ni = i \
+   &&    if (name/**/0_idir==0) ni = 0 \
+   &&    if (name/**/0_idir> 0) ni = name/**/0_imax+1-i \
+
+#define CCTK_ENDLOOP1STR_NORMAL(name) \
+   && end do \
+
+
+
 #define CCTK_LOOP1_DECLARE(name) \
-   && integer :: name/**/_imin \
-   && integer :: name/**/_imax \
-   && integer :: name/**/_istr \
+   CCTK_LOOP1STR_DECLARE(name) \
 
 #define CCTK_LOOP1_OMP_PRIVATE(name) \
+   CCTK_LOOP1STR_OMP_PRIVATE(name) \
 
 #define CCTK_LOOP1(name, \
                    i, \
                    imin, \
                    imax, \
                    iash) \
-  CCTK_LOOP1STR(name, \
-             i, \
-             imin, \
-             imax, \
-             iash, \
-             1) \
+   CCTK_LOOP1STR(name, \
+                 i, \
+                 imin, \
+                 imax, \
+                 iash, \
+                 1) \
+
+#define CCTK_ENDLOOP1(name) \
+   CCTK_ENDLOOP1STR(name) \
+
+#define CCTK_LOOP1STR_DECLARE(name) \
+   CCTK_LOOP1STR_NORMAL_DECLARE(name) \
+   && integer :: name/**/1_ni \
+
+#define CCTK_LOOP1STR_OMP_PRIVATE(name) \
+   CCTK_LOOP1STR_NORMAL_OMP_PRIVATE(name) \
 
 #define CCTK_LOOP1STR(name, \
                       i, \
@@ -497,149 +564,415 @@
                       imax, \
                       iash, \
                       istr) \
-   && name/**/_imin = imin \
-   && name/**/_imax = imax \
-   && name/**/_istr = istr \
-   && do i = name/**/_imin, name/**/_imax \
-
-#define CCTK_ENDLOOP1(name) \
-  CCTK_ENDLOOP1STR(name) \
+   CCTK_LOOP1STR_NORMAL(name, \
+                        i, \
+                        name/**/1_ni, \
+                        0, \
+                        imin, \
+                        imax, \
+                        iash, \
+                        istr) \
 
 #define CCTK_ENDLOOP1STR(name) \
-   && end do \
-
-
-
-/* LOOP_ALL */
-
-#define CCTK_LOOP1_ALL_DECLARE(name) \
-   CCTK_LOOP1_DECLARE(name) \
-
-#define CCTK_LOOP1_ALL_OMP_PRIVATE(name) \
-   CCTK_LOOP1_OMP_PRIVATE(name) \
-
-#define CCTK_LOOP1_ALL(name, \
-                       i) \
-  CCTK_LOOP1STR_ALL(name, \
-                 i, \
-                 1) \
-
-#define CCTK_LOOP1STR_ALL(name, \
-                          i, \
-                          istr) \
-   CCTK_LOOP1STR(name, \
-                 i, \
-                 1, \
-                 cctk_lsh(1), \
-                 cctk_ash(1), \
-                 istr) \
-
-#define CCTK_ENDLOOP1_ALL(name) \
-  CCTK_ENDLOOP1STR_ALL(name) \
-
-#define CCTK_ENDLOOP1STR_ALL(name) \
-   CCTK_ENDLOOP1(name) \
+   CCTK_ENDLOOP1STR_NORMAL(name) \
 
 
 
 /* LOOP_INTERIOR */
 
 #define CCTK_LOOP1_INTERIOR_DECLARE(name) \
-   CCTK_LOOP1_DECLARE(name) \
+   CCTK_LOOP1STR_INTERIOR_DECLARE(name) \
 
 #define CCTK_LOOP1_INTERIOR_OMP_PRIVATE(name) \
-   CCTK_LOOP1_OMP_PRIVATE(name) \
+   CCTK_LOOP1STR_INTERIOR_OMP_PRIVATE(name) \
 
 #define CCTK_LOOP1_INTERIOR(name, \
                             i, \
                             iblo, \
                             ibhi) \
-  CCTK_LOOP1STR_INTERIOR(name, \
-                      i, \
-                      iblo, \
-                      ibhi, \
-                      1) \
+   CCTK_LOOP1STR_INTERIOR(name, \
+                          i, \
+                          iblo, \
+                          ibhi, \
+                          1) \
+
+#define CCTK_ENDLOOP1_INTERIOR(name) \
+   CCTK_ENDLOOP1STR_INTERIOR(name) \
+
+#define CCTK_LOOP1STR_INTERIOR_DECLARE(name) \
+   CCTK_LOOP1STR_DECLARE(name/**/_interior) \
+
+#define CCTK_LOOP1STR_INTERIOR_OMP_PRIVATE(name) \
+   CCTK_LOOP1STR_OMP_PRIVATE(name/**/_interior) \
 
 #define CCTK_LOOP1STR_INTERIOR(name, \
                                i, \
                                iblo, \
                                ibhi, \
                                istr) \
-   CCTK_LOOP1STR(name, \
+   CCTK_LOOP1STR(name/**/_interior, \
                  i, \
-                 (iblo), \
+                 (iblo)+1, \
                  cctk_lsh(1)-(ibhi), \
                  cctk_ash(1), \
                  istr) \
 
-#define CCTK_ENDLOOP1_INTERIOR(name) \
-  CCTK_ENDLOOP1STR_INTERIOR(name) \
-
 #define CCTK_ENDLOOP1STR_INTERIOR(name) \
-   CCTK_ENDLOOP1(name) \
+   CCTK_ENDLOOP1STR(name/**/_interior) \
 
 
 
 /* LOOP_BOUNDARIES */
 
 #define CCTK_LOOP1_BOUNDARIES_DECLARE(name) \
-   CCTK_LOOP1_DECLARE(name) \
-   && integer :: lc_bmin(1), lc_bmax(1) \
-   && integer :: lc_blo(1), lc_bhi(1) \
-   && integer :: lc_istr \
-   && integer :: lc_dir, lc_face \
-   && integer :: lc_d \
+   CCTK_LOOP1STR_BOUNDARIES_DECLARE(name) \
 
 #define CCTK_LOOP1_BOUNDARIES_OMP_PRIVATE(name) \
-   CCTK_LOOP1_OMP_PRIVATE(name) \
+   CCTK_LOOP1STR_BOUNDARIES_OMP_PRIVATE(name) \
 
 #define CCTK_LOOP1_BOUNDARIES(name, \
                               i, \
+                              ni, \
                               iblo, \
-                              ibhi) \
-  CCTK_LOOP1STR_BOUNDARIES(name, \
-                        i, \
-                        iblo, \
-                        ibhi, \
-                        1) \
+                              ibhi, \
+                              ibboxlo, \
+                              ibboxhi) \
+   CCTK_LOOP1STR_BOUNDARIES(name, \
+                            i, \
+                            ni, \
+                            iblo, \
+                            ibhi, \
+                            ibboxlo, \
+                            ibboxhi, \
+                            1) \
+
+#define CCTK_ENDLOOP1_BOUNDARIES(name) \
+   CCTK_ENDLOOP1STR_BOUNDARIES(name) \
+
+#define CCTK_LOOP1STR_BOUNDARIES_DECLARE(name) \
+   CCTK_LOOP1STR_NORMAL_DECLARE(name/**/_boundaries) \
+   && integer :: name/**/2_blo(1), name/**/2_bhi(1) \
+   && integer :: name/**/2_bboxlo(1), name/**/2_bboxhi(1) \
+   && integer :: name/**/2_istr \
+   && integer :: name/**/2_idir \
+   && logical :: name/**/2_any_bbox \
+   && integer :: name/**/2_bmin(1), name/**/2_bmax(1) \
+
+#define CCTK_LOOP1STR_BOUNDARIES_OMP_PRIVATE(name) \
+   CCTK_LOOP1STR_NORMAL_OMP_PRIVATE(name/**/_boundaries) \
 
 #define CCTK_LOOP1STR_BOUNDARIES(name, \
                                  i, \
+                                 ni, \
                                  iblo, \
                                  ibhi, \
+                                 ibboxlo, \
+                                 ibboxhi, \
                                  istr) \
-   && lc_blo = (/ iblo /) \
-   && lc_bhi = (/ ibhi /) \
-   && lc_istr = istr \
-   && do lc_dir=1,1 \
-   &&    do lc_face=1,2 \
-   &&       do lc_d=1,1 \
-   &&          lc_bmin(lc_d) = 1 \
-   &&          lc_bmax(lc_d) = cctk_lsh(lc_d) \
-   &&          if (lc_d<lc_dir) then \
-   &&             lc_bmin(lc_d) = lc_bmin(lc_d)+lc_blo(lc_d) \
-   &&             lc_bmax(lc_d) = lc_bmax(lc_d)-lc_bhi(lc_d) \
-   &&          end if \
-   &&       end do \
-   &&       if (lc_face==1) then \
-   &&          lc_bmax(lc_dir) = lc_bmin(lc_dir)+lc_blo(lc_dir) \
-   &&       else \
-   &&          lc_bmin(lc_dir) = lc_bmax(lc_dir)-lc_bhi(lc_dir) \
-   &&       end if \
-            CCTK_LOOP1STR(name, \
-                          i, \
-                          lc_bmin(1), \
-                          lc_bmax(1), \
-                          cctk_ash(1), \
-                          lc_istr) \
-
-#define CCTK_ENDLOOP1_BOUNDARIES(name) \
-  CCTK_ENDLOOP1STR_BOUNDARIES(name) \
+   && name/**/2_blo = (/ iblo /) \
+   && name/**/2_bhi = (/ ibhi /) \
+   && name/**/2_bboxlo = (/ ibboxlo /) \
+   && name/**/2_bboxhi = (/ ibboxhi /) \
+   && name/**/2_istr = (istr) \
+   && /* Loop over all faces, edges, and corners */ \
+   && do name/**/2_idir=-1, +1 \
+   &&     name/**/2_any_bbox = .false. \
+   &&     if (name/**/2_idir==-1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxlo(1) /= 0 \
+   &&     if (name/**/2_idir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(1) /= 0 \
+   &&    if (name/**/2_any_bbox) then \
+   &&       if (name/**/2_idir==-1) name/**/2_bmin(1) = 1 \
+   &&       if (name/**/2_idir== 0) name/**/2_bmin(1) = name/**/2_blo(1)+1 \
+   &&       if (name/**/2_idir==+1) name/**/2_bmin(1) = cctk_lsh(1) - name/**/2_bhi(1) \
+   &&       if (name/**/2_idir==-1) name/**/2_bmax(1) = name/**/2_blo(1) \
+   &&       if (name/**/2_idir== 0) name/**/2_bmax(1) = cctk_lsh(1) - name/**/2_bhi(1) \
+   &&       if (name/**/2_idir==+1) name/**/2_bmax(1) = cctk_lsh(1) \
+            CCTK_LOOP1STR_NORMAL(name/**/_boundaries, \
+                                 i, \
+                                 ni, \
+                                 name/**/2_idir, \
+                                 name/**/2_bmin(1), \
+                                 name/**/2_bmax(1), \
+                                 cctk_ash(1), \
+                                 name/**/2_istr) \
 
 #define CCTK_ENDLOOP1STR_BOUNDARIES(name) \
-            CCTK_ENDLOOP1(name) \
-   &&    end do /* face */ \
+            CCTK_ENDLOOP1STR_NORMAL(name/**/_boundaries) \
+   &&    end if /* bbox */ \
    && end do /* dir */ \
+
+
+
+/* LOOP_INTBOUNDARIES */
+
+#define CCTK_LOOP1_INTBOUNDARIES_DECLARE(name) \
+   CCTK_LOOP1STR_INTBOUNDARIES_DECLARE(name) \
+
+#define CCTK_LOOP1_INTBOUNDARIES_OMP_PRIVATE(name) \
+   CCTK_LOOP1STR_INTBOUNDARIES_OMP_PRIVATE(name) \
+
+#define CCTK_LOOP1_INTBOUNDARIES(name, \
+                                 i, \
+                                 ni, \
+                                 iblo, \
+                                 ibhi, \
+                                 ibboxlo, \
+                                 ibboxhi) \
+   CCTK_LOOP1STR_INTBOUNDARIES(name, \
+                               i, \
+                               ni, \
+                               iblo, \
+                               ibhi, \
+                               ibboxlo, \
+                               ibboxhi, \
+                               1) \
+
+#define CCTK_ENDLOOP1_INTBOUNDARIES(name) \
+   CCTK_ENDLOOP1STR_INTBOUNDARIES(name) \
+
+#define CCTK_LOOP1STR_INTBOUNDARIES_DECLARE(name) \
+   CCTK_LOOP1STR_NORMAL_DECLARE(name/**/_intboundaries) \
+   && integer :: name/**/2_blo(1), name/**/2_bhi(1) \
+   && integer :: name/**/2_bboxlo(1), name/**/2_bboxhi(1) \
+   && integer :: name/**/2_istr \
+   && integer :: name/**/2_idir \
+   && logical :: name/**/2_any_bbox,  name/**/2_all_bbox \
+   && integer :: name/**/2_bmin(1), name/**/2_bmax(1) \
+
+#define CCTK_LOOP1STR_INTBOUNDARIES_OMP_PRIVATE(name) \
+   CCTK_LOOP1STR_NORMAL_OMP_PRIVATE(name/**/_intboundaries) \
+
+#define CCTK_LOOP1STR_INTBOUNDARIES(name, \
+                                    i, \
+                                    ni, \
+                                    iblo, \
+                                    ibhi, \
+                                    ibboxlo, \
+                                    ibboxhi, \
+                                    istr) \
+   && name/**/2_blo = (/ iblo /) \
+   && name/**/2_bhi = (/ ibhi /) \
+   && name/**/2_bboxlo = (/ ibboxlo /) \
+   && name/**/2_bboxhi = (/ ibboxhi /) \
+   && name/**/2_istr = (istr) \
+   && /* Loop over all faces, edges, and corners */ \
+   && do name/**/2_idir=-1, +1 \
+   &&     name/**/2_any_bbox = .false. \
+   &&     if (name/**/2_idir==-1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxlo(1) /= 0 \
+   &&     if (name/**/2_idir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(1) /= 0 \
+   &&     name/**/2_all_bbox = .true. \
+   &&     if (name/**/2_idir==-1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxlo(1) /= 0 \
+   &&     if (name/**/2_idir==+1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxhi(1) /= 0 \
+   &&    if (name/**/2_all_bbox .and. name/**/2_any_bbox) then \
+   &&       if (name/**/2_idir==-1) name/**/2_bmin(1) = 1 \
+   &&       if (name/**/2_idir== 0) name/**/2_bmin(1) = name/**/2_blo(1)+1 \
+   &&       if (name/**/2_idir==+1) name/**/2_bmin(1) = cctk_lsh(1) - name/**/2_bhi(1) \
+   &&       if (name/**/2_idir==-1) name/**/2_bmax(1) = name/**/2_blo(1) \
+   &&       if (name/**/2_idir== 0) name/**/2_bmax(1) = cctk_lsh(1) - name/**/2_bhi(1) \
+   &&       if (name/**/2_idir==+1) name/**/2_bmax(1) = cctk_lsh(1) \
+            CCTK_LOOP1STR_NORMAL(name/**/_intboundaries, \
+                                 i, \
+                                 ni, \
+                                 name/**/2_idir, \
+                                 name/**/2_bmin(1), \
+                                 name/**/2_bmax(1), \
+                                 cctk_ash(1), \
+                                 name/**/2_istr) \
+
+#define CCTK_ENDLOOP1STR_INTBOUNDARIES(name) \
+            CCTK_ENDLOOP1STR_NORMAL(name/**/_intboundaries) \
+   &&    end if /* bbox */ \
+   && end do /* dir */ \
+
+
+
+/* LOOP_ALL */
+
+#define CCTK_LOOP1_ALL_DECLARE(name) \
+   CCTK_LOOP1STR_ALL_DECLARE(name) \
+
+#define CCTK_LOOP1_ALL_OMP_PRIVATE(name) \
+   CCTK_LOOP1STR_ALL_OMP_PRIVATE(name) \
+
+#define CCTK_LOOP1_ALL(name, \
+                       i) \
+   CCTK_LOOP1STR_ALL(name, \
+                     i, \
+                     1) \
+
+#define CCTK_ENDLOOP1_ALL(name) \
+   CCTK_ENDLOOP1STR_ALL(name) \
+
+#define CCTK_LOOP1STR_ALL_DECLARE(name) \
+   CCTK_LOOP1STR_DECLARE(name/**/_all) \
+
+#define CCTK_LOOP1STR_ALL_OMP_PRIVATE(name) \
+   CCTK_LOOP1STR_OMP_PRIVATE(name/**/_all) \
+
+#define CCTK_LOOP1STR_ALL(name, \
+                          i, \
+                          istr) \
+   CCTK_LOOP1STR(name/**/_all, \
+                 i, \
+                 1, \
+                 cctk_lsh(1), \
+                 cctk_ash(1), \
+                 istr) \
+
+#define CCTK_ENDLOOP1STR_ALL(name) \
+   CCTK_ENDLOOP1STR(name/**/_all) \
+
+
+
+/* LOOP_INT */
+
+#define CCTK_LOOP1_INT_DECLARE(name) \
+   CCTK_LOOP1STR_INT_DECLARE(name) \
+
+#define CCTK_LOOP1_INT_OMP_PRIVATE(name) \
+   CCTK_LOOP1STR_INT_OMP_PRIVATE(name) \
+
+#define CCTK_LOOP1_INT(name, \
+                        i) \
+   CCTK_LOOP1STR_INT(name, \
+                      i, \
+                      1) \
+
+#define CCTK_ENDLOOP1_INT(name) \
+   CCTK_ENDLOOP1STR_INT(name) \
+
+#define CCTK_LOOP1STR_INT_DECLARE(name) \
+   CCTK_LOOP1STR_INTERIOR_DECLARE(name/**/_int) \
+   && integer :: name/**/3_bndsize    (2) \
+   && integer :: name/**/3_is_ghostbnd(2) \
+   && integer :: name/**/3_is_symbnd  (2) \
+   && integer :: name/**/3_is_physbnd (2) \
+   && integer :: name/**/3_ierr \
+
+#define CCTK_LOOP1STR_INT_OMP_PRIVATE(name) \
+   CCTK_LOOP1STR_INTERIOR_OMP_PRIVATE(name/**/_int) \
+
+#define CCTK_LOOP1STR_INT(name, \
+                          i, \
+                          istr) \
+   && !$omp single \
+   && name/**/3_ierr = GetBoundarySizesAndTypes \
+         (cctkGH, 2, name/**/3_bndsize, name/**/3_is_ghostbnd, name/**/3_is_symbnd, name/**/3_is_physbnd) \
+   && !$omp end single copyprivate(name/**/3_bndsize) \
+      CCTK_LOOP1STR_INTERIOR(name/**/_int, \
+                             i, \
+                             name/**/3_bndsize(1+1), \
+                             name/**/3_bndsize(2), \
+                             (istr)) \
+
+#define CCTK_ENDLOOP1STR_INT(name) \
+      CCTK_ENDLOOP1STR_INTERIOR(name/**/int) \
+
+
+
+/* LOOP_BND */
+
+#define CCTK_LOOP1_BND_DECLARE(name) \
+   CCTK_LOOP1STR_BND_DECLARE(name) \
+
+#define CCTK_LOOP1_BND_OMP_PRIVATE(name) \
+   CCTK_LOOP1STR_BND_OMP_PRIVATE(name) \
+
+#define CCTK_LOOP1_BND(name, \
+                       i, \
+                       ni) \
+   CCTK_LOOP1STR_BND(name, \
+                     i, \
+                     ni, \
+                     1) \
+
+#define CCTK_ENDLOOP1_BND(name) \
+   CCTK_ENDLOOP1STR_BND(name) \
+
+#define CCTK_LOOP1STR_BND_DECLARE(name) \
+   CCTK_LOOP1STR_BOUNDARIES_DECLARE(name/**/_bnd) \
+   && integer :: name/**/3_bndsize    (2) \
+   && integer :: name/**/3_is_ghostbnd(2) \
+   && integer :: name/**/3_is_symbnd  (2) \
+   && integer :: name/**/3_is_physbnd (2) \
+   && integer :: name/**/3_ierr \
+
+#define CCTK_LOOP1STR_BND_OMP_PRIVATE(name) \
+   CCTK_LOOP1STR_BOUNDARIES_OMP_PRIVATE(name/**/_bnd) \
+
+#define CCTK_LOOP1STR_BND(name, \
+                          i, \
+                          ni, \
+                          istr) \
+   && !$omp single \
+   && name/**/3_ierr = GetBoundarySizesAndTypes \
+         (cctkGH, 2, name/**/3_bndsize, name/**/3_is_ghostbnd, name/**/3_is_symbnd, name/**/3_is_physbnd) \
+   && !$omp end single copyprivate(name/**/3_bndsize, name/**/3_is_physbnd) \
+      CCTK_LOOP1STR_BOUNDARIES(name/**/_bnd, \
+                               i, \
+                               ni, \
+                               name/**/3_bndsize(1)+1, \
+                               name/**/3_bndsize(2), \
+                               name/**/3_is_physbnd(1), \
+                               name/**/3_is_physbnd(2), \
+                               (istr)) \
+
+#define CCTK_ENDLOOP1STR_BND(name) \
+      CCTK_ENDLOOP1STR_BOUNDARIES(name/**/_bnd) \
+
+
+
+
+
+
+/* LOOP_INTBND */
+
+#define CCTK_LOOP1_INTBND_DECLARE(name) \
+   CCTK_LOOP1STR_INTBND_DECLARE(name) \
+
+#define CCTK_LOOP1_INTBND_OMP_PRIVATE(name) \
+   CCTK_LOOP1STR_INTBND_OMP_PRIVATE(name) \
+
+#define CCTK_LOOP1_INTBND(name, \
+                          i, \
+                          ni) \
+   CCTK_LOOP1STR_INTBND(name, \
+                        i, \
+                        ni, \
+                        1) \
+
+#define CCTK_ENDLOOP1_INTBND(name) \
+   CCTK_ENDLOOP1STR_INTBND(name) \
+
+#define CCTK_LOOP1STR_INTBND_DECLARE(name) \
+   CCTK_LOOP1STR_INTBOUNDARIES_DECLARE(name/**/_bnd) \
+   && integer :: name/**/3_bndsize    (2) \
+   && integer :: name/**/3_is_ghostbnd(2) \
+   && integer :: name/**/3_is_symbnd  (2) \
+   && integer :: name/**/3_is_physbnd (2) \
+   && integer :: name/**/3_ierr \
+
+#define CCTK_LOOP1STR_INTBND_OMP_PRIVATE(name) \
+   CCTK_LOOP1STR_INTBOUNDARIES_OMP_PRIVATE(name/**/_bnd) \
+
+#define CCTK_LOOP1STR_INTBND(name, \
+                             i, \
+                             ni, \
+                             istr) \
+   && !$omp single \
+   && name/**/3_ierr = GetBoundarySizesAndTypes \
+         (cctkGH, 2, name/**/3_bndsize, name/**/3_is_ghostbnd, name/**/3_is_symbnd, name/**/3_is_physbnd) \
+   && !$omp end single copyprivate(name/**/3_bndsize, name/**/3_is_physbnd) \
+      CCTK_LOOP1STR_INTBOUNDARIES(name/**/_bnd, \
+                                  i, \
+                                  ni, \
+                                  name/**/3_bndsize(1+1), \
+                                  name/**/3_bndsize(2), \
+                                  name/**/3_is_physbnd(1), \
+                                  name/**/3_is_physbnd(2), \
+                                  (istr)) \
+
+#define CCTK_ENDLOOP1STR_INTBND(name) \
+      CCTK_ENDLOOP1STR_INTBOUNDARIES(name/**/_bnd) \
 
 #endif /* #ifdef FCODE */
 
@@ -824,7 +1157,7 @@
     int const cctki2_bhi[] = { (ibhi),(jbhi) }; \
     int const cctki2_bbox[] = { (ibboxlo), (ibboxhi),(jbboxlo), (jbboxhi) }; \
     int const cctki2_lsh[] = { cctki2_cctkGH->cctk_lsh[0],cctki2_cctkGH->cctk_lsh[1] }; \
-    int const cctki2_istr1 CCTK_ATTRIBUTE_UNUSED = (istr); \
+    int const cctki2_istr CCTK_ATTRIBUTE_UNUSED = (istr); \
     /* Loop over all faces, edges, and corners */ \
     for (int cctki2_jdir=-1; cctki2_jdir<=+1; ++cctki2_jdir) { \
     for (int cctki2_idir=-1; cctki2_idir<=+1; ++cctki2_idir) { \
@@ -848,7 +1181,7 @@
                              cctki2_bmax[0],cctki2_bmax[1], \
                              cctki2_cctkGH->cctk_ash[0], \
                              cctki2_cctkGH->cctk_ash[1], \
-                             cctki2_istr1) { \
+                             cctki2_istr) { \
 
 #define CCTK_ENDLOOP2STR_BOUNDARIES(name) \
         } CCTK_ENDLOOP2STR_NORMAL(name##_boundaries); \
@@ -901,7 +1234,7 @@
     int const cctki2_bhi[] = { (ibhi),(jbhi) }; \
     int const cctki2_bbox[] = { (ibboxlo), (ibboxhi),(jbboxlo), (jbboxhi) }; \
     int const cctki2_lsh[] = { cctki2_cctkGH->cctk_lsh[0],cctki2_cctkGH->cctk_lsh[1] }; \
-    int const cctki2_istr1 CCTK_ATTRIBUTE_UNUSED = (istr); \
+    int const cctki2_istr CCTK_ATTRIBUTE_UNUSED = (istr); \
     /* Loop over all faces, edges, and corners */ \
     for (int cctki2_jdir=-1; cctki2_jdir<=+1; ++cctki2_jdir) { \
     for (int cctki2_idir=-1; cctki2_idir<=+1; ++cctki2_idir) { \
@@ -928,7 +1261,7 @@
                              cctki2_bmax[0],cctki2_bmax[1], \
                              cctki2_cctkGH->cctk_ash[0], \
                              cctki2_cctkGH->cctk_ash[1], \
-                             cctki2_istr1) { \
+                             cctki2_istr) { \
 
 #define CCTK_ENDLOOP2STR_INTBOUNDARIES(name) \
         } CCTK_ENDLOOP2STR_NORMAL(name##_intboundaries); \
@@ -1125,24 +1458,99 @@
 
 /* LOOP */
 
+#define CCTK_LOOP2_NORMAL_DECLARE(name) \
+   CCTK_LOOP2STR_NORMAL_DECLARE(name) \
+
+#define CCTK_LOOP2_NORMAL_OMP_PRIVATE(name) \
+   CCTK_LOOP2STR_NORMAL_OMP_PRIVATE(name) \
+
+#define CCTK_LOOP2_NORMAL(name, \
+                          i,j, \
+                          ni,nj, \
+                          idir,jdir, \
+                          imin,jmin, \
+                          imax,jmax, \
+                          iash,jash) \
+   CCTK_LOOP2STR_NORMAL(name, \
+                        i,j, \
+                        ni,nj, \
+                        idir,jdir, \
+                        imin,jmin, \
+                        imax,jmax, \
+                        iash,jash, \
+                        1) \
+
+#define CCTK_ENDLOOP2_NORMAL(name) \
+   CCTK_ENDLOOP2STR_NORMAL(name) \
+
+#define CCTK_LOOP2STR_NORMAL_DECLARE(name) \
+   && integer :: name/**/0_idir,name/**/0_jdir \
+   && integer :: name/**/0_imin,name/**/0_jmin \
+   && integer :: name/**/0_imax,name/**/0_jmax \
+   && integer :: name/**/0_istr \
+
+#define CCTK_LOOP2STR_NORMAL_OMP_PRIVATE(name) \
+   && !$omp private (i,j) \
+   && !$omp private (ni,nj) \
+
+#define CCTK_LOOP2STR_NORMAL(name, \
+                             i,j, \
+                             ni,nj, \
+                             idir,jdir, \
+                             imin,jmin, \
+                             imax,jmax, \
+                             iash,jash, \
+                             istr) \
+   && name/**/0_idir = idir \
+   && name/**/0_jdir = jdir \
+   && name/**/0_imin = imin \
+   && name/**/0_jmin = jmin \
+   && name/**/0_imax = imax \
+   && name/**/0_jmax = jmax \
+   && name/**/0_istr = istr \
+   && !$omp do \
+   && do j = name/**/0_jmin, name/**/0_jmax \
+   && do i = name/**/0_imin, name/**/0_imax \
+   &&    if (name/**/0_idir< 0) ni = i \
+   &&    if (name/**/0_jdir< 0) nj = j \
+   &&    if (name/**/0_idir==0) ni = 0 \
+   &&    if (name/**/0_jdir==0) nj = 0 \
+   &&    if (name/**/0_idir> 0) ni = name/**/0_imax+1-i \
+   &&    if (name/**/0_jdir> 0) nj = name/**/0_jmax+1-j \
+
+#define CCTK_ENDLOOP2STR_NORMAL(name) \
+   && end do \
+   && end do \
+
+
+
 #define CCTK_LOOP2_DECLARE(name) \
-   && integer :: name/**/_imin,name/**/_jmin \
-   && integer :: name/**/_imax,name/**/_jmax \
-   && integer :: name/**/_istr \
+   CCTK_LOOP2STR_DECLARE(name) \
 
 #define CCTK_LOOP2_OMP_PRIVATE(name) \
+   CCTK_LOOP2STR_OMP_PRIVATE(name) \
 
 #define CCTK_LOOP2(name, \
                    i,j, \
                    imin,jmin, \
                    imax,jmax, \
                    iash,jash) \
-  CCTK_LOOP2STR(name, \
-             i,j, \
-             imin,jmin, \
-             imax,jmax, \
-             iash,jash, \
-             1) \
+   CCTK_LOOP2STR(name, \
+                 i,j, \
+                 imin,jmin, \
+                 imax,jmax, \
+                 iash,jash, \
+                 1) \
+
+#define CCTK_ENDLOOP2(name) \
+   CCTK_ENDLOOP2STR(name) \
+
+#define CCTK_LOOP2STR_DECLARE(name) \
+   CCTK_LOOP2STR_NORMAL_DECLARE(name) \
+   && integer :: name/**/1_ni,name/**/1_nj \
+
+#define CCTK_LOOP2STR_OMP_PRIVATE(name) \
+   CCTK_LOOP2STR_NORMAL_OMP_PRIVATE(name) \
 
 #define CCTK_LOOP2STR(name, \
                       i,j, \
@@ -1150,154 +1558,443 @@
                       imax,jmax, \
                       iash,jash, \
                       istr) \
-   && name/**/_imin = imin \
-   && name/**/_jmin = jmin \
-   && name/**/_imax = imax \
-   && name/**/_jmax = jmax \
-   && name/**/_istr = istr \
-   && do j = name/**/_jmin, name/**/_jmax \
-   && do i = name/**/_imin, name/**/_imax \
-
-#define CCTK_ENDLOOP2(name) \
-  CCTK_ENDLOOP2STR(name) \
+   CCTK_LOOP2STR_NORMAL(name, \
+                        i,j, \
+                        name/**/1_ni,name/**/1_nj, \
+                        0,0, \
+                        imin,jmin, \
+                        imax,jmax, \
+                        iash,jash, \
+                        istr) \
 
 #define CCTK_ENDLOOP2STR(name) \
-   && end do \
-   && end do \
-
-
-
-/* LOOP_ALL */
-
-#define CCTK_LOOP2_ALL_DECLARE(name) \
-   CCTK_LOOP2_DECLARE(name) \
-
-#define CCTK_LOOP2_ALL_OMP_PRIVATE(name) \
-   CCTK_LOOP2_OMP_PRIVATE(name) \
-
-#define CCTK_LOOP2_ALL(name, \
-                       i,j) \
-  CCTK_LOOP2STR_ALL(name, \
-                 i,j, \
-                 1) \
-
-#define CCTK_LOOP2STR_ALL(name, \
-                          i,j, \
-                          istr) \
-   CCTK_LOOP2STR(name, \
-                 i,j, \
-                 1,1, \
-                 cctk_lsh(1),cctk_lsh(2), \
-                 cctk_ash(1),cctk_ash(2), \
-                 istr) \
-
-#define CCTK_ENDLOOP2_ALL(name) \
-  CCTK_ENDLOOP2STR_ALL(name) \
-
-#define CCTK_ENDLOOP2STR_ALL(name) \
-   CCTK_ENDLOOP2(name) \
+   CCTK_ENDLOOP2STR_NORMAL(name) \
 
 
 
 /* LOOP_INTERIOR */
 
 #define CCTK_LOOP2_INTERIOR_DECLARE(name) \
-   CCTK_LOOP2_DECLARE(name) \
+   CCTK_LOOP2STR_INTERIOR_DECLARE(name) \
 
 #define CCTK_LOOP2_INTERIOR_OMP_PRIVATE(name) \
-   CCTK_LOOP2_OMP_PRIVATE(name) \
+   CCTK_LOOP2STR_INTERIOR_OMP_PRIVATE(name) \
 
 #define CCTK_LOOP2_INTERIOR(name, \
                             i,j, \
                             iblo,jblo, \
                             ibhi,jbhi) \
-  CCTK_LOOP2STR_INTERIOR(name, \
-                      i,j, \
-                      iblo,jblo, \
-                      ibhi,jbhi, \
-                      1) \
+   CCTK_LOOP2STR_INTERIOR(name, \
+                          i,j, \
+                          iblo,jblo, \
+                          ibhi,jbhi, \
+                          1) \
+
+#define CCTK_ENDLOOP2_INTERIOR(name) \
+   CCTK_ENDLOOP2STR_INTERIOR(name) \
+
+#define CCTK_LOOP2STR_INTERIOR_DECLARE(name) \
+   CCTK_LOOP2STR_DECLARE(name/**/_interior) \
+
+#define CCTK_LOOP2STR_INTERIOR_OMP_PRIVATE(name) \
+   CCTK_LOOP2STR_OMP_PRIVATE(name/**/_interior) \
 
 #define CCTK_LOOP2STR_INTERIOR(name, \
                                i,j, \
                                iblo,jblo, \
                                ibhi,jbhi, \
                                istr) \
-   CCTK_LOOP2STR(name, \
+   CCTK_LOOP2STR(name/**/_interior, \
                  i,j, \
-                 (iblo),(jblo), \
+                 (iblo)+1, \
+                 (jblo)+1, \
                  cctk_lsh(1)-(ibhi), \
                  cctk_lsh(2)-(jbhi), \
                  cctk_ash(1),cctk_ash(2), \
                  istr) \
 
-#define CCTK_ENDLOOP2_INTERIOR(name) \
-  CCTK_ENDLOOP2STR_INTERIOR(name) \
-
 #define CCTK_ENDLOOP2STR_INTERIOR(name) \
-   CCTK_ENDLOOP2(name) \
+   CCTK_ENDLOOP2STR(name/**/_interior) \
 
 
 
 /* LOOP_BOUNDARIES */
 
 #define CCTK_LOOP2_BOUNDARIES_DECLARE(name) \
-   CCTK_LOOP2_DECLARE(name) \
-   && integer :: lc_bmin(2), lc_bmax(2) \
-   && integer :: lc_blo(2), lc_bhi(2) \
-   && integer :: lc_istr \
-   && integer :: lc_dir, lc_face \
-   && integer :: lc_d \
+   CCTK_LOOP2STR_BOUNDARIES_DECLARE(name) \
 
 #define CCTK_LOOP2_BOUNDARIES_OMP_PRIVATE(name) \
-   CCTK_LOOP2_OMP_PRIVATE(name) \
+   CCTK_LOOP2STR_BOUNDARIES_OMP_PRIVATE(name) \
 
 #define CCTK_LOOP2_BOUNDARIES(name, \
                               i,j, \
+                              ni,nj, \
                               iblo,jblo, \
-                              ibhi,jbhi) \
-  CCTK_LOOP2STR_BOUNDARIES(name, \
-                        i,j, \
-                        iblo,jblo, \
-                        ibhi,jbhi, \
-                        1) \
+                              ibhi,jbhi, \
+                              ibboxlo,jbboxlo, \
+                              ibboxhi,jbboxhi) \
+   CCTK_LOOP2STR_BOUNDARIES(name, \
+                            i,j, \
+                            ni,nj, \
+                            iblo,jblo, \
+                            ibhi,jbhi, \
+                            ibboxlo,jbboxlo, \
+                            ibboxhi,jbboxhi, \
+                            1) \
+
+#define CCTK_ENDLOOP2_BOUNDARIES(name) \
+   CCTK_ENDLOOP2STR_BOUNDARIES(name) \
+
+#define CCTK_LOOP2STR_BOUNDARIES_DECLARE(name) \
+   CCTK_LOOP2STR_NORMAL_DECLARE(name/**/_boundaries) \
+   && integer :: name/**/2_blo(2), name/**/2_bhi(2) \
+   && integer :: name/**/2_bboxlo(2), name/**/2_bboxhi(2) \
+   && integer :: name/**/2_istr \
+   && integer :: name/**/2_idir \
+   && integer :: name/**/2_jdir \
+   && logical :: name/**/2_any_bbox \
+   && integer :: name/**/2_bmin(2), name/**/2_bmax(2) \
+
+#define CCTK_LOOP2STR_BOUNDARIES_OMP_PRIVATE(name) \
+   CCTK_LOOP2STR_NORMAL_OMP_PRIVATE(name/**/_boundaries) \
 
 #define CCTK_LOOP2STR_BOUNDARIES(name, \
                                  i,j, \
+                                 ni,nj, \
                                  iblo,jblo, \
                                  ibhi,jbhi, \
+                                 ibboxlo,jbboxlo, \
+                                 ibboxhi,jbboxhi, \
                                  istr) \
-   && lc_blo = (/ iblo,jblo /) \
-   && lc_bhi = (/ ibhi,jbhi /) \
-   && lc_istr = istr \
-   && do lc_dir=1,2 \
-   &&    do lc_face=1,2 \
-   &&       do lc_d=1,2 \
-   &&          lc_bmin(lc_d) = 1 \
-   &&          lc_bmax(lc_d) = cctk_lsh(lc_d) \
-   &&          if (lc_d<lc_dir) then \
-   &&             lc_bmin(lc_d) = lc_bmin(lc_d)+lc_blo(lc_d) \
-   &&             lc_bmax(lc_d) = lc_bmax(lc_d)-lc_bhi(lc_d) \
-   &&          end if \
-   &&       end do \
-   &&       if (lc_face==1) then \
-   &&          lc_bmax(lc_dir) = lc_bmin(lc_dir)+lc_blo(lc_dir) \
-   &&       else \
-   &&          lc_bmin(lc_dir) = lc_bmax(lc_dir)-lc_bhi(lc_dir) \
-   &&       end if \
-            CCTK_LOOP2STR(name, \
-                          i,j, \
-                          lc_bmin(1),lc_bmin(2), \
-                          lc_bmax(1),lc_bmax(2), \
-                          cctk_ash(1),cctk_ash(2), \
-                          lc_istr) \
-
-#define CCTK_ENDLOOP2_BOUNDARIES(name) \
-  CCTK_ENDLOOP2STR_BOUNDARIES(name) \
+   && name/**/2_blo = (/ iblo,jblo /) \
+   && name/**/2_bhi = (/ ibhi,jbhi /) \
+   && name/**/2_bboxlo = (/ ibboxlo,jbboxlo /) \
+   && name/**/2_bboxhi = (/ ibboxhi,jbboxhi /) \
+   && name/**/2_istr = (istr) \
+   && /* Loop over all faces, edges, and corners */ \
+   && do name/**/2_jdir=-1, +1 \
+   && do name/**/2_idir=-1, +1 \
+   &&     name/**/2_any_bbox = .false. \
+   &&     if (name/**/2_idir==-1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxlo(1) /= 0 \
+   &&     if (name/**/2_jdir==-1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxlo(2) /= 0 \
+   &&     if (name/**/2_idir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(1) /= 0 \
+   &&     if (name/**/2_jdir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(2) /= 0 \
+   &&    if (name/**/2_any_bbox) then \
+   &&       if (name/**/2_idir==-1) name/**/2_bmin(1) = 1 \
+   &&       if (name/**/2_jdir==-1) name/**/2_bmin(2) = 1 \
+   &&       if (name/**/2_idir== 0) name/**/2_bmin(1) = name/**/2_blo(1)+1 \
+   &&       if (name/**/2_jdir== 0) name/**/2_bmin(2) = name/**/2_blo(2)+1 \
+   &&       if (name/**/2_idir==+1) name/**/2_bmin(1) = cctk_lsh(1) - name/**/2_bhi(1) \
+   &&       if (name/**/2_jdir==+1) name/**/2_bmin(2) = cctk_lsh(2) - name/**/2_bhi(2) \
+   &&       if (name/**/2_idir==-1) name/**/2_bmax(1) = name/**/2_blo(1) \
+   &&       if (name/**/2_jdir==-1) name/**/2_bmax(2) = name/**/2_blo(2) \
+   &&       if (name/**/2_idir== 0) name/**/2_bmax(1) = cctk_lsh(1) - name/**/2_bhi(1) \
+   &&       if (name/**/2_jdir== 0) name/**/2_bmax(2) = cctk_lsh(2) - name/**/2_bhi(2) \
+   &&       if (name/**/2_idir==+1) name/**/2_bmax(1) = cctk_lsh(1) \
+   &&       if (name/**/2_jdir==+1) name/**/2_bmax(2) = cctk_lsh(2) \
+            CCTK_LOOP2STR_NORMAL(name/**/_boundaries, \
+                                 i,j, \
+                                 ni,nj, \
+                                 name/**/2_idir,name/**/2_jdir, \
+                                 name/**/2_bmin(1),name/**/2_bmin(2), \
+                                 name/**/2_bmax(1),name/**/2_bmax(2), \
+                                 cctk_ash(1), \
+                                 cctk_ash(2), \
+                                 name/**/2_istr) \
 
 #define CCTK_ENDLOOP2STR_BOUNDARIES(name) \
-            CCTK_ENDLOOP2(name) \
-   &&    end do /* face */ \
+            CCTK_ENDLOOP2STR_NORMAL(name/**/_boundaries) \
+   &&    end if /* bbox */ \
    && end do /* dir */ \
+   && end do /* dir */ \
+
+
+
+/* LOOP_INTBOUNDARIES */
+
+#define CCTK_LOOP2_INTBOUNDARIES_DECLARE(name) \
+   CCTK_LOOP2STR_INTBOUNDARIES_DECLARE(name) \
+
+#define CCTK_LOOP2_INTBOUNDARIES_OMP_PRIVATE(name) \
+   CCTK_LOOP2STR_INTBOUNDARIES_OMP_PRIVATE(name) \
+
+#define CCTK_LOOP2_INTBOUNDARIES(name, \
+                                 i,j, \
+                                 ni,nj, \
+                                 iblo,jblo, \
+                                 ibhi,jbhi, \
+                                 ibboxlo,jbboxlo, \
+                                 ibboxhi,jbboxhi) \
+   CCTK_LOOP2STR_INTBOUNDARIES(name, \
+                               i,j, \
+                               ni,nj, \
+                               iblo,jblo, \
+                               ibhi,jbhi, \
+                               ibboxlo,jbboxlo, \
+                               ibboxhi,jbboxhi, \
+                               1) \
+
+#define CCTK_ENDLOOP2_INTBOUNDARIES(name) \
+   CCTK_ENDLOOP2STR_INTBOUNDARIES(name) \
+
+#define CCTK_LOOP2STR_INTBOUNDARIES_DECLARE(name) \
+   CCTK_LOOP2STR_NORMAL_DECLARE(name/**/_intboundaries) \
+   && integer :: name/**/2_blo(2), name/**/2_bhi(2) \
+   && integer :: name/**/2_bboxlo(2), name/**/2_bboxhi(2) \
+   && integer :: name/**/2_istr \
+   && integer :: name/**/2_idir \
+   && integer :: name/**/2_jdir \
+   && logical :: name/**/2_any_bbox,  name/**/2_all_bbox \
+   && integer :: name/**/2_bmin(2), name/**/2_bmax(2) \
+
+#define CCTK_LOOP2STR_INTBOUNDARIES_OMP_PRIVATE(name) \
+   CCTK_LOOP2STR_NORMAL_OMP_PRIVATE(name/**/_intboundaries) \
+
+#define CCTK_LOOP2STR_INTBOUNDARIES(name, \
+                                    i,j, \
+                                    ni,nj, \
+                                    iblo,jblo, \
+                                    ibhi,jbhi, \
+                                    ibboxlo,jbboxlo, \
+                                    ibboxhi,jbboxhi, \
+                                    istr) \
+   && name/**/2_blo = (/ iblo,jblo /) \
+   && name/**/2_bhi = (/ ibhi,jbhi /) \
+   && name/**/2_bboxlo = (/ ibboxlo,jbboxlo /) \
+   && name/**/2_bboxhi = (/ ibboxhi,jbboxhi /) \
+   && name/**/2_istr = (istr) \
+   && /* Loop over all faces, edges, and corners */ \
+   && do name/**/2_jdir=-1, +1 \
+   && do name/**/2_idir=-1, +1 \
+   &&     name/**/2_any_bbox = .false. \
+   &&     if (name/**/2_idir==-1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxlo(1) /= 0 \
+   &&     if (name/**/2_jdir==-1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxlo(2) /= 0 \
+   &&     if (name/**/2_idir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(1) /= 0 \
+   &&     if (name/**/2_jdir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(2) /= 0 \
+   &&     name/**/2_all_bbox = .true. \
+   &&     if (name/**/2_idir==-1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxlo(1) /= 0 \
+   &&     if (name/**/2_jdir==-1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxlo(2) /= 0 \
+   &&     if (name/**/2_idir==+1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxhi(1) /= 0 \
+   &&     if (name/**/2_jdir==+1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxhi(2) /= 0 \
+   &&    if (name/**/2_all_bbox .and. name/**/2_any_bbox) then \
+   &&       if (name/**/2_idir==-1) name/**/2_bmin(1) = 1 \
+   &&       if (name/**/2_jdir==-1) name/**/2_bmin(2) = 1 \
+   &&       if (name/**/2_idir== 0) name/**/2_bmin(1) = name/**/2_blo(1)+1 \
+   &&       if (name/**/2_jdir== 0) name/**/2_bmin(2) = name/**/2_blo(2)+1 \
+   &&       if (name/**/2_idir==+1) name/**/2_bmin(1) = cctk_lsh(1) - name/**/2_bhi(1) \
+   &&       if (name/**/2_jdir==+1) name/**/2_bmin(2) = cctk_lsh(2) - name/**/2_bhi(2) \
+   &&       if (name/**/2_idir==-1) name/**/2_bmax(1) = name/**/2_blo(1) \
+   &&       if (name/**/2_jdir==-1) name/**/2_bmax(2) = name/**/2_blo(2) \
+   &&       if (name/**/2_idir== 0) name/**/2_bmax(1) = cctk_lsh(1) - name/**/2_bhi(1) \
+   &&       if (name/**/2_jdir== 0) name/**/2_bmax(2) = cctk_lsh(2) - name/**/2_bhi(2) \
+   &&       if (name/**/2_idir==+1) name/**/2_bmax(1) = cctk_lsh(1) \
+   &&       if (name/**/2_jdir==+1) name/**/2_bmax(2) = cctk_lsh(2) \
+            CCTK_LOOP2STR_NORMAL(name/**/_intboundaries, \
+                                 i,j, \
+                                 ni,nj, \
+                                 name/**/2_idir,name/**/2_jdir, \
+                                 name/**/2_bmin(1),name/**/2_bmin(2), \
+                                 name/**/2_bmax(1),name/**/2_bmax(2), \
+                                 cctk_ash(1), \
+                                 cctk_ash(2), \
+                                 name/**/2_istr) \
+
+#define CCTK_ENDLOOP2STR_INTBOUNDARIES(name) \
+            CCTK_ENDLOOP2STR_NORMAL(name/**/_intboundaries) \
+   &&    end if /* bbox */ \
+   && end do /* dir */ \
+   && end do /* dir */ \
+
+
+
+/* LOOP_ALL */
+
+#define CCTK_LOOP2_ALL_DECLARE(name) \
+   CCTK_LOOP2STR_ALL_DECLARE(name) \
+
+#define CCTK_LOOP2_ALL_OMP_PRIVATE(name) \
+   CCTK_LOOP2STR_ALL_OMP_PRIVATE(name) \
+
+#define CCTK_LOOP2_ALL(name, \
+                       i,j) \
+   CCTK_LOOP2STR_ALL(name, \
+                     i,j, \
+                     1) \
+
+#define CCTK_ENDLOOP2_ALL(name) \
+   CCTK_ENDLOOP2STR_ALL(name) \
+
+#define CCTK_LOOP2STR_ALL_DECLARE(name) \
+   CCTK_LOOP2STR_DECLARE(name/**/_all) \
+
+#define CCTK_LOOP2STR_ALL_OMP_PRIVATE(name) \
+   CCTK_LOOP2STR_OMP_PRIVATE(name/**/_all) \
+
+#define CCTK_LOOP2STR_ALL(name, \
+                          i,j, \
+                          istr) \
+   CCTK_LOOP2STR(name/**/_all, \
+                 i,j, \
+                 1,1, \
+                 cctk_lsh(1),cctk_lsh(2), \
+                 cctk_ash(1),cctk_ash(2), \
+                 istr) \
+
+#define CCTK_ENDLOOP2STR_ALL(name) \
+   CCTK_ENDLOOP2STR(name/**/_all) \
+
+
+
+/* LOOP_INT */
+
+#define CCTK_LOOP2_INT_DECLARE(name) \
+   CCTK_LOOP2STR_INT_DECLARE(name) \
+
+#define CCTK_LOOP2_INT_OMP_PRIVATE(name) \
+   CCTK_LOOP2STR_INT_OMP_PRIVATE(name) \
+
+#define CCTK_LOOP2_INT(name, \
+                        i,j) \
+   CCTK_LOOP2STR_INT(name, \
+                      i,j, \
+                      1) \
+
+#define CCTK_ENDLOOP2_INT(name) \
+   CCTK_ENDLOOP2STR_INT(name) \
+
+#define CCTK_LOOP2STR_INT_DECLARE(name) \
+   CCTK_LOOP2STR_INTERIOR_DECLARE(name/**/_int) \
+   && integer :: name/**/3_bndsize    (4) \
+   && integer :: name/**/3_is_ghostbnd(4) \
+   && integer :: name/**/3_is_symbnd  (4) \
+   && integer :: name/**/3_is_physbnd (4) \
+   && integer :: name/**/3_ierr \
+
+#define CCTK_LOOP2STR_INT_OMP_PRIVATE(name) \
+   CCTK_LOOP2STR_INTERIOR_OMP_PRIVATE(name/**/_int) \
+
+#define CCTK_LOOP2STR_INT(name, \
+                          i,j, \
+                          istr) \
+   && !$omp single \
+   && name/**/3_ierr = GetBoundarySizesAndTypes \
+         (cctkGH, 4, name/**/3_bndsize, name/**/3_is_ghostbnd, name/**/3_is_symbnd, name/**/3_is_physbnd) \
+   && !$omp end single copyprivate(name/**/3_bndsize) \
+      CCTK_LOOP2STR_INTERIOR(name/**/_int, \
+                             i,j, \
+                             name/**/3_bndsize(1+1),name/**/3_bndsize(3+1), \
+                             name/**/3_bndsize(2),name/**/3_bndsize(4), \
+                             (istr)) \
+
+#define CCTK_ENDLOOP2STR_INT(name) \
+      CCTK_ENDLOOP2STR_INTERIOR(name/**/int) \
+
+
+
+/* LOOP_BND */
+
+#define CCTK_LOOP2_BND_DECLARE(name) \
+   CCTK_LOOP2STR_BND_DECLARE(name) \
+
+#define CCTK_LOOP2_BND_OMP_PRIVATE(name) \
+   CCTK_LOOP2STR_BND_OMP_PRIVATE(name) \
+
+#define CCTK_LOOP2_BND(name, \
+                       i,j, \
+                       ni,nj) \
+   CCTK_LOOP2STR_BND(name, \
+                     i,j, \
+                     ni,nj, \
+                     1) \
+
+#define CCTK_ENDLOOP2_BND(name) \
+   CCTK_ENDLOOP2STR_BND(name) \
+
+#define CCTK_LOOP2STR_BND_DECLARE(name) \
+   CCTK_LOOP2STR_BOUNDARIES_DECLARE(name/**/_bnd) \
+   && integer :: name/**/3_bndsize    (4) \
+   && integer :: name/**/3_is_ghostbnd(4) \
+   && integer :: name/**/3_is_symbnd  (4) \
+   && integer :: name/**/3_is_physbnd (4) \
+   && integer :: name/**/3_ierr \
+
+#define CCTK_LOOP2STR_BND_OMP_PRIVATE(name) \
+   CCTK_LOOP2STR_BOUNDARIES_OMP_PRIVATE(name/**/_bnd) \
+
+#define CCTK_LOOP2STR_BND(name, \
+                          i,j, \
+                          ni,nj, \
+                          istr) \
+   && !$omp single \
+   && name/**/3_ierr = GetBoundarySizesAndTypes \
+         (cctkGH, 4, name/**/3_bndsize, name/**/3_is_ghostbnd, name/**/3_is_symbnd, name/**/3_is_physbnd) \
+   && !$omp end single copyprivate(name/**/3_bndsize, name/**/3_is_physbnd) \
+      CCTK_LOOP2STR_BOUNDARIES(name/**/_bnd, \
+                               i,j, \
+                               ni,nj, \
+                               name/**/3_bndsize(1)+1,name/**/3_bndsize(3)+1, \
+                               name/**/3_bndsize(2),name/**/3_bndsize(4), \
+                               name/**/3_is_physbnd(1),name/**/3_is_physbnd(3), \
+                               name/**/3_is_physbnd(2),name/**/3_is_physbnd(4), \
+                               (istr)) \
+
+#define CCTK_ENDLOOP2STR_BND(name) \
+      CCTK_ENDLOOP2STR_BOUNDARIES(name/**/_bnd) \
+
+
+
+
+
+
+/* LOOP_INTBND */
+
+#define CCTK_LOOP2_INTBND_DECLARE(name) \
+   CCTK_LOOP2STR_INTBND_DECLARE(name) \
+
+#define CCTK_LOOP2_INTBND_OMP_PRIVATE(name) \
+   CCTK_LOOP2STR_INTBND_OMP_PRIVATE(name) \
+
+#define CCTK_LOOP2_INTBND(name, \
+                          i,j, \
+                          ni,nj) \
+   CCTK_LOOP2STR_INTBND(name, \
+                        i,j, \
+                        ni,nj, \
+                        1) \
+
+#define CCTK_ENDLOOP2_INTBND(name) \
+   CCTK_ENDLOOP2STR_INTBND(name) \
+
+#define CCTK_LOOP2STR_INTBND_DECLARE(name) \
+   CCTK_LOOP2STR_INTBOUNDARIES_DECLARE(name/**/_bnd) \
+   && integer :: name/**/3_bndsize    (4) \
+   && integer :: name/**/3_is_ghostbnd(4) \
+   && integer :: name/**/3_is_symbnd  (4) \
+   && integer :: name/**/3_is_physbnd (4) \
+   && integer :: name/**/3_ierr \
+
+#define CCTK_LOOP2STR_INTBND_OMP_PRIVATE(name) \
+   CCTK_LOOP2STR_INTBOUNDARIES_OMP_PRIVATE(name/**/_bnd) \
+
+#define CCTK_LOOP2STR_INTBND(name, \
+                             i,j, \
+                             ni,nj, \
+                             istr) \
+   && !$omp single \
+   && name/**/3_ierr = GetBoundarySizesAndTypes \
+         (cctkGH, 4, name/**/3_bndsize, name/**/3_is_ghostbnd, name/**/3_is_symbnd, name/**/3_is_physbnd) \
+   && !$omp end single copyprivate(name/**/3_bndsize, name/**/3_is_physbnd) \
+      CCTK_LOOP2STR_INTBOUNDARIES(name/**/_bnd, \
+                                  i,j, \
+                                  ni,nj, \
+                                  name/**/3_bndsize(1+1),name/**/3_bndsize(3+1), \
+                                  name/**/3_bndsize(2),name/**/3_bndsize(4), \
+                                  name/**/3_is_physbnd(1),name/**/3_is_physbnd(3), \
+                                  name/**/3_is_physbnd(2),name/**/3_is_physbnd(4), \
+                                  (istr)) \
+
+#define CCTK_ENDLOOP2STR_INTBND(name) \
+      CCTK_ENDLOOP2STR_INTBOUNDARIES(name/**/_bnd) \
 
 #endif /* #ifdef FCODE */
 
@@ -1490,7 +2187,7 @@
     int const cctki2_bhi[] = { (ibhi),(jbhi),(kbhi) }; \
     int const cctki2_bbox[] = { (ibboxlo), (ibboxhi),(jbboxlo), (jbboxhi),(kbboxlo), (kbboxhi) }; \
     int const cctki2_lsh[] = { cctki2_cctkGH->cctk_lsh[0],cctki2_cctkGH->cctk_lsh[1],cctki2_cctkGH->cctk_lsh[2] }; \
-    int const cctki2_istr1 CCTK_ATTRIBUTE_UNUSED = (istr); \
+    int const cctki2_istr CCTK_ATTRIBUTE_UNUSED = (istr); \
     /* Loop over all faces, edges, and corners */ \
     for (int cctki2_kdir=-1; cctki2_kdir<=+1; ++cctki2_kdir) { \
     for (int cctki2_jdir=-1; cctki2_jdir<=+1; ++cctki2_jdir) { \
@@ -1519,7 +2216,7 @@
                              cctki2_cctkGH->cctk_ash[0], \
                              cctki2_cctkGH->cctk_ash[1], \
                              cctki2_cctkGH->cctk_ash[2], \
-                             cctki2_istr1) { \
+                             cctki2_istr) { \
 
 #define CCTK_ENDLOOP3STR_BOUNDARIES(name) \
         } CCTK_ENDLOOP3STR_NORMAL(name##_boundaries); \
@@ -1573,7 +2270,7 @@
     int const cctki2_bhi[] = { (ibhi),(jbhi),(kbhi) }; \
     int const cctki2_bbox[] = { (ibboxlo), (ibboxhi),(jbboxlo), (jbboxhi),(kbboxlo), (kbboxhi) }; \
     int const cctki2_lsh[] = { cctki2_cctkGH->cctk_lsh[0],cctki2_cctkGH->cctk_lsh[1],cctki2_cctkGH->cctk_lsh[2] }; \
-    int const cctki2_istr1 CCTK_ATTRIBUTE_UNUSED = (istr); \
+    int const cctki2_istr CCTK_ATTRIBUTE_UNUSED = (istr); \
     /* Loop over all faces, edges, and corners */ \
     for (int cctki2_kdir=-1; cctki2_kdir<=+1; ++cctki2_kdir) { \
     for (int cctki2_jdir=-1; cctki2_jdir<=+1; ++cctki2_jdir) { \
@@ -1606,7 +2303,7 @@
                              cctki2_cctkGH->cctk_ash[0], \
                              cctki2_cctkGH->cctk_ash[1], \
                              cctki2_cctkGH->cctk_ash[2], \
-                             cctki2_istr1) { \
+                             cctki2_istr) { \
 
 #define CCTK_ENDLOOP3STR_INTBOUNDARIES(name) \
         } CCTK_ENDLOOP3STR_NORMAL(name##_intboundaries); \
@@ -1806,24 +2503,107 @@
 
 /* LOOP */
 
+#define CCTK_LOOP3_NORMAL_DECLARE(name) \
+   CCTK_LOOP3STR_NORMAL_DECLARE(name) \
+
+#define CCTK_LOOP3_NORMAL_OMP_PRIVATE(name) \
+   CCTK_LOOP3STR_NORMAL_OMP_PRIVATE(name) \
+
+#define CCTK_LOOP3_NORMAL(name, \
+                          i,j,k, \
+                          ni,nj,nk, \
+                          idir,jdir,kdir, \
+                          imin,jmin,kmin, \
+                          imax,jmax,kmax, \
+                          iash,jash,kash) \
+   CCTK_LOOP3STR_NORMAL(name, \
+                        i,j,k, \
+                        ni,nj,nk, \
+                        idir,jdir,kdir, \
+                        imin,jmin,kmin, \
+                        imax,jmax,kmax, \
+                        iash,jash,kash, \
+                        1) \
+
+#define CCTK_ENDLOOP3_NORMAL(name) \
+   CCTK_ENDLOOP3STR_NORMAL(name) \
+
+#define CCTK_LOOP3STR_NORMAL_DECLARE(name) \
+   && integer :: name/**/0_idir,name/**/0_jdir,name/**/0_kdir \
+   && integer :: name/**/0_imin,name/**/0_jmin,name/**/0_kmin \
+   && integer :: name/**/0_imax,name/**/0_jmax,name/**/0_kmax \
+   && integer :: name/**/0_istr \
+
+#define CCTK_LOOP3STR_NORMAL_OMP_PRIVATE(name) \
+   && !$omp private (i,j,k) \
+   && !$omp private (ni,nj,nk) \
+
+#define CCTK_LOOP3STR_NORMAL(name, \
+                             i,j,k, \
+                             ni,nj,nk, \
+                             idir,jdir,kdir, \
+                             imin,jmin,kmin, \
+                             imax,jmax,kmax, \
+                             iash,jash,kash, \
+                             istr) \
+   && name/**/0_idir = idir \
+   && name/**/0_jdir = jdir \
+   && name/**/0_kdir = kdir \
+   && name/**/0_imin = imin \
+   && name/**/0_jmin = jmin \
+   && name/**/0_kmin = kmin \
+   && name/**/0_imax = imax \
+   && name/**/0_jmax = jmax \
+   && name/**/0_kmax = kmax \
+   && name/**/0_istr = istr \
+   && !$omp do \
+   && do k = name/**/0_kmin, name/**/0_kmax \
+   && do j = name/**/0_jmin, name/**/0_jmax \
+   && do i = name/**/0_imin, name/**/0_imax \
+   &&    if (name/**/0_idir< 0) ni = i \
+   &&    if (name/**/0_jdir< 0) nj = j \
+   &&    if (name/**/0_kdir< 0) nk = k \
+   &&    if (name/**/0_idir==0) ni = 0 \
+   &&    if (name/**/0_jdir==0) nj = 0 \
+   &&    if (name/**/0_kdir==0) nk = 0 \
+   &&    if (name/**/0_idir> 0) ni = name/**/0_imax+1-i \
+   &&    if (name/**/0_jdir> 0) nj = name/**/0_jmax+1-j \
+   &&    if (name/**/0_kdir> 0) nk = name/**/0_kmax+1-k \
+
+#define CCTK_ENDLOOP3STR_NORMAL(name) \
+   && end do \
+   && end do \
+   && end do \
+
+
+
 #define CCTK_LOOP3_DECLARE(name) \
-   && integer :: name/**/_imin,name/**/_jmin,name/**/_kmin \
-   && integer :: name/**/_imax,name/**/_jmax,name/**/_kmax \
-   && integer :: name/**/_istr \
+   CCTK_LOOP3STR_DECLARE(name) \
 
 #define CCTK_LOOP3_OMP_PRIVATE(name) \
+   CCTK_LOOP3STR_OMP_PRIVATE(name) \
 
 #define CCTK_LOOP3(name, \
                    i,j,k, \
                    imin,jmin,kmin, \
                    imax,jmax,kmax, \
                    iash,jash,kash) \
-  CCTK_LOOP3STR(name, \
-             i,j,k, \
-             imin,jmin,kmin, \
-             imax,jmax,kmax, \
-             iash,jash,kash, \
-             1) \
+   CCTK_LOOP3STR(name, \
+                 i,j,k, \
+                 imin,jmin,kmin, \
+                 imax,jmax,kmax, \
+                 iash,jash,kash, \
+                 1) \
+
+#define CCTK_ENDLOOP3(name) \
+   CCTK_ENDLOOP3STR(name) \
+
+#define CCTK_LOOP3STR_DECLARE(name) \
+   CCTK_LOOP3STR_NORMAL_DECLARE(name) \
+   && integer :: name/**/1_ni,name/**/1_nj,name/**/1_nk \
+
+#define CCTK_LOOP3STR_OMP_PRIVATE(name) \
+   CCTK_LOOP3STR_NORMAL_OMP_PRIVATE(name) \
 
 #define CCTK_LOOP3STR(name, \
                       i,j,k, \
@@ -1831,159 +2611,471 @@
                       imax,jmax,kmax, \
                       iash,jash,kash, \
                       istr) \
-   && name/**/_imin = imin \
-   && name/**/_jmin = jmin \
-   && name/**/_kmin = kmin \
-   && name/**/_imax = imax \
-   && name/**/_jmax = jmax \
-   && name/**/_kmax = kmax \
-   && name/**/_istr = istr \
-   && do k = name/**/_kmin, name/**/_kmax \
-   && do j = name/**/_jmin, name/**/_jmax \
-   && do i = name/**/_imin, name/**/_imax \
-
-#define CCTK_ENDLOOP3(name) \
-  CCTK_ENDLOOP3STR(name) \
+   CCTK_LOOP3STR_NORMAL(name, \
+                        i,j,k, \
+                        name/**/1_ni,name/**/1_nj,name/**/1_nk, \
+                        0,0,0, \
+                        imin,jmin,kmin, \
+                        imax,jmax,kmax, \
+                        iash,jash,kash, \
+                        istr) \
 
 #define CCTK_ENDLOOP3STR(name) \
-   && end do \
-   && end do \
-   && end do \
-
-
-
-/* LOOP_ALL */
-
-#define CCTK_LOOP3_ALL_DECLARE(name) \
-   CCTK_LOOP3_DECLARE(name) \
-
-#define CCTK_LOOP3_ALL_OMP_PRIVATE(name) \
-   CCTK_LOOP3_OMP_PRIVATE(name) \
-
-#define CCTK_LOOP3_ALL(name, \
-                       i,j,k) \
-  CCTK_LOOP3STR_ALL(name, \
-                 i,j,k, \
-                 1) \
-
-#define CCTK_LOOP3STR_ALL(name, \
-                          i,j,k, \
-                          istr) \
-   CCTK_LOOP3STR(name, \
-                 i,j,k, \
-                 1,1,1, \
-                 cctk_lsh(1),cctk_lsh(2),cctk_lsh(3), \
-                 cctk_ash(1),cctk_ash(2),cctk_ash(3), \
-                 istr) \
-
-#define CCTK_ENDLOOP3_ALL(name) \
-  CCTK_ENDLOOP3STR_ALL(name) \
-
-#define CCTK_ENDLOOP3STR_ALL(name) \
-   CCTK_ENDLOOP3(name) \
+   CCTK_ENDLOOP3STR_NORMAL(name) \
 
 
 
 /* LOOP_INTERIOR */
 
 #define CCTK_LOOP3_INTERIOR_DECLARE(name) \
-   CCTK_LOOP3_DECLARE(name) \
+   CCTK_LOOP3STR_INTERIOR_DECLARE(name) \
 
 #define CCTK_LOOP3_INTERIOR_OMP_PRIVATE(name) \
-   CCTK_LOOP3_OMP_PRIVATE(name) \
+   CCTK_LOOP3STR_INTERIOR_OMP_PRIVATE(name) \
 
 #define CCTK_LOOP3_INTERIOR(name, \
                             i,j,k, \
                             iblo,jblo,kblo, \
                             ibhi,jbhi,kbhi) \
-  CCTK_LOOP3STR_INTERIOR(name, \
-                      i,j,k, \
-                      iblo,jblo,kblo, \
-                      ibhi,jbhi,kbhi, \
-                      1) \
+   CCTK_LOOP3STR_INTERIOR(name, \
+                          i,j,k, \
+                          iblo,jblo,kblo, \
+                          ibhi,jbhi,kbhi, \
+                          1) \
+
+#define CCTK_ENDLOOP3_INTERIOR(name) \
+   CCTK_ENDLOOP3STR_INTERIOR(name) \
+
+#define CCTK_LOOP3STR_INTERIOR_DECLARE(name) \
+   CCTK_LOOP3STR_DECLARE(name/**/_interior) \
+
+#define CCTK_LOOP3STR_INTERIOR_OMP_PRIVATE(name) \
+   CCTK_LOOP3STR_OMP_PRIVATE(name/**/_interior) \
 
 #define CCTK_LOOP3STR_INTERIOR(name, \
                                i,j,k, \
                                iblo,jblo,kblo, \
                                ibhi,jbhi,kbhi, \
                                istr) \
-   CCTK_LOOP3STR(name, \
+   CCTK_LOOP3STR(name/**/_interior, \
                  i,j,k, \
-                 (iblo),(jblo),(kblo), \
+                 (iblo)+1, \
+                 (jblo)+1, \
+                 (kblo)+1, \
                  cctk_lsh(1)-(ibhi), \
                  cctk_lsh(2)-(jbhi), \
                  cctk_lsh(3)-(kbhi), \
                  cctk_ash(1),cctk_ash(2),cctk_ash(3), \
                  istr) \
 
-#define CCTK_ENDLOOP3_INTERIOR(name) \
-  CCTK_ENDLOOP3STR_INTERIOR(name) \
-
 #define CCTK_ENDLOOP3STR_INTERIOR(name) \
-   CCTK_ENDLOOP3(name) \
+   CCTK_ENDLOOP3STR(name/**/_interior) \
 
 
 
 /* LOOP_BOUNDARIES */
 
 #define CCTK_LOOP3_BOUNDARIES_DECLARE(name) \
-   CCTK_LOOP3_DECLARE(name) \
-   && integer :: lc_bmin(3), lc_bmax(3) \
-   && integer :: lc_blo(3), lc_bhi(3) \
-   && integer :: lc_istr \
-   && integer :: lc_dir, lc_face \
-   && integer :: lc_d \
+   CCTK_LOOP3STR_BOUNDARIES_DECLARE(name) \
 
 #define CCTK_LOOP3_BOUNDARIES_OMP_PRIVATE(name) \
-   CCTK_LOOP3_OMP_PRIVATE(name) \
+   CCTK_LOOP3STR_BOUNDARIES_OMP_PRIVATE(name) \
 
 #define CCTK_LOOP3_BOUNDARIES(name, \
                               i,j,k, \
+                              ni,nj,nk, \
                               iblo,jblo,kblo, \
-                              ibhi,jbhi,kbhi) \
-  CCTK_LOOP3STR_BOUNDARIES(name, \
-                        i,j,k, \
-                        iblo,jblo,kblo, \
-                        ibhi,jbhi,kbhi, \
-                        1) \
+                              ibhi,jbhi,kbhi, \
+                              ibboxlo,jbboxlo,kbboxlo, \
+                              ibboxhi,jbboxhi,kbboxhi) \
+   CCTK_LOOP3STR_BOUNDARIES(name, \
+                            i,j,k, \
+                            ni,nj,nk, \
+                            iblo,jblo,kblo, \
+                            ibhi,jbhi,kbhi, \
+                            ibboxlo,jbboxlo,kbboxlo, \
+                            ibboxhi,jbboxhi,kbboxhi, \
+                            1) \
+
+#define CCTK_ENDLOOP3_BOUNDARIES(name) \
+   CCTK_ENDLOOP3STR_BOUNDARIES(name) \
+
+#define CCTK_LOOP3STR_BOUNDARIES_DECLARE(name) \
+   CCTK_LOOP3STR_NORMAL_DECLARE(name/**/_boundaries) \
+   && integer :: name/**/2_blo(3), name/**/2_bhi(3) \
+   && integer :: name/**/2_bboxlo(3), name/**/2_bboxhi(3) \
+   && integer :: name/**/2_istr \
+   && integer :: name/**/2_idir \
+   && integer :: name/**/2_jdir \
+   && integer :: name/**/2_kdir \
+   && logical :: name/**/2_any_bbox \
+   && integer :: name/**/2_bmin(3), name/**/2_bmax(3) \
+
+#define CCTK_LOOP3STR_BOUNDARIES_OMP_PRIVATE(name) \
+   CCTK_LOOP3STR_NORMAL_OMP_PRIVATE(name/**/_boundaries) \
 
 #define CCTK_LOOP3STR_BOUNDARIES(name, \
                                  i,j,k, \
+                                 ni,nj,nk, \
                                  iblo,jblo,kblo, \
                                  ibhi,jbhi,kbhi, \
+                                 ibboxlo,jbboxlo,kbboxlo, \
+                                 ibboxhi,jbboxhi,kbboxhi, \
                                  istr) \
-   && lc_blo = (/ iblo,jblo,kblo /) \
-   && lc_bhi = (/ ibhi,jbhi,kbhi /) \
-   && lc_istr = istr \
-   && do lc_dir=1,3 \
-   &&    do lc_face=1,2 \
-   &&       do lc_d=1,3 \
-   &&          lc_bmin(lc_d) = 1 \
-   &&          lc_bmax(lc_d) = cctk_lsh(lc_d) \
-   &&          if (lc_d<lc_dir) then \
-   &&             lc_bmin(lc_d) = lc_bmin(lc_d)+lc_blo(lc_d) \
-   &&             lc_bmax(lc_d) = lc_bmax(lc_d)-lc_bhi(lc_d) \
-   &&          end if \
-   &&       end do \
-   &&       if (lc_face==1) then \
-   &&          lc_bmax(lc_dir) = lc_bmin(lc_dir)+lc_blo(lc_dir) \
-   &&       else \
-   &&          lc_bmin(lc_dir) = lc_bmax(lc_dir)-lc_bhi(lc_dir) \
-   &&       end if \
-            CCTK_LOOP3STR(name, \
-                          i,j,k, \
-                          lc_bmin(1),lc_bmin(2),lc_bmin(3), \
-                          lc_bmax(1),lc_bmax(2),lc_bmax(3), \
-                          cctk_ash(1),cctk_ash(2),cctk_ash(3), \
-                          lc_istr) \
-
-#define CCTK_ENDLOOP3_BOUNDARIES(name) \
-  CCTK_ENDLOOP3STR_BOUNDARIES(name) \
+   && name/**/2_blo = (/ iblo,jblo,kblo /) \
+   && name/**/2_bhi = (/ ibhi,jbhi,kbhi /) \
+   && name/**/2_bboxlo = (/ ibboxlo,jbboxlo,kbboxlo /) \
+   && name/**/2_bboxhi = (/ ibboxhi,jbboxhi,kbboxhi /) \
+   && name/**/2_istr = (istr) \
+   && /* Loop over all faces, edges, and corners */ \
+   && do name/**/2_kdir=-1, +1 \
+   && do name/**/2_jdir=-1, +1 \
+   && do name/**/2_idir=-1, +1 \
+   &&     name/**/2_any_bbox = .false. \
+   &&     if (name/**/2_idir==-1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxlo(1) /= 0 \
+   &&     if (name/**/2_jdir==-1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxlo(2) /= 0 \
+   &&     if (name/**/2_kdir==-1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxlo(3) /= 0 \
+   &&     if (name/**/2_idir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(1) /= 0 \
+   &&     if (name/**/2_jdir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(2) /= 0 \
+   &&     if (name/**/2_kdir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(3) /= 0 \
+   &&    if (name/**/2_any_bbox) then \
+   &&       if (name/**/2_idir==-1) name/**/2_bmin(1) = 1 \
+   &&       if (name/**/2_jdir==-1) name/**/2_bmin(2) = 1 \
+   &&       if (name/**/2_kdir==-1) name/**/2_bmin(3) = 1 \
+   &&       if (name/**/2_idir== 0) name/**/2_bmin(1) = name/**/2_blo(1)+1 \
+   &&       if (name/**/2_jdir== 0) name/**/2_bmin(2) = name/**/2_blo(2)+1 \
+   &&       if (name/**/2_kdir== 0) name/**/2_bmin(3) = name/**/2_blo(3)+1 \
+   &&       if (name/**/2_idir==+1) name/**/2_bmin(1) = cctk_lsh(1) - name/**/2_bhi(1) \
+   &&       if (name/**/2_jdir==+1) name/**/2_bmin(2) = cctk_lsh(2) - name/**/2_bhi(2) \
+   &&       if (name/**/2_kdir==+1) name/**/2_bmin(3) = cctk_lsh(3) - name/**/2_bhi(3) \
+   &&       if (name/**/2_idir==-1) name/**/2_bmax(1) = name/**/2_blo(1) \
+   &&       if (name/**/2_jdir==-1) name/**/2_bmax(2) = name/**/2_blo(2) \
+   &&       if (name/**/2_kdir==-1) name/**/2_bmax(3) = name/**/2_blo(3) \
+   &&       if (name/**/2_idir== 0) name/**/2_bmax(1) = cctk_lsh(1) - name/**/2_bhi(1) \
+   &&       if (name/**/2_jdir== 0) name/**/2_bmax(2) = cctk_lsh(2) - name/**/2_bhi(2) \
+   &&       if (name/**/2_kdir== 0) name/**/2_bmax(3) = cctk_lsh(3) - name/**/2_bhi(3) \
+   &&       if (name/**/2_idir==+1) name/**/2_bmax(1) = cctk_lsh(1) \
+   &&       if (name/**/2_jdir==+1) name/**/2_bmax(2) = cctk_lsh(2) \
+   &&       if (name/**/2_kdir==+1) name/**/2_bmax(3) = cctk_lsh(3) \
+            CCTK_LOOP3STR_NORMAL(name/**/_boundaries, \
+                                 i,j,k, \
+                                 ni,nj,nk, \
+                                 name/**/2_idir,name/**/2_jdir,name/**/2_kdir, \
+                                 name/**/2_bmin(1),name/**/2_bmin(2),name/**/2_bmin(3), \
+                                 name/**/2_bmax(1),name/**/2_bmax(2),name/**/2_bmax(3), \
+                                 cctk_ash(1), \
+                                 cctk_ash(2), \
+                                 cctk_ash(3), \
+                                 name/**/2_istr) \
 
 #define CCTK_ENDLOOP3STR_BOUNDARIES(name) \
-            CCTK_ENDLOOP3(name) \
-   &&    end do /* face */ \
+            CCTK_ENDLOOP3STR_NORMAL(name/**/_boundaries) \
+   &&    end if /* bbox */ \
    && end do /* dir */ \
+   && end do /* dir */ \
+   && end do /* dir */ \
+
+
+
+/* LOOP_INTBOUNDARIES */
+
+#define CCTK_LOOP3_INTBOUNDARIES_DECLARE(name) \
+   CCTK_LOOP3STR_INTBOUNDARIES_DECLARE(name) \
+
+#define CCTK_LOOP3_INTBOUNDARIES_OMP_PRIVATE(name) \
+   CCTK_LOOP3STR_INTBOUNDARIES_OMP_PRIVATE(name) \
+
+#define CCTK_LOOP3_INTBOUNDARIES(name, \
+                                 i,j,k, \
+                                 ni,nj,nk, \
+                                 iblo,jblo,kblo, \
+                                 ibhi,jbhi,kbhi, \
+                                 ibboxlo,jbboxlo,kbboxlo, \
+                                 ibboxhi,jbboxhi,kbboxhi) \
+   CCTK_LOOP3STR_INTBOUNDARIES(name, \
+                               i,j,k, \
+                               ni,nj,nk, \
+                               iblo,jblo,kblo, \
+                               ibhi,jbhi,kbhi, \
+                               ibboxlo,jbboxlo,kbboxlo, \
+                               ibboxhi,jbboxhi,kbboxhi, \
+                               1) \
+
+#define CCTK_ENDLOOP3_INTBOUNDARIES(name) \
+   CCTK_ENDLOOP3STR_INTBOUNDARIES(name) \
+
+#define CCTK_LOOP3STR_INTBOUNDARIES_DECLARE(name) \
+   CCTK_LOOP3STR_NORMAL_DECLARE(name/**/_intboundaries) \
+   && integer :: name/**/2_blo(3), name/**/2_bhi(3) \
+   && integer :: name/**/2_bboxlo(3), name/**/2_bboxhi(3) \
+   && integer :: name/**/2_istr \
+   && integer :: name/**/2_idir \
+   && integer :: name/**/2_jdir \
+   && integer :: name/**/2_kdir \
+   && logical :: name/**/2_any_bbox,  name/**/2_all_bbox \
+   && integer :: name/**/2_bmin(3), name/**/2_bmax(3) \
+
+#define CCTK_LOOP3STR_INTBOUNDARIES_OMP_PRIVATE(name) \
+   CCTK_LOOP3STR_NORMAL_OMP_PRIVATE(name/**/_intboundaries) \
+
+#define CCTK_LOOP3STR_INTBOUNDARIES(name, \
+                                    i,j,k, \
+                                    ni,nj,nk, \
+                                    iblo,jblo,kblo, \
+                                    ibhi,jbhi,kbhi, \
+                                    ibboxlo,jbboxlo,kbboxlo, \
+                                    ibboxhi,jbboxhi,kbboxhi, \
+                                    istr) \
+   && name/**/2_blo = (/ iblo,jblo,kblo /) \
+   && name/**/2_bhi = (/ ibhi,jbhi,kbhi /) \
+   && name/**/2_bboxlo = (/ ibboxlo,jbboxlo,kbboxlo /) \
+   && name/**/2_bboxhi = (/ ibboxhi,jbboxhi,kbboxhi /) \
+   && name/**/2_istr = (istr) \
+   && /* Loop over all faces, edges, and corners */ \
+   && do name/**/2_kdir=-1, +1 \
+   && do name/**/2_jdir=-1, +1 \
+   && do name/**/2_idir=-1, +1 \
+   &&     name/**/2_any_bbox = .false. \
+   &&     if (name/**/2_idir==-1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxlo(1) /= 0 \
+   &&     if (name/**/2_jdir==-1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxlo(2) /= 0 \
+   &&     if (name/**/2_kdir==-1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxlo(3) /= 0 \
+   &&     if (name/**/2_idir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(1) /= 0 \
+   &&     if (name/**/2_jdir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(2) /= 0 \
+   &&     if (name/**/2_kdir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(3) /= 0 \
+   &&     name/**/2_all_bbox = .true. \
+   &&     if (name/**/2_idir==-1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxlo(1) /= 0 \
+   &&     if (name/**/2_jdir==-1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxlo(2) /= 0 \
+   &&     if (name/**/2_kdir==-1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxlo(3) /= 0 \
+   &&     if (name/**/2_idir==+1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxhi(1) /= 0 \
+   &&     if (name/**/2_jdir==+1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxhi(2) /= 0 \
+   &&     if (name/**/2_kdir==+1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxhi(3) /= 0 \
+   &&    if (name/**/2_all_bbox .and. name/**/2_any_bbox) then \
+   &&       if (name/**/2_idir==-1) name/**/2_bmin(1) = 1 \
+   &&       if (name/**/2_jdir==-1) name/**/2_bmin(2) = 1 \
+   &&       if (name/**/2_kdir==-1) name/**/2_bmin(3) = 1 \
+   &&       if (name/**/2_idir== 0) name/**/2_bmin(1) = name/**/2_blo(1)+1 \
+   &&       if (name/**/2_jdir== 0) name/**/2_bmin(2) = name/**/2_blo(2)+1 \
+   &&       if (name/**/2_kdir== 0) name/**/2_bmin(3) = name/**/2_blo(3)+1 \
+   &&       if (name/**/2_idir==+1) name/**/2_bmin(1) = cctk_lsh(1) - name/**/2_bhi(1) \
+   &&       if (name/**/2_jdir==+1) name/**/2_bmin(2) = cctk_lsh(2) - name/**/2_bhi(2) \
+   &&       if (name/**/2_kdir==+1) name/**/2_bmin(3) = cctk_lsh(3) - name/**/2_bhi(3) \
+   &&       if (name/**/2_idir==-1) name/**/2_bmax(1) = name/**/2_blo(1) \
+   &&       if (name/**/2_jdir==-1) name/**/2_bmax(2) = name/**/2_blo(2) \
+   &&       if (name/**/2_kdir==-1) name/**/2_bmax(3) = name/**/2_blo(3) \
+   &&       if (name/**/2_idir== 0) name/**/2_bmax(1) = cctk_lsh(1) - name/**/2_bhi(1) \
+   &&       if (name/**/2_jdir== 0) name/**/2_bmax(2) = cctk_lsh(2) - name/**/2_bhi(2) \
+   &&       if (name/**/2_kdir== 0) name/**/2_bmax(3) = cctk_lsh(3) - name/**/2_bhi(3) \
+   &&       if (name/**/2_idir==+1) name/**/2_bmax(1) = cctk_lsh(1) \
+   &&       if (name/**/2_jdir==+1) name/**/2_bmax(2) = cctk_lsh(2) \
+   &&       if (name/**/2_kdir==+1) name/**/2_bmax(3) = cctk_lsh(3) \
+            CCTK_LOOP3STR_NORMAL(name/**/_intboundaries, \
+                                 i,j,k, \
+                                 ni,nj,nk, \
+                                 name/**/2_idir,name/**/2_jdir,name/**/2_kdir, \
+                                 name/**/2_bmin(1),name/**/2_bmin(2),name/**/2_bmin(3), \
+                                 name/**/2_bmax(1),name/**/2_bmax(2),name/**/2_bmax(3), \
+                                 cctk_ash(1), \
+                                 cctk_ash(2), \
+                                 cctk_ash(3), \
+                                 name/**/2_istr) \
+
+#define CCTK_ENDLOOP3STR_INTBOUNDARIES(name) \
+            CCTK_ENDLOOP3STR_NORMAL(name/**/_intboundaries) \
+   &&    end if /* bbox */ \
+   && end do /* dir */ \
+   && end do /* dir */ \
+   && end do /* dir */ \
+
+
+
+/* LOOP_ALL */
+
+#define CCTK_LOOP3_ALL_DECLARE(name) \
+   CCTK_LOOP3STR_ALL_DECLARE(name) \
+
+#define CCTK_LOOP3_ALL_OMP_PRIVATE(name) \
+   CCTK_LOOP3STR_ALL_OMP_PRIVATE(name) \
+
+#define CCTK_LOOP3_ALL(name, \
+                       i,j,k) \
+   CCTK_LOOP3STR_ALL(name, \
+                     i,j,k, \
+                     1) \
+
+#define CCTK_ENDLOOP3_ALL(name) \
+   CCTK_ENDLOOP3STR_ALL(name) \
+
+#define CCTK_LOOP3STR_ALL_DECLARE(name) \
+   CCTK_LOOP3STR_DECLARE(name/**/_all) \
+
+#define CCTK_LOOP3STR_ALL_OMP_PRIVATE(name) \
+   CCTK_LOOP3STR_OMP_PRIVATE(name/**/_all) \
+
+#define CCTK_LOOP3STR_ALL(name, \
+                          i,j,k, \
+                          istr) \
+   CCTK_LOOP3STR(name/**/_all, \
+                 i,j,k, \
+                 1,1,1, \
+                 cctk_lsh(1),cctk_lsh(2),cctk_lsh(3), \
+                 cctk_ash(1),cctk_ash(2),cctk_ash(3), \
+                 istr) \
+
+#define CCTK_ENDLOOP3STR_ALL(name) \
+   CCTK_ENDLOOP3STR(name/**/_all) \
+
+
+
+/* LOOP_INT */
+
+#define CCTK_LOOP3_INT_DECLARE(name) \
+   CCTK_LOOP3STR_INT_DECLARE(name) \
+
+#define CCTK_LOOP3_INT_OMP_PRIVATE(name) \
+   CCTK_LOOP3STR_INT_OMP_PRIVATE(name) \
+
+#define CCTK_LOOP3_INT(name, \
+                        i,j,k) \
+   CCTK_LOOP3STR_INT(name, \
+                      i,j,k, \
+                      1) \
+
+#define CCTK_ENDLOOP3_INT(name) \
+   CCTK_ENDLOOP3STR_INT(name) \
+
+#define CCTK_LOOP3STR_INT_DECLARE(name) \
+   CCTK_LOOP3STR_INTERIOR_DECLARE(name/**/_int) \
+   && integer :: name/**/3_bndsize    (6) \
+   && integer :: name/**/3_is_ghostbnd(6) \
+   && integer :: name/**/3_is_symbnd  (6) \
+   && integer :: name/**/3_is_physbnd (6) \
+   && integer :: name/**/3_ierr \
+
+#define CCTK_LOOP3STR_INT_OMP_PRIVATE(name) \
+   CCTK_LOOP3STR_INTERIOR_OMP_PRIVATE(name/**/_int) \
+
+#define CCTK_LOOP3STR_INT(name, \
+                          i,j,k, \
+                          istr) \
+   && !$omp single \
+   && name/**/3_ierr = GetBoundarySizesAndTypes \
+         (cctkGH, 6, name/**/3_bndsize, name/**/3_is_ghostbnd, name/**/3_is_symbnd, name/**/3_is_physbnd) \
+   && !$omp end single copyprivate(name/**/3_bndsize) \
+      CCTK_LOOP3STR_INTERIOR(name/**/_int, \
+                             i,j,k, \
+                             name/**/3_bndsize(1+1),name/**/3_bndsize(3+1),name/**/3_bndsize(5+1), \
+                             name/**/3_bndsize(2),name/**/3_bndsize(4),name/**/3_bndsize(6), \
+                             (istr)) \
+
+#define CCTK_ENDLOOP3STR_INT(name) \
+      CCTK_ENDLOOP3STR_INTERIOR(name/**/int) \
+
+
+
+/* LOOP_BND */
+
+#define CCTK_LOOP3_BND_DECLARE(name) \
+   CCTK_LOOP3STR_BND_DECLARE(name) \
+
+#define CCTK_LOOP3_BND_OMP_PRIVATE(name) \
+   CCTK_LOOP3STR_BND_OMP_PRIVATE(name) \
+
+#define CCTK_LOOP3_BND(name, \
+                       i,j,k, \
+                       ni,nj,nk) \
+   CCTK_LOOP3STR_BND(name, \
+                     i,j,k, \
+                     ni,nj,nk, \
+                     1) \
+
+#define CCTK_ENDLOOP3_BND(name) \
+   CCTK_ENDLOOP3STR_BND(name) \
+
+#define CCTK_LOOP3STR_BND_DECLARE(name) \
+   CCTK_LOOP3STR_BOUNDARIES_DECLARE(name/**/_bnd) \
+   && integer :: name/**/3_bndsize    (6) \
+   && integer :: name/**/3_is_ghostbnd(6) \
+   && integer :: name/**/3_is_symbnd  (6) \
+   && integer :: name/**/3_is_physbnd (6) \
+   && integer :: name/**/3_ierr \
+
+#define CCTK_LOOP3STR_BND_OMP_PRIVATE(name) \
+   CCTK_LOOP3STR_BOUNDARIES_OMP_PRIVATE(name/**/_bnd) \
+
+#define CCTK_LOOP3STR_BND(name, \
+                          i,j,k, \
+                          ni,nj,nk, \
+                          istr) \
+   && !$omp single \
+   && name/**/3_ierr = GetBoundarySizesAndTypes \
+         (cctkGH, 6, name/**/3_bndsize, name/**/3_is_ghostbnd, name/**/3_is_symbnd, name/**/3_is_physbnd) \
+   && !$omp end single copyprivate(name/**/3_bndsize, name/**/3_is_physbnd) \
+      CCTK_LOOP3STR_BOUNDARIES(name/**/_bnd, \
+                               i,j,k, \
+                               ni,nj,nk, \
+                               name/**/3_bndsize(1)+1,name/**/3_bndsize(3)+1,name/**/3_bndsize(5)+1, \
+                               name/**/3_bndsize(2),name/**/3_bndsize(4),name/**/3_bndsize(6), \
+                               name/**/3_is_physbnd(1),name/**/3_is_physbnd(3),name/**/3_is_physbnd(5), \
+                               name/**/3_is_physbnd(2),name/**/3_is_physbnd(4),name/**/3_is_physbnd(6), \
+                               (istr)) \
+
+#define CCTK_ENDLOOP3STR_BND(name) \
+      CCTK_ENDLOOP3STR_BOUNDARIES(name/**/_bnd) \
+
+
+
+
+
+
+/* LOOP_INTBND */
+
+#define CCTK_LOOP3_INTBND_DECLARE(name) \
+   CCTK_LOOP3STR_INTBND_DECLARE(name) \
+
+#define CCTK_LOOP3_INTBND_OMP_PRIVATE(name) \
+   CCTK_LOOP3STR_INTBND_OMP_PRIVATE(name) \
+
+#define CCTK_LOOP3_INTBND(name, \
+                          i,j,k, \
+                          ni,nj,nk) \
+   CCTK_LOOP3STR_INTBND(name, \
+                        i,j,k, \
+                        ni,nj,nk, \
+                        1) \
+
+#define CCTK_ENDLOOP3_INTBND(name) \
+   CCTK_ENDLOOP3STR_INTBND(name) \
+
+#define CCTK_LOOP3STR_INTBND_DECLARE(name) \
+   CCTK_LOOP3STR_INTBOUNDARIES_DECLARE(name/**/_bnd) \
+   && integer :: name/**/3_bndsize    (6) \
+   && integer :: name/**/3_is_ghostbnd(6) \
+   && integer :: name/**/3_is_symbnd  (6) \
+   && integer :: name/**/3_is_physbnd (6) \
+   && integer :: name/**/3_ierr \
+
+#define CCTK_LOOP3STR_INTBND_OMP_PRIVATE(name) \
+   CCTK_LOOP3STR_INTBOUNDARIES_OMP_PRIVATE(name/**/_bnd) \
+
+#define CCTK_LOOP3STR_INTBND(name, \
+                             i,j,k, \
+                             ni,nj,nk, \
+                             istr) \
+   && !$omp single \
+   && name/**/3_ierr = GetBoundarySizesAndTypes \
+         (cctkGH, 6, name/**/3_bndsize, name/**/3_is_ghostbnd, name/**/3_is_symbnd, name/**/3_is_physbnd) \
+   && !$omp end single copyprivate(name/**/3_bndsize, name/**/3_is_physbnd) \
+      CCTK_LOOP3STR_INTBOUNDARIES(name/**/_bnd, \
+                                  i,j,k, \
+                                  ni,nj,nk, \
+                                  name/**/3_bndsize(1+1),name/**/3_bndsize(3+1),name/**/3_bndsize(5+1), \
+                                  name/**/3_bndsize(2),name/**/3_bndsize(4),name/**/3_bndsize(6), \
+                                  name/**/3_is_physbnd(1),name/**/3_is_physbnd(3),name/**/3_is_physbnd(5), \
+                                  name/**/3_is_physbnd(2),name/**/3_is_physbnd(4),name/**/3_is_physbnd(6), \
+                                  (istr)) \
+
+#define CCTK_ENDLOOP3STR_INTBND(name) \
+      CCTK_ENDLOOP3STR_INTBOUNDARIES(name/**/_bnd) \
 
 #endif /* #ifdef FCODE */
 
@@ -2184,7 +3276,7 @@
     int const cctki2_bhi[] = { (ibhi),(jbhi),(kbhi),(lbhi) }; \
     int const cctki2_bbox[] = { (ibboxlo), (ibboxhi),(jbboxlo), (jbboxhi),(kbboxlo), (kbboxhi),(lbboxlo), (lbboxhi) }; \
     int const cctki2_lsh[] = { cctki2_cctkGH->cctk_lsh[0],cctki2_cctkGH->cctk_lsh[1],cctki2_cctkGH->cctk_lsh[2],cctki2_cctkGH->cctk_lsh[3] }; \
-    int const cctki2_istr1 CCTK_ATTRIBUTE_UNUSED = (istr); \
+    int const cctki2_istr CCTK_ATTRIBUTE_UNUSED = (istr); \
     /* Loop over all faces, edges, and corners */ \
     for (int cctki2_ldir=-1; cctki2_ldir<=+1; ++cctki2_ldir) { \
     for (int cctki2_kdir=-1; cctki2_kdir<=+1; ++cctki2_kdir) { \
@@ -2218,7 +3310,7 @@
                              cctki2_cctkGH->cctk_ash[1], \
                              cctki2_cctkGH->cctk_ash[2], \
                              cctki2_cctkGH->cctk_ash[3], \
-                             cctki2_istr1) { \
+                             cctki2_istr) { \
 
 #define CCTK_ENDLOOP4STR_BOUNDARIES(name) \
         } CCTK_ENDLOOP4STR_NORMAL(name##_boundaries); \
@@ -2273,7 +3365,7 @@
     int const cctki2_bhi[] = { (ibhi),(jbhi),(kbhi),(lbhi) }; \
     int const cctki2_bbox[] = { (ibboxlo), (ibboxhi),(jbboxlo), (jbboxhi),(kbboxlo), (kbboxhi),(lbboxlo), (lbboxhi) }; \
     int const cctki2_lsh[] = { cctki2_cctkGH->cctk_lsh[0],cctki2_cctkGH->cctk_lsh[1],cctki2_cctkGH->cctk_lsh[2],cctki2_cctkGH->cctk_lsh[3] }; \
-    int const cctki2_istr1 CCTK_ATTRIBUTE_UNUSED = (istr); \
+    int const cctki2_istr CCTK_ATTRIBUTE_UNUSED = (istr); \
     /* Loop over all faces, edges, and corners */ \
     for (int cctki2_ldir=-1; cctki2_ldir<=+1; ++cctki2_ldir) { \
     for (int cctki2_kdir=-1; cctki2_kdir<=+1; ++cctki2_kdir) { \
@@ -2312,7 +3404,7 @@
                              cctki2_cctkGH->cctk_ash[1], \
                              cctki2_cctkGH->cctk_ash[2], \
                              cctki2_cctkGH->cctk_ash[3], \
-                             cctki2_istr1) { \
+                             cctki2_istr) { \
 
 #define CCTK_ENDLOOP4STR_INTBOUNDARIES(name) \
         } CCTK_ENDLOOP4STR_NORMAL(name##_intboundaries); \
@@ -2515,24 +3607,115 @@
 
 /* LOOP */
 
+#define CCTK_LOOP4_NORMAL_DECLARE(name) \
+   CCTK_LOOP4STR_NORMAL_DECLARE(name) \
+
+#define CCTK_LOOP4_NORMAL_OMP_PRIVATE(name) \
+   CCTK_LOOP4STR_NORMAL_OMP_PRIVATE(name) \
+
+#define CCTK_LOOP4_NORMAL(name, \
+                          i,j,k,l, \
+                          ni,nj,nk,nl, \
+                          idir,jdir,kdir,ldir, \
+                          imin,jmin,kmin,lmin, \
+                          imax,jmax,kmax,lmax, \
+                          iash,jash,kash,lash) \
+   CCTK_LOOP4STR_NORMAL(name, \
+                        i,j,k,l, \
+                        ni,nj,nk,nl, \
+                        idir,jdir,kdir,ldir, \
+                        imin,jmin,kmin,lmin, \
+                        imax,jmax,kmax,lmax, \
+                        iash,jash,kash,lash, \
+                        1) \
+
+#define CCTK_ENDLOOP4_NORMAL(name) \
+   CCTK_ENDLOOP4STR_NORMAL(name) \
+
+#define CCTK_LOOP4STR_NORMAL_DECLARE(name) \
+   && integer :: name/**/0_idir,name/**/0_jdir,name/**/0_kdir,name/**/0_ldir \
+   && integer :: name/**/0_imin,name/**/0_jmin,name/**/0_kmin,name/**/0_lmin \
+   && integer :: name/**/0_imax,name/**/0_jmax,name/**/0_kmax,name/**/0_lmax \
+   && integer :: name/**/0_istr \
+
+#define CCTK_LOOP4STR_NORMAL_OMP_PRIVATE(name) \
+   && !$omp private (i,j,k,l) \
+   && !$omp private (ni,nj,nk,nl) \
+
+#define CCTK_LOOP4STR_NORMAL(name, \
+                             i,j,k,l, \
+                             ni,nj,nk,nl, \
+                             idir,jdir,kdir,ldir, \
+                             imin,jmin,kmin,lmin, \
+                             imax,jmax,kmax,lmax, \
+                             iash,jash,kash,lash, \
+                             istr) \
+   && name/**/0_idir = idir \
+   && name/**/0_jdir = jdir \
+   && name/**/0_kdir = kdir \
+   && name/**/0_ldir = ldir \
+   && name/**/0_imin = imin \
+   && name/**/0_jmin = jmin \
+   && name/**/0_kmin = kmin \
+   && name/**/0_lmin = lmin \
+   && name/**/0_imax = imax \
+   && name/**/0_jmax = jmax \
+   && name/**/0_kmax = kmax \
+   && name/**/0_lmax = lmax \
+   && name/**/0_istr = istr \
+   && !$omp do \
+   && do l = name/**/0_lmin, name/**/0_lmax \
+   && do k = name/**/0_kmin, name/**/0_kmax \
+   && do j = name/**/0_jmin, name/**/0_jmax \
+   && do i = name/**/0_imin, name/**/0_imax \
+   &&    if (name/**/0_idir< 0) ni = i \
+   &&    if (name/**/0_jdir< 0) nj = j \
+   &&    if (name/**/0_kdir< 0) nk = k \
+   &&    if (name/**/0_ldir< 0) nl = l \
+   &&    if (name/**/0_idir==0) ni = 0 \
+   &&    if (name/**/0_jdir==0) nj = 0 \
+   &&    if (name/**/0_kdir==0) nk = 0 \
+   &&    if (name/**/0_ldir==0) nl = 0 \
+   &&    if (name/**/0_idir> 0) ni = name/**/0_imax+1-i \
+   &&    if (name/**/0_jdir> 0) nj = name/**/0_jmax+1-j \
+   &&    if (name/**/0_kdir> 0) nk = name/**/0_kmax+1-k \
+   &&    if (name/**/0_ldir> 0) nl = name/**/0_lmax+1-l \
+
+#define CCTK_ENDLOOP4STR_NORMAL(name) \
+   && end do \
+   && end do \
+   && end do \
+   && end do \
+
+
+
 #define CCTK_LOOP4_DECLARE(name) \
-   && integer :: name/**/_imin,name/**/_jmin,name/**/_kmin,name/**/_lmin \
-   && integer :: name/**/_imax,name/**/_jmax,name/**/_kmax,name/**/_lmax \
-   && integer :: name/**/_istr \
+   CCTK_LOOP4STR_DECLARE(name) \
 
 #define CCTK_LOOP4_OMP_PRIVATE(name) \
+   CCTK_LOOP4STR_OMP_PRIVATE(name) \
 
 #define CCTK_LOOP4(name, \
                    i,j,k,l, \
                    imin,jmin,kmin,lmin, \
                    imax,jmax,kmax,lmax, \
                    iash,jash,kash,lash) \
-  CCTK_LOOP4STR(name, \
-             i,j,k,l, \
-             imin,jmin,kmin,lmin, \
-             imax,jmax,kmax,lmax, \
-             iash,jash,kash,lash, \
-             1) \
+   CCTK_LOOP4STR(name, \
+                 i,j,k,l, \
+                 imin,jmin,kmin,lmin, \
+                 imax,jmax,kmax,lmax, \
+                 iash,jash,kash,lash, \
+                 1) \
+
+#define CCTK_ENDLOOP4(name) \
+   CCTK_ENDLOOP4STR(name) \
+
+#define CCTK_LOOP4STR_DECLARE(name) \
+   CCTK_LOOP4STR_NORMAL_DECLARE(name) \
+   && integer :: name/**/1_ni,name/**/1_nj,name/**/1_nk,name/**/1_nl \
+
+#define CCTK_LOOP4STR_OMP_PRIVATE(name) \
+   CCTK_LOOP4STR_NORMAL_OMP_PRIVATE(name) \
 
 #define CCTK_LOOP4STR(name, \
                       i,j,k,l, \
@@ -2540,89 +3723,58 @@
                       imax,jmax,kmax,lmax, \
                       iash,jash,kash,lash, \
                       istr) \
-   && name/**/_imin = imin \
-   && name/**/_jmin = jmin \
-   && name/**/_kmin = kmin \
-   && name/**/_lmin = lmin \
-   && name/**/_imax = imax \
-   && name/**/_jmax = jmax \
-   && name/**/_kmax = kmax \
-   && name/**/_lmax = lmax \
-   && name/**/_istr = istr \
-   && do l = name/**/_lmin, name/**/_lmax \
-   && do k = name/**/_kmin, name/**/_kmax \
-   && do j = name/**/_jmin, name/**/_jmax \
-   && do i = name/**/_imin, name/**/_imax \
-
-#define CCTK_ENDLOOP4(name) \
-  CCTK_ENDLOOP4STR(name) \
+   CCTK_LOOP4STR_NORMAL(name, \
+                        i,j,k,l, \
+                        name/**/1_ni,name/**/1_nj,name/**/1_nk,name/**/1_nl, \
+                        0,0,0,0, \
+                        imin,jmin,kmin,lmin, \
+                        imax,jmax,kmax,lmax, \
+                        iash,jash,kash,lash, \
+                        istr) \
 
 #define CCTK_ENDLOOP4STR(name) \
-   && end do \
-   && end do \
-   && end do \
-   && end do \
-
-
-
-/* LOOP_ALL */
-
-#define CCTK_LOOP4_ALL_DECLARE(name) \
-   CCTK_LOOP4_DECLARE(name) \
-
-#define CCTK_LOOP4_ALL_OMP_PRIVATE(name) \
-   CCTK_LOOP4_OMP_PRIVATE(name) \
-
-#define CCTK_LOOP4_ALL(name, \
-                       i,j,k,l) \
-  CCTK_LOOP4STR_ALL(name, \
-                 i,j,k,l, \
-                 1) \
-
-#define CCTK_LOOP4STR_ALL(name, \
-                          i,j,k,l, \
-                          istr) \
-   CCTK_LOOP4STR(name, \
-                 i,j,k,l, \
-                 1,1,1,1, \
-                 cctk_lsh(1),cctk_lsh(2),cctk_lsh(3),cctk_lsh(4), \
-                 cctk_ash(1),cctk_ash(2),cctk_ash(3),cctk_ash(4), \
-                 istr) \
-
-#define CCTK_ENDLOOP4_ALL(name) \
-  CCTK_ENDLOOP4STR_ALL(name) \
-
-#define CCTK_ENDLOOP4STR_ALL(name) \
-   CCTK_ENDLOOP4(name) \
+   CCTK_ENDLOOP4STR_NORMAL(name) \
 
 
 
 /* LOOP_INTERIOR */
 
 #define CCTK_LOOP4_INTERIOR_DECLARE(name) \
-   CCTK_LOOP4_DECLARE(name) \
+   CCTK_LOOP4STR_INTERIOR_DECLARE(name) \
 
 #define CCTK_LOOP4_INTERIOR_OMP_PRIVATE(name) \
-   CCTK_LOOP4_OMP_PRIVATE(name) \
+   CCTK_LOOP4STR_INTERIOR_OMP_PRIVATE(name) \
 
 #define CCTK_LOOP4_INTERIOR(name, \
                             i,j,k,l, \
                             iblo,jblo,kblo,lblo, \
                             ibhi,jbhi,kbhi,lbhi) \
-  CCTK_LOOP4STR_INTERIOR(name, \
-                      i,j,k,l, \
-                      iblo,jblo,kblo,lblo, \
-                      ibhi,jbhi,kbhi,lbhi, \
-                      1) \
+   CCTK_LOOP4STR_INTERIOR(name, \
+                          i,j,k,l, \
+                          iblo,jblo,kblo,lblo, \
+                          ibhi,jbhi,kbhi,lbhi, \
+                          1) \
+
+#define CCTK_ENDLOOP4_INTERIOR(name) \
+   CCTK_ENDLOOP4STR_INTERIOR(name) \
+
+#define CCTK_LOOP4STR_INTERIOR_DECLARE(name) \
+   CCTK_LOOP4STR_DECLARE(name/**/_interior) \
+
+#define CCTK_LOOP4STR_INTERIOR_OMP_PRIVATE(name) \
+   CCTK_LOOP4STR_OMP_PRIVATE(name/**/_interior) \
 
 #define CCTK_LOOP4STR_INTERIOR(name, \
                                i,j,k,l, \
                                iblo,jblo,kblo,lblo, \
                                ibhi,jbhi,kbhi,lbhi, \
                                istr) \
-   CCTK_LOOP4STR(name, \
+   CCTK_LOOP4STR(name/**/_interior, \
                  i,j,k,l, \
-                 (iblo),(jblo),(kblo),(lblo), \
+                 (iblo)+1, \
+                 (jblo)+1, \
+                 (kblo)+1, \
+                 (lblo)+1, \
                  cctk_lsh(1)-(ibhi), \
                  cctk_lsh(2)-(jbhi), \
                  cctk_lsh(3)-(kbhi), \
@@ -2630,74 +3782,440 @@
                  cctk_ash(1),cctk_ash(2),cctk_ash(3),cctk_ash(4), \
                  istr) \
 
-#define CCTK_ENDLOOP4_INTERIOR(name) \
-  CCTK_ENDLOOP4STR_INTERIOR(name) \
-
 #define CCTK_ENDLOOP4STR_INTERIOR(name) \
-   CCTK_ENDLOOP4(name) \
+   CCTK_ENDLOOP4STR(name/**/_interior) \
 
 
 
 /* LOOP_BOUNDARIES */
 
 #define CCTK_LOOP4_BOUNDARIES_DECLARE(name) \
-   CCTK_LOOP4_DECLARE(name) \
-   && integer :: lc_bmin(4), lc_bmax(4) \
-   && integer :: lc_blo(4), lc_bhi(4) \
-   && integer :: lc_istr \
-   && integer :: lc_dir, lc_face \
-   && integer :: lc_d \
+   CCTK_LOOP4STR_BOUNDARIES_DECLARE(name) \
 
 #define CCTK_LOOP4_BOUNDARIES_OMP_PRIVATE(name) \
-   CCTK_LOOP4_OMP_PRIVATE(name) \
+   CCTK_LOOP4STR_BOUNDARIES_OMP_PRIVATE(name) \
 
 #define CCTK_LOOP4_BOUNDARIES(name, \
                               i,j,k,l, \
+                              ni,nj,nk,nl, \
                               iblo,jblo,kblo,lblo, \
-                              ibhi,jbhi,kbhi,lbhi) \
-  CCTK_LOOP4STR_BOUNDARIES(name, \
-                        i,j,k,l, \
-                        iblo,jblo,kblo,lblo, \
-                        ibhi,jbhi,kbhi,lbhi, \
-                        1) \
+                              ibhi,jbhi,kbhi,lbhi, \
+                              ibboxlo,jbboxlo,kbboxlo,lbboxlo, \
+                              ibboxhi,jbboxhi,kbboxhi,lbboxhi) \
+   CCTK_LOOP4STR_BOUNDARIES(name, \
+                            i,j,k,l, \
+                            ni,nj,nk,nl, \
+                            iblo,jblo,kblo,lblo, \
+                            ibhi,jbhi,kbhi,lbhi, \
+                            ibboxlo,jbboxlo,kbboxlo,lbboxlo, \
+                            ibboxhi,jbboxhi,kbboxhi,lbboxhi, \
+                            1) \
+
+#define CCTK_ENDLOOP4_BOUNDARIES(name) \
+   CCTK_ENDLOOP4STR_BOUNDARIES(name) \
+
+#define CCTK_LOOP4STR_BOUNDARIES_DECLARE(name) \
+   CCTK_LOOP4STR_NORMAL_DECLARE(name/**/_boundaries) \
+   && integer :: name/**/2_blo(4), name/**/2_bhi(4) \
+   && integer :: name/**/2_bboxlo(4), name/**/2_bboxhi(4) \
+   && integer :: name/**/2_istr \
+   && integer :: name/**/2_idir \
+   && integer :: name/**/2_jdir \
+   && integer :: name/**/2_kdir \
+   && integer :: name/**/2_ldir \
+   && logical :: name/**/2_any_bbox \
+   && integer :: name/**/2_bmin(4), name/**/2_bmax(4) \
+
+#define CCTK_LOOP4STR_BOUNDARIES_OMP_PRIVATE(name) \
+   CCTK_LOOP4STR_NORMAL_OMP_PRIVATE(name/**/_boundaries) \
 
 #define CCTK_LOOP4STR_BOUNDARIES(name, \
                                  i,j,k,l, \
+                                 ni,nj,nk,nl, \
                                  iblo,jblo,kblo,lblo, \
                                  ibhi,jbhi,kbhi,lbhi, \
+                                 ibboxlo,jbboxlo,kbboxlo,lbboxlo, \
+                                 ibboxhi,jbboxhi,kbboxhi,lbboxhi, \
                                  istr) \
-   && lc_blo = (/ iblo,jblo,kblo,lblo /) \
-   && lc_bhi = (/ ibhi,jbhi,kbhi,lbhi /) \
-   && lc_istr = istr \
-   && do lc_dir=1,4 \
-   &&    do lc_face=1,2 \
-   &&       do lc_d=1,4 \
-   &&          lc_bmin(lc_d) = 1 \
-   &&          lc_bmax(lc_d) = cctk_lsh(lc_d) \
-   &&          if (lc_d<lc_dir) then \
-   &&             lc_bmin(lc_d) = lc_bmin(lc_d)+lc_blo(lc_d) \
-   &&             lc_bmax(lc_d) = lc_bmax(lc_d)-lc_bhi(lc_d) \
-   &&          end if \
-   &&       end do \
-   &&       if (lc_face==1) then \
-   &&          lc_bmax(lc_dir) = lc_bmin(lc_dir)+lc_blo(lc_dir) \
-   &&       else \
-   &&          lc_bmin(lc_dir) = lc_bmax(lc_dir)-lc_bhi(lc_dir) \
-   &&       end if \
-            CCTK_LOOP4STR(name, \
-                          i,j,k,l, \
-                          lc_bmin(1),lc_bmin(2),lc_bmin(3),lc_bmin(4), \
-                          lc_bmax(1),lc_bmax(2),lc_bmax(3),lc_bmax(4), \
-                          cctk_ash(1),cctk_ash(2),cctk_ash(3),cctk_ash(4), \
-                          lc_istr) \
-
-#define CCTK_ENDLOOP4_BOUNDARIES(name) \
-  CCTK_ENDLOOP4STR_BOUNDARIES(name) \
+   && name/**/2_blo = (/ iblo,jblo,kblo,lblo /) \
+   && name/**/2_bhi = (/ ibhi,jbhi,kbhi,lbhi /) \
+   && name/**/2_bboxlo = (/ ibboxlo,jbboxlo,kbboxlo,lbboxlo /) \
+   && name/**/2_bboxhi = (/ ibboxhi,jbboxhi,kbboxhi,lbboxhi /) \
+   && name/**/2_istr = (istr) \
+   && /* Loop over all faces, edges, and corners */ \
+   && do name/**/2_ldir=-1, +1 \
+   && do name/**/2_kdir=-1, +1 \
+   && do name/**/2_jdir=-1, +1 \
+   && do name/**/2_idir=-1, +1 \
+   &&     name/**/2_any_bbox = .false. \
+   &&     if (name/**/2_idir==-1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxlo(1) /= 0 \
+   &&     if (name/**/2_jdir==-1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxlo(2) /= 0 \
+   &&     if (name/**/2_kdir==-1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxlo(3) /= 0 \
+   &&     if (name/**/2_ldir==-1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxlo(4) /= 0 \
+   &&     if (name/**/2_idir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(1) /= 0 \
+   &&     if (name/**/2_jdir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(2) /= 0 \
+   &&     if (name/**/2_kdir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(3) /= 0 \
+   &&     if (name/**/2_ldir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(4) /= 0 \
+   &&    if (name/**/2_any_bbox) then \
+   &&       if (name/**/2_idir==-1) name/**/2_bmin(1) = 1 \
+   &&       if (name/**/2_jdir==-1) name/**/2_bmin(2) = 1 \
+   &&       if (name/**/2_kdir==-1) name/**/2_bmin(3) = 1 \
+   &&       if (name/**/2_ldir==-1) name/**/2_bmin(4) = 1 \
+   &&       if (name/**/2_idir== 0) name/**/2_bmin(1) = name/**/2_blo(1)+1 \
+   &&       if (name/**/2_jdir== 0) name/**/2_bmin(2) = name/**/2_blo(2)+1 \
+   &&       if (name/**/2_kdir== 0) name/**/2_bmin(3) = name/**/2_blo(3)+1 \
+   &&       if (name/**/2_ldir== 0) name/**/2_bmin(4) = name/**/2_blo(4)+1 \
+   &&       if (name/**/2_idir==+1) name/**/2_bmin(1) = cctk_lsh(1) - name/**/2_bhi(1) \
+   &&       if (name/**/2_jdir==+1) name/**/2_bmin(2) = cctk_lsh(2) - name/**/2_bhi(2) \
+   &&       if (name/**/2_kdir==+1) name/**/2_bmin(3) = cctk_lsh(3) - name/**/2_bhi(3) \
+   &&       if (name/**/2_ldir==+1) name/**/2_bmin(4) = cctk_lsh(4) - name/**/2_bhi(4) \
+   &&       if (name/**/2_idir==-1) name/**/2_bmax(1) = name/**/2_blo(1) \
+   &&       if (name/**/2_jdir==-1) name/**/2_bmax(2) = name/**/2_blo(2) \
+   &&       if (name/**/2_kdir==-1) name/**/2_bmax(3) = name/**/2_blo(3) \
+   &&       if (name/**/2_ldir==-1) name/**/2_bmax(4) = name/**/2_blo(4) \
+   &&       if (name/**/2_idir== 0) name/**/2_bmax(1) = cctk_lsh(1) - name/**/2_bhi(1) \
+   &&       if (name/**/2_jdir== 0) name/**/2_bmax(2) = cctk_lsh(2) - name/**/2_bhi(2) \
+   &&       if (name/**/2_kdir== 0) name/**/2_bmax(3) = cctk_lsh(3) - name/**/2_bhi(3) \
+   &&       if (name/**/2_ldir== 0) name/**/2_bmax(4) = cctk_lsh(4) - name/**/2_bhi(4) \
+   &&       if (name/**/2_idir==+1) name/**/2_bmax(1) = cctk_lsh(1) \
+   &&       if (name/**/2_jdir==+1) name/**/2_bmax(2) = cctk_lsh(2) \
+   &&       if (name/**/2_kdir==+1) name/**/2_bmax(3) = cctk_lsh(3) \
+   &&       if (name/**/2_ldir==+1) name/**/2_bmax(4) = cctk_lsh(4) \
+            CCTK_LOOP4STR_NORMAL(name/**/_boundaries, \
+                                 i,j,k,l, \
+                                 ni,nj,nk,nl, \
+                                 name/**/2_idir,name/**/2_jdir,name/**/2_kdir,name/**/2_ldir, \
+                                 name/**/2_bmin(1),name/**/2_bmin(2),name/**/2_bmin(3),name/**/2_bmin(4), \
+                                 name/**/2_bmax(1),name/**/2_bmax(2),name/**/2_bmax(3),name/**/2_bmax(4), \
+                                 cctk_ash(1), \
+                                 cctk_ash(2), \
+                                 cctk_ash(3), \
+                                 cctk_ash(4), \
+                                 name/**/2_istr) \
 
 #define CCTK_ENDLOOP4STR_BOUNDARIES(name) \
-            CCTK_ENDLOOP4(name) \
-   &&    end do /* face */ \
+            CCTK_ENDLOOP4STR_NORMAL(name/**/_boundaries) \
+   &&    end if /* bbox */ \
    && end do /* dir */ \
+   && end do /* dir */ \
+   && end do /* dir */ \
+   && end do /* dir */ \
+
+
+
+/* LOOP_INTBOUNDARIES */
+
+#define CCTK_LOOP4_INTBOUNDARIES_DECLARE(name) \
+   CCTK_LOOP4STR_INTBOUNDARIES_DECLARE(name) \
+
+#define CCTK_LOOP4_INTBOUNDARIES_OMP_PRIVATE(name) \
+   CCTK_LOOP4STR_INTBOUNDARIES_OMP_PRIVATE(name) \
+
+#define CCTK_LOOP4_INTBOUNDARIES(name, \
+                                 i,j,k,l, \
+                                 ni,nj,nk,nl, \
+                                 iblo,jblo,kblo,lblo, \
+                                 ibhi,jbhi,kbhi,lbhi, \
+                                 ibboxlo,jbboxlo,kbboxlo,lbboxlo, \
+                                 ibboxhi,jbboxhi,kbboxhi,lbboxhi) \
+   CCTK_LOOP4STR_INTBOUNDARIES(name, \
+                               i,j,k,l, \
+                               ni,nj,nk,nl, \
+                               iblo,jblo,kblo,lblo, \
+                               ibhi,jbhi,kbhi,lbhi, \
+                               ibboxlo,jbboxlo,kbboxlo,lbboxlo, \
+                               ibboxhi,jbboxhi,kbboxhi,lbboxhi, \
+                               1) \
+
+#define CCTK_ENDLOOP4_INTBOUNDARIES(name) \
+   CCTK_ENDLOOP4STR_INTBOUNDARIES(name) \
+
+#define CCTK_LOOP4STR_INTBOUNDARIES_DECLARE(name) \
+   CCTK_LOOP4STR_NORMAL_DECLARE(name/**/_intboundaries) \
+   && integer :: name/**/2_blo(4), name/**/2_bhi(4) \
+   && integer :: name/**/2_bboxlo(4), name/**/2_bboxhi(4) \
+   && integer :: name/**/2_istr \
+   && integer :: name/**/2_idir \
+   && integer :: name/**/2_jdir \
+   && integer :: name/**/2_kdir \
+   && integer :: name/**/2_ldir \
+   && logical :: name/**/2_any_bbox,  name/**/2_all_bbox \
+   && integer :: name/**/2_bmin(4), name/**/2_bmax(4) \
+
+#define CCTK_LOOP4STR_INTBOUNDARIES_OMP_PRIVATE(name) \
+   CCTK_LOOP4STR_NORMAL_OMP_PRIVATE(name/**/_intboundaries) \
+
+#define CCTK_LOOP4STR_INTBOUNDARIES(name, \
+                                    i,j,k,l, \
+                                    ni,nj,nk,nl, \
+                                    iblo,jblo,kblo,lblo, \
+                                    ibhi,jbhi,kbhi,lbhi, \
+                                    ibboxlo,jbboxlo,kbboxlo,lbboxlo, \
+                                    ibboxhi,jbboxhi,kbboxhi,lbboxhi, \
+                                    istr) \
+   && name/**/2_blo = (/ iblo,jblo,kblo,lblo /) \
+   && name/**/2_bhi = (/ ibhi,jbhi,kbhi,lbhi /) \
+   && name/**/2_bboxlo = (/ ibboxlo,jbboxlo,kbboxlo,lbboxlo /) \
+   && name/**/2_bboxhi = (/ ibboxhi,jbboxhi,kbboxhi,lbboxhi /) \
+   && name/**/2_istr = (istr) \
+   && /* Loop over all faces, edges, and corners */ \
+   && do name/**/2_ldir=-1, +1 \
+   && do name/**/2_kdir=-1, +1 \
+   && do name/**/2_jdir=-1, +1 \
+   && do name/**/2_idir=-1, +1 \
+   &&     name/**/2_any_bbox = .false. \
+   &&     if (name/**/2_idir==-1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxlo(1) /= 0 \
+   &&     if (name/**/2_jdir==-1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxlo(2) /= 0 \
+   &&     if (name/**/2_kdir==-1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxlo(3) /= 0 \
+   &&     if (name/**/2_ldir==-1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxlo(4) /= 0 \
+   &&     if (name/**/2_idir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(1) /= 0 \
+   &&     if (name/**/2_jdir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(2) /= 0 \
+   &&     if (name/**/2_kdir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(3) /= 0 \
+   &&     if (name/**/2_ldir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(4) /= 0 \
+   &&     name/**/2_all_bbox = .true. \
+   &&     if (name/**/2_idir==-1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxlo(1) /= 0 \
+   &&     if (name/**/2_jdir==-1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxlo(2) /= 0 \
+   &&     if (name/**/2_kdir==-1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxlo(3) /= 0 \
+   &&     if (name/**/2_ldir==-1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxlo(4) /= 0 \
+   &&     if (name/**/2_idir==+1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxhi(1) /= 0 \
+   &&     if (name/**/2_jdir==+1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxhi(2) /= 0 \
+   &&     if (name/**/2_kdir==+1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxhi(3) /= 0 \
+   &&     if (name/**/2_ldir==+1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxhi(4) /= 0 \
+   &&    if (name/**/2_all_bbox .and. name/**/2_any_bbox) then \
+   &&       if (name/**/2_idir==-1) name/**/2_bmin(1) = 1 \
+   &&       if (name/**/2_jdir==-1) name/**/2_bmin(2) = 1 \
+   &&       if (name/**/2_kdir==-1) name/**/2_bmin(3) = 1 \
+   &&       if (name/**/2_ldir==-1) name/**/2_bmin(4) = 1 \
+   &&       if (name/**/2_idir== 0) name/**/2_bmin(1) = name/**/2_blo(1)+1 \
+   &&       if (name/**/2_jdir== 0) name/**/2_bmin(2) = name/**/2_blo(2)+1 \
+   &&       if (name/**/2_kdir== 0) name/**/2_bmin(3) = name/**/2_blo(3)+1 \
+   &&       if (name/**/2_ldir== 0) name/**/2_bmin(4) = name/**/2_blo(4)+1 \
+   &&       if (name/**/2_idir==+1) name/**/2_bmin(1) = cctk_lsh(1) - name/**/2_bhi(1) \
+   &&       if (name/**/2_jdir==+1) name/**/2_bmin(2) = cctk_lsh(2) - name/**/2_bhi(2) \
+   &&       if (name/**/2_kdir==+1) name/**/2_bmin(3) = cctk_lsh(3) - name/**/2_bhi(3) \
+   &&       if (name/**/2_ldir==+1) name/**/2_bmin(4) = cctk_lsh(4) - name/**/2_bhi(4) \
+   &&       if (name/**/2_idir==-1) name/**/2_bmax(1) = name/**/2_blo(1) \
+   &&       if (name/**/2_jdir==-1) name/**/2_bmax(2) = name/**/2_blo(2) \
+   &&       if (name/**/2_kdir==-1) name/**/2_bmax(3) = name/**/2_blo(3) \
+   &&       if (name/**/2_ldir==-1) name/**/2_bmax(4) = name/**/2_blo(4) \
+   &&       if (name/**/2_idir== 0) name/**/2_bmax(1) = cctk_lsh(1) - name/**/2_bhi(1) \
+   &&       if (name/**/2_jdir== 0) name/**/2_bmax(2) = cctk_lsh(2) - name/**/2_bhi(2) \
+   &&       if (name/**/2_kdir== 0) name/**/2_bmax(3) = cctk_lsh(3) - name/**/2_bhi(3) \
+   &&       if (name/**/2_ldir== 0) name/**/2_bmax(4) = cctk_lsh(4) - name/**/2_bhi(4) \
+   &&       if (name/**/2_idir==+1) name/**/2_bmax(1) = cctk_lsh(1) \
+   &&       if (name/**/2_jdir==+1) name/**/2_bmax(2) = cctk_lsh(2) \
+   &&       if (name/**/2_kdir==+1) name/**/2_bmax(3) = cctk_lsh(3) \
+   &&       if (name/**/2_ldir==+1) name/**/2_bmax(4) = cctk_lsh(4) \
+            CCTK_LOOP4STR_NORMAL(name/**/_intboundaries, \
+                                 i,j,k,l, \
+                                 ni,nj,nk,nl, \
+                                 name/**/2_idir,name/**/2_jdir,name/**/2_kdir,name/**/2_ldir, \
+                                 name/**/2_bmin(1),name/**/2_bmin(2),name/**/2_bmin(3),name/**/2_bmin(4), \
+                                 name/**/2_bmax(1),name/**/2_bmax(2),name/**/2_bmax(3),name/**/2_bmax(4), \
+                                 cctk_ash(1), \
+                                 cctk_ash(2), \
+                                 cctk_ash(3), \
+                                 cctk_ash(4), \
+                                 name/**/2_istr) \
+
+#define CCTK_ENDLOOP4STR_INTBOUNDARIES(name) \
+            CCTK_ENDLOOP4STR_NORMAL(name/**/_intboundaries) \
+   &&    end if /* bbox */ \
+   && end do /* dir */ \
+   && end do /* dir */ \
+   && end do /* dir */ \
+   && end do /* dir */ \
+
+
+
+/* LOOP_ALL */
+
+#define CCTK_LOOP4_ALL_DECLARE(name) \
+   CCTK_LOOP4STR_ALL_DECLARE(name) \
+
+#define CCTK_LOOP4_ALL_OMP_PRIVATE(name) \
+   CCTK_LOOP4STR_ALL_OMP_PRIVATE(name) \
+
+#define CCTK_LOOP4_ALL(name, \
+                       i,j,k,l) \
+   CCTK_LOOP4STR_ALL(name, \
+                     i,j,k,l, \
+                     1) \
+
+#define CCTK_ENDLOOP4_ALL(name) \
+   CCTK_ENDLOOP4STR_ALL(name) \
+
+#define CCTK_LOOP4STR_ALL_DECLARE(name) \
+   CCTK_LOOP4STR_DECLARE(name/**/_all) \
+
+#define CCTK_LOOP4STR_ALL_OMP_PRIVATE(name) \
+   CCTK_LOOP4STR_OMP_PRIVATE(name/**/_all) \
+
+#define CCTK_LOOP4STR_ALL(name, \
+                          i,j,k,l, \
+                          istr) \
+   CCTK_LOOP4STR(name/**/_all, \
+                 i,j,k,l, \
+                 1,1,1,1, \
+                 cctk_lsh(1),cctk_lsh(2),cctk_lsh(3),cctk_lsh(4), \
+                 cctk_ash(1),cctk_ash(2),cctk_ash(3),cctk_ash(4), \
+                 istr) \
+
+#define CCTK_ENDLOOP4STR_ALL(name) \
+   CCTK_ENDLOOP4STR(name/**/_all) \
+
+
+
+/* LOOP_INT */
+
+#define CCTK_LOOP4_INT_DECLARE(name) \
+   CCTK_LOOP4STR_INT_DECLARE(name) \
+
+#define CCTK_LOOP4_INT_OMP_PRIVATE(name) \
+   CCTK_LOOP4STR_INT_OMP_PRIVATE(name) \
+
+#define CCTK_LOOP4_INT(name, \
+                        i,j,k,l) \
+   CCTK_LOOP4STR_INT(name, \
+                      i,j,k,l, \
+                      1) \
+
+#define CCTK_ENDLOOP4_INT(name) \
+   CCTK_ENDLOOP4STR_INT(name) \
+
+#define CCTK_LOOP4STR_INT_DECLARE(name) \
+   CCTK_LOOP4STR_INTERIOR_DECLARE(name/**/_int) \
+   && integer :: name/**/3_bndsize    (8) \
+   && integer :: name/**/3_is_ghostbnd(8) \
+   && integer :: name/**/3_is_symbnd  (8) \
+   && integer :: name/**/3_is_physbnd (8) \
+   && integer :: name/**/3_ierr \
+
+#define CCTK_LOOP4STR_INT_OMP_PRIVATE(name) \
+   CCTK_LOOP4STR_INTERIOR_OMP_PRIVATE(name/**/_int) \
+
+#define CCTK_LOOP4STR_INT(name, \
+                          i,j,k,l, \
+                          istr) \
+   && !$omp single \
+   && name/**/3_ierr = GetBoundarySizesAndTypes \
+         (cctkGH, 8, name/**/3_bndsize, name/**/3_is_ghostbnd, name/**/3_is_symbnd, name/**/3_is_physbnd) \
+   && !$omp end single copyprivate(name/**/3_bndsize) \
+      CCTK_LOOP4STR_INTERIOR(name/**/_int, \
+                             i,j,k,l, \
+                             name/**/3_bndsize(1+1),name/**/3_bndsize(3+1),name/**/3_bndsize(5+1),name/**/3_bndsize(7+1), \
+                             name/**/3_bndsize(2),name/**/3_bndsize(4),name/**/3_bndsize(6),name/**/3_bndsize(8), \
+                             (istr)) \
+
+#define CCTK_ENDLOOP4STR_INT(name) \
+      CCTK_ENDLOOP4STR_INTERIOR(name/**/int) \
+
+
+
+/* LOOP_BND */
+
+#define CCTK_LOOP4_BND_DECLARE(name) \
+   CCTK_LOOP4STR_BND_DECLARE(name) \
+
+#define CCTK_LOOP4_BND_OMP_PRIVATE(name) \
+   CCTK_LOOP4STR_BND_OMP_PRIVATE(name) \
+
+#define CCTK_LOOP4_BND(name, \
+                       i,j,k,l, \
+                       ni,nj,nk,nl) \
+   CCTK_LOOP4STR_BND(name, \
+                     i,j,k,l, \
+                     ni,nj,nk,nl, \
+                     1) \
+
+#define CCTK_ENDLOOP4_BND(name) \
+   CCTK_ENDLOOP4STR_BND(name) \
+
+#define CCTK_LOOP4STR_BND_DECLARE(name) \
+   CCTK_LOOP4STR_BOUNDARIES_DECLARE(name/**/_bnd) \
+   && integer :: name/**/3_bndsize    (8) \
+   && integer :: name/**/3_is_ghostbnd(8) \
+   && integer :: name/**/3_is_symbnd  (8) \
+   && integer :: name/**/3_is_physbnd (8) \
+   && integer :: name/**/3_ierr \
+
+#define CCTK_LOOP4STR_BND_OMP_PRIVATE(name) \
+   CCTK_LOOP4STR_BOUNDARIES_OMP_PRIVATE(name/**/_bnd) \
+
+#define CCTK_LOOP4STR_BND(name, \
+                          i,j,k,l, \
+                          ni,nj,nk,nl, \
+                          istr) \
+   && !$omp single \
+   && name/**/3_ierr = GetBoundarySizesAndTypes \
+         (cctkGH, 8, name/**/3_bndsize, name/**/3_is_ghostbnd, name/**/3_is_symbnd, name/**/3_is_physbnd) \
+   && !$omp end single copyprivate(name/**/3_bndsize, name/**/3_is_physbnd) \
+      CCTK_LOOP4STR_BOUNDARIES(name/**/_bnd, \
+                               i,j,k,l, \
+                               ni,nj,nk,nl, \
+                               name/**/3_bndsize(1)+1,name/**/3_bndsize(3)+1,name/**/3_bndsize(5)+1,name/**/3_bndsize(7)+1, \
+                               name/**/3_bndsize(2),name/**/3_bndsize(4),name/**/3_bndsize(6),name/**/3_bndsize(8), \
+                               name/**/3_is_physbnd(1),name/**/3_is_physbnd(3),name/**/3_is_physbnd(5),name/**/3_is_physbnd(7), \
+                               name/**/3_is_physbnd(2),name/**/3_is_physbnd(4),name/**/3_is_physbnd(6),name/**/3_is_physbnd(8), \
+                               (istr)) \
+
+#define CCTK_ENDLOOP4STR_BND(name) \
+      CCTK_ENDLOOP4STR_BOUNDARIES(name/**/_bnd) \
+
+
+
+
+
+
+/* LOOP_INTBND */
+
+#define CCTK_LOOP4_INTBND_DECLARE(name) \
+   CCTK_LOOP4STR_INTBND_DECLARE(name) \
+
+#define CCTK_LOOP4_INTBND_OMP_PRIVATE(name) \
+   CCTK_LOOP4STR_INTBND_OMP_PRIVATE(name) \
+
+#define CCTK_LOOP4_INTBND(name, \
+                          i,j,k,l, \
+                          ni,nj,nk,nl) \
+   CCTK_LOOP4STR_INTBND(name, \
+                        i,j,k,l, \
+                        ni,nj,nk,nl, \
+                        1) \
+
+#define CCTK_ENDLOOP4_INTBND(name) \
+   CCTK_ENDLOOP4STR_INTBND(name) \
+
+#define CCTK_LOOP4STR_INTBND_DECLARE(name) \
+   CCTK_LOOP4STR_INTBOUNDARIES_DECLARE(name/**/_bnd) \
+   && integer :: name/**/3_bndsize    (8) \
+   && integer :: name/**/3_is_ghostbnd(8) \
+   && integer :: name/**/3_is_symbnd  (8) \
+   && integer :: name/**/3_is_physbnd (8) \
+   && integer :: name/**/3_ierr \
+
+#define CCTK_LOOP4STR_INTBND_OMP_PRIVATE(name) \
+   CCTK_LOOP4STR_INTBOUNDARIES_OMP_PRIVATE(name/**/_bnd) \
+
+#define CCTK_LOOP4STR_INTBND(name, \
+                             i,j,k,l, \
+                             ni,nj,nk,nl, \
+                             istr) \
+   && !$omp single \
+   && name/**/3_ierr = GetBoundarySizesAndTypes \
+         (cctkGH, 8, name/**/3_bndsize, name/**/3_is_ghostbnd, name/**/3_is_symbnd, name/**/3_is_physbnd) \
+   && !$omp end single copyprivate(name/**/3_bndsize, name/**/3_is_physbnd) \
+      CCTK_LOOP4STR_INTBOUNDARIES(name/**/_bnd, \
+                                  i,j,k,l, \
+                                  ni,nj,nk,nl, \
+                                  name/**/3_bndsize(1+1),name/**/3_bndsize(3+1),name/**/3_bndsize(5+1),name/**/3_bndsize(7+1), \
+                                  name/**/3_bndsize(2),name/**/3_bndsize(4),name/**/3_bndsize(6),name/**/3_bndsize(8), \
+                                  name/**/3_is_physbnd(1),name/**/3_is_physbnd(3),name/**/3_is_physbnd(5),name/**/3_is_physbnd(7), \
+                                  name/**/3_is_physbnd(2),name/**/3_is_physbnd(4),name/**/3_is_physbnd(6),name/**/3_is_physbnd(8), \
+                                  (istr)) \
+
+#define CCTK_ENDLOOP4STR_INTBND(name) \
+      CCTK_ENDLOOP4STR_INTBOUNDARIES(name/**/_bnd) \
 
 #endif /* #ifdef FCODE */
 
