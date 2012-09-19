@@ -524,12 +524,16 @@ sub ParseExtras
   my($config_data) = @_;
   my($mpi,$dir,$sep,$extradir,$capabilitydir);
 
-  $dir = $config_data->{"CCTK_DIR"};
   $sep = $config_data->{"SEPARATOR"};
   $config = $config_data->{"CONFIG"};
+  if(defined($ENV{CACTUS_CONFIGS_DIR})) {
+    $dir = $ENV{CACTUS_CONFIGS_DIR};
+  } else {
+    $dir = $config_data->{"CCTK_DIR"}.${sep}."configs";
+  }
 
-  $extradir = "$dir${sep}configs${sep}$config${sep}config-data${sep}cctk_Extradefs.h";
-  $capabilitydir = "$dir${sep}configs${sep}$config${sep}bindings${sep}Configuration${sep}Capabilities${sep}cctki_MPI.h";
+  $extradir = "${dir}${sep}$config{$sep}config-data${sep}cctk_Extradefs.h";
+  $capabilitydir = "${dir}${sep}$config${sep}bindings${sep}Configuration${sep}Capabilities${sep}cctki_MPI.h";
 
   $mpi = 0;
 
