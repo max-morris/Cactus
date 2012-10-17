@@ -309,12 +309,12 @@ TAGS:
 	$(NOTIFY_DIVIDER)
 	@echo Updating the Emacs TAGS file
 	rm -f TAGS ; touch TAGS
-	find src arrangements \( \
+	find -L src arrangements \( \
 	  -name '*.[chCfF]' -o -name '*.[fF]77' -o -name '*.[fF]90'\
 	  -o -name '*.cc' -o -name '*.cxx' -o -name '*.hh' -o -name '*.[ch]pp' \
 	  -o -name '*.inc' \
 	  \) -print |  xargs etags -a
-#	find src arrangements \( -name '*.[cChF]' -o -name '*.F77' -o -name '*.cc'\) \
+#	find -L src arrangements \( -name '*.[cChF]' -o -name '*.F77' -o -name '*.cc'\) \
 #          -exec etags --append --regex '/[a-z A-Z \t]*FORTRAN_NAME[^)]*/' {} \;
 	$(PERL) -pi.bak -e 's/(subroutine\s*)([a-zA-Z0-9_]+)/\1\L\2/g;' TAGS
 	rm TAGS.bak
@@ -324,7 +324,7 @@ tags:
 	$(NOTIFY_DIVIDER)
 	@echo Updating the vi tags file
 	rm -f tags ; touch tags
-	find src arrangements \( \
+	find -L src arrangements \( \
 	  -name '*.[chCfF]' -o -name '*.[fF]77' -o -name '*.[fF]90'\
 	  -o -name '*.cc' -o -name '*.cxx' -o -name '*.hh' -o -name '*.[ch]pp' \
 	  -o -name '*.inc' \
