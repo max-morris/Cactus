@@ -3,7 +3,7 @@
    @date      Wed Jan 20 10:06:35 1999
    @author    Tom Goodale
    @desc
-              Miscellaneuous routines.
+              Miscellaneous routines.
    @enddesc
    @version   $Id$
  @@*/
