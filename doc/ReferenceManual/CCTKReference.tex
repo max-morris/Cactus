@@ -2932,12 +2932,12 @@ error returns from this function.
  */
 void MyThorn_some_function(CCTK_ARGUMENTS)
 {
-DECLARE_CCTK_PARAMETERS
-
-if (CCTK_Equals(my_parameter, "option A"))
-        {
-        CCTK_VInfo(CCTK_THORNSTRING, "using option A");
-        }
+  DECLARE_CCTK_ARGUMENTS;
+  DECLARE_CCTK_PARAMETERS;
+  
+  if (CCTK_Equals(my_parameter, "option A")) {
+    CCTK_VInfo(CCTK_THORNSTRING, "using option A");
+  }
 }
 \end{verbatim}
 \end{Example}
@@ -2946,21 +2946,22 @@ if (CCTK_Equals(my_parameter, "option A"))
 \begin{verbatim}
 #include "cctk.h"
 #include "cctk_Arguments.h"
+#include "cctk_Functions.h"
 #include "cctk_Parameters.h"
 
-c
-c assume this thorn has a string or keyword parameter  my_parameter
-c
-subroutine MyThorn_some_function(CCTK_ARGUMENTS)
-implicit none
-DECLARE_CCTK_PARAMETERS
-
-if (CCTK_Equals(my_parameter, "option A") .eq. 1) then
-        call CCTK_INFO("using option A");
-end if
-
-return
-end subroutine MyThorn_some_function
+!
+! assume this thorn has a string or keyword parameter  my_parameter
+!
+subroutine MyThorn_some_routine(CCTK_ARGUMENTS)
+   implicit none
+   DECLARE_CCTK_ARGUMENTS
+   DECLARE_CCTK_FUNCTIONS
+   DECLARE_CCTK_PARAMETERS
+   
+   if (CCTK_Equals(my_parameter, "option A") /= 0) then
+      call CCTK_INFO("using option A")
+   end if
+end subroutine MyThorn_some_routine
 \end{verbatim}
 \end{Example}
 \end{ExampleSection}
