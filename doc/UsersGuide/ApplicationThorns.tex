@@ -268,7 +268,7 @@ friends.
 Cactus variables, described in Chapter~\ref{chap:cactus_variables}, are placed
 in groups with homogeneous attributes, where
 the attributes describe properties such as the data type, group type,
-dimension, ghostsize, number of timelevels, type of staggering and
+dimension, ghostsize, number of timelevels, and
 distribution.
 
 For example, a group, called \texttt{realfields} of 5 real grid
@@ -957,7 +957,7 @@ The specification for a group declaration
 \begin{alltt}
 <\var{data_type}> <\var{group_name}> [TYPE=<\var{group_type}>] [DIM=<\var{dim}>] [TIMELEVELS=<\var{num}>]
    [SIZE=<\var{size in each direction}>] [DISTRIB=<\var{distribution_type}>]
-   [GHOSTSIZE=<\var{ghostsize}>] [STAGGER=<\var{stagger-specification}>]
+   [GHOSTSIZE=<\var{ghostsize}>]
 [\{
  [ <\var{variable_name}>[,]<\var{variable_name}>
    <\var{variable_name}> ]
@@ -1013,11 +1013,11 @@ This is the most common group type.  A GF is an array with a
 specific size, set at run time in the parameter file, which is distributed
 across processors.  All GFs have the same size, and the same number of
 ghostzones. Groups of GFs can also specify a dimension,
-number of timelevels, and stagger type.
+and number of timelevels.
 \item[\texttt{ARRAY}]
 This is a more general form of the GF.  Each group of arrays can have
-a distinct size and number of ghostzones, in addition to dimension,
-number of timelevels and stagger type.
+a distinct size and number of ghostzones, in addition to dimension
+and number of timelevels.
 The drawback of using an array over a GF is that a lot of data about the
 array can only be determined by function calls, rather than the
 quicker methods available for GFs.
@@ -1150,65 +1150,6 @@ ghostzones as your stencil size requires.
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\subsection{Staggering}
-\label{sec:staggering}
-
-The staggering of a grid function or array describes the \emph{physical}
-placement of that grid function relative to the supporting grid
-structure. For example, a grid function does not have to
-be placed at the intersection
-of the ``grid lines''. It can be moved by half a grid spacing in
-any or all dimensions. In the latter case, it will be placed in
-the center of a cell.
-
-The staggering of a grid function is a pure \emph{physical} property:
-the values will be calculated at a different position in physical
-space. Still the indexing (or bookkeeping)  is kept the same for all
-types of staggerings: the indexing of the default unstaggered grids is
-used.
-
-\vskip .25cm
-
-{\bf Specifying the staggertype}
-
-The type of staggering applied to a grid function can be specified in
-the \texttt{interface.ccl} file by the attribute \texttt{stagger} (see Appendix
-\ref{sec:Appendix.interface}). Cactus supports three kinds of staggering
-per dimension. The physical location of a grid function is shifted
-relative to the default position by adding the following values to the
-stagger attribute:
-\begin{Lentry}
-\item[\texttt{M}] no staggering, default. Refers to the ``minus'' face
-relative to  the default gridpoint.
-\item[\texttt{C}] centre staggering. The physical location is offset by
-half of the grid spacing in the positive direction (or to the right).
-\item[\texttt{P}] full staggered. \texttt{P} refers to plus. The physical location
-is offset by a full grid spacing in the positive direction (or the right).
-\end{Lentry}
-For multi-dimensional grid functions you concatenate the code
-characters in $xyz$ order. In Figure \ref{fig:stagger1}, we show four different
-staggerings of a two dimensional grid function. The solid black grid
-circles show the default location of the grid function at the
-intersections of the grid lines. In (A) we show an additional grid
-function of type \texttt{stagger=MC}: no staggering in $x$ direction,
-center staggered in $y$ direction. In (B) we have \texttt{stagger=CM}, and
-staggering each direction (\texttt{stagger=CC}) is shown in (C). The full
-staggering in (D) (\texttt{stagger=PP}) obeys the same rules, but is
-rather unusual; it is included here for completeness.
-
-\begin{figure}[ht]
-  \def\epsfsize#1#2{0.45#1}
-\begin{center}
-\includegraphics[angle=0,width=8cm]{staggering1}
-\end{center}
-\caption[]{\small {\bf Staggered gridpoints in 2D} for several
-staggerings. (a) : \texttt{MC}, (b): \texttt{CM}, (c): \texttt{CC}, (d): {\tt
-PP}. Note that the staggering of grid functions does not change its
-index. The staggered gridpoints and the corresponding unstaggered
-points (arrows) are accessed by the same indices.}
-\label{fig:stagger1}
-\end{figure}
 
 \subsection{Information about Grid Variables}
 
@@ -1975,8 +1916,10 @@ The Cactus variables which are passed through the macro
 \item [\texttt{cctk\_dim}] An integer with the number of dimensions
       used for this grid hierarchy.
 \item [\texttt{cctk\_lsh}] An array of \texttt{cctk\_dim} integers
-      with the local grid size on this processor.  This is the allocated
-      size of the array.
+      with the local grid size on this processor.
+\item [\texttt{cctk\_ash}] An array of \texttt{cctk\_dim} integers
+      with the allocated size of the array.  This may be larger than
+      the local size; the additional points may not be used.
 \item [\texttt{cctk\_gsh}] An array of \texttt{cctk\_dim} integers
       with the \textit{global} grid size.
 \item [\texttt{cctk\_iteration}] The current iteration number.
@@ -1991,13 +1934,6 @@ CCTK\_REAL}s with the grid spacing in each direction.
 \item [\texttt{cctk\_origin\_space}] An array of \texttt{cctk\_dim} {\tt
       CCTK\_REAL}s with the spatial coordinates of the global origin
       of the grid.
-\item [\texttt{cctk\_lssh}]  This is an internal array used to hold
-array extents for staggering.  One should use the macro CCTK\_LSSH(,)
-to access its elements.  This variable is also used to determine the
-extent of the array over which to loop.  Usually it is identical to
-\texttt{cctk\_lsh}, but if array padding is used (not yet implemented), all
-loops should use CCTK\_LSSH(,) to determine the loop indices over which to
-loop.
 
 \end{Lentry}
 
@@ -2162,148 +2098,6 @@ Declaring \texttt{local\_var} to have a non-Cactus data type, e.g.\
 \texttt{REAL*4}, or using one of the other Cactus real data types
 described in Section~\ref{sec:datyansi}, could give problems for
 different architectures or configurations.
-
-\subsubsection{Staggering}
-\label{sec:st}
-
-\paragraph{Indexing, ghostzones, etc.}
-Note that staggering does not make any changes to the indexing of a
-grid function: the black solid circles in diagram \ref{fig:stagger2} and their
-associated staggered grid functions (connected by arrows) have the same index!
-
-Since the grid function does not ``know'' anything about the physical
-location (it's only addressed by indices), why add staggering if the
-indexing is the same?
-
-Indeed, you could roll your own, but there compelling reasons:
-Readability and the fact that you are able to query the staggertype of a
-grid function. More important: In the way the grid is laid out, there is one grid
-point \emph{less} for \texttt{M} and \texttt{P} staggered grid functions. This is
-illustrated in Figure \ref{fig:stagger2}, which shows 15 gridpoints distributed
-across 3 processors. The solid black circles show the default
-location of the grid functions, the grey circles depict the ghostzones.
-Note that the number of center staggered gridpoints (fat crosses)
-corresponds to the number of default gridpoints on all processors but
-the last one. (The same is true for full staggered gridpoints).
-
-\paragraph{Staggertypes}
-The string specifying the staggering is encoded in a number called
-the \textit{staggerindex}. With the 3 supported staggerings, the string
-is converted into a base 3 number. Several routines exist to extract the
-staggering in a specific direction, called \textit{directional
-staggerindex}. For example, \texttt{stagger = MCM}: \textit{staggerindex} = 3, in the
-$x$-direction: \textit{directional staggerindex} = \texttt{CCTK\_STAGGER\_M} (value 0),
-in the
-$y$-direction: \textit{directional staggerindex} = \texttt{CCTK\_STAGGER\_C} (value 1).
-
-\begin{Lentry}
-\item[\texttt{CCTK\_STAGGER\_M}]  value used for M-type staggering
-\item[\texttt{CCTK\_STAGGER\_C}]  value used for C-type staggering
-\item[\texttt{CCTK\_STAGGER\_P}]  value used for P-type staggering
-\item[\texttt{CCTK\_NO\_STAGGER}] value to indicate no staggering
-\item[\texttt{CCTK\_STAGGER}]    value to indicate staggering
-\item[\texttt{CCTK\_NSTAGGER}]   number of coded staggerings (3)
-%\item[\texttt{CCTK\_STAGGER\_ERROR}] failed stagger operation, negative
-\end{Lentry}
-
-
-\begin{figure}[ht]
-  \def\epsfsize#1#2{0.45#1}
-\begin{center}
-\includegraphics[angle=0,width=10cm]{staggering2}
-\end{center}
-\caption[]{\small {\bf Unstaggered and center-staggered gridpoints} with
-ghostzone size of one (above) and two (below). The points are
-distributed across three processors. Note that the number of
-center staggered gridpoints (fat crosses) is one less on the outermost grid. How to
-treat this case in an easy way is explained in the text. }
-\label{fig:stagger2}
-\end{figure}
-
-When a thorn programmer uses staggered gridpoints, he has to be aware
-of this gridpoint anomaly. This can be done most easily by using the
-\texttt{CCTK\_LSSH(<\var{dir\_staggertype}>,<\var{direction}>)} macro.
-For a given staggertype and direction, this 2D array returns the local
-number of gridpoints, including ghostzones and the necessary change
-for the staggering on the outermost processor.
-
-\begin{Lentry}
-\item[\texttt{CCTK\_LSSH(<\var{dir\_staggertype}>,<\var{direction}>)}]
-for a given staggertype and a direction, this macro returns the number
-of processor local gridpoints, including ghostzones.
-
-\begin{itemize}
-\item{For Fortran users, the macro has to be in capital letters}\item{This macro is C/Fortran indexing aware:
-can specify the dimension in C ranging from $0 \ldots$ and in Fortran
-ranging from $1 \ldots$.}
-\end{itemize}
-\end{Lentry}
-
-\vskip .25cm
-
-Several functions exist to derive the staggertype for a given group
-and for a certain direction.
-\begin{Lentry}
-\item[\texttt{int CCTK\_GroupStaggerIndexGI(int \var{group\_index})}] %returns the
-%\textit{staggerindex} for a given group index.
-\item[\texttt{call CCTK\_GroupStaggerIndexGI(int \var{staggerindex}, int
-\var{group\_index})}]  returns the \var{staggerindex} for a given group index.
-\end{Lentry}
-\vskip .45cm
-
-\begin{Lentry}
-\item[\texttt{int CCTK\_GroupStaggerIndexGN(char *\var{group\_name})}] %returns the
-%\textit{staggerindex} for a given group name.
-\item[\texttt{call CCTK\_GroupStaggerIndexGN(int \var{staggerindex}, char *\var{group\_name})}] returns the
-\var{staggerindex} for a given group name. \vskip .25cm
-\end{Lentry}
-\vskip .45cm
-
-%\begin{Lentry}
-%\item[\texttt{int CCTK\_GroupStaggerIndexVI(int variable\_index)}] %returns the
-%%\textit{staggerindex} for a given variable index.
-%\item[\texttt{call CCTK\_GroupStaggerIndexVI(int staggerindex, int variable\_index)}] returns the
-
-%\textit{staggerindex} for a given variable index.
-
-%\end{Lentry}
-%\vskip .45cm
-%
-%\begin{Lentry}
-%\item[\texttt{int CCTK\_GroupStaggerIndexVN(char *variable\_name)}] %returns the
-%%\textit{staggerindex} for a given variable name.
-%\item[\texttt{call CCTK\_GroupStaggerIndexVN(int staggerindex, char *variable\_name)}] returns the
-
-%\textit{staggerindex} for a given variable name.
-%\end{Lentry}
-%\vskip .45cm
-
-\begin{Lentry}
-\item[\texttt{int CCTK\_StaggerIndex(char *\var{stagger\_string})}] %return the \textit{
-%staggerindex} for a given stagger string.
-\item[\texttt{call CCTK\_StaggerIndex(int \var{staggerindex}, char *\var{stagger\_string})}] return the \var{staggerindex} for a given stagger string.
-\end{Lentry}
-\vskip .45cm
-
-\begin{Lentry}
-\item[\texttt{int CCTK\_DirStaggerIndex(int \var{direction}, char *\var{stagger\_string})}]
-%returns the \textit{directional staggerindex} for a given direction and
-%stagger string.
-\item[\texttt{call CCTK\_DirStaggerIndex(int \var{dir\_staggerindex}, int \var{direction}, char *\var{stagger\_string})}]
-returns the \var{directional staggerindex} for a given direction and
-stagger string.
-\end{Lentry}
-\vskip .45cm
-
-\begin{Lentry}
-\item[\texttt{int CCTK\_DirStaggerIndexI(int \var{direction}, char *\var{stagger\_type})}]
-%returns the \textit{directional staggerindex} for a given direction and
-%staggerindex.
-\item[\texttt{call CCTK\_DirStaggerIndexI(int \var{dir\_direction}, char *\var{stagger\_type})}]
-returns the \var{directional staggerindex} for a given direction and
-staggerindex.
-
-\end{Lentry}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
