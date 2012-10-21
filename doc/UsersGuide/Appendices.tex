@@ -12,9 +12,6 @@
 \label{part:Appendices}
 \renewcommand{\thepage}{\Alph{part}\arabic{page}}
 
-Note that these appendices appear (identically) in both the
-Cactus Users' Guide and the Cactus Reference Manual.
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37,7 +34,7 @@ Cactus Users' Guide and the Cactus Reference Manual.
   The Cactus Reference Manual documents most of the Cactus flesh APIs.
 \item[arrangement]
   A collection of thorns, stored in a subdirectory of the Cactus
-  \verb|arrangements| directory.%  See Section~\ref{sec:arrangements}.
+  \verb|arrangements| directory.  See Section~\ref{sec:arrangements}.
 \item[autoconf]
   A GNU program which builds a configuration script which can be used
   to make a Makefile.
@@ -67,13 +64,13 @@ http://en.wikipedia.org/wiki/Cactus
   configuration (these flags change what binary is produced), but the
   Cactus \verb|VERBOSE| and \verb|WARN| configure options aren't part
   of a configuration (they don't change what binary will be produced).
-%  See Section~\ref{sec:configurations}.
+  See Section~\ref{sec:configurations}.
 \item[checkout]
-  Get a copy of source code from SVN.%  See Section~\ref{sec:checkout}.
+  Get a copy of source code from SVN.  See Section~\ref{sec:checkout}.
 \item[checkpoint]
   Save the entire state of a Cactus run to a file, so that the run can be
   restarted at a later time.
-%  See Sections~\ref{sec:checkpointing}, \ref{chap:cp_recovery_methods}.
+  See Sections~\ref{sec:checkpointing}, \ref{chap:cp_recovery_methods}.
 \item[computational grid]
   A discrete finite set of spatial points in $\Re^n$
   (typically, $1 \le n \le 3$).
@@ -94,8 +91,7 @@ http://en.wikipedia.org/wiki/Cactus
 \item[SVN]
   \textit{Subversion} is the favoured code
   distribution system for Cactus.
-  See Section %s~\ref{sec:checkout},
-  \ref{sec:Appendix.svn}.
+  See Sections~\ref{sec:checkout},\ref{sec:Appendix.svn}.
 \item[domain decomposition]
   The technique of breaking up a large computational problem into parts
   that are easier to solve.  In Cactus, it refers especially to a decomposition
@@ -103,8 +99,10 @@ http://en.wikipedia.org/wiki/Cactus
 \item[driver]
   A special kind of thorn which creates and handles grid hierarchies 
   and grid variables.
-%Drivers are responsible for memory management for grid variables, and for all parallel operations, in response to requests from the scheduler.
-%  See Section~\ref{sec:parallelisation}.
+  Drivers are responsible for memory management for grid variables,
+  and for all parallel operations, in response to requests from the
+  scheduler.
+  See Section~\ref{sec:parallelisation}.
 \item[evolution]
   An iteration interpreted as a step through time.  Also, a particular Cactus
   schedule bin for executing routines when evolution occurs.
@@ -114,12 +112,12 @@ http://en.wikipedia.org/wiki/Cactus
   get if you check out Cactus from our SVN repository.
 \item[friend] Interfaces that are \textit{friends}, share their collective
   set of protected grid variables.
-  See Section~\ref{sec:Appendix.interface}. %%~\ref{subsec:interface_ccl}.
+  See Section~\ref{sec:Appendix.interface}~\ref{subsec:interface_ccl}.
 \item[function aliasing]
   The process of referring to a function to be provided by an interface
   independently of which thorn actually contains the function, or what
   language the function is written in.  The function is called an
-  \textit{alias function}.%%  See Section~\ref{sec:function_aliasing},
+  \textit{alias function}.  See Section~\ref{sec:function_aliasing},
   \ref{subsec:Appendix.interface.function_aliasing}.
 \item[GA]
   Shorthand for a \textit{grid array}.
@@ -136,7 +134,7 @@ http://en.wikipedia.org/wiki/Cactus
   to the corresponding ghost zone of the other block, and vice versa.
   In single processor runs there are no ghost zones.
   Contrast with symmetry or boundary zones.
-  %See Section~\ref{sec:ghost_size}.
+  See Section~\ref{sec:ghost_size}.
 \item[grid]
   Short for \textit{computational grid}.
 \item[grid array]
@@ -148,7 +146,7 @@ http://en.wikipedia.org/wiki/Cactus
   computational grid.  (See also \textit{local array}.)
   From another perspective,
   \textit{grid functions} are functions (of any of the Cactus
-  data types% (see Section~\ref{sect-ThornWriting/DataTypes})
+  data types (see Section~\ref{sect-ThornWriting/DataTypes})
   defined on the domain of grid points.
   Typically, grid functions are used to discretely approximate functions
   defined on the domain $\Re^n$, with \textit{finite differencing}
@@ -168,7 +166,7 @@ http://en.wikipedia.org/wiki/Cactus
   to being an internal variable of the thorn or one of its routines. 
   \textit{grid scalar}, \textit{grid function}, and \textit{grid array}
   are all examples of \textit{grid variables}. 
-  %See Sections~\ref{sec:cactus_variables-groups},
+  See Sections~\ref{sec:cactus_variables-groups},
   \ref{subsec:Appendix.interface-variables}
 \item[GNATS]
   The GNU program we use for reporting and tracking bugs, comments and
@@ -187,15 +185,14 @@ http://en.wikipedia.org/wiki/Cactus
   store both data (for example, Cactus grid variables), and meta data
   (data describing the other data, for example, Cactus coordinate
   systems).
-  See %Section~\ref{subsec:hdf5}, also
+  See Section~\ref{subsec:hdf5}, also
   \url{http://hdf.ncsa.uiuc.edu/HDF5/}.
 \item[implementation]
   Defines the interface that a thorn presents to the rest of a Cactus program.
-  % See Section~\ref{sec:implementations}.
+  See Section~\ref{sec:implementations}.
 \item[inherit] A thorn that \textit{inherits} from another implementation
   can access all the other implementation's public variables.
-  See Section~\ref{sec:Appendix.interface}.
-  %\ref{subsec:interface_ccl}.
+  See Section~\ref{sec:Appendix.interface}, \ref{subsec:interface_ccl}.
 \item[interface]
 \item[interpolation]
   Given a set of grid variables and interpolation points (points in the
@@ -222,8 +219,8 @@ http://en.wikipedia.org/wiki/Cactus
 \item[MPI]
   \textit{Message Passing Interface}, an API and software library for sending
   messages between processors in a multiprocessor system.
-%  See Sections~\ref{subsec:Compilation-Available_Options},
-%  \ref{subsubsec:Compiling-MPI}.
+  See Sections~\ref{subsec:Compilation-Available_Options},
+  \ref{subsubsec:Compiling-MPI}.
 \item[multi-patch]
 \item[mutual recursion]
   See \textit{recursion, mutual}.
@@ -269,21 +266,21 @@ http://en.wikipedia.org/wiki/Cactus
 \item[parameter]
   A variable that controls the run time behaviour of the Cactus executable.
   Parameters have default values which can be set in a
-  \textit{parameter file}.% (See Chapter~\ref{chap:Cactus_parameters}).
+  \textit{parameter file}. (See Chapter~\ref{chap:Cactus_parameters}).
   The flesh has parameters; thorn parameters are made available to the rest
   of Cactus by describing them in the thorn's 
   {\tt param.ccl} file (See Appendix~\ref{sec:Appendix.param}).
 \item[parameter file]
   (Also called \textit{par file}.) A text file used as the input of a
   Cactus program, specifying initial values of thorn parameters.
- % See Section~\ref{sec:Parameter_File}.
+  See Section~\ref{sec:Parameter_File}.
 \item[processor topology]
 \item[PUGH]
   The default driver thorn for Cactus which uses MPI.
-  %See Section~\ref{sec:required_software}.
+  See Section~\ref{sec:required_software}.
 \item[PVM]
   \textit{Parallel Virtual Machine}, provides interprocessor communication.
-  %See Section~\ref{sec:required_software}.
+  See Section~\ref{sec:required_software}.
 \item[recursion, mutual]
   See \textit{mutual recursion}.
 \item[reduction]
@@ -296,8 +293,7 @@ http://en.wikipedia.org/wiki/Cactus
   are registered with the flesh via the thorn's {\tt schedule.ccl} file to
   be executed in a certain schedule bin, before or after another function 
   or group executes, and so forth.
-  See section~\ref{sec:Appendix.schedule}.
-  %~\ref{chap:scheduling},
+  See section~\ref{sec:Appendix.schedule}~\ref{chap:scheduling},
 \item[schedule bin]
   One of a set of special timebins pre-defined by Cactus.
   See Section \ref{sec:Appendix.schedule_bins} for a list.
@@ -306,16 +302,15 @@ http://en.wikipedia.org/wiki/Cactus
   Appendix \ref{sec:Appendix.schedule}).
   Each schedule group must be defined to occur in a Cactus schedule bin or
   another schedule group.  
-  %See Chapter~\ref{chap:scheduling}, \ref{scheduling:schedule_bins}.
+  See Chapter~\ref{chap:scheduling}, \ref{scheduling:schedule_bins}.
 \item[shares] An implementation may \textit{share} restricted parameters
   with another implementation, which means the other implementation can
   get the parameter values, and if the parameters are steerable, it can
   change them.
-  See Section~\ref{sec:Appendix.param}.
-  %\ref{subsec:param_ccl}.
+  See Section~\ref{sec:Appendix.param} \ref{subsec:param_ccl}.
 \item[steerable parameter]
   A parameter which can be changed at any time after the program has been
-  initialised.%  See Section~\ref{sec:Cactus_parameters.steerable}.
+  initialised.  See Section~\ref{sec:Cactus_parameters.steerable}.
 \item[symmetry operation]
   A grid operation that is a manifestation of a geometrical symmetry,
   especially rotation or reflection.
@@ -329,7 +324,7 @@ http://en.wikipedia.org/wiki/Cactus
   computational interior on one processor to the corresponding ghost zone 
   (see) on another processor.  Also refers to a special Cactus timebin
   corresponding to the occurrence of this process. 
-  %See Section~\ref{sec:ghost_size}.
+  See Section~\ref{sec:ghost_size}.
 \item[TAGS]
   See Section~\ref{sec:Appendix.tags}.
 \item[target]
@@ -338,16 +333,16 @@ http://en.wikipedia.org/wiki/Cactus
   command line for \texttt{make}, the rules are executed, usually to
   build some software.
 \item[test suite]
-  %See Sections~\ref{sec:testing}, \ref{sec:adding_test_suite}.
+  See Sections~\ref{sec:testing}, \ref{sec:adding_test_suite}.
 \item[thorn]
   A collection of subroutines defining a Cactus interface.  
-  %See Chapters~\ref{chap:thorn_concepts}, \ref{chap:thorn_anatomy}.
+  See Chapters~\ref{chap:thorn_concepts}, \ref{chap:thorn_anatomy}.
 \item[ThornList]
   A file used by the Cactus CST to determine which thorns to compile 
   into a Cactus executable
-  %(see Section~\ref{sec:gmtafobuanadco}, \ref{sec:cointh}). 
+  (see Section~\ref{sec:gmtafobuanadco}, \ref{sec:cointh}). 
   Can also be used to determine which thorns
-  to check out from SVN.% (see Section~\ref{sec:checkout}).
+  to check out from SVN. (see Section~\ref{sec:checkout}).
   A ThornList for each Cactus configuration lies in the configuration
   subdirectory of the Cactus {\tt configs} directory.
 \item[time bin]
@@ -355,13 +350,13 @@ http://en.wikipedia.org/wiki/Cactus
   runs specified routines.  See \textit{scheduler}, \textit{schedule bin}.
 \item[time level]
 \item[timer]
-  A Cactus API for reporting time.%  See Section~\ref{sec:timers}.
+  A Cactus API for reporting time.  See Section~\ref{sec:timers}.
 \item[trigger]
 \item[unigrid]
 \item[WMPI]
   \textit{Win32 Message Passing Interface}.
-  %See Sections~\ref{subsec:Compilation-Available_Options},
-  %\ref{subsubsec:Compiling-MPI}.
+  See Sections~\ref{subsec:Compilation-Available_Options},
+  \ref{subsubsec:Compiling-MPI}.
 \item[wrapper]
 
 \end{Lentry}
@@ -404,8 +399,8 @@ thorns, and which include files are provided by this thorn.
 \item Blocks detailing aliased functions provided or used by this thorn.
 \item A series of blocks listing the thorn's global variables.
 \end{itemize}
-%(For a more extensive discussion of Cactus variables, see Chapter
-%\ref{chap:cactus_variables}.)
+(For a more extensive discussion of Cactus variables, see Chapter
+\ref{chap:cactus_variables}.)
 
 \subsection{Header Block}
 The header block has the form:
@@ -570,8 +565,7 @@ optional, with the default variable type being {\t SCALAR}.
         {\tt SIZE} grid-points should be allocated on each
         processor. The default value is {\tt DISTRIB=DEFAULT}.
 \item{} {\t GHOSTSIZE} defines number of ghost zones in each dimension
-of an {\tt ARRAY}.  
-%Does GHOSTSIZE default to one for a GF and zero for a GA?
+of an {\tt ARRAY}.  It defaults to zero.
 \item{} {\t TAGS} defines an optional string which is used to create a
 	set of key-value pairs associated with the group. The keys are case
 	independent.  The string (which must be deliminated by single or
@@ -586,9 +580,9 @@ of an {\tt ARRAY}.
         (see the ReferenceManual for detailed descriptions).\\
         For a list of currently supported {\t TAGS} key-value table information,
         please refer to the corresponding chapter in the documentation of the
-        \verb|CactusDoc| arrangement.% (Section \ref{sec:OtherGmakeTargetsDoc} on
-%        page \pageref{sec:OtherGmakeTargetsDoc} explains how to build this
-%        documentation).
+        \verb|CactusDoc| arrangement. (Section \ref{sec:OtherGmakeTargetsDoc} on
+        page \pageref{sec:OtherGmakeTargetsDoc} explains how to build this
+        documentation).
 \item{} The (optional) block following the group declaration line,
 contains a list of variables contained in the group. All variables in
 a group have the same data type, variable type, dimension and
@@ -604,9 +598,9 @@ line.  If the variable block is omitted, this description can be given
 at the end of the declaration line.
 \end{itemize}
 
-%The process of sharing code among thorns using include files is
-%discussed in Section~\ref{sec:includefiles}.
-%
+The process of sharing code among thorns using include files is
+discussed in Section~\ref{sec:includefiles}.
+
 \section{param.ccl}
 \label{sec:Appendix.param}
 
@@ -614,8 +608,8 @@ The parameter configuration file consists of a list of
 \textit{parameter object specification items} (OSIs) giving the type and
 range of the parameter separated by optional
 \textit{parameter data scoping items} (DSIs), which detail access to the
-parameter.%  (For a more extensive discussion of Cactus parameters, see Chapter
-%\ref{chap:Cactus_parameters}.)
+parameter.  (For a more extensive discussion of Cactus parameters, see Chapter
+\ref{chap:Cactus_parameters}.)
 
 \subsection{Parameter Data Scoping Items}
 
@@ -796,8 +790,8 @@ beginning of a line followed by \var{<default value>} on that same line.
 \section{schedule.ccl}
 \label{sec:Appendix.schedule}
 
-%(A more extensive discussion of Cactus scheduling is provided in Chapter
-%\ref{chap:scheduling}.)
+(A more extensive discussion of Cactus scheduling is provided in Chapter
+\ref{chap:scheduling}.)
 A schedule configuration file consists of:
 \begin{itemize}
 
@@ -903,9 +897,9 @@ schedule [GROUP] <\var{function name}|\var{group name}> AT|IN <\var{time}> \verb
   list of these.  (Any names that are not provided by an active thorn
   are ignored.)  Note that a single schedule block may have multiple
   {\tt BEFORE/AFTER} clauses.
-  %See Section~\ref{chap:scheduling}
-  %(``Scheduling'') in the Cactus Users' Guide for more information
-  %about {\tt BEFORE/AFTER} clauses.
+  See Section~\ref{chap:scheduling}
+  (``Scheduling'') in the Cactus Users' Guide for more information
+  about {\tt BEFORE/AFTER} clauses.
 
   \item[{\tt LANG}] The code language for the function (either {\tt C} or {\tt
     FORTRAN}). No language should be specified for a schedule group.
@@ -1301,8 +1295,8 @@ character `{\tt /}' reserved for future expansion.%%%
 	 tree-like data structures.%%%
 	 }%%%
 
-Values are 1-dimensional arrays of any of the usual Cactus data types.
-%described in Section~\ref{sect-ThornWriting/DataTypes}.
+Values are 1-dimensional arrays of any of the usual Cactus data types,
+described in Section~\ref{sect-ThornWriting/DataTypes}.
 A string can be stored by treating it as a 1-dimensional array of
 \verb|CCTK_CHAR| (there's an example of this below).
 
