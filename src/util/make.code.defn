@@ -13,6 +13,7 @@ SKBinTree.c\
 Hash.c\
 Cache.c\
 Malloc.c\
+Math.c\
 snprintf.c\
 String.c\
 StringList.c\

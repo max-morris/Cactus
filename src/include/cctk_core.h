@@ -149,6 +149,7 @@ cctk_ash1,cctk_ash2,cctk_ash3
 #include "cctk_Loop.h"
 #include "cctk_Main.h"
 #include "cctk_Malloc.h"
+#include "cctk_Math.h"
 #include "cctk_Misc.h"
 #include "cctk_Parameter.h"
 #include "cctk_Reduction.h"
