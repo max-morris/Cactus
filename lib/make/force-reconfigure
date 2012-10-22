@@ -33,3 +33,4 @@
 01 May 2012: Add OpenCL support
 15 Jul 2012: Correct error in determining make dependencies
 09 Aug 2012: Take CFLAGS/CXXFLAGS into account when determining dependencies
+22 Oct 2012: Check availability of isnan etc. in C++

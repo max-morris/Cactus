@@ -24,8 +24,13 @@
 #undef HAVE_BACKTRACE_SYMBOLS
 #undef HAVE_CRYPT
 #undef HAVE_FINITE
-#undef HAVE_ISNAN
+#undef HAVE_COPYSIGN
+#undef HAVE_FPCLASSIFY
+#undef HAVE_ISFINITE
 #undef HAVE_ISINF
+#undef HAVE_ISNAN
+#undef HAVE_ISNORMAL
+#undef HAVE_SIGNBIT
 #undef HAVE_MKSTEMP
 #undef HAVE_VA_COPY
 
@@ -212,6 +217,62 @@ typedef enum {false, true} bool;
 #endif /* HAVE_CCTK_C_BOOL */
 #endif
 
+/* Whether copysign exists, and how it should be called */
+#ifdef HAVE_COPYSIGN
+#  define HAVE_CCTK_C_COPYSIGN HAVE_COPYSIGN
+#  define CCTK_C_COPYSIGN copysign
+#  define HAVE_CCTK_COPYSIGN HAVE_CCTK_C_COPYSIGN
+#  define CCTK_COPYSIGN CCTK_C_COPYSIGN
+#endif
+
+/* Whether fpclassify exists, and how it should be called */
+#ifdef HAVE_FPCLASSIFY
+#  define HAVE_CCTK_C_FPCLASSIFY HAVE_FPCLASSIFY
+#  define CCTK_C_FPCLASSIFY fpclassify
+#  define HAVE_CCTK_FPCLASSIFY HAVE_CCTK_C_FPCLASSIFY
+#  define CCTK_FPCLASSIFY CCTK_C_FPCLASSIFY
+#endif
+
+/* Whether isfinite exists, and how it should be called */
+#ifdef HAVE_ISFINITE
+#  define HAVE_CCTK_C_ISFINITE HAVE_ISFINITE
+#  define CCTK_C_ISFINITE isfinite
+#  define HAVE_CCTK_ISFINITE HAVE_CCTK_C_ISFINITE
+#  define CCTK_ISFINITE CCTK_C_ISFINITE
+#endif
+
+/* Whether isinf exists, and how it should be called */
+#ifdef HAVE_ISINF
+#  define HAVE_CCTK_C_ISINF HAVE_ISINF
+#  define CCTK_C_ISINF isinf
+#  define HAVE_CCTK_ISINF HAVE_CCTK_C_ISINF
+#  define CCTK_ISINF CCTK_C_ISINF
+#endif
+
+/* Whether isnan exists, and how it should be called */
+#ifdef HAVE_ISNAN
+#  define HAVE_CCTK_C_ISNAN HAVE_ISNAN
+#  define CCTK_C_ISNAN isnan
+#  define HAVE_CCTK_ISNAN HAVE_CCTK_C_ISNAN
+#  define CCTK_ISNAN CCTK_C_ISNAN
+#endif
+
+/* Whether isnormal exists, and how it should be called */
+#ifdef HAVE_ISNORMAL
+#  define HAVE_CCTK_C_ISNORMAL HAVE_ISNORMAL
+#  define CCTK_C_ISNORMAL isnormal
+#  define HAVE_CCTK_ISNORMAL HAVE_CCTK_C_ISNORMAL
+#  define CCTK_ISNORMAL CCTK_C_ISNORMAL
+#endif
+
+/* Whether signbit exists, and how it should be called */
+#ifdef HAVE_SIGNBIT
+#  define HAVE_CCTK_C_SIGNBIT HAVE_SIGNBIT
+#  define CCTK_C_SIGNBIT signbit
+#  define HAVE_CCTK_SIGNBIT HAVE_CCTK_C_SIGNBIT
+#  define CCTK_SIGNBIT CCTK_C_SIGNBIT
+#endif
+
 /* Whether __attribute__((const)) exists. */
 #undef HAVE_CCTK_C_ATTRIBUTE_CONST
 #ifdef HAVE_CCTK_C_ATTRIBUTE_CONST
@@ -294,6 +355,62 @@ typedef enum {false, true} bool;
 #else
   /* deprecated in beta15 */
 #  define CCTK_HAVE_CXX_BOOL
+#endif
+
+/* Whether copysign exists, and how it should be called */
+#undef HAVE_CCTK_CXX_COPYSIGN
+#undef CCTK_CXX_COPYSIGN
+#ifdef HAVE_CCTK_CXX_COPYSIGN
+#  define HAVE_CCTK_COPYSIGN HAVE_CCTK_CXX_COPYSIGN
+#  define CCTK_COPYSIGN CCTK_CXX_COPYSIGN
+#endif
+
+/* Whether fpclassify exists, and how it should be called */
+#undef HAVE_CCTK_CXX_FPCLASSIFY
+#undef CCTK_CXX_FPCLASSIFY
+#ifdef HAVE_CCTK_CXX_FPCLASSIFY
+#  define HAVE_CCTK_FPCLASSIFY HAVE_CCTK_CXX_FPCLASSIFY
+#  define CCTK_FPCLASSIFY CCTK_CXX_FPCLASSIFY
+#endif
+
+/* Whether isinf exists, and how it should be called */
+#undef HAVE_CCTK_CXX_ISINF
+#undef CCTK_CXX_ISINF
+#ifdef HAVE_CCTK_CXX_ISINF
+#  define HAVE_CCTK_ISINF HAVE_CCTK_CXX_ISINF
+#  define CCTK_ISINF CCTK_CXX_ISINF
+#endif
+
+/* Whether isinf exists, and how it should be called */
+#undef HAVE_CCTK_CXX_ISINF
+#undef CCTK_CXX_ISINF
+#ifdef HAVE_CCTK_CXX_ISINF
+#  define HAVE_CCTK_ISINF HAVE_CCTK_CXX_ISINF
+#  define CCTK_ISINF CCTK_CXX_ISINF
+#endif
+
+/* Whether isnan exists, and how it should be called */
+#undef HAVE_CCTK_CXX_ISNAN
+#undef CCTK_CXX_ISNAN
+#ifdef HAVE_CCTK_CXX_ISNAN
+#  define HAVE_CCTK_ISNAN HAVE_CCTK_CXX_ISNAN
+#  define CCTK_ISNAN CCTK_CXX_ISNAN
+#endif
+
+/* Whether isnormal exists, and how it should be called */
+#undef HAVE_CCTK_CXX_ISNORMAL
+#undef CCTK_CXX_ISNORMAL
+#ifdef HAVE_CCTK_CXX_ISNORMAL
+#  define HAVE_CCTK_ISNORMAL HAVE_CCTK_CXX_ISNORMAL
+#  define CCTK_ISNORMAL CCTK_CXX_ISNORMAL
+#endif
+
+/* Whether signbit exists, and how it should be called */
+#undef HAVE_CCTK_CXX_SIGNBIT
+#undef CCTK_CXX_SIGNBIT
+#ifdef HAVE_CCTK_CXX_SIGNBIT
+#  define HAVE_CCTK_SIGNBIT HAVE_CCTK_CXX_SIGNBIT
+#  define CCTK_SIGNBIT CCTK_CXX_SIGNBIT
 #endif
 
 /* Whether __attribute__((const)) exists. */
@@ -394,6 +511,7 @@ typedef enum {false, true} bool;
 #endif
 
 #endif /* __cplusplus */
+
 /****************************************************************************/
 
 #endif /* CCODE */

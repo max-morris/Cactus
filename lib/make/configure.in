@@ -839,6 +839,9 @@ else
   BUILD_REGEX=yes
 fi
 
+CCTK_C_BOOL
+CCTK_CXX_BOOL
+
 AC_C_CONST
 #AC_C_INLINE
 CCTK_CHECK_C_INLINE
@@ -847,8 +850,13 @@ CCTK_CHECK_C_STATIC_INLINE
 CCTK_CHECK_C_RESTRICT
 CCTK_CHECK_CXX_RESTRICT
 
-CCTK_C_BOOL
-CCTK_CXX_BOOL
+CCTK_CHECK_CXX_STDMATHFUNC(copysign)
+CCTK_CHECK_CXX_STDMATHFUNC(fpclassify)
+CCTK_CHECK_CXX_STDMATHFUNC(isfinite)
+CCTK_CHECK_CXX_STDMATHFUNC(isinf)
+CCTK_CHECK_CXX_STDMATHFUNC(isnan)
+CCTK_CHECK_CXX_STDMATHFUNC(isnormal)
+CCTK_CHECK_CXX_STDMATHFUNC(signbit)
 
 CCTK_C__PRAGMA
 
@@ -934,14 +942,15 @@ CCTK_CHECK_FUNCS(backtrace_symbols, , )
 dnl Do we have crypt(3)
 CCTK_CHECK_FUNCS(crypt, , CCTK_CHECK_LIB_FUNC(crypt, crypt))
 
-dnl Do we have finite(3)
-CCTK_CHECK_FUNCS(finite, , CCTK_CHECK_LIB_FUNC(m, finite))
-
-dnl Do we have isnan(3)
-CCTK_CHECK_FUNCS(isnan, , CCTK_CHECK_LIB_FUNC(m, isnan))
-
-dnl Do we have isinf(3)
-CCTK_CHECK_FUNCS(isinf, , CCTK_CHECK_LIB_FUNC(m, isinf))
+dnl Do we have certain math functions or macros?
+CCTK_CHECK_HEADER_LIB_FUNC(math.h, m, finite, (1.0))
+CCTK_CHECK_HEADER_LIB_FUNC(math.h, m, copysign, (1.0, 1.0))
+CCTK_CHECK_HEADER_LIB_FUNC(math.h, m, fpclassify, (1.0))
+CCTK_CHECK_HEADER_LIB_FUNC(math.h, m, isfinite, (1.0))
+CCTK_CHECK_HEADER_LIB_FUNC(math.h, m, isinf, (1.0))
+CCTK_CHECK_HEADER_LIB_FUNC(math.h, m, isnan, (1.0))
+CCTK_CHECK_HEADER_LIB_FUNC(math.h, m, isnormal, (1.0))
+CCTK_CHECK_HEADER_LIB_FUNC(math.h, m, signbit, (1.0))
 
 dnl Do we have mkstemp(3)
 CCTK_CHECK_FUNCS(mkstemp, , CCTK_CHECK_LIB_FUNC(c, mkstemp))

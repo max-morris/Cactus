@@ -415,6 +415,76 @@ ifelse([$4], , , [$4
 ])dnl
 ])
 
+
+
+# CCTK_CHECK_HEADER_LIB(HEADER, LIBRARY, FUNCTION, ARGUMENTS,
+#                       [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND],
+#                       [OTHER-LIBRARIES])
+# ------------------------------------------------------
+AC_DEFUN(CCTK_CHECK_HEADER_LIB,
+[AC_MSG_CHECKING([for $3 in header $1 and library $2])
+dnl Use a cache variable name containing the header, library, and function
+dnl name, because the test really is for header $1 and library $2 defining
+dnl function $3, not just for header $1 and library $2.  Separate tests with
+dnl the same $1 or $2 and different $3s may have different results.
+ac_lib_var=`echo $1['_']$2['_']$3 | sed 'y%./+-%__p_%'`
+AC_CACHE_VAL(ac_cv_lib_$ac_lib_var,
+[ac_link='${CC-cc} -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext `CCTK_Wrap "$LIBDIR_PREFIX" "$LIBDIR_SUFFIX" "$LIBDIRS"` `CCTK_Wrap "$LIBLINK_PREFIX" "$LIBLINK_SUFFIX" "$LIBS"` >&5'
+ac_save_LIBS="$LIBS"
+LIBS="$2 $7 $LIBS"
+AC_TRY_LINK(dnl
+ifelse(AC_LANG, [FORTRAN77], ,
+ifelse([$3], [main], , dnl Avoid conflicting decl of main.
+[]ifelse(AC_LANG, CPLUSPLUS, [#ifdef __cplusplus
+extern "C"
+#endif
+])dnl
+[#include <$1>
+])),
+            [$3 $4],
+            eval "ac_cv_lib_$ac_lib_var=yes",
+            eval "ac_cv_lib_$ac_lib_var=no")
+LIBS="$ac_save_LIBS"
+])dnl
+if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
+  AC_MSG_RESULT(yes)
+  ifelse([$5], ,
+[changequote(, )dnl
+  ac_tr_lib=HAVE_LIB`echo $2 | sed -e 's/[^a-zA-Z0-9_]/_/g' \
+    -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
+changequote([, ])dnl
+  AC_DEFINE_UNQUOTED($ac_tr_lib)
+  LIBS="$2 $LIBS"
+], [$5])
+else
+  AC_MSG_RESULT(no)
+ifelse([$6], , , [$6
+])dnl
+fi
+])
+
+AC_DEFUN(CCTK_CHECK_HEADER_LIB_FUNC,
+[CCTK_CHECK_HEADER_LIB($1, $2, $3, $4,
+ifelse([$5], , [changequote(, )dnl
+  cctk_tr_header=HAVE_`echo $1 | sed -e 's/[^a-zA-Z0-9_]/_/g' \
+    -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
+  cctk_tr_lib=HAVE_LIB`echo $2 | sed -e 's/[^a-zA-Z0-9_]/_/g' \
+    -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
+  cctk_tr_func=HAVE_`echo $3 | sed -e 's/[^a-zA-Z0-9_]/_/g' \
+    -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
+changequote([, ])dnl
+  AC_DEFINE_UNQUOTED($cctk_tr_header)
+  AC_DEFINE_UNQUOTED($cctk_tr_lib)
+  AC_DEFINE_UNQUOTED($cctk_tr_func)
+  LIBS="$2 $LIBS"
+], [$5])dnl
+)
+ifelse([$6], , , [$6
+])dnl
+])
+
+
+
 dnl Do nothing if the compiler accepts the restrict keyword.
 dnl Otherwise define restrict to __restrict__ or __restrict if one of
 dnl those work, otherwise define restrict to be empty.
@@ -915,4 +985,49 @@ AC_LANG_RESTORE
 if test "$cctk_cv_have_cxx_builtin_expect" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_CXX_BUILTIN_EXPECT)
 fi
+])
+
+
+
+dnl Check for a function that may be provided by cmath or math.h
+AC_DEFUN(CCTK_CHECK_CXX_STDMATHFUNC,
+[cctk_func=`echo $1 | sed 'y%./+-%__p_%'`
+ cctk_tr_func=`echo $cctk_func |
+   sed -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
+AC_MSG_CHECKING([for C++ $1])
+AC_CACHE_VAL(cctk_cv_cxx_$cctk_func,
+[AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+for ac_kw in "std::$cctk_func" "$cctk_func" "::$cctk_func"; do
+cctk_cv_cxx_func=no
+for ac_nargs in 1 2; do
+  case $ac_nargs in
+    1) ac_args='(1.0)'; ac_argsf='(1.0f)' ;;
+    2) ac_args='(1.0, 1.0)'; ac_argsf='(1.0f, 1.0f)' ;;
+  esac
+  AC_TRY_COMPILE([
+#include <math.h>
+#include <cmath>
+], [
+{
+  $ac_kw $ac_argsf;
+  $ac_kw $ac_args;
+}
+using namespace std;
+{
+  $ac_kw $ac_argsf;
+  $ac_kw $ac_args;
+}
+], [cctk_cv_cxx_func=$ac_kw; break 2])
+done
+done
+AC_LANG_RESTORE
+eval cctk_cv_cxx_$cctk_func=\$cctk_cv_cxx_func
+])
+AC_MSG_RESULT($cctk_cv_cxx_func)
+case $cctk_cv_cxx_func in
+  no) AC_DEFINE_UNQUOTED(CCTK_CXX_$cctk_tr_func, ) ;;
+  *)  AC_DEFINE_UNQUOTED(CCTK_CXX_$cctk_tr_func, $cctk_cv_cxx_func)
+      AC_DEFINE_UNQUOTED(HAVE_CCTK_CXX_$cctk_tr_func, 1) ;;
+esac
 ])
