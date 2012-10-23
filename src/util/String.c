@@ -268,7 +268,7 @@ int Util_SplitString(char **before, char **after, const char *string, const char
 @@*/
 char *Util_Strdup(const char *s)
 {
-  char *retstr=NULL;
+  char *retstr;
 
   retstr = (char*) malloc((strlen(s)+1)*sizeof(char));
   if(retstr)
@@ -616,6 +616,8 @@ int Util_asprintf(char **buffer, const char *fmt, ...)
 
   count = Util_vsnprintf(NULL, 0, fmt, args);
 
+  va_end(args);
+
   *buffer = (char *)malloc(count+1);
 
   if(*buffer)
@@ -691,6 +693,8 @@ int Util_asnprintf(char **buffer, size_t size, const char *fmt, ...)
   va_start(args,fmt);
 
   count = Util_vsnprintf(NULL, 0, fmt, args);
+
+  va_end(args);
 
   if(count+1 > size)
   {
