@@ -1004,26 +1004,6 @@ endif
 	@echo Getting system info aborted.
 
 
-# Create bugreport
-
-.PHONY: bugreport
-
-bugreport:
-	$(SHELL) ./lib/sbin/cctkbug
-
-
-ifneq ($strip($(CONFIGURATIONS)),)
-.PHONY: $(addsuffix -bugreport,$(CONFIGURATIONS))
-
-$(addsuffix -bugreport,$(CONFIGURATIONS)):
-	$(SHELL) ./lib/sbin/cctkbug -c $(CONFIGS_DIR)/$(@:%-bugreport=%)
-endif
-
-%-bugreport:
-	$(NOTIFY_DIVIDER)
-	@echo Configuration $(@:%-bugreport=%) does not exist.
-	@echo Bugreport creation aborted.
-
 ###############################################################################
 #                      Documentation targets
 ###############################################################################
