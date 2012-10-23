@@ -168,7 +168,7 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
   {
     while (1)
     {
-      c = getopt_long_only (argc, argv, "hO::o:x::L:W:E:r::b:STt:vi",
+      c = getopt_long_only (argc, argv, "hO::o:x::L:W:E:r::b:STt:Pvi",
                             long_options, &option_index);
       if (c == -1)
         break;
