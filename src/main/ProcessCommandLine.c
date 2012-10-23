@@ -131,7 +131,7 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
     list_thorns_option            = 'T',
     test_thorns_compiled_option   = 't',
     version_option                = 'v',
-    exit_after_param_check_option = 'p',
+    exit_after_param_check_option = 'P',
     ignore_next_option            = 'i'
   };
   /* the longopts argument passed into getopt_long_only() */

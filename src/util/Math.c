@@ -11,6 +11,7 @@
 
 #include <math.h>
 #include <cctk_Config.h>
+#include <cctk_Math.h>
 
 
 
@@ -23,6 +24,14 @@ double CCTK_copysign(double x, double y)
 #endif
 }
 
+double CCTK_FNAME(CCTK_copysign)(double *x, double *y);
+double CCTK_FNAME(CCTK_copysign)(double *x, double *y)
+{
+  return CCTK_copysign(*x, *y);
+}
+
+
+
 int CCTK_fpclassify(double x)
 {
 #ifdef HAVE_FPCLASSIFY
@@ -31,6 +40,14 @@ int CCTK_fpclassify(double x)
   return 0;                     /* don't know what else to return */
 #endif
 }
+
+int CCTK_FNAME(CCTK_fpclassify)(double *x);
+int CCTK_FNAME(CCTK_fpclassify)(double *x)
+{
+  return CCTK_fpclassify(*x);
+}
+
+
 
 int CCTK_isfinite(double x)
 {
@@ -41,6 +58,14 @@ int CCTK_isfinite(double x)
 #endif
 }
 
+int CCTK_FNAME(CCTK_isfinite)(double *x);
+int CCTK_FNAME(CCTK_isfinite)(double *x)
+{
+  return CCTK_isfinite(*x);
+}
+
+
+
 int CCTK_isinf(double x)
 {
 #ifdef HAVE_ISINF
@@ -49,6 +74,14 @@ int CCTK_isinf(double x)
   return 0;                     /* default */
 #endif
 }
+
+int CCTK_FNAME(CCTK_isinf)(double *x);
+int CCTK_FNAME(CCTK_isinf)(double *x)
+{
+  return CCTK_isinf(*x);
+}
+
+
 
 int CCTK_isnan(double x)
 {
@@ -59,6 +92,14 @@ int CCTK_isnan(double x)
 #endif
 }
 
+int CCTK_FNAME(CCTK_isnan)(double *x);
+int CCTK_FNAME(CCTK_isnan)(double *x)
+{
+  return CCTK_isnan(*x);
+}
+
+
+
 int CCTK_isnormal(double x)
 {
 #ifdef HAVE_ISNORMAL
@@ -68,6 +109,14 @@ int CCTK_isnormal(double x)
 #endif
 }
 
+int CCTK_FNAME(CCTK_isnormal)(double *x);
+int CCTK_FNAME(CCTK_isnormal)(double *x)
+{
+  return CCTK_isnormal(*x);
+}
+
+
+
 int CCTK_signbit(double x)
 {
 #ifdef HAVE_SIGNBIT
@@ -75,4 +124,10 @@ int CCTK_signbit(double x)
 #else
   return x < 0.0;
 #endif
+}
+
+int CCTK_FNAME(CCTK_signbit)(double *x);
+int CCTK_FNAME(CCTK_signbit)(double *x)
+{
+  return CCTK_signbit(*x);
 }

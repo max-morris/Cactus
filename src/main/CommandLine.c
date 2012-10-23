@@ -621,6 +621,7 @@ void CCTKi_CommandLineHelp (void)
     "                                       created by the '-r' option\n"
     "-b, --buffering <no|line|full>       : Set stdout buffering mode.\n"
     "-S, --print-schedule                 : Print the schedule tree, then exit.\n"
+    "-P, --exit-after-param-check         : Check the parameters, then exit.\n"
     "-T, --list-thorns                    : Lists the compiled-in thorns.\n"
     "-t, --test-thorn-compiled <name>     : Tests for the presence of thorn <name>.\n"
     "    --parameter-level <level>        : Sets the amount of parameter checking, \n"
