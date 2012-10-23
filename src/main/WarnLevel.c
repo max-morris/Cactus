@@ -1137,7 +1137,7 @@ int CCTKi_SetErrorLevel (int level)
 }
 
 
-int CCTK_ExitAfterParamCheck();
+int CCTK_ExitAfterParamCheck (void);
  /*@@
    @routine    ExitIfParamCheckOnly
    @date       Mon May 16 2012
@@ -1147,7 +1147,7 @@ int CCTK_ExitAfterParamCheck();
    @enddesc
 
 @@*/
-void CCTK_ExitIfParamCheckOnly()
+void CCTK_ExitIfParamCheckOnly (void)
 {
     if(CCTK_ExitAfterParamCheck()) {
         printf("Exit after param check requested using the --exit-after-param-check option.\n");
