@@ -1031,3 +1031,20 @@ case $cctk_cv_cxx_func in
       AC_DEFINE_UNQUOTED(HAVE_CCTK_CXX_$cctk_tr_func, 1) ;;
 esac
 ])
+
+
+
+AC_DEFUN(CCTK_CHECK_C99,
+[AC_CACHE_CHECK([for C99 features], cctk_cv_have_c99,
+[cctk_cv_have_c99=no
+AC_TRY_COMPILE(,
+// Test C99 comments
+// Test variable declarations in the middle of blocks
+0;
+int x;
+, cctk_cv_have_c99=yes, cctk_cv_have_c99=no)
+])
+if test "$cctk_cv_have_c99" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_C99)
+fi
+])
