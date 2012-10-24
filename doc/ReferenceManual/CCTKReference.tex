@@ -12345,6 +12345,70 @@ A negative return value indicates an error.
 \end{ErrorSection}
 \end{FunctionDescription}
 
+\begin{FunctionDescription}{CCTK\_TimerIsRunning}
+\label{CCTK-TimerIsRunning}
+Checks if a Cactus timer is running, given its name.
+Returns 0 of not (or in case of errors) and 1 if the timer is running.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+int err = CCTK_TimerIsRunning(name)
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_TimerIsRunning(isrunning, name)
+  integer isrunning
+  character*(*) name
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter} {char* name}
+timer name
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Errors are treated as non-running timers: 0 is returned.
+\end{Discussion}
+
+\end{FunctionDescription}
+
+\begin{FunctionDescription}{CCTK\_TimerIsRunningI}
+\label{CCTK-TimerIsRunningI}
+Checks if a Cactus timer is running, given its handle.
+Returns 0 of not (or in case of errors) and 1 if the timer is running.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+int err = CCTK_TimerIsRunningI(index)
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_TimerIsRunningI(isrunning , index )
+  integer isrunning
+  integer index
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter} {int index}
+timer index
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Errors are treated as non-running timers: 0 is returned.
+\end{Discussion}
+
+\end{FunctionDescription}
+
 \begin{FunctionDescription}{CCTK\_TraverseString}
 \label{CCTK-TraverseString}
 Traverse through all variables and/or groups whose names appear in the given
