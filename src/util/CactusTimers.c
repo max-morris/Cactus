@@ -62,6 +62,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_TimerPrintData)
 typedef struct
 {
   void **data;
+  int running; /* 1 or 0 depending on timer running or not */
 } t_Timer;
 
 
@@ -421,6 +422,7 @@ static int CCTKi_TimerCreate (const char *timername)
 
     if (timer)
     {
+      timer->running = 0;
       timer->data = (void **) malloc (n_clocks * sizeof (void *));
 
       if (timer->data)
@@ -667,6 +669,13 @@ int CCTK_TimerStartI (int this_timer)
   timer = Util_GetHandledData (timers, this_timer);
   if (timer)
   {
+    if (timer->running)
+    {
+      CCTK_VWarn(1, __LINE__, __FILE__, "Cactus",
+                 "CCTK_TimerStartI: Trying to start timer \"%s\" (%d) which "
+                 "is already running.", Util_GetHandleName(timers, this_timer),
+                 this_timer);
+    }
     CCTKi_TimerStart (this_timer, timer);
   }
   else
@@ -709,6 +718,12 @@ static void CCTKi_TimerStart (int this_timer, t_Timer *timer)
   const cClockFuncs *funcs;
   int handle;
 
+  /* If timer is running already, ignore call. Errors have to be reported
+   * by calling functions if wanted. */
+  if (timer && timer->running)
+  {
+    return;
+  }
 
   if (timer && timer->data)
   {
@@ -718,6 +733,7 @@ static void CCTKi_TimerStart (int this_timer, t_Timer *timer)
       funcs = (const cClockFuncs *) Util_GetHandledData (clocks, handle);
       funcs->start (this_timer, timer->data[handle]);
     }
+    timer->running = 1;
   }
 }
 
@@ -799,6 +815,13 @@ int CCTK_TimerStopI (int this_timer)
   timer = Util_GetHandledData (timers, this_timer);
   if (timer)
   {
+    if (!timer->running)
+    {
+      CCTK_VWarn(1, __LINE__, __FILE__, "Cactus",
+                 "CCTK_TimerStopI: Trying to stop timer \"%s\" (%d) which "
+                 "isn't running.", Util_GetHandleName(timers, this_timer),
+                 this_timer);
+    }
     CCTKi_TimerStop (this_timer, timer);
   }
   else
@@ -841,6 +864,13 @@ static void CCTKi_TimerStop (int this_timer, t_Timer *timer)
   const cClockFuncs *funcs;
   int handle;
 
+  /* Do nothing if timer isn't running. Warning messages have to be produced
+   * in CCTK_TimerStopI, so this shouldn't be reached in theory */
+  if (timer && !timer->running)
+  {
+    return;
+  }
+
   if (timer && timer->data)
   {
     /* Stop the timer info for this timer */
@@ -849,6 +879,7 @@ static void CCTKi_TimerStop (int this_timer, t_Timer *timer)
       funcs = (const cClockFuncs *) Util_GetHandledData (clocks, handle);
       funcs->stop (this_timer, timer->data[handle]);
     }
+    timer->running = 0;
   }
 }
 
