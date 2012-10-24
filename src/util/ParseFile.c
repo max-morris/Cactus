@@ -430,7 +430,8 @@ static char *ParseDefines(char *buffer, unsigned long *buffersize)
           if (pos+1 < *buffersize) { pos++; }
         }
         /* Parameter file name ? */
-        else if (strcmp(define, "parfile") == 0)
+        else if ((strcmp(define, "parfile") == 0) ||
+                 (strcmp(define, "{parfile") == 0))
         {
           char path[500];
           CCTK_ParameterFilename(500, path);
@@ -447,6 +448,11 @@ static char *ParseDefines(char *buffer, unsigned long *buffersize)
           if (strcmp (value + strlen (value) - 4, ".par") == 0)
           {
             value[strlen (value) - 4] = '\0';
+          }
+          if (define[0] == '{')
+          {
+            /* increase pos to jump over the trailing } */
+            if (pos+1 < *buffersize) { pos++; }
           }
         }
         /* Else: unknown define - or no define at all: ignore */
