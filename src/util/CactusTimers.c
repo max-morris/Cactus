@@ -54,6 +54,10 @@ void CCTK_FCALL CCTK_FNAME (CCTK_TimerPrintDataI)
                            (int *ierr, int *this_timer, int *this_clock);
 void CCTK_FCALL CCTK_FNAME (CCTK_TimerPrintData)
                            (int *ierr, TWO_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_TimerIsRunningI)
+                           (int *ierr, int *this_timer);
+void CCTK_FCALL CCTK_FNAME (CCTK_TimerIsRunning)
+                           (int *ierr, ONE_FORTSTRING_ARG);
 
 
 /********************************************************************
@@ -1015,6 +1019,97 @@ static void CCTKi_TimerReset (int this_timer, t_Timer *timer)
   }
 }
 
+
+ /*@@
+   @routine    CCTK_TimerIsRunningI
+   @date       Wed Oct 24 2012  13:00:00
+   @author     Frank Löffler
+   @desc
+               Returns if a timer is currently running given by its handle.
+   @enddesc
+   @calls
+
+   @var        this_timer
+   @vdesc      handle for the timer
+   @vtype      int
+   @vio        in
+   @endvar
+
+   @returntype int
+   @returndesc
+               0 for no (or failure to lookup timer), 1 for yes
+   @endreturndesc
+@@*/
+int CCTK_TimerIsRunningI (int this_timer)
+{
+  t_Timer *timer;
+
+
+  timer = Util_GetHandledData (timers, this_timer);
+  if (timer)
+  {
+    return !!timer->running;
+  }
+  else
+  {
+    CCTK_VWarn (8, __LINE__, __FILE__, "Cactus",
+                "CCTK_TimerIsRunningI: Timer %d not found",this_timer);
+  }
+  return 0;
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_TimerIsRunningI)
+                           (int *ierr, int *this_timer)
+{
+  *ierr = CCTK_TimerIsRunningI (*this_timer);
+}
+
+ /*@@
+   @routine    CCTK_TimerIsRunning
+   @date       Wed Oct 24 13:00:00
+   @author     Frank Löffler
+   @desc
+               Returns if a timer is currently running.
+   @enddesc
+   @calls      CCTK_TimerIsRunningI
+
+   @var        timername
+   @vdesc      name of the timer
+   @vtype      const char *
+   @vio        in
+   @endvar
+
+   @returntype int
+   @returndesc
+               0 for no (or failure to lookup timer), 1 for yes
+   @endreturndesc
+@@*/
+int CCTK_TimerIsRunning (const char *timername)
+{
+  t_Timer *timer;
+  int this_timer;
+
+
+  this_timer = Util_GetHandle (timers, timername, (void **) &timer);
+  if (this_timer >= 0)
+  {
+    return CCTK_TimerIsRunningI (this_timer);
+  }
+  else
+  {
+    CCTK_VWarn (8, __LINE__, __FILE__, "Cactus",
+                "CCTK_TimerIsRunning: Timer %s not found",timername);
+  }
+  return 0;
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_TimerIsRunning)
+                           (int *ierr, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (timername)
+  *ierr = CCTK_TimerIsRunning (timername);
+  free (timername);
+}
 
  /*@@
    @routine    CCTK_Timer

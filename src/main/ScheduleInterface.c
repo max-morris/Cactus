@@ -1253,13 +1253,20 @@ int CCTK_SchedulePrintTimesToFile(const char *where, FILE *file)
   /* also print total time at the bottom */
   if (total_timer >= 0)
   {
-    CCTK_TimerStopI (total_timer);
+    int total_timer_running = CCTK_TimerIsRunningI(total_timer);
+    if (total_timer_running)
+    {
+      CCTK_TimerStopI (total_timer);
+    }
     CCTK_TimerI (total_timer, timerinfo);
     CCTKi_SchedulePrintTimerInfo
       (timerinfo, NULL, "", "Total time for simulation", file);
 
     /* just in case this is not at termination yet ... */
-    CCTK_TimerStartI (total_timer);
+    if (total_timer_running)
+    {
+      CCTK_TimerStartI (total_timer);
+    }
   }
 
   return 0;

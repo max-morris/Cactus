@@ -77,6 +77,8 @@ int CCTK_TimerStop(const char *name);
 int CCTK_TimerStopI(int this_timer);
 int CCTK_TimerReset(const char *name);
 int CCTK_TimerResetI(int this_timer);
+int CCTK_TimerIsRunning(const char *name);
+int CCTK_TimerIsRunningI(int this_timer);
 int CCTK_Timer(const char *name, cTimerData *info);
 int CCTK_TimerI(int this_timer, cTimerData *info);
 
