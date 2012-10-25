@@ -30,6 +30,7 @@
 # endif
 #endif
 
+#include "CommandLine.h"
 #include "StoreKeyedData.h"
 
 #include "cctk_Comm.h"
@@ -137,6 +138,8 @@ static void CCTKi_WarnCallbacksCall(int level,
                                     const char *message);
 
 static void CCTKi_InfoCallbacksCall(const char *thorn, const char *message);
+
+static void CCTKi_ExitIfParamCheckOnly(void);
 
 /********************************************************************
  *********************    Static Data   *****************************
@@ -1137,7 +1140,6 @@ int CCTKi_SetErrorLevel (int level)
 }
 
 
-int CCTK_ExitAfterParamCheck (void);
  /*@@
    @routine    ExitIfParamCheckOnly
    @date       Mon May 16 2012
@@ -1147,9 +1149,9 @@ int CCTK_ExitAfterParamCheck (void);
    @enddesc
 
 @@*/
-void CCTK_ExitIfParamCheckOnly (void)
+static void CCTKi_ExitIfParamCheckOnly(void)
 {
-    if(CCTK_ExitAfterParamCheck()) {
+    if(CCTKi_ExitAfterParamCheck()) {
         printf("Exit after param check requested using the --exit-after-param-check option.\n");
         CCTK_Exit(NULL, 0);
     }
@@ -1210,7 +1212,7 @@ void CCTKi_FinaliseParamWarn (void)
       }
     }
   }
-  CCTK_ExitIfParamCheckOnly();
+  CCTKi_ExitIfParamCheckOnly();
 }
 
 

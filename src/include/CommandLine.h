@@ -32,6 +32,8 @@ void CCTKi_CommandLineHelp(void);
 void CCTKi_CommandLineUsage(void);
 void CCTKi_CommandLineFinished(void);
 
+int CCTKi_ExitAfterParamCheck(void);
+
 #ifdef __cplusplus 
 }
 #endif

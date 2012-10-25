@@ -2229,7 +2229,7 @@ static int ParameterSetInteger (t_param *param, const char *value)
       }
       else if(fabs(round(val.value.rval) - val.value.rval) < 1e-12) /* enforce integer result */
       {
-        inval = (int)round(val.value.rval);
+        inval = (int)rint(round(val.value.rval));
       }
       else
       {
