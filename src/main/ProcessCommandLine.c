@@ -340,7 +340,7 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ParameterFilename)
   *retval = CCTK_ParameterFilename(*len,name);
 }
 
-int CCTKi_ExitAfterParamCheck()
+int CCTKi_ExitAfterParamCheck(void)
 {
     return exit_after_param_check;
 }
