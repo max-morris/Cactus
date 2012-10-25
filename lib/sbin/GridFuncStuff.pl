@@ -526,18 +526,23 @@ sub CreateCArgumentDeclarations
     my $implementation = "\U\"$3\"";
     my $ntimelevels    = $5;
     my $var            = "\"$varname$6\"";
-
-    for(my $level = 0; $level < $ntimelevels; $level++)
-    {
-       push(@declarations, "CCTK_DECLARE_INIT (CCTK_$type * restrict const, $varname, (CCTK_$type *) CCTKi_VarDataPtr(cctkGH, $level, $implementation, $var));");
-
-      # Modify the name for the time level
-      $varname .= '_p';
-    }
+    my $fullvar        = "\"$3::$varname$6\"";
 
     if(! $type =~ /^(BYTE|INT|INT1|INT2|INT4|INT8|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
     {
       CST_error(0,"Unknown argument type $type","",__LINE__,__FILE__);
+    }
+
+    my $varname0 = $varname;
+    push(@declarations, "static int cctki_vi_$varname0 = -1;");
+    push(@declarations, "if (cctki_vi_$varname0 < 0) cctki_vi_$varname0 = CCTK_VarIndex($fullvar);");
+
+    for(my $level = 0; $level < $ntimelevels; $level++)
+    {
+       push(@declarations, "CCTK_DECLARE_INIT (CCTK_$type * restrict const, $varname, (CCTK_$type *) CCTK_VarDataPtrI(cctkGH, $level, cctki_vi_$varname0));");
+
+      # Modify the name for the time level
+      $varname .= '_p';
     }
   }
 
