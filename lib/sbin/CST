@@ -594,7 +594,6 @@ sub TopoSort
 
   foreach $thorn (sort keys %thorns)
   {
-    next if ("\U$thorn\E" eq "CACTUS");
     $thorn_ancestor{"\U$thorn\E"} = '';
     foreach $ancestor_imp ( split(' ', $interface->{"\U$thorn INHERITS\E"}))
     {
