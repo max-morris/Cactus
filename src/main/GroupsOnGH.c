@@ -21,6 +21,8 @@
 #include "cctk_Misc.h"
 #include "cctk_WarnLevel.h"
 
+#include "cctki_GroupsOnGH.h"
+
 static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_GroupsOnGH_c);
@@ -369,11 +371,52 @@ void CCTK_FCALL CCTK_FNAME(CCTK_VarDataPtrI)
 }
 
  /*@@
+   @routine    CCTKi_VarDataPtrI
+   @date       2012-10-26
+   @author     Erik Schnetter
+   @desc
+   Passes back a variable data pointer, given a variable index and timelevel.
+   This function does not output any warnings.
+   @enddesc
+
+   @var        GH
+   @vdesc      Pointer to Grid Hierachy
+   @vtype      const cGH *
+   @vio        in
+   @endvar
+
+   @var        vindex
+   @vdesc      Index of grid variable
+   @vtype      int
+   @vio        in
+   @endvar
+
+   @var        timelevel
+   @vdesc      Index of timelevel on which data is required
+   @vtype      int
+   @vio        in
+   @endvar
+
+   @returntype void *
+   @returndesc Pointer to the required data, should be cast to required type
+   @endreturndesc
+@@*/
+void *CCTKi_VarDataPtrI(const cGH *GH, int timelevel, int vindex)
+{
+  int numtimelevels = CCTK_MaxTimeLevelsVI (vindex);
+  if (timelevel < 0 || timelevel >= numtimelevels)
+  {
+    return NULL;
+  }
+  return GH->data[vindex][timelevel];
+}
+
+ /*@@
    @routine    CCTK_VarDataPtrB
    @date       Tue 6th April 1999
    @author     Gabrielle Allen
    @desc
-   Passes back a variable data pointer, given either a  variable index
+   Passes back a variable data pointer, given either a variable index
    or a full name and timelevel
    @enddesc
 

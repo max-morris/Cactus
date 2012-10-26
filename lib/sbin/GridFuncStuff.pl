@@ -64,15 +64,8 @@ sub CreateVariableBindings
     push(@data, '#include "cctk_Types.h"');
     push(@data, '');
     push(@data, '#ifdef CCODE');
-    push(@data, '/* prototype for CCTKi_VarDataPtr() goes here');
-    push(@data, '   because we don\'t want to include another CCTK header file */');
     push(@data, '#include "cGH.h"');
-    push(@data, '#ifdef __cplusplus');
-    push(@data, 'extern "C"');
-    push(@data, '#endif');
-    push(@data, 'void *CCTKi_VarDataPtr(const cGH *GH, int timelevel,');
-    push(@data, '                       const char *implementation, const char *varname);');
-    push(@data, '');
+    push(@data, '#include "cctki_GroupsOnGH.h"');
 
     push(@data, '#define PASS_GROUPSIZE(group, dir)  CCTKGROUPNUM_##group >= 0 ? \\');
     push(@data, '                                    CCTK_ArrayGroupSizeI(GH, dir, CCTKGROUPNUM_##group) : &_cctk_zero');
@@ -534,12 +527,12 @@ sub CreateCArgumentDeclarations
     }
 
     my $varname0 = $varname;
-    push(@declarations, "static int cctki_vi_$varname0 = -1;");
-    push(@declarations, "if (cctki_vi_$varname0 < 0) cctki_vi_$varname0 = CCTK_VarIndex($fullvar);");
+    push(@declarations, "static int cctki_vi_$varname0 = -100;");
+    push(@declarations, "if (cctki_vi_$varname0 == -100) cctki_vi_$varname0 = CCTK_VarIndex($fullvar);");
 
     for(my $level = 0; $level < $ntimelevels; $level++)
     {
-       push(@declarations, "CCTK_DECLARE_INIT (CCTK_$type * restrict const, $varname, (CCTK_$type *) CCTK_VarDataPtrI(cctkGH, $level, cctki_vi_$varname0));");
+       push(@declarations, "CCTK_DECLARE_INIT (CCTK_$type * restrict const, $varname, (CCTK_$type *) CCTKi_VarDataPtrI(cctkGH, $level, cctki_vi_$varname0));");
 
       # Modify the name for the time level
       $varname .= '_p';
