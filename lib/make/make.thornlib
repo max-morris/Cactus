@@ -89,7 +89,6 @@ $(NAME): $(addsuffix /make.checked, $(SUBDIRS) $(THORNBINDINGS))
 ##	in batches not larger than $(OBJS-words-max) files at a time.
 	$(MAKE) -f $(MAKE_DIR)/make.thornlib $(NAME).objectlist
 	xargs -n $(OBJS-words-max) $(AR) $(ARFLAGS) $@ < $(NAME).objectlist
-	$(RM) $(NAME).objectlist
 ##	Alternatively, we could create a single object file from the object
 ##	files and put it into an archive.
 #	ld -r -o $@.o $(OBJS)

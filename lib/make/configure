@@ -7627,10 +7627,10 @@ cat > conftest.$ac_ext <<EOF
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
     builtin and then its argument prototype would still apply.  */
-char q2nVBa;
+char ryvCLg;
 
 int main() {
-65DAV6
+0anSRA
 ; return 0; }
 EOF
 if { (eval echo configure:7637: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
@@ -8172,6 +8172,12 @@ LDFLAGS="$LDFLAGS $KNOWN_LDFLAGS"
 
 : ${LIBNAME_SUFFIX='.a'}
 
+# How to link in all object files from an archive
+
+: ${BEGIN_WHOLE_ARCHIVE_FLAGS=''}
+
+: ${END_WHOLE_ARCHIVE_FLAGS=''}
+
 # How to link the cactus libraries
 
 : ${CACTUSLIBLINKLINE='-L$(CCTK_LIBDIR) $(addprefix -l, $(ALLCACTUSLIBS))'}
@@ -8307,7 +8313,7 @@ if test "x$CCTK_NEED_X" = 'xyes' ; then
 # Uses ac_ vars as temps to allow command line to override cache and checks.
 # --without-x overrides everything else, but does not touch the cache.
 echo $ac_n "checking for X""... $ac_c" 1>&6
-echo "configure:8311: checking for X" >&5
+echo "configure:8317: checking for X" >&5
 
 # Check whether --with-x or --without-x was given.
 if test "${with_x+set}" = set; then
@@ -8369,12 +8375,12 @@ if test "$ac_x_includes" = NO; then
 
   # First, try using that file with no special directory specified.
 cat > conftest.$ac_ext <<EOF
-#line 8373 "configure"
+#line 8379 "configure"
 #include "confdefs.h"
 #include <$x_direct_test_include>
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:8378: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:8384: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   rm -rf conftest*
@@ -8443,14 +8449,14 @@ if test "$ac_x_libraries" = NO; then
   ac_save_LIBS="$LIBS"
   LIBS="-l$x_direct_test_library $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 8447 "configure"
+#line 8453 "configure"
 #include "confdefs.h"
 
 int main() {
 ${x_direct_test_function}()
 ; return 0; }
 EOF
-if { (eval echo configure:8454: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:8460: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   LIBS="$ac_save_LIBS"
 # We can link X programs with no special library path.
@@ -8791,6 +8797,8 @@ s%@DIRSEP@%$DIRSEP%g
 s%@OPTIONSEP@%$OPTIONSEP%g
 s%@LIBNAME_PREFIX@%$LIBNAME_PREFIX%g
 s%@LIBNAME_SUFFIX@%$LIBNAME_SUFFIX%g
+s%@BEGIN_WHOLE_ARCHIVE_FLAGS@%$BEGIN_WHOLE_ARCHIVE_FLAGS%g
+s%@END_WHOLE_ARCHIVE_FLAGS@%$END_WHOLE_ARCHIVE_FLAGS%g
 s%@CACTUSLIBLINKLINE@%$CACTUSLIBLINKLINE%g
 s%@C_DEPEND@%$C_DEPEND%g
 s%@C_DEPEND_OUT@%$C_DEPEND_OUT%g
