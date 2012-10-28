@@ -333,6 +333,15 @@ while the compilers and linkers are autodetected.  This can lead to
 strange errors while configuring.  You can pass the linker flags in
 the variable \texttt{LD} instead.
 
+\item [\texttt{BEGIN\_WHOLE\_ARCHIVE\_FLAGS},
+  \texttt{END\_WHOLE\_ARCHIVE\_FLAGS}]
+Optional set of flags for the linker that change the behaviour how
+archives are handled. These flags are used just before and just after
+listing the flesh and all thorn libraries. This mechanism can be used
+to force linking in all object files from the flesh and all thorns,
+which can help detect duplicate definitions. Otherwise, duplicate
+routines may go undetected.
+
 \item [\texttt{ARFLAGS}]
 Flags for the archiver.
 
