@@ -893,6 +893,23 @@ sub WriteFullResults
   }
   push (@summary, "$message\n") if ($missingtests > 0);
 
+  # Different number of processors required
+  $message = "  Tests missed for different number of processors required:\n";
+  $missingtests = 0;
+  foreach $thorn (sort split(' ',$testdata->{'THORNS'}))
+  {
+    foreach $parfile (sort split(' ',$testdata->{"$thorn TESTS"}))
+    {
+      my $nprocs = $testdata->{"$thorn $parfile NPROCS"};
+      next unless ($nprocs);
+      $message .= "\n    ".$parfile." in ". $thorn."\n";
+      $message .= "      (". $testdata->{"$thorn $parfile DESC"}.")\n";
+      $message .= "      Requires $nprocs processors\n";
+      $missingtests++;
+    }
+  }
+  push (@summary, "$message\n") if ($missingtests > 0);
+
   # Different numbers of test files
 
   $message =  "  Tests with different number of test files:\n\n";
@@ -1042,18 +1059,7 @@ sub WriteFullResults
     {
       foreach $file (sort split(' ',$rundata->{"$thorn PASSED"}))
       {
-        my $nprocs_available = $config_data->{'NPROCS'};
-        my $nprocs = $testdata->{"$thorn $file NPROCS"};
-        my $nprocstext = "";
-        if ($nprocs)
-        {
-          $nprocstext = " using $nprocs MPI processes";
-        }
-        else
-        {
-          $nprocs = $nprocs_available;
-        }
-        push (@summary, "    $file (from $thorn$nprocstext)");
+        push (@summary, "    $file (from $thorn)");
       }
     }
   }
@@ -1067,10 +1073,7 @@ sub WriteFullResults
     {
       foreach $file (sort split(' ',$rundata->{"$thorn FAILED"}))
       {
-        my $nprocs_available = $config_data->{'NPROCS'};
-        my $nprocs = $testdata->{"$thorn $file NPROCS"};
-        $nprocs = $nprocs_available unless $nprocs;
-        push (@summary, "    $file (from $thorn using $nprocs MPI processes)");
+        push (@summary, "    $file (from $thorn)");
       }
     }
   }
@@ -1239,13 +1242,9 @@ sub RunTest
   chdir ($testdata->{"$thorn $test TESTRUNDIR"}) ;
 
   # substitute the ($nprocs, $exe, $parfile) templates in the command
-  my $nprocs_available = $config_data->{'NPROCS'};
-  my $nprocs = $testdata->{"$thorn $test NPROCS"};
-  $nprocs = $nprocs_available unless $nprocs;
-  my $exe = $config_data->{'EXE'};
   my $cmd = $config_data->{'COMMAND'};
-  $cmd =~ s/\$exe/$exe/g;
-  $cmd =~ s/\$nprocs/$nprocs/g;
+  $cmd =~ s/\$exe/$config_data->{'EXE'}/g;
+  $cmd =~ s/\$nprocs/$config_data->{'NPROCS'}/g;
   $cmd =~ s/\$parfile/$parfile/g;
 
   $retcode = &RunCactus($output,$test,$cmd);
@@ -1695,13 +1694,16 @@ sub ParseAllParameterFiles
         $testdata->{"$thorn $testbase MISSING"} .= $missing;
         $testdata->{'NUNRUNNABLE'}++;
       }
+      elsif ($nprocs_required != $nprocs_available)
+      {
+        $testdata->{"$thorn UNRUNNABLE"} .= "$testbase ";
+        $testdata->{"$thorn $testbase NPROCS"} = $nprocs_required;
+        $testdata->{'NUNRUNNABLE'}++;
+      }
       else
       {
         $testdata->{"$thorn RUNNABLE"} .= "$testbase ";
         $testdata->{"$thorn TESTED"} = 1;
-        if($nprocs_required != $nprocs_available) {
-          $testdata->{"$thorn $testbase NPROCS"} = $nprocs_required;
-        }
         $testdata->{'NRUNNABLE'}++;
         $nrunnable++;
       }
