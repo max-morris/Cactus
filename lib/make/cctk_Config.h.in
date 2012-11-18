@@ -337,6 +337,14 @@ typedef enum {false, true} bool;
 #  define CCTK_BUILTIN_EXPECT(x,y) (x)
 #endif
 
+/* OpenMP collapse clause */
+#if defined __INTEL_COMPILER && __INTEL_COMPILER_BUILD_DATE < 20100801
+/* see http://software.intel.com/en-us/articles/intel-professional-edition-compilers-111-fixes-list/ */
+#  define collapse(N)
+#else
+#  undef collapse
+#endif
+
 #endif /* ! defined __cplusplus */
 /****************************************************************************/
 
@@ -510,6 +518,14 @@ typedef enum {false, true} bool;
 #  define CCTK_RESTRICT restrict
 #endif
 
+/* OpenMP collapse clause */
+#if defined __INTEL_COMPILER && __INTEL_COMPILER_BUILD_DATE < 20100801
+/* see http://software.intel.com/en-us/articles/intel-professional-edition-compilers-111-fixes-list/ */
+#  define collapse(N)
+#else
+#  undef collapse
+#endif
+
 #endif /* __cplusplus */
 
 /****************************************************************************/
@@ -525,6 +541,16 @@ typedef enum {false, true} bool;
 #undef HAVE_CCTK_FORTRAN_COMPLEX8
 #undef HAVE_CCTK_FORTRAN_COMPLEX16
 #undef HAVE_CCTK_FORTRAN_COMPLEX32
+
+/* OpenMP collapse clause */
+#if defined __INTEL_COMPILER && __INTEL_COMPILER_BUILD_DATE < 20100801
+/* see http://software.intel.com/en-us/articles/intel-professional-edition-compilers-111-fixes-list/ */
+#  define collapse(N)
+#  define COLLAPSE(N)
+#else
+#  undef collapse
+#  undef COLLAPSE
+#endif
 
 #endif /* FCODE */
 
