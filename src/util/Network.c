@@ -14,12 +14,12 @@
 #include <string.h>
 
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
+#  include <unistd.h>
 #endif /* HAVE_UNISTD_H */
 #ifdef HAVE_NETDB_H
-#include <netdb.h>
+#  include <netdb.h>
 #elif defined HAVE_WINSOCK2_H
-#include <winsock2.h>
+#  include <winsock2.h>
 #endif /* HAVE_WINSOCK2_H */
 
 static const char *rcsid = "$Header$";
@@ -73,25 +73,48 @@ CCTK_FILEVERSION(util_Network_c);
    @endvar
 
 @@*/
-void Util_GetHostName (char *name, int length)
+void Util_GetHostName (char *returned_name, int length)
 {
-  gethostname (name, length);
-
-  /* Does the name include the domain. */
-  if (! strchr (name, '.'))
+  static int have_name = 0;
+  static char name[100];
+  
+  if (! have_name)
   {
-#ifdef HAVE_GETHOSTBYNAME
-    struct hostent *thishostent=0;
-#ifndef CRAY_XT
-    thishostent = gethostbyname (name);
-#endif
-
-    if (thishostent)
+    gethostname (name, sizeof name);
+    
+    /* Does the name include the domain name? */
+    if (! strchr (name, '.'))
     {
-      strncpy (name, thishostent->h_name, length);
-      name[length - 1] = 0;
-    }
-    else name[0]='\0';
+#ifdef HAVE_GETHOSTBYNAME
+      struct hostent *thishostent = 0;
+#ifndef CRAY_XT
+      thishostent = gethostbyname (name);
 #endif
+      
+      if (thishostent)
+      {
+        strncpy (name, thishostent->h_name, sizeof name - 1);
+        name[sizeof name - 1] = '\0';
+      }
+      else
+      {
+        name[0] = '\0';
+      }
+#endif
+    }
+    
+    have_name = 1;
   }
+  
+  if (! returned_name)
+  {
+    CCTK_WARN (CCTK_WARN_ABORT, "Argument \"name\" to Util_GetHostName is NULL");
+  }
+  if (length < 1)
+  {
+    CCTK_WARN (CCTK_WARN_ABORT, "Argument \"length\" to Util_GetHostName is too small");
+  }
+  
+  strncpy (returned_name, name, length - 1);
+  returned_name[length - 1] = '\0';
 }
