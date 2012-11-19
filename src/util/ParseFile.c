@@ -316,6 +316,7 @@ int main(int argc, char *argv[])
 static char *ReadFile(FILE *file, unsigned long *filesize)
 {
   char *buffer;
+  size_t bytes_read;
 
   if (!file)
   {
@@ -334,7 +335,13 @@ static char *ReadFile(FILE *file, unsigned long *filesize)
     return NULL;
   }
   /* Read file into buffer and return */
-  fread(buffer, *filesize, 1, file);
+  bytes_read = fread(buffer, *filesize, 1, file);
+  if (bytes_read != *filesize)
+  {
+    fprintf(stderr, "File size changed while reading.\n");
+    free(buffer);
+    return NULL;
+  }
   /* Protect buffer for string operations */
   buffer[*filesize] = '\0';
   return buffer;
