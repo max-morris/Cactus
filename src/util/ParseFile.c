@@ -335,7 +335,7 @@ static char *ReadFile(FILE *file, unsigned long *filesize)
     return NULL;
   }
   /* Read file into buffer and return */
-  bytes_read = fread(buffer, *filesize, 1, file);
+  bytes_read = fread(buffer, 1, *filesize, file);
   if (bytes_read != *filesize)
   {
     fprintf(stderr, "File size changed while reading.\n");
