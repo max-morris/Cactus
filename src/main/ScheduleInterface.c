@@ -2433,7 +2433,7 @@ static int CCTKi_SchedulePrintWhile(int n_whiles,
         printf(" && ");
       }
 
-      printf(whiles[i]);
+      printf("%s", whiles[i]);
     }
     printf(")\n");
     indent_level += 2;
@@ -2503,7 +2503,7 @@ static int CCTKi_SchedulePrintIf(int n_ifs,
       printf(" && ");
     }
 
-    printf(ifs[i]);
+    printf("%s", ifs[i]);
   }
   printf(")\n");
 
