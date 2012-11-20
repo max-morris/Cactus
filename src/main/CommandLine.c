@@ -687,6 +687,7 @@ void CCTKi_CommandLineFinished (void)
 {
   int myproc;
   char *logfilename;
+  FILE *newfile;
 
 
   /* Are we in a paramcheck run ? */
@@ -735,17 +736,33 @@ void CCTKi_CommandLineFinished (void)
     if (requested_stdout_redirection)
     {
       sprintf (logfilename, "%s/CCTK_Proc%u.out", logdir, myproc);
-      freopen (logfilename, "w", stdout);
+      newfile = freopen (logfilename, "w", stdout);
+      if (! newfile)
+      {
+        CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                    "Could not redirect stdout to logfile '%s'", logfilename);
+      }
     }
     else
     {
-      freopen (NULL_DEVICE, "w", stdout);
+      newfile = freopen (NULL_DEVICE, "w", stdout);
+      if (! newfile)
+      {
+        CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                    "Could not disable stdout "
+                    "(was trying to redirect it to '%s')", NULL_DEVICE);
+      }
     }
 
     if (requested_stderr_redirection)
     {
       sprintf (logfilename, "%s/CCTK_Proc%u.err", logdir, myproc);
-      freopen (logfilename, "w", stderr);
+      newfile = freopen (logfilename, "w", stderr);
+      if (! newfile)
+      {
+        CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                    "Could not redirect stderr to logfile '%s'", logfilename);
+      }
     }
     free (logfilename);
   }
