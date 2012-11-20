@@ -33,10 +33,7 @@ CCTK_FILEVERSION(main_CactusDefaultShutdown_c);
 @@*/
 int CactusDefaultShutdown(tFleshConfig *config)
 {
-  int myproc;
   unsigned int conv_level;
-
-  myproc = CCTK_MyProc(config->GH[0]);
 
   /* Execute termination for all convergence levels */
   for(conv_level = 0 ; conv_level < config->nGHs;  conv_level++) 
