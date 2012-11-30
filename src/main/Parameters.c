@@ -185,11 +185,11 @@ static int ParameterSetSentence (t_param *param, const char *value);
 static int ParameterSetInteger  (t_param *param, const char *value);
 static int ParameterSetReal     (t_param *param, const char *value);
 static int ParameterSetBoolean  (t_param *param, const char *value);
-static int SetVarEvaluator(int nvars, const char * const *vars, uExpressionValue *vals, void *data);
+static int SetVarEvaluator(int nvars, const char * const *vars, uExpressionValue *vals, const void *data);
 
 static void GetBaseName(const char *name, char **basename, int *array_index);
 static char *ArrayParamName(const char *basename,int array_index);
-static int AccVarEvaluator(int nvars, const char * const *vars, uExpressionValue *vals, void *data);
+static int AccVarEvaluator(int nvars, const char * const *vars, uExpressionValue *vals, const void *data);
 static void AddAccumulators(t_param *base,
                             t_param *extra,
                             const char *thorn,
@@ -1938,7 +1938,7 @@ static int ParameterSetAccumulator(t_param *param)
         retval = Util_ExpressionEvaluate(parsed_expression,
                                          &value,
                                          AccVarEvaluator,
-                                         (void *)xy);
+                                         xy);
 
         xy[0] = value;
       }
@@ -2574,7 +2574,7 @@ static char *ArrayParamName(const char *basename,int array_index)
    @endvar
    @var     data
    @vdesc   Data passed from expression evaluator
-   @vtype   void *
+   @vtype   const void *
    @vio     in
    @vcomment
      Should be an array of two uExpressionValues,
@@ -2586,7 +2586,7 @@ static char *ArrayParamName(const char *basename,int array_index)
    0
    @endreturndesc
  @@*/
-static int AccVarEvaluator(int nvars, const char * const *vars, uExpressionValue *vals, void *data)
+static int AccVarEvaluator(int nvars, const char * const *vars, uExpressionValue *vals, const void *data)
 {
   int i;
   uExpressionValue *exps;
@@ -2647,7 +2647,7 @@ static int AccVarEvaluator(int nvars, const char * const *vars, uExpressionValue
    @endvar
    @var     data
    @vdesc   Data passed from expression evaluator
-   @vtype   void *
+   @vtype   const void *
    @vio     in
    @vcomment
    Not used.
@@ -2658,7 +2658,7 @@ static int AccVarEvaluator(int nvars, const char * const *vars, uExpressionValue
    0
    @endreturndesc
  @@*/
-static int SetVarEvaluator(int nvars, const char * const *vars, uExpressionValue *vals, void *data)
+static int SetVarEvaluator(int nvars, const char * const *vars, uExpressionValue *vals, const void *data)
 {
   const int restype = *(int *)data;
   int retval = 0;

@@ -252,7 +252,7 @@ uExpression Util_ExpressionParse(const char *expression)
    @endvar 
    @var     eval
    @vdesc   Variable evaluation function
-   @vtype   int (*eval)(int, const char * const *, uExpressionValue *, void *),
+   @vtype   int (*eval)(int, const char * const *, uExpressionValue *, const void *),
    @vio     in
    @vcomment 
    This function is called with an array of variables to determine the values of
@@ -275,8 +275,8 @@ uExpression Util_ExpressionParse(const char *expression)
 @@*/
 int Util_ExpressionEvaluate(const uExpression buffer,
                             uExpressionValue *retval,
-                            int (*eval)(int, const char * const *, uExpressionValue *, void *),
-                            void *data)
+                            int (*eval)(int, const char * const *, uExpressionValue *, const void *),
+                            const void *data)
 {
   int retcode;
   uExpressionValue stack[MAX_STACK_SIZE];

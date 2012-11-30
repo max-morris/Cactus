@@ -2810,7 +2810,7 @@ const int *CCTKi_GroupLengthAsPointer(const char *fullgroupname)
    @endvar
    @var     data
    @vdesc   Data passed from expression evaluator
-   @vtype   void *
+   @vtype   const void *
    @vio     in
    @vcomment
      Should be a char * with the thorn name.
@@ -2824,7 +2824,7 @@ const int *CCTKi_GroupLengthAsPointer(const char *fullgroupname)
 static int IntParameterEvaluator(int nvars,
                                  const char * const *vars,
                                  uExpressionValue *vals,
-                                 void *data)
+                                 const void *data)
 {
   int i;
 

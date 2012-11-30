@@ -37,8 +37,8 @@ uExpression Util_ExpressionParse(const char *expression);
 
 int Util_ExpressionEvaluate(const uExpression buffer,
                             uExpressionValue *retval,
-                            int (*eval)(int, const char * const *, uExpressionValue *, void *),
-                            void *data);
+                            int (*eval)(int, const char * const *, uExpressionValue *, const void *),
+                            const void *data);
 
 void Util_ExpressionFree(uExpression buffer);
 
