@@ -1109,7 +1109,13 @@ int CCTKi_SetErrorLevel (int level)
 {
   int retval;
 
-  if (level <= warning_level)
+  if (level < 0)
+  {
+    CCTK_VWarn (3, __LINE__, __FILE__, "Cactus",
+                "Error level cannot be negative (%d requested)", level);
+    retval = 0;
+  }
+  else if (level <= warning_level)
   {
     if (error_level != level)
     {

@@ -379,7 +379,17 @@ void CCTKi_CommandLineErrorLevel (const char *argument)
   errorlevel = strtol (argument, &endptr, 10);
   if (endptr && *endptr == 0)
   {
-    CCTKi_SetErrorLevel (errorlevel);
+    if (errorlevel < 0)
+    {
+      CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                  "Error level cannot be negative, but %d was requested.",
+                  (int)errorlevel);
+      CCTK_Exit (NULL, 1);
+    }
+    else
+    {
+      CCTKi_SetErrorLevel (errorlevel);
+    }
   }
   else
   {
