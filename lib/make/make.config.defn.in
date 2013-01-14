@@ -183,7 +183,6 @@ export USE_RANLIB = @USE_RANLIB@
 
 # Exclude some files from the dependency lists
 export DEP_EXCLUDE_FILES = CParameterStructNames\.h
-#export DEP_EXCLUDE_FILES =
 
 # Command used to get the working directory
 export GET_WD = @GET_WD@
