@@ -3119,11 +3119,6 @@ static void CCTKi_SchedulePrintTimerInfo(cTimerData *timer,
   int i, j;
 
 
-  if (indent_level > 0)
-  {
-    fprintf (file, "%*s", indent_level, " ");
-  }
-
   /* print delimiter line */
   if (*where == 0)
   {
@@ -3138,31 +3133,10 @@ static void CCTKi_SchedulePrintTimerInfo(cTimerData *timer,
   {
     j = strlen (timer->vals[i].heading) + strlen (timer->vals[i].units) + 3;
 
-    switch (timer->vals[i].type)
+    fprintf (file, "| %*.8f ", j, timer->vals[i].seconds);
+    if (total_time)
     {
-      case val_int:
-        fprintf (file, "| %*d ", j, timer->vals[i].val.i);
-        if (total_time)
-        {
-          total_time->vals[i].val.i += timer->vals[i].val.i;
-        }
-        break;
-      case val_long:
-        fprintf (file, "| %*ld ", j, timer->vals[i].val.l);
-        if (total_time)
-        {
-          total_time->vals[i].val.l += timer->vals[i].val.l;
-        }
-        break;
-      case val_double:
-        fprintf (file, "| %*.8f ", j, timer->vals[i].val.d);
-        if (total_time)
-        {
-          total_time->vals[i].val.d += timer->vals[i].val.d;
-        }
-        break;
-      default:
-        fprintf (file, "Unknown value type at line %d of %s\n", __LINE__, __FILE__);
+      total_time->vals[i].seconds += timer->vals[i].seconds;
     }
   }
 
