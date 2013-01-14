@@ -13,8 +13,16 @@
 #define _CCTK_MATH_H_
 
 #ifdef __cplusplus
-#  include <math.h>
+/* Note: Some C++ implementations differ in their behaviour (how isnan
+   etc. can be accessed) depending on the order (!) in which <cmath>
+   and <math.h> is included, if both are included.
+   
+   We therefore require: A file including this file may include
+   <cmath> at will, and is allowed to include <math.h> if <cmath> is
+   included before. We do this because <cmath> seems "more standard"
+   than <math.h> for C++ these days. */
 #  include <cmath>
+#  include <math.h>
 #  include <cctk_Config.h>
 #  include <cctk_Types.h>
 #endif
