@@ -568,6 +568,9 @@ typedef enum {false, true} bool;
 #undef HAVE_CCTK_FORTRAN_COMPLEX16
 #undef HAVE_CCTK_FORTRAN_COMPLEX32
 
+#undef CCTK_REAL16_KIND
+#undef CCTK_COMPLEX32_KIND
+
 /* OpenMP collapse clause */
 #if defined __INTEL_COMPILER && __INTEL_COMPILER_BUILD_DATE < 20100801
 /* see http://software.intel.com/en-us/articles/intel-professional-edition-compilers-111-fixes-list/ */

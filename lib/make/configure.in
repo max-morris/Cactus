@@ -912,6 +912,11 @@ CCTK_CXX_ATTRIBUTE_HOT
 CCTK_C_BUILTIN_EXPECT
 CCTK_CXX_BUILTIN_EXPECT
 
+if test "x$REAL16_KIND" = 'x'; then
+  REAL16_KIND=16
+fi
+COMPLEX32_KIND=$(( $REAL16_KIND * 2 ))
+
 CCTK_FORTRAN_REAL4
 CCTK_FORTRAN_REAL8
 CCTK_FORTRAN_REAL16
@@ -1127,6 +1132,8 @@ fi
 if test -n "$CCTK_REAL16" -a \( "x$F77" = 'xnone' -o \( "x$cctk_cv_have_fortran_real16" = 'xyes' -a "x$cctk_cv_have_fortran_complex32" = 'xyes' \) \) -a "x$DISABLE_REAL16" != 'xyes' ; then
   AC_DEFINE_UNQUOTED(CCTK_REAL16, $CCTK_REAL16)
   AC_DEFINE(HAVE_CCTK_REAL16)
+  AC_DEFINE_UNQUOTED(CCTK_REAL16_KIND, $REAL16_KIND)
+  AC_DEFINE_UNQUOTED(CCTK_COMPLEX32_KIND, $COMPLEX32_KIND)
 fi
 
 if test -n "$CCTK_REAL8" -a \( "x$F77" = 'xnone' -o \( "x$cctk_cv_have_fortran_real8" -a "x$cctk_cv_have_fortran_complex16" = 'xyes' \) \); then

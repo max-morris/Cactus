@@ -710,7 +710,7 @@ AC_DEFUN(CCTK_FORTRAN_REAL16,
 [cctk_cv_have_fortran_real16=no
 AC_LANG_SAVE
 AC_LANG_FORTRAN77
-CCTK_TRY_COMPILE(,[      REAL*16 a], cctk_cv_have_fortran_real16=yes, cctk_cv_have_fortran_real16=no)
+CCTK_TRY_COMPILE(,[      REAL*$REAL16_KIND a], cctk_cv_have_fortran_real16=yes, cctk_cv_have_fortran_real16=no)
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_fortran_real16" = "yes" ; then
@@ -749,7 +749,7 @@ AC_DEFUN(CCTK_FORTRAN_COMPLEX32,
 [cctk_cv_have_fortran_complex32=no
 AC_LANG_SAVE
 AC_LANG_FORTRAN77
-CCTK_TRY_COMPILE(,[      COMPLEX*32 a], cctk_cv_have_fortran_complex32=yes, cctk_cv_have_fortran_complex32=no)
+CCTK_TRY_COMPILE(,[      COMPLEX*$COMPLEX32_KIND a], cctk_cv_have_fortran_complex32=yes, cctk_cv_have_fortran_complex32=no)
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_fortran_complex32" = "yes" ; then

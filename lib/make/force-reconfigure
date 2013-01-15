@@ -35,3 +35,4 @@
 09 Aug 2012: Take CFLAGS/CXXFLAGS into account when determining dependencies
 22 Oct 2012: Check availability of isnan etc. in C++
 15 Jan 2013: Add CCTK_ATTRIBUTE_ALWAYS_INLINE
+15 Nov 2013: Introduce CCTK_REAL16_KIND
