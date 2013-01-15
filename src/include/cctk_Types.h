@@ -115,9 +115,9 @@ typedef unsigned char CCTK_BYTE;
 #endif
 
 #ifdef HAVE_CCTK_REAL16
-#define CCTK_REAL16 REAL*16
+#define CCTK_REAL16 REAL*CCTK_REAL16_KIND
 #define HAVE_CCTK_COMPLEX32 1
-#define CCTK_COMPLEX32  COMPLEX*32
+#define CCTK_COMPLEX32  COMPLEX*CCTK_COMPLEX32_KIND
 #endif
 
 #ifdef HAVE_CCTK_REAL8
@@ -194,7 +194,7 @@ typedef unsigned char CCTK_BYTE;
 #define CCTK_COMPLEX CCTK_COMPLEX8
 #endif
 
-#endif /*_CCTK_TYPES_H_ */
+#endif /* CCODE */
 
 /* Determine whether we have a traditional or an ANSI cpp. */
 #ifdef FCODE
@@ -273,5 +273,4 @@ typedef unsigned char CCTK_BYTE;
 
 #endif /* HAVE_..._ATTRIBUTE_UNUSED */
 
-#endif /* CCODE */
-
+#endif /*_CCTK_TYPES_H_ */
