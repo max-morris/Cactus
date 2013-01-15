@@ -887,6 +887,11 @@ CCTK_C_ATTRIBUTE_NOINLINE
 CCTK_CXX_ATTRIBUTE_NOINLINE
 CCTK_CXX_MEMBER_ATTRIBUTE_NOINLINE
 
+# Find out whether the C compiler supports __attribute__((always_inline))
+CCTK_C_ATTRIBUTE_ALWAYS_INLINE
+CCTK_CXX_ATTRIBUTE_ALWAYS_INLINE
+CCTK_CXX_MEMBER_ATTRIBUTE_ALWAYS_INLINE
+
 # Find out whether the C compiler supports __attribute__((unused))
 CCTK_C_ATTRIBUTE_UNUSED
 CCTK_CXX_ATTRIBUTE_UNUSED
@@ -914,6 +919,12 @@ CCTK_FORTRAN_REAL16
 CCTK_FORTRAN_COMPLEX8
 CCTK_FORTRAN_COMPLEX16
 CCTK_FORTRAN_COMPLEX32
+
+# CCTK_FORTRAN_CRAY_POINTERS
+# if test "$cctk_cv_have_fortran_cray_pointers" = "no" ; then
+#   echo 'Fortran Cray pointers are not supported'
+#   exit 1
+# fi
 
 dnl Do we whave __cxa_demangle
 AC_LANG_SAVE

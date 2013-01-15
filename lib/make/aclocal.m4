@@ -631,7 +631,15 @@ dnl Otherwise define _Pragma to be empty.
 AC_DEFUN(CCTK_C__PRAGMA,
 [AC_CACHE_CHECK([for C _Pragma], cctk_cv_have_c__Pragma,
 [cctk_cv_have_c__Pragma=no
-AC_TRY_COMPILE(, int x; _Pragma ("omp barrier") x=0;, cctk_cv_have_c__Pragma=yes, cctk_cv_have_c__Pragma=no)
+AC_TRY_COMPILE([
+#define LOOP(i) _Pragma("omp for") for (int i=0; i<10; ++i)
+],[
+  int s=0;
+#pragma omp parallel reduction(+: s)
+  LOOP(i) {
+    s+=i;
+  }
+], cctk_cv_have_c__Pragma=yes, cctk_cv_have_c__Pragma=no)
 ])
 if test "$cctk_cv_have_c__Pragma" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_C__PRAGMA)
@@ -645,7 +653,8 @@ dnl             [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 AC_DEFUN(CCTK_TRY_COMPILE,
 [cat > conftest.$ac_ext <<EOF
 ifelse(AC_LANG, [FORTRAN77],
-[      program main
+[[$1]
+      program main
 [$2]
       end
 ],
@@ -864,6 +873,44 @@ fi
 
 
 
+AC_DEFUN(CCTK_C_ATTRIBUTE_ALWAYS_INLINE,
+[AC_CACHE_CHECK([for C function __attribute__((__always_inline__))], cctk_cv_have_c_attribute_always_inline,
+[cctk_cv_have_c_attribute_always_inline=no
+AC_TRY_COMPILE(, double foo (double) __attribute__((__always_inline__));, cctk_cv_have_c_attribute_always_inline=yes, cctk_cv_have_c_attribute_always_inline=no)
+])
+if test "$cctk_cv_have_c_attribute_always_inline" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_ALWAYS_INLINE)
+fi
+])
+
+AC_DEFUN(CCTK_CXX_ATTRIBUTE_ALWAYS_INLINE,
+[AC_CACHE_CHECK([for CXX function __attribute__((__always_inline__))], cctk_cv_have_cxx_attribute_always_inline,
+[cctk_cv_have_cxx_attribute_always_inline=no
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(, double foo (double) __attribute__((__always_inline__));, cctk_cv_have_cxx_attribute_always_inline=yes, cctk_cv_have_cxx_attribute_always_inline=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_cxx_attribute_always_inline" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_CXX_ATTRIBUTE_ALWAYS_INLINE)
+fi
+])
+
+AC_DEFUN(CCTK_CXX_MEMBER_ATTRIBUTE_ALWAYS_INLINE,
+[AC_CACHE_CHECK([for CXX member function __attribute__((__always_inline__))], cctk_cv_have_cxx_member_attribute_always_inline,
+[cctk_cv_have_cxx_member_attribute_always_inline=no
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(, struct bar { double foo (double) __attribute__((__always_inline__)); };, cctk_cv_have_cxx_member_attribute_always_inline=yes, cctk_cv_have_cxx_member_attribute_always_inline=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_cxx_member_attribute_always_inline" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_CXX_MEMBER_ATTRIBUTE_ALWAYS_INLINE)
+fi
+])
+
+
+
 AC_DEFUN(CCTK_C_ATTRIBUTE_UNUSED,
 [AC_CACHE_CHECK([for C __attribute__((__unused__))], cctk_cv_have_c_attribute_unused,
 [cctk_cv_have_c_attribute_unused=no
@@ -998,35 +1045,36 @@ AC_MSG_CHECKING([for C++ $1])
 AC_CACHE_VAL(cctk_cv_cxx_$cctk_func,
 [AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
-for ac_kw in "std::$cctk_func" "$cctk_func" "::$cctk_func"; do
 cctk_cv_cxx_func=no
+for ac_func in "std::$cctk_func" "$cctk_func" "::$cctk_func"; do
 for ac_nargs in 1 2; do
   case $ac_nargs in
     1) ac_args='(1.0)'; ac_argsf='(1.0f)' ;;
     2) ac_args='(1.0, 1.0)'; ac_argsf='(1.0f, 1.0f)' ;;
   esac
   AC_TRY_COMPILE([
-#include <math.h>
+/* See note in cctk_Math.h regarding these include statements */
 #include <cmath>
+#include <math.h>
 ], [
 {
-  $ac_kw $ac_argsf;
-  $ac_kw $ac_args;
+  $ac_func $ac_argsf;
+  $ac_func $ac_args;
 }
 using namespace std;
 {
-  $ac_kw $ac_argsf;
-  $ac_kw $ac_args;
+  $ac_func $ac_argsf;
+  $ac_func $ac_args;
 }
-], [cctk_cv_cxx_func=$ac_kw; break 2])
+], [cctk_cv_cxx_func="$ac_func"; break 2])
 done
 done
 AC_LANG_RESTORE
 eval cctk_cv_cxx_$cctk_func=\$cctk_cv_cxx_func
 ])
 AC_MSG_RESULT($cctk_cv_cxx_func)
-case $cctk_cv_cxx_func in
-  no) AC_DEFINE_UNQUOTED(CCTK_CXX_$cctk_tr_func, ) ;;
+case "$cctk_cv_cxx_func" in
+  no) AC_MSG_RESULT(no) ;;
   *)  AC_DEFINE_UNQUOTED(CCTK_CXX_$cctk_tr_func, $cctk_cv_cxx_func)
       AC_DEFINE_UNQUOTED(HAVE_CCTK_CXX_$cctk_tr_func, 1) ;;
 esac
@@ -1046,5 +1094,86 @@ int x;
 ])
 if test "$cctk_cv_have_c99" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_C99)
+fi
+])
+
+
+
+AC_DEFUN(CCTK_FORTRAN_CRAY_POINTERS,
+[AC_CACHE_CHECK([for Fortran Cray pointers], cctk_cv_have_fortran_cray_pointers,
+[cctk_cv_have_fortran_cray_pointers=no
+AC_LANG_SAVE
+AC_LANG_FORTRAN77
+CCTK_TRY_COMPILE(
+[
+      subroutine sub(pointers, n)
+      implicit none
+
+C     Find the integer type used for pointers
+      integer dummy
+      pointer (pdummy, dummy)
+      integer, parameter :: pk = kind(pdummy)
+
+C     An array of pointers that is passed in
+      integer(pk) pointers(3)
+
+C     The array size
+      integer n
+
+C     Declare local variables which are pointers, using the Cray pointer
+C     extension
+
+C     Explanation: The variables "a" and "pa" belong together. Only "pa"
+C     is a variable. Whenever "a" is used, the pointer which is stored
+C     in "pa" is dereferenced. In C, one would write "*pa" instead of
+C     "a".
+      double precision a(n,n), b(n,n), c(n,n)
+      pointer (pa, a)
+      pointer (pb, b)
+      pointer (pc, c)
+
+C     Local loop indices
+      integer i, j, k
+
+C     Set the pointers from the array which is passed in
+      pa = pointers(1)
+      pb = pointers(2)
+      pc = pointers(3)
+
+C     Do some work on the arrays, as if they were not pointers
+      do i = 1, n
+         do j = 1, n
+            a(i,j) = 0
+            do k = 1, n
+               a(i,j) = a(i,j) + b(i,k) * c(k,j)
+            end do
+         end do
+      end do
+
+      end subroutine sub
+],
+[
+      implicit none
+
+      integer, parameter :: n = 10
+      double precision a(n,n), b(n,n), c(n,n)
+
+C     Find the integer type used for pointers
+      integer dummy
+      pointer (pdummy, dummy)
+      integer, parameter :: pk = kind(pdummy)
+
+      integer(pk) pointers(3)
+      pointers(1) = %loc(a)
+      pointers(2) = %loc(b)
+      pointers(3) = %loc(b)
+      call sub(pointers, n)
+],
+cctk_cv_have_fortran_cray_pointers=yes,
+cctk_cv_have_fortran_cray_pointers=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_fortran_cray_pointers" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_FORTRAN_CRAY_POINTERS)
 fi
 ])
