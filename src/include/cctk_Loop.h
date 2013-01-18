@@ -53,12 +53,12 @@
     int const cctki0_idir = (idir); \
     int const cctki0_imin = (imin_); \
     int const cctki0_imax = (imax_); \
-    int const cctki0_iash = (iash); \
+    int const cctki0_iash CCTK_ATTRIBUTE_UNUSED = (iash); \
     int const cctki0_istr = (istr); \
-    int const imin = cctki0_imin; \
-    int const imax = cctki0_imax; \
+    int const imin CCTK_ATTRIBUTE_UNUSED = cctki0_imin; \
+    int const imax CCTK_ATTRIBUTE_UNUSED = cctki0_imax; \
     _Pragma("omp for") \
-    for (int i=cctki0_imin - (imin) % cctki0_istr; i<cctki0_imax; i+=cctki0_istr) { \
+    for (int i=cctki0_imin - (cctki0_imin) % cctki0_istr; i<cctki0_imax; i+=cctki0_istr) { \
       int const ni CCTK_ATTRIBUTE_UNUSED = cctki0_idir<0 ? i+1 : cctki0_idir==0 ? 0 : cctki0_imax-i; \
       { \
 
@@ -1030,14 +1030,14 @@
     int const cctki0_jmin = (jmin_); \
     int const cctki0_imax = (imax_); \
     int const cctki0_jmax = (jmax_); \
-    int const cctki0_iash = (iash); \
-    int const cctki0_jash = (jash); \
+    int const cctki0_iash CCTK_ATTRIBUTE_UNUSED = (iash); \
+    int const cctki0_jash CCTK_ATTRIBUTE_UNUSED = (jash); \
     int const cctki0_istr = (istr); \
-    int const imin = cctki0_imin; \
-    int const imax = cctki0_imax; \
+    int const imin CCTK_ATTRIBUTE_UNUSED = cctki0_imin; \
+    int const imax CCTK_ATTRIBUTE_UNUSED = cctki0_imax; \
     _Pragma("omp for collapse(1)") \
     for (int j=cctki0_jmin; j<cctki0_jmax; ++j) { \
-    for (int i=cctki0_imin - (imin+cctki0_iash*(j)) % cctki0_istr; i<cctki0_imax; i+=cctki0_istr) { \
+    for (int i=cctki0_imin - (cctki0_imin+cctki0_iash*(j)) % cctki0_istr; i<cctki0_imax; i+=cctki0_istr) { \
       int const ni CCTK_ATTRIBUTE_UNUSED = cctki0_idir<0 ? i+1 : cctki0_idir==0 ? 0 : cctki0_imax-i; \
       int const nj CCTK_ATTRIBUTE_UNUSED = cctki0_jdir<0 ? j+1 : cctki0_jdir==0 ? 0 : cctki0_jmax-j; \
       { \
@@ -2068,16 +2068,16 @@
     int const cctki0_imax = (imax_); \
     int const cctki0_jmax = (jmax_); \
     int const cctki0_kmax = (kmax_); \
-    int const cctki0_iash = (iash); \
-    int const cctki0_jash = (jash); \
-    int const cctki0_kash = (kash); \
+    int const cctki0_iash CCTK_ATTRIBUTE_UNUSED = (iash); \
+    int const cctki0_jash CCTK_ATTRIBUTE_UNUSED = (jash); \
+    int const cctki0_kash CCTK_ATTRIBUTE_UNUSED = (kash); \
     int const cctki0_istr = (istr); \
-    int const imin = cctki0_imin; \
-    int const imax = cctki0_imax; \
+    int const imin CCTK_ATTRIBUTE_UNUSED = cctki0_imin; \
+    int const imax CCTK_ATTRIBUTE_UNUSED = cctki0_imax; \
     _Pragma("omp for collapse(2)") \
     for (int k=cctki0_kmin; k<cctki0_kmax; ++k) { \
     for (int j=cctki0_jmin; j<cctki0_jmax; ++j) { \
-    for (int i=cctki0_imin - (imin+cctki0_iash*(j+cctki0_jash*(k))) % cctki0_istr; i<cctki0_imax; i+=cctki0_istr) { \
+    for (int i=cctki0_imin - (cctki0_imin+cctki0_iash*(j+cctki0_jash*(k))) % cctki0_istr; i<cctki0_imax; i+=cctki0_istr) { \
       int const ni CCTK_ATTRIBUTE_UNUSED = cctki0_idir<0 ? i+1 : cctki0_idir==0 ? 0 : cctki0_imax-i; \
       int const nj CCTK_ATTRIBUTE_UNUSED = cctki0_jdir<0 ? j+1 : cctki0_jdir==0 ? 0 : cctki0_jmax-j; \
       int const nk CCTK_ATTRIBUTE_UNUSED = cctki0_kdir<0 ? k+1 : cctki0_kdir==0 ? 0 : cctki0_kmax-k; \
@@ -3167,18 +3167,18 @@
     int const cctki0_jmax = (jmax_); \
     int const cctki0_kmax = (kmax_); \
     int const cctki0_lmax = (lmax_); \
-    int const cctki0_iash = (iash); \
-    int const cctki0_jash = (jash); \
-    int const cctki0_kash = (kash); \
-    int const cctki0_lash = (lash); \
+    int const cctki0_iash CCTK_ATTRIBUTE_UNUSED = (iash); \
+    int const cctki0_jash CCTK_ATTRIBUTE_UNUSED = (jash); \
+    int const cctki0_kash CCTK_ATTRIBUTE_UNUSED = (kash); \
+    int const cctki0_lash CCTK_ATTRIBUTE_UNUSED = (lash); \
     int const cctki0_istr = (istr); \
-    int const imin = cctki0_imin; \
-    int const imax = cctki0_imax; \
+    int const imin CCTK_ATTRIBUTE_UNUSED = cctki0_imin; \
+    int const imax CCTK_ATTRIBUTE_UNUSED = cctki0_imax; \
     _Pragma("omp for collapse(3)") \
     for (int l=cctki0_lmin; l<cctki0_lmax; ++l) { \
     for (int k=cctki0_kmin; k<cctki0_kmax; ++k) { \
     for (int j=cctki0_jmin; j<cctki0_jmax; ++j) { \
-    for (int i=cctki0_imin - (imin+cctki0_iash*(j+cctki0_jash*(k+cctki0_kash*(l)))) % cctki0_istr; i<cctki0_imax; i+=cctki0_istr) { \
+    for (int i=cctki0_imin - (cctki0_imin+cctki0_iash*(j+cctki0_jash*(k+cctki0_kash*(l)))) % cctki0_istr; i<cctki0_imax; i+=cctki0_istr) { \
       int const ni CCTK_ATTRIBUTE_UNUSED = cctki0_idir<0 ? i+1 : cctki0_idir==0 ? 0 : cctki0_imax-i; \
       int const nj CCTK_ATTRIBUTE_UNUSED = cctki0_jdir<0 ? j+1 : cctki0_jdir==0 ? 0 : cctki0_jmax-j; \
       int const nk CCTK_ATTRIBUTE_UNUSED = cctki0_kdir<0 ? k+1 : cctki0_kdir==0 ? 0 : cctki0_kmax-k; \

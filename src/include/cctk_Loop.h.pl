@@ -244,15 +244,15 @@ for $dim (1,2,3,4) {
         (rpt (bsnl '    int const cctki0_[C]dir = ([C]dir);')),
         (rpt (bsnl '    int const cctki0_[C]min = ([C]min_);')),
         (rpt (bsnl '    int const cctki0_[C]max = ([C]max_);')),
-        (rpt (bsnl '    int const cctki0_[C]ash = ([C]ash);')),
+        (rpt (bsnl '    int const cctki0_[C]ash CCTK_ATTRIBUTE_UNUSED = ([C]ash);')),
         (bsnl '    int const cctki0_istr = (istr);'),
         # Export loop bounds in the i direction
-        (bsnl '    int const imin = cctki0_imin;'),
-        (bsnl '    int const imax = cctki0_imax;'),
+        (bsnl '    int const imin CCTK_ATTRIBUTE_UNUSED = cctki0_imin;'),
+        (bsnl '    int const imax CCTK_ATTRIBUTE_UNUSED = cctki0_imax;'),
         (bsnl '    _Pragma("omp for[DIM==1?: collapse([DIM-1])]")'),
         (reverse (rpt (bsnl ('    for (int [C]=cctki0_[C]min' .
                              # Align i-loop to vector size
-                             '[I==1? - ' . (sep '', rpt '[I==1?(imin:+cctki0_[C-1]ash*([C]]') . (sep '', rpt ')') . ' % cctki0_istr:]' .
+                             '[I==1? - ' . (sep '', rpt '[I==1?(cctki0_imin:+cctki0_[C-1]ash*([C]]') . (sep '', rpt ')') . ' % cctki0_istr:]' .
                              '; [C]<cctki0_[C]max; [I==1?[C]+=cctki0_[C]str:++[C]]) {')))),
         (rpt (bsnl '      int const n[C] CCTK_ATTRIBUTE_UNUSED = cctki0_[C]dir<0 ? [C]+1 : cctki0_[C]dir==0 ? 0 : cctki0_[C]max-[C];')),
         (bsnl '      {'),
