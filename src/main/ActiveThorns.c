@@ -939,7 +939,7 @@ int CCTKi_ActivateThorns(const char *activethornlist)
   {
     if (! Util_StringListAdd(activated_thorns, token))
     {
-      printf("Warning: thorn %s already scheduled for activation\n", thorn);
+      printf("Warning: thorn %s already scheduled for activation\n", token);
       n_warnings++;
     }
   }
