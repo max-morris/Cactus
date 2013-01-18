@@ -290,7 +290,7 @@ re.ccl of thorn '$thorn'");
 #        "\n Please adjust thorn \U$thorn\E to use \'Requires\' instead.");
 #      }
     }
-    elsif($line =~ m/^\s*REQUIRES\s*(.*)/i)
+    elsif($line =~ m/^\s*REQUIRES\s+(.*)/i)
     {
       my $cap = $1;
       if ($cap !~ m{^[A-Za-z0-9_. ]+$}) {
@@ -298,7 +298,7 @@ re.ccl of thorn '$thorn'");
       }
       $cfg->{"\U$thorn\E REQUIRES"} .= "$cap ";
     }
-    elsif($line =~ m/^\s*OPTIONAL\s*/i)
+    elsif($line =~ m/^\s*OPTIONAL\s+/i)
     {
       ($optional, $define, $line_number) = &ParseOptionalBlock($filename, $line_number, \@data);
       if ($optional !~ m{^[A-Za-z0-9_. ]+$}) {
@@ -307,7 +307,7 @@ re.ccl of thorn '$thorn'");
       $cfg->{"\U$thorn\E OPTIONAL"} .= "$optional ";
       $cfg->{"\U$thorn\E OPTIONAL \U$optional\E DEFINE"} = $define;
     }
-    elsif($line =~ m/^\s*OPTIONAL_IFACTIVE\s*/i)
+    elsif($line =~ m/^\s*OPTIONAL_IFACTIVE\+*/i)
     {
       ($optional, $define, $line_number) = &ParseOptionalBlock($filename, $line_number, \@data);
       if ($optional !~ m{^[A-Za-z0-9_. ]+$}) {
@@ -316,7 +316,7 @@ re.ccl of thorn '$thorn'");
       $cfg->{"\U$thorn\E OPTIONAL_IFACTIVE"} .= "$optional ";
       $cfg->{"\U$thorn\E OPTIONAL_IFACTIVE \U$optional\E DEFINE"} = $define;
     }
-    elsif($line =~ m/^\s*NO_SOURCE\s*/i)
+    elsif($line =~ m/^\s*NO_SOURCE\s*$/i)
     {
       $cfg->{"\U$thorn\E OPTIONS"} .= "NO_SOURCE";
     }
