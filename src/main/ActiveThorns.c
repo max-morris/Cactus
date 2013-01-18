@@ -939,7 +939,8 @@ int CCTKi_ActivateThorns(const char *activethornlist)
   {
     if (! Util_StringListAdd(activated_thorns, token))
     {
-      CCTK_Warn(0, __LINE__, __FILE__, "Cactus", "internal error");
+      printf("Warning: thorn %s already scheduled for activation\n", thorn);
+      n_warnings++;
     }
   }
 
@@ -968,8 +969,8 @@ int CCTKi_ActivateThorns(const char *activethornlist)
           {
             if (Util_StringListAdd(new_thorns, new_thorn))
             {
-              printf("Automatic activation requested for thorn %s\n",
-                     new_thorn);
+              printf("Thorn %s requests automatic activation of %s\n",
+                     thorn, new_thorn);
               did_add_thorns = 1;
             }
           }
