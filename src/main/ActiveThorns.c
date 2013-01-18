@@ -38,6 +38,7 @@ struct THORN
   int active;
   char *implementation;
   const char **requires_thorns;
+  const char **activates_thorns;
 };
 
 struct IMPLEMENTATION
@@ -124,11 +125,11 @@ int CCTKi_RegisterThorn(const struct iAttributeList *attributes)
   t_sktree *node, *temp;
   struct THORN *thorn;
   const char *name, *imp;
-  const char **ancestors, **friends, **requires_thorns;
+  const char **ancestors, **friends, **requires_thorns, **activates_thorns;
 
 
   name = imp = NULL;
-  ancestors = friends = requires_thorns = NULL;
+  ancestors = friends = requires_thorns = activates_thorns = NULL;
 
   for(i=0; attributes[i].attribute; i++)
   {
@@ -157,6 +158,10 @@ int CCTKi_RegisterThorn(const struct iAttributeList *attributes)
     else if(!strcmp(attributes[i].attribute, "requires thorns"))
     {
       requires_thorns = attributes[i].AttributeData.StringList;
+    }
+    else if(!strcmp(attributes[i].attribute, "activates thorns"))
+    {
+      activates_thorns = attributes[i].AttributeData.StringList;
     }
     else
     {
@@ -187,6 +192,20 @@ int CCTKi_RegisterThorn(const struct iAttributeList *attributes)
         while (--i >= 0)
         {
           thorn->requires_thorns[i] = Util_Strdup (requires_thorns[i]);
+        }
+      }
+
+      thorn->activates_thorns = NULL;
+      if (activates_thorns)
+      {
+        /* count the number of thorns */
+        for (i = 0; activates_thorns[i]; i++);
+
+        thorn->activates_thorns = malloc ((i+1) * sizeof(char *));
+        thorn->activates_thorns[i] = NULL;
+        while (--i >= 0)
+        {
+          thorn->activates_thorns[i] = Util_Strdup (activates_thorns[i]);
         }
       }
 
@@ -882,6 +901,8 @@ int CCTKi_ActivateThorns(const char *activethornlist)
 {
   int retval;
   char *local_list;
+  uStringList *activated_thorns;
+  uStringList *new_thorns;
   uStringList *required_thorns;
   uStringList *requested_imps;
   uStringList *required_imps;
@@ -894,14 +915,16 @@ int CCTKi_ActivateThorns(const char *activethornlist)
 
   struct IMPLEMENTATION *imp;
   struct THORN *this_thorn;
+  int did_add_thorns;
   int i, j;
 
   const char *imp1, *imp2;
-  const char *this, *thorn;
+  const char *this, *thorn, *new_thorn;
   struct iInternalStringList *current;
 
   local_list = Util_Strdup(activethornlist);
 
+  activated_thorns = Util_StringListCreate(n_thorns);
   required_thorns  = Util_StringListCreate(n_thorns);
   required_imps    = Util_StringListCreate(n_imps);
   requested_imps   = Util_StringListCreate(n_imps);
@@ -911,24 +934,70 @@ int CCTKi_ActivateThorns(const char *activethornlist)
   n_errors = 0;
   n_warnings = 0;
 
-  token = strtok(local_list, " \t\n");
-  while(token)
+  /* Parse list of activated thorns */
+  for(token = strtok(local_list, " \t\n"); token; token = strtok(NULL," \t\n"))
   {
-    if(CCTK_IsThornActive(token))
+    if (! Util_StringListAdd(activated_thorns, token))
     {
-      printf("Warning: thorn %s already active\n", token);
+      CCTK_Warn(0, __LINE__, __FILE__, "Cactus", "internal error");
+    }
+  }
+
+  /* Auto-activate some thorns */
+  did_add_thorns = 1;
+  while(did_add_thorns) {
+    new_thorns = Util_StringListCreate(n_thorns);
+    // Copy existing thorns
+    for(thorn = Util_StringListNext(activated_thorns,1); thorn;
+        thorn = Util_StringListNext(activated_thorns,0))
+    {
+      Util_StringListAdd(new_thorns, thorn);
+    }
+    // Add all thorns activated by these thorns
+    did_add_thorns = 0;
+    for(thorn = Util_StringListNext(activated_thorns,1); thorn;
+        thorn = Util_StringListNext(activated_thorns,0))
+    {
+      this_thorn = ((t_sktree *) SKTreeFindNode(thornlist, thorn))->data;
+      if(this_thorn->activates_thorns)
+      {
+        for(i = 0; this_thorn->activates_thorns[i]; i++)
+        {
+          new_thorn = this_thorn->activates_thorns[i];
+          if (! CCTK_IsThornActive(new_thorn))
+          {
+            if (Util_StringListAdd(new_thorns, new_thorn))
+            {
+              printf("Automatic activation requested for thorn %s\n",
+                     new_thorn);
+              did_add_thorns = 1;
+            }
+          }
+        }
+      }
+    }
+    Util_StringListDestroy(activated_thorns);
+    activated_thorns = new_thorns;
+  }
+
+  for(thorn = Util_StringListNext(activated_thorns,1); thorn;
+      thorn = Util_StringListNext(activated_thorns,0))
+  {
+    if(CCTK_IsThornActive(thorn))
+    {
+      printf("Warning: thorn %s already active\n", thorn);
       n_warnings++;
     }
-    else if (! (this_imp = CCTK_ThornImplementation(token)))
+    else if (! (this_imp = CCTK_ThornImplementation(thorn)))
     {
-      printf("Error: Thorn %s not found\n", token);
+      printf("Error: Thorn %s not found\n", thorn);
       n_errors++;
       /*  Give some more help */
-      if (CCTK_IsImplementationCompiled(token))
+      if (CCTK_IsImplementationCompiled(thorn))
       {
-        impthornlist = CCTK_ImpThornList(token);
+        impthornlist = CCTK_ImpThornList(thorn);
 
-        printf("       However, implementation %s was found and is\n",token);
+        printf("       However, implementation %s was found and is\n",thorn);
         printf("       provided by thorn(s):");
         SKTreeTraverseInorder(impthornlist, JustPrintThornName, NULL);
         printf("\n");
@@ -937,18 +1006,18 @@ int CCTKi_ActivateThorns(const char *activethornlist)
     else if (CCTK_IsImplementationActive(this_imp))
     {
       printf("Error: thorn %s provides implementation %s - already active\n",
-             token, this_imp);
+             thorn, this_imp);
       n_errors++;
     }
-    else if (! Util_StringListAdd(required_thorns,token))
+    else if (! Util_StringListAdd(required_thorns,thorn))
     {
-      printf("Warning: thorn %s already scheduled for activation\n", token);
+      printf("Warning: thorn %s already scheduled for activation\n", thorn);
       n_warnings++;
     }
     else if (! Util_StringListAdd(requested_imps,this_imp))
     {
       printf("Error: thorn %s provides implementation %s which is already "
-             "scheduled for activation\n", token, this_imp);
+             "scheduled for activation\n", thorn, this_imp);
       n_errors++;
     }
     else if ((impnode = SKTreeFindNode(implist, this_imp)))
@@ -987,7 +1056,6 @@ int CCTKi_ActivateThorns(const char *activethornlist)
       CCTK_Warn(0, __LINE__, __FILE__, "Cactus", "Internal error :- please "
                 "report this to cactusmaint@cactuscode.org");
     }
-    token = strtok(NULL," \t\n");
   }
 
   /* No longer need the local list */
