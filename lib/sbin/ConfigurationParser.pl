@@ -38,12 +38,14 @@ sub CreateConfigurationDatabase
 #    if($debug)
 #    {
 #      print "   $thorn\n";
-#      print "           Provides: ", $cfg{"\U$thorn\E PROVIDES"}, "\n"
+#      print "           Provides:          ", $cfg{"\U$thorn\E PROVIDES"}, "\n"
 #        if ($cfg{"\U$thorn\E PROVIDES"});
-#      print "           Requires: ", $cfg{"\U$thorn\E REQUIRES"}, "\n"
+#      print "           Requires:          ", $cfg{"\U$thorn\E REQUIRES"}, "\n"
 #        if ($cfg{"\U$thorn\E REQUIRES"});
-#      print "           Optional: ", $cfg{"\U$thorn\E OPTIONAL"}, "\n"
+#      print "           Optional:          ", $cfg{"\U$thorn\E OPTIONAL"}, "\n"
 #        if ($cfg{"\U$thorn\E OPTIONAL"});
+#      print "           Optional-ifactive: ", $cfg{"\U$thorn\E OPTIONAL_IFACTIVE"}, "\n"
+#        if ($cfg{"\U$thorn\E OPTIONAL_IFACTIVE"});
 #    }
 
     $cfg{"\U$thorn\E USES THORNS"} = '';
@@ -89,6 +91,16 @@ sub CreateConfigurationDatabase
   }
   foreach my $thorn (sort keys %thorns)
   {
+      if ($cfg{"\U$thorn\E REQUIRES"})
+      {
+          foreach my $requiredcap (split (' ', $cfg{"\U$thorn\E REQUIRES"}))
+          {
+              $cfg{"\U$thorn\E ACTIVATES"} .= "$requiredcap ";
+          }
+      }
+  }
+  foreach my $thorn (sort keys %thorns)
+  {
       if ($cfg{"\U$thorn\E OPTIONAL"})
       {
           foreach my $optionalcap (split (' ', $cfg{"\U$thorn\E OPTIONAL"}))
@@ -96,6 +108,18 @@ sub CreateConfigurationDatabase
               if ($providedcaps{$optionalcap})
               {
                   $cfg{"\U$thorn\E REQUIRES"} .= "$optionalcap ";
+                  $cfg{"\U$thorn\E ACTIVATES"} .= "$optionalcap ";
+              }
+          }
+      }
+      if ($cfg{"\U$thorn\E OPTIONAL_IFACTIVE"})
+      {
+          foreach my $optionalcap (split (' ', $cfg{"\U$thorn\E OPTIONAL_IFACTIVE"}))
+          {
+              if ($providedcaps{$optionalcap})
+              {
+                  $cfg{"\U$thorn\E REQUIRES"} .= "$optionalcap ";
+                  # nothing is activated
               }
           }
       }
@@ -140,8 +164,29 @@ sub CreateConfigurationDatabase
     }
   }
 
-# Check for cyclic dependencies
-# create a hash with thorn-> used thorns (no prefix)
+  # Translate capability to thorn names
+  my %capabilities;
+  foreach my $thorn (sort keys %thorns)
+  {
+      next if ! $cfg{"\U$thorn\E PROVIDES"};
+      foreach my $cap (split (' ', $cfg{"\U$thorn\E PROVIDES"}))
+      {
+          $capabilities{"\U$cap\E"} = $thorn;
+      }
+  }
+  foreach my $thorn (sort keys %thorns)
+  {
+      my $activates = '';
+      foreach my $cap (split (' ', $cfg{"\U$thorn\E ACTIVATES"}))
+      {
+          my $cap_thorn = $capabilities{"\U$cap\E"};
+          $activates .= " $cap_thorn";
+      }
+      $cfg{"\U$thorn\E ACTIVATES THORNS"} = $activates;
+  }
+
+  # Check for cyclic dependencies
+  # create a hash with thorn-> used thorns (no prefix)
   foreach my $thorn (sort keys %thorns)
   {
     $thorn_dependencies{uc($thorn)}=$cfg{"\U$thorn\E USES THORNS"};
@@ -151,10 +196,10 @@ sub CreateConfigurationDatabase
   my $message = &find_dep_cycles(%thorn_dependencies);
   if ("" ne $message)
   {
-    $message  =~ s/^\s*//g;
-    $message  =~ s/\s*$//g;
+    $message =~ s/^\s*//g;
+    $message =~ s/\s*$//g;
     $message =~ s/\s+/->/g;
-    $message = "Found a cyclic dependency in configuration requirements:".$message."\n";
+    $message = "Found a cyclic dependency in configuration requirements:$message\n";
     &CST_error(0, $message);
   }
 
@@ -184,6 +229,8 @@ sub ParseConfigurationCCL
   $cfg->{"\U$thorn\E REQUIRES"} = '';
   $cfg->{"\U$thorn\E REQUIRES THORNS"} = '';
   $cfg->{"\U$thorn\E OPTIONAL"} = '';
+  $cfg->{"\U$thorn\E OPTIONAL_IFACTIVE"} = '';
+  $cfg->{"\U$thorn\E ACTIVATES"} = '';
   $cfg->{"\U$thorn\E OPTIONS"}  = '';
 
   # Read the data
@@ -259,6 +306,15 @@ re.ccl of thorn '$thorn'");
       }
       $cfg->{"\U$thorn\E OPTIONAL"} .= "$optional ";
       $cfg->{"\U$thorn\E OPTIONAL \U$optional\E DEFINE"} = $define;
+    }
+    elsif($line =~ m/^\s*OPTIONAL_IFACTIVE\s*/i)
+    {
+      ($optional, $define, $line_number) = &ParseOptionalBlock($filename, $line_number, \@data);
+      if ($optional !~ m{^[A-Za-z0-9_. ]+$}) {
+        &CST_error (0, "Illegal optional capability '$optional' line '$line' in configure.ccl of thorn '$thorn'");
+      }
+      $cfg->{"\U$thorn\E OPTIONAL_IFACTIVE"} .= "$optional ";
+      $cfg->{"\U$thorn\E OPTIONAL_IFACTIVE \U$optional\E DEFINE"} = $define;
     }
     elsif($line =~ m/^\s*NO_SOURCE\s*/i)
     {
@@ -343,7 +399,7 @@ sub ParseProvidesBlock
 #  @date       Mon May  8 15:52:40 2000
 #  @author     Tom Goodale
 #  @desc
-#  Parses the OPTIONAL block in a configuration.ccl file.
+#  Parses the OPTIONAL or OPTIONAL_IFACTIVE block in a configuration.ccl file.
 #  @enddesc
 #@@*/
 sub ParseOptionalBlock
@@ -351,9 +407,9 @@ sub ParseOptionalBlock
   my ($file_name, $line_number, $data) = @_;
   my ($optional, $define);
 
-  $data->[$line_number] =~ m/^\s*OPTIONAL\s*(.*)/i;
+  $data->[$line_number] =~ m/^\s*OPTIONAL(_IFACTIVE)?\s*(.*)/i;
 
-  $optional = $1;
+  $optional = $2;
 
   $define = "";
 

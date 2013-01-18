@@ -11,7 +11,7 @@ sub CreateImplementationBindings
 {
   my($bindings_dir, $rhparameter_db, $rhinterface_db, $configuration_db) = @_;
   my($i, $start_dir, $thorn);
-  my(@data, @thorns, @ancestors, @friends, @requires_thorns);
+  my(@data, @thorns, @ancestors, @friends, @requires_thorns, @activates_thorns);
 
   if(! $build_dir)
   {
@@ -87,6 +87,7 @@ sub CreateImplementationBindings
     @ancestors = map { "    \"$_\"," } split (' ', $rhinterface_db->{"IMPLEMENTATION \U$myimp\E ANCESTORS"});
     @friends = map { "    \"$_\"," } split (' ', $rhinterface_db->{"\U$thorn\E FRIEND"});
     @requires_thorns = map { "    \"$_\"," } split (' ', $configuration_db->{"\U$thorn\E REQUIRES THORNS"});
+    @activates_thorns = map { "    \"$_\"," } split (' ', $configuration_db->{"\U$thorn\E ACTIVATES THORNS"});
 
     @data = ();
     push(@data, '#include <stdio.h>');
@@ -134,6 +135,17 @@ sub CreateImplementationBindings
       $i++;
     }
 
+    if (@activates_thorns)
+    {
+      push(@data, '  const char *activates_thorns[] =');
+      push(@data, '  {');
+      push(@data, @activates_thorns);
+      push(@data, '    0,');
+      push(@data, '  };');
+      push(@data, '');
+      $i++;
+    }
+
     push(@data, '  /*');
     push(@data, '   * Should be able to do below with a constant initializer');
     push(@data, '   * but sr8000 compiler doesn\'t like it.');
@@ -162,6 +174,12 @@ sub CreateImplementationBindings
     {
       push(@data, "  attributes[$i].attribute                = \"requires thorns\";");
       push(@data, "  attributes[$i].AttributeData.StringList = requires_thorns;");
+      $i++;
+    }
+    if (@activates_thorns)
+    {
+      push(@data, "  attributes[$i].attribute                = \"activates thorns\";");
+      push(@data, "  attributes[$i].AttributeData.StringList = activates_thorns;");
       $i++;
     }
     push(@data, "  attributes[$i].attribute                = 0;");
