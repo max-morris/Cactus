@@ -57,8 +57,11 @@
     int const cctki0_istr = (istr); \
     int const imin CCTK_ATTRIBUTE_UNUSED = cctki0_imin; \
     int const imax CCTK_ATTRIBUTE_UNUSED = cctki0_imax; \
+     \
+     \
+    int const cctki0_ioff = (cctki0_imin) % cctki0_istr; \
     _Pragma("omp for") \
-    for (int i=cctki0_imin - (cctki0_imin) % cctki0_istr; i<cctki0_imax; i+=cctki0_istr) { \
+    for (int i=cctki0_imin-cctki0_ioff; i<cctki0_imax; i+=cctki0_istr) { \
       int const ni CCTK_ATTRIBUTE_UNUSED = cctki0_idir<0 ? i+1 : cctki0_idir==0 ? 0 : cctki0_imax-i; \
       { \
 
@@ -687,11 +690,11 @@
    &&     if (name/**/2_idir==-1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxlo(1) /= 0 \
    &&     if (name/**/2_idir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(1) /= 0 \
    &&    if (name/**/2_any_bbox) then \
+   &&       name/**/2_bmin(1) = name/**/2_blo(1)+1 \
    &&       if (name/**/2_idir==-1) name/**/2_bmin(1) = 1 \
-   &&       if (name/**/2_idir== 0) name/**/2_bmin(1) = name/**/2_blo(1)+1 \
    &&       if (name/**/2_idir==+1) name/**/2_bmin(1) = cctk_lsh(1) - name/**/2_bhi(1) \
+   &&       name/**/2_bmax(1) = cctk_lsh(1) - name/**/2_bhi(1) \
    &&       if (name/**/2_idir==-1) name/**/2_bmax(1) = name/**/2_blo(1) \
-   &&       if (name/**/2_idir== 0) name/**/2_bmax(1) = cctk_lsh(1) - name/**/2_bhi(1) \
    &&       if (name/**/2_idir==+1) name/**/2_bmax(1) = cctk_lsh(1) \
             CCTK_LOOP1STR_NORMAL(name/**/_boundaries, \
                                  i, \
@@ -770,11 +773,11 @@
    &&     if (name/**/2_idir==-1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxlo(1) /= 0 \
    &&     if (name/**/2_idir==+1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxhi(1) /= 0 \
    &&    if (name/**/2_all_bbox .and. name/**/2_any_bbox) then \
+   &&       name/**/2_bmin(1) = name/**/2_blo(1)+1 \
    &&       if (name/**/2_idir==-1) name/**/2_bmin(1) = 1 \
-   &&       if (name/**/2_idir== 0) name/**/2_bmin(1) = name/**/2_blo(1)+1 \
    &&       if (name/**/2_idir==+1) name/**/2_bmin(1) = cctk_lsh(1) - name/**/2_bhi(1) \
+   &&       name/**/2_bmax(1) = cctk_lsh(1) - name/**/2_bhi(1) \
    &&       if (name/**/2_idir==-1) name/**/2_bmax(1) = name/**/2_blo(1) \
-   &&       if (name/**/2_idir== 0) name/**/2_bmax(1) = cctk_lsh(1) - name/**/2_bhi(1) \
    &&       if (name/**/2_idir==+1) name/**/2_bmax(1) = cctk_lsh(1) \
             CCTK_LOOP1STR_NORMAL(name/**/_intboundaries, \
                                  i, \
@@ -1037,7 +1040,10 @@
     int const imax CCTK_ATTRIBUTE_UNUSED = cctki0_imax; \
     _Pragma("omp for collapse(1)") \
     for (int j=cctki0_jmin; j<cctki0_jmax; ++j) { \
-    for (int i=cctki0_imin - (cctki0_imin+cctki0_iash*(j)) % cctki0_istr; i<cctki0_imax; i+=cctki0_istr) { \
+     \
+    int const cctki0_ioff = (cctki0_imin+cctki0_iash*(j)) % cctki0_istr; \
+     \
+    for (int i=cctki0_imin-cctki0_ioff; i<cctki0_imax; i+=cctki0_istr) { \
       int const ni CCTK_ATTRIBUTE_UNUSED = cctki0_idir<0 ? i+1 : cctki0_idir==0 ? 0 : cctki0_imax-i; \
       int const nj CCTK_ATTRIBUTE_UNUSED = cctki0_jdir<0 ? j+1 : cctki0_jdir==0 ? 0 : cctki0_jmax-j; \
       { \
@@ -1700,16 +1706,16 @@
    &&     if (name/**/2_idir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(1) /= 0 \
    &&     if (name/**/2_jdir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(2) /= 0 \
    &&    if (name/**/2_any_bbox) then \
+   &&       name/**/2_bmin(1) = name/**/2_blo(1)+1 \
+   &&       name/**/2_bmin(2) = name/**/2_blo(2)+1 \
    &&       if (name/**/2_idir==-1) name/**/2_bmin(1) = 1 \
    &&       if (name/**/2_jdir==-1) name/**/2_bmin(2) = 1 \
-   &&       if (name/**/2_idir== 0) name/**/2_bmin(1) = name/**/2_blo(1)+1 \
-   &&       if (name/**/2_jdir== 0) name/**/2_bmin(2) = name/**/2_blo(2)+1 \
    &&       if (name/**/2_idir==+1) name/**/2_bmin(1) = cctk_lsh(1) - name/**/2_bhi(1) \
    &&       if (name/**/2_jdir==+1) name/**/2_bmin(2) = cctk_lsh(2) - name/**/2_bhi(2) \
+   &&       name/**/2_bmax(1) = cctk_lsh(1) - name/**/2_bhi(1) \
+   &&       name/**/2_bmax(2) = cctk_lsh(2) - name/**/2_bhi(2) \
    &&       if (name/**/2_idir==-1) name/**/2_bmax(1) = name/**/2_blo(1) \
    &&       if (name/**/2_jdir==-1) name/**/2_bmax(2) = name/**/2_blo(2) \
-   &&       if (name/**/2_idir== 0) name/**/2_bmax(1) = cctk_lsh(1) - name/**/2_bhi(1) \
-   &&       if (name/**/2_jdir== 0) name/**/2_bmax(2) = cctk_lsh(2) - name/**/2_bhi(2) \
    &&       if (name/**/2_idir==+1) name/**/2_bmax(1) = cctk_lsh(1) \
    &&       if (name/**/2_jdir==+1) name/**/2_bmax(2) = cctk_lsh(2) \
             CCTK_LOOP2STR_NORMAL(name/**/_boundaries, \
@@ -1797,16 +1803,16 @@
    &&     if (name/**/2_idir==+1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxhi(1) /= 0 \
    &&     if (name/**/2_jdir==+1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxhi(2) /= 0 \
    &&    if (name/**/2_all_bbox .and. name/**/2_any_bbox) then \
+   &&       name/**/2_bmin(1) = name/**/2_blo(1)+1 \
+   &&       name/**/2_bmin(2) = name/**/2_blo(2)+1 \
    &&       if (name/**/2_idir==-1) name/**/2_bmin(1) = 1 \
    &&       if (name/**/2_jdir==-1) name/**/2_bmin(2) = 1 \
-   &&       if (name/**/2_idir== 0) name/**/2_bmin(1) = name/**/2_blo(1)+1 \
-   &&       if (name/**/2_jdir== 0) name/**/2_bmin(2) = name/**/2_blo(2)+1 \
    &&       if (name/**/2_idir==+1) name/**/2_bmin(1) = cctk_lsh(1) - name/**/2_bhi(1) \
    &&       if (name/**/2_jdir==+1) name/**/2_bmin(2) = cctk_lsh(2) - name/**/2_bhi(2) \
+   &&       name/**/2_bmax(1) = cctk_lsh(1) - name/**/2_bhi(1) \
+   &&       name/**/2_bmax(2) = cctk_lsh(2) - name/**/2_bhi(2) \
    &&       if (name/**/2_idir==-1) name/**/2_bmax(1) = name/**/2_blo(1) \
    &&       if (name/**/2_jdir==-1) name/**/2_bmax(2) = name/**/2_blo(2) \
-   &&       if (name/**/2_idir== 0) name/**/2_bmax(1) = cctk_lsh(1) - name/**/2_bhi(1) \
-   &&       if (name/**/2_jdir== 0) name/**/2_bmax(2) = cctk_lsh(2) - name/**/2_bhi(2) \
    &&       if (name/**/2_idir==+1) name/**/2_bmax(1) = cctk_lsh(1) \
    &&       if (name/**/2_jdir==+1) name/**/2_bmax(2) = cctk_lsh(2) \
             CCTK_LOOP2STR_NORMAL(name/**/_intboundaries, \
@@ -2077,7 +2083,10 @@
     _Pragma("omp for collapse(2)") \
     for (int k=cctki0_kmin; k<cctki0_kmax; ++k) { \
     for (int j=cctki0_jmin; j<cctki0_jmax; ++j) { \
-    for (int i=cctki0_imin - (cctki0_imin+cctki0_iash*(j+cctki0_jash*(k))) % cctki0_istr; i<cctki0_imax; i+=cctki0_istr) { \
+     \
+    int const cctki0_ioff = (cctki0_imin+cctki0_iash*(j+cctki0_jash*(k))) % cctki0_istr; \
+     \
+    for (int i=cctki0_imin-cctki0_ioff; i<cctki0_imax; i+=cctki0_istr) { \
       int const ni CCTK_ATTRIBUTE_UNUSED = cctki0_idir<0 ? i+1 : cctki0_idir==0 ? 0 : cctki0_imax-i; \
       int const nj CCTK_ATTRIBUTE_UNUSED = cctki0_jdir<0 ? j+1 : cctki0_jdir==0 ? 0 : cctki0_jmax-j; \
       int const nk CCTK_ATTRIBUTE_UNUSED = cctki0_kdir<0 ? k+1 : cctki0_kdir==0 ? 0 : cctki0_kmax-k; \
@@ -2774,21 +2783,21 @@
    &&     if (name/**/2_jdir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(2) /= 0 \
    &&     if (name/**/2_kdir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(3) /= 0 \
    &&    if (name/**/2_any_bbox) then \
+   &&       name/**/2_bmin(1) = name/**/2_blo(1)+1 \
+   &&       name/**/2_bmin(2) = name/**/2_blo(2)+1 \
+   &&       name/**/2_bmin(3) = name/**/2_blo(3)+1 \
    &&       if (name/**/2_idir==-1) name/**/2_bmin(1) = 1 \
    &&       if (name/**/2_jdir==-1) name/**/2_bmin(2) = 1 \
    &&       if (name/**/2_kdir==-1) name/**/2_bmin(3) = 1 \
-   &&       if (name/**/2_idir== 0) name/**/2_bmin(1) = name/**/2_blo(1)+1 \
-   &&       if (name/**/2_jdir== 0) name/**/2_bmin(2) = name/**/2_blo(2)+1 \
-   &&       if (name/**/2_kdir== 0) name/**/2_bmin(3) = name/**/2_blo(3)+1 \
    &&       if (name/**/2_idir==+1) name/**/2_bmin(1) = cctk_lsh(1) - name/**/2_bhi(1) \
    &&       if (name/**/2_jdir==+1) name/**/2_bmin(2) = cctk_lsh(2) - name/**/2_bhi(2) \
    &&       if (name/**/2_kdir==+1) name/**/2_bmin(3) = cctk_lsh(3) - name/**/2_bhi(3) \
+   &&       name/**/2_bmax(1) = cctk_lsh(1) - name/**/2_bhi(1) \
+   &&       name/**/2_bmax(2) = cctk_lsh(2) - name/**/2_bhi(2) \
+   &&       name/**/2_bmax(3) = cctk_lsh(3) - name/**/2_bhi(3) \
    &&       if (name/**/2_idir==-1) name/**/2_bmax(1) = name/**/2_blo(1) \
    &&       if (name/**/2_jdir==-1) name/**/2_bmax(2) = name/**/2_blo(2) \
    &&       if (name/**/2_kdir==-1) name/**/2_bmax(3) = name/**/2_blo(3) \
-   &&       if (name/**/2_idir== 0) name/**/2_bmax(1) = cctk_lsh(1) - name/**/2_bhi(1) \
-   &&       if (name/**/2_jdir== 0) name/**/2_bmax(2) = cctk_lsh(2) - name/**/2_bhi(2) \
-   &&       if (name/**/2_kdir== 0) name/**/2_bmax(3) = cctk_lsh(3) - name/**/2_bhi(3) \
    &&       if (name/**/2_idir==+1) name/**/2_bmax(1) = cctk_lsh(1) \
    &&       if (name/**/2_jdir==+1) name/**/2_bmax(2) = cctk_lsh(2) \
    &&       if (name/**/2_kdir==+1) name/**/2_bmax(3) = cctk_lsh(3) \
@@ -2885,21 +2894,21 @@
    &&     if (name/**/2_jdir==+1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxhi(2) /= 0 \
    &&     if (name/**/2_kdir==+1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxhi(3) /= 0 \
    &&    if (name/**/2_all_bbox .and. name/**/2_any_bbox) then \
+   &&       name/**/2_bmin(1) = name/**/2_blo(1)+1 \
+   &&       name/**/2_bmin(2) = name/**/2_blo(2)+1 \
+   &&       name/**/2_bmin(3) = name/**/2_blo(3)+1 \
    &&       if (name/**/2_idir==-1) name/**/2_bmin(1) = 1 \
    &&       if (name/**/2_jdir==-1) name/**/2_bmin(2) = 1 \
    &&       if (name/**/2_kdir==-1) name/**/2_bmin(3) = 1 \
-   &&       if (name/**/2_idir== 0) name/**/2_bmin(1) = name/**/2_blo(1)+1 \
-   &&       if (name/**/2_jdir== 0) name/**/2_bmin(2) = name/**/2_blo(2)+1 \
-   &&       if (name/**/2_kdir== 0) name/**/2_bmin(3) = name/**/2_blo(3)+1 \
    &&       if (name/**/2_idir==+1) name/**/2_bmin(1) = cctk_lsh(1) - name/**/2_bhi(1) \
    &&       if (name/**/2_jdir==+1) name/**/2_bmin(2) = cctk_lsh(2) - name/**/2_bhi(2) \
    &&       if (name/**/2_kdir==+1) name/**/2_bmin(3) = cctk_lsh(3) - name/**/2_bhi(3) \
+   &&       name/**/2_bmax(1) = cctk_lsh(1) - name/**/2_bhi(1) \
+   &&       name/**/2_bmax(2) = cctk_lsh(2) - name/**/2_bhi(2) \
+   &&       name/**/2_bmax(3) = cctk_lsh(3) - name/**/2_bhi(3) \
    &&       if (name/**/2_idir==-1) name/**/2_bmax(1) = name/**/2_blo(1) \
    &&       if (name/**/2_jdir==-1) name/**/2_bmax(2) = name/**/2_blo(2) \
    &&       if (name/**/2_kdir==-1) name/**/2_bmax(3) = name/**/2_blo(3) \
-   &&       if (name/**/2_idir== 0) name/**/2_bmax(1) = cctk_lsh(1) - name/**/2_bhi(1) \
-   &&       if (name/**/2_jdir== 0) name/**/2_bmax(2) = cctk_lsh(2) - name/**/2_bhi(2) \
-   &&       if (name/**/2_kdir== 0) name/**/2_bmax(3) = cctk_lsh(3) - name/**/2_bhi(3) \
    &&       if (name/**/2_idir==+1) name/**/2_bmax(1) = cctk_lsh(1) \
    &&       if (name/**/2_jdir==+1) name/**/2_bmax(2) = cctk_lsh(2) \
    &&       if (name/**/2_kdir==+1) name/**/2_bmax(3) = cctk_lsh(3) \
@@ -3178,7 +3187,10 @@
     for (int l=cctki0_lmin; l<cctki0_lmax; ++l) { \
     for (int k=cctki0_kmin; k<cctki0_kmax; ++k) { \
     for (int j=cctki0_jmin; j<cctki0_jmax; ++j) { \
-    for (int i=cctki0_imin - (cctki0_imin+cctki0_iash*(j+cctki0_jash*(k+cctki0_kash*(l)))) % cctki0_istr; i<cctki0_imax; i+=cctki0_istr) { \
+     \
+    int const cctki0_ioff = (cctki0_imin+cctki0_iash*(j+cctki0_jash*(k+cctki0_kash*(l)))) % cctki0_istr; \
+     \
+    for (int i=cctki0_imin-cctki0_ioff; i<cctki0_imax; i+=cctki0_istr) { \
       int const ni CCTK_ATTRIBUTE_UNUSED = cctki0_idir<0 ? i+1 : cctki0_idir==0 ? 0 : cctki0_imax-i; \
       int const nj CCTK_ATTRIBUTE_UNUSED = cctki0_jdir<0 ? j+1 : cctki0_jdir==0 ? 0 : cctki0_jmax-j; \
       int const nk CCTK_ATTRIBUTE_UNUSED = cctki0_kdir<0 ? k+1 : cctki0_kdir==0 ? 0 : cctki0_kmax-k; \
@@ -3909,26 +3921,26 @@
    &&     if (name/**/2_kdir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(3) /= 0 \
    &&     if (name/**/2_ldir==+1) name/**/2_any_bbox = name/**/2_any_bbox .or. name/**/2_bboxhi(4) /= 0 \
    &&    if (name/**/2_any_bbox) then \
+   &&       name/**/2_bmin(1) = name/**/2_blo(1)+1 \
+   &&       name/**/2_bmin(2) = name/**/2_blo(2)+1 \
+   &&       name/**/2_bmin(3) = name/**/2_blo(3)+1 \
+   &&       name/**/2_bmin(4) = name/**/2_blo(4)+1 \
    &&       if (name/**/2_idir==-1) name/**/2_bmin(1) = 1 \
    &&       if (name/**/2_jdir==-1) name/**/2_bmin(2) = 1 \
    &&       if (name/**/2_kdir==-1) name/**/2_bmin(3) = 1 \
    &&       if (name/**/2_ldir==-1) name/**/2_bmin(4) = 1 \
-   &&       if (name/**/2_idir== 0) name/**/2_bmin(1) = name/**/2_blo(1)+1 \
-   &&       if (name/**/2_jdir== 0) name/**/2_bmin(2) = name/**/2_blo(2)+1 \
-   &&       if (name/**/2_kdir== 0) name/**/2_bmin(3) = name/**/2_blo(3)+1 \
-   &&       if (name/**/2_ldir== 0) name/**/2_bmin(4) = name/**/2_blo(4)+1 \
    &&       if (name/**/2_idir==+1) name/**/2_bmin(1) = cctk_lsh(1) - name/**/2_bhi(1) \
    &&       if (name/**/2_jdir==+1) name/**/2_bmin(2) = cctk_lsh(2) - name/**/2_bhi(2) \
    &&       if (name/**/2_kdir==+1) name/**/2_bmin(3) = cctk_lsh(3) - name/**/2_bhi(3) \
    &&       if (name/**/2_ldir==+1) name/**/2_bmin(4) = cctk_lsh(4) - name/**/2_bhi(4) \
+   &&       name/**/2_bmax(1) = cctk_lsh(1) - name/**/2_bhi(1) \
+   &&       name/**/2_bmax(2) = cctk_lsh(2) - name/**/2_bhi(2) \
+   &&       name/**/2_bmax(3) = cctk_lsh(3) - name/**/2_bhi(3) \
+   &&       name/**/2_bmax(4) = cctk_lsh(4) - name/**/2_bhi(4) \
    &&       if (name/**/2_idir==-1) name/**/2_bmax(1) = name/**/2_blo(1) \
    &&       if (name/**/2_jdir==-1) name/**/2_bmax(2) = name/**/2_blo(2) \
    &&       if (name/**/2_kdir==-1) name/**/2_bmax(3) = name/**/2_blo(3) \
    &&       if (name/**/2_ldir==-1) name/**/2_bmax(4) = name/**/2_blo(4) \
-   &&       if (name/**/2_idir== 0) name/**/2_bmax(1) = cctk_lsh(1) - name/**/2_bhi(1) \
-   &&       if (name/**/2_jdir== 0) name/**/2_bmax(2) = cctk_lsh(2) - name/**/2_bhi(2) \
-   &&       if (name/**/2_kdir== 0) name/**/2_bmax(3) = cctk_lsh(3) - name/**/2_bhi(3) \
-   &&       if (name/**/2_ldir== 0) name/**/2_bmax(4) = cctk_lsh(4) - name/**/2_bhi(4) \
    &&       if (name/**/2_idir==+1) name/**/2_bmax(1) = cctk_lsh(1) \
    &&       if (name/**/2_jdir==+1) name/**/2_bmax(2) = cctk_lsh(2) \
    &&       if (name/**/2_kdir==+1) name/**/2_bmax(3) = cctk_lsh(3) \
@@ -4034,26 +4046,26 @@
    &&     if (name/**/2_kdir==+1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxhi(3) /= 0 \
    &&     if (name/**/2_ldir==+1) name/**/2_all_bbox = name/**/2_all_bbox .and. name/**/2_bboxhi(4) /= 0 \
    &&    if (name/**/2_all_bbox .and. name/**/2_any_bbox) then \
+   &&       name/**/2_bmin(1) = name/**/2_blo(1)+1 \
+   &&       name/**/2_bmin(2) = name/**/2_blo(2)+1 \
+   &&       name/**/2_bmin(3) = name/**/2_blo(3)+1 \
+   &&       name/**/2_bmin(4) = name/**/2_blo(4)+1 \
    &&       if (name/**/2_idir==-1) name/**/2_bmin(1) = 1 \
    &&       if (name/**/2_jdir==-1) name/**/2_bmin(2) = 1 \
    &&       if (name/**/2_kdir==-1) name/**/2_bmin(3) = 1 \
    &&       if (name/**/2_ldir==-1) name/**/2_bmin(4) = 1 \
-   &&       if (name/**/2_idir== 0) name/**/2_bmin(1) = name/**/2_blo(1)+1 \
-   &&       if (name/**/2_jdir== 0) name/**/2_bmin(2) = name/**/2_blo(2)+1 \
-   &&       if (name/**/2_kdir== 0) name/**/2_bmin(3) = name/**/2_blo(3)+1 \
-   &&       if (name/**/2_ldir== 0) name/**/2_bmin(4) = name/**/2_blo(4)+1 \
    &&       if (name/**/2_idir==+1) name/**/2_bmin(1) = cctk_lsh(1) - name/**/2_bhi(1) \
    &&       if (name/**/2_jdir==+1) name/**/2_bmin(2) = cctk_lsh(2) - name/**/2_bhi(2) \
    &&       if (name/**/2_kdir==+1) name/**/2_bmin(3) = cctk_lsh(3) - name/**/2_bhi(3) \
    &&       if (name/**/2_ldir==+1) name/**/2_bmin(4) = cctk_lsh(4) - name/**/2_bhi(4) \
+   &&       name/**/2_bmax(1) = cctk_lsh(1) - name/**/2_bhi(1) \
+   &&       name/**/2_bmax(2) = cctk_lsh(2) - name/**/2_bhi(2) \
+   &&       name/**/2_bmax(3) = cctk_lsh(3) - name/**/2_bhi(3) \
+   &&       name/**/2_bmax(4) = cctk_lsh(4) - name/**/2_bhi(4) \
    &&       if (name/**/2_idir==-1) name/**/2_bmax(1) = name/**/2_blo(1) \
    &&       if (name/**/2_jdir==-1) name/**/2_bmax(2) = name/**/2_blo(2) \
    &&       if (name/**/2_kdir==-1) name/**/2_bmax(3) = name/**/2_blo(3) \
    &&       if (name/**/2_ldir==-1) name/**/2_bmax(4) = name/**/2_blo(4) \
-   &&       if (name/**/2_idir== 0) name/**/2_bmax(1) = cctk_lsh(1) - name/**/2_bhi(1) \
-   &&       if (name/**/2_jdir== 0) name/**/2_bmax(2) = cctk_lsh(2) - name/**/2_bhi(2) \
-   &&       if (name/**/2_kdir== 0) name/**/2_bmax(3) = cctk_lsh(3) - name/**/2_bhi(3) \
-   &&       if (name/**/2_ldir== 0) name/**/2_bmax(4) = cctk_lsh(4) - name/**/2_bhi(4) \
    &&       if (name/**/2_idir==+1) name/**/2_bmax(1) = cctk_lsh(1) \
    &&       if (name/**/2_jdir==+1) name/**/2_bmax(2) = cctk_lsh(2) \
    &&       if (name/**/2_kdir==+1) name/**/2_bmax(3) = cctk_lsh(3) \
