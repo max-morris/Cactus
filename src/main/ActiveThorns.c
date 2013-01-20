@@ -960,18 +960,25 @@ int CCTKi_ActivateThorns(const char *activethornlist)
         thorn = Util_StringListNext(activated_thorns,0))
     {
       this_thorn = ((t_sktree *) SKTreeFindNode(thornlist, thorn))->data;
-      if(this_thorn->activates_thorns)
+      if(this_thorn && this_thorn->activates_thorns)
       {
         for(i = 0; this_thorn->activates_thorns[i]; i++)
         {
           new_thorn = this_thorn->activates_thorns[i];
           if (! CCTK_IsThornActive(new_thorn))
           {
-            if (Util_StringListAdd(new_thorns, new_thorn))
+            switch (Util_StringListAdd(new_thorns, new_thorn))
             {
+            case 0:
+              /* Thorn already scheduled for activation */
+              break;
+            case 1:
               printf("Thorn %s requests automatic activation of %s\n",
                      thorn, new_thorn);
               did_add_thorns = 1;
+              break;
+            default:
+              CCTK_Warn(0, __LINE__, __FILE__, "Cactus", "Internal error");
             }
           }
         }
