@@ -436,7 +436,7 @@ else
      CC_VERSION="`$CC -v 2>&1 | grep -i version | head -n1`"
      : ${C_OPENMP_FLAGS='-openmp'}
      ;;
-   xlc | xlc_r)
+   xlc | xlc_r | bgxlc | bgxlc_r)
      : ${CFLAGS='-q64'}
      : ${C_DEPEND='$(CXX) -E -M $(CPPFLAGS)'}
      : ${C_DEPEND_OUT=' > /dev/null ; mv $(basename $(basename $@)).d $@'}
@@ -510,7 +510,7 @@ else
      CXX_VERSION="`$CXX -v 2>&1 | grep -i version | head -n1`"
      : ${CXX_OPENMP_FLAGS='-openmp'}
      ;;
-   xlC | xlC_r)
+   xlC | xlC_r | bgxlC | bgxlC_r)
      : ${CXXFLAGS='-q64'}
      : ${CXX_DEPEND='$(CXX) -E -M $(CPPFLAGS)'}
      : ${CXX_DEPEND_OUT=' > /dev/null ; mv $(basename $(basename $@)).d $@'}
