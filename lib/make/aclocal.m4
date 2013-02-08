@@ -42,7 +42,7 @@ CCTK_CHECK_HEADER($cctk_hdr,
 [changequote(, )dnl
   cctk_tr_hdr=HAVE_`echo $cctk_hdr | sed 'y%abcdefghijklmnopqrstuvwxyz./-%ABCDEFGHIJKLMNOPQRSTUVWXYZ___%'`
 changequote([, ])dnl
-  AC_DEFINE_UNQUOTED($cctk_tr_hdr) $3], $4)dnl
+  AC_DEFINE_UNQUOTED($cctk_tr_hdr) $3], [$4])dnl
 done
 ])
 
@@ -338,14 +338,15 @@ fi
 # ---------------------------------------------------------------------
 AC_DEFUN([CCTK_CHECK_FUNCS],
 [ac_link='${CC-cc} -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext `CCTK_Wrap "$LIBDIR_PREFIX" "$LIBDIR_SUFFIX" "$LIBDIRS"` `CCTK_Wrap "$LIBLINK_PREFIX" "$LIBLINK_SUFFIX" "$LIBS"` >&5'
-AC_CHECK_FUNCS($1,$2,$3)
+dnl AC_CHECK_FUNCS does not properly quote its last argument
+AC_CHECK_FUNCS([$1],[$2],[[$3]])
 ])
 
 # CCTK_CHECK_FUNC(FUNCTION, [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
 # ---------------------------------------------------------------------
 AC_DEFUN([CCTK_CHECK_FUNC],
 [ac_link='${CC-cc} -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext `CCTK_Wrap "$LIBDIR_PREFIX" "$LIBDIR_SUFFIX" "$LIBDIRS"` `CCTK_Wrap "$LIBLINK_PREFIX" "$LIBLINK_SUFFIX" "$LIBS"` >&5'
-AC_CHECK_FUNC($1,$2,$3)
+AC_CHECK_FUNC([$1],[$2],[$3])
 ])
 
 
@@ -399,8 +400,8 @@ fi
 ])
 
 AC_DEFUN(CCTK_CHECK_LIB_FUNC,
-[CCTK_CHECK_LIB($1, $2,
-ifelse([$3], , [changequote(, )dnl
+[CCTK_CHECK_LIB([$1], [$2],
+[ifelse([$3], , [changequote(, )dnl
   cctk_tr_lib=HAVE_LIB`echo $1 | sed -e 's/[^a-zA-Z0-9_]/_/g' \
     -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
   cctk_tr_func=HAVE_`echo $2 | sed -e 's/[^a-zA-Z0-9_]/_/g' \
@@ -409,10 +410,9 @@ changequote([, ])dnl
   AC_DEFINE_UNQUOTED($cctk_tr_lib)
   AC_DEFINE_UNQUOTED($cctk_tr_func)
   LIBS="$1 $LIBS"
-], [$3])dnl
-),
-ifelse([$4], , , [$4
-])dnl
+], [$3])],dnl
+[ifelse([$4], , , [$4
+])])dnl
 ])
 
 
@@ -464,8 +464,8 @@ fi
 ])
 
 AC_DEFUN(CCTK_CHECK_HEADER_LIB_FUNC,
-[CCTK_CHECK_HEADER_LIB($1, $2, $3, $4,
-ifelse([$5], , [changequote(, )dnl
+[CCTK_CHECK_HEADER_LIB([$1], [$2], [$3], [$4],
+[ifelse([$5], , [changequote(, )dnl
   cctk_tr_header=HAVE_`echo $1 | sed -e 's/[^a-zA-Z0-9_]/_/g' \
     -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
   cctk_tr_lib=HAVE_LIB`echo $2 | sed -e 's/[^a-zA-Z0-9_]/_/g' \
@@ -477,7 +477,7 @@ changequote([, ])dnl
   AC_DEFINE_UNQUOTED($cctk_tr_lib)
   AC_DEFINE_UNQUOTED($cctk_tr_func)
   LIBS="$2 $LIBS"
-], [$5])dnl
+], [$5])]dnl
 )
 ifelse([$6], , , [$6
 ])dnl
