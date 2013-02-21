@@ -143,8 +143,8 @@ else
        : ${LIBS='gfortran'}
        : ${LIBDIRS="$gnu95_libdir"}
      fi
-     F77_VERSION="`$F77 --version 2>&1 | head -n1`"
-     F90_VERSION="`$F90 --version 2>&1 | head -n1`"
+     F77_VERSION="`$F77 --version 2>&1 | grep GNU | head -n1`"
+     F90_VERSION="`$F90 --version 2>&1 | grep GNU | head -n1`"
      # only gfortran versions 4.1 and higher support OpenMP
      major_version=`echo $F77_VERSION | cut -d')' -f2 | tr -d ' ' | cut -d'.' -f1`
      minor_version=`echo $F77_VERSION | cut -d')' -f2 | cut -d'.' -f2`
