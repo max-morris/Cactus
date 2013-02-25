@@ -185,7 +185,8 @@ extern "C" int PirahaParser(const char *buffer,unsigned long buffersize,int (*se
 
 			"name = [@a-zA-Z_][@/a-zA-Z0-9_-]*\n"
 			"inquot = ({var}|\\\\.|[^\\\\\"])*\n"
-			"quot = \"{inquot}\"\n"
+			"fname = \\.?/[-\\./0-9a-zA-Z_]+\n"
+			"quot = \"{inquot}\"|{fname}\n"
 			"num = [-+]?([0-9]+(\\.[0-9]*|)|\\.[0-9]+)(e[+-][0-9]+|)\n"
 			"env = ENV\\{{name}\\}\n"
 			"var = \\$({env}|{name}|\\{{name}\\})\n"
