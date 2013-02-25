@@ -119,30 +119,42 @@ static int lineno = 1;
    @endreturndesc
 @@*/
 
+int PirahaParser(const char *buffer,unsigned long buffersize,int (*set_function)(const char *, const char *, int));
+
 int ParseFile(FILE *ifp,
               int (*set_function)(const char *, const char *, int),
               tFleshConfig *ConfigData)
 {
-  int retval;
+  int retval=1;
   unsigned long buffersize;
   char *buffer = ReadFile(ifp, &buffersize);
   if (!buffer)
     return 1;
 
-  /* Ensure Unix line endings */
-  convert_crlf_to_lf(buffer);
-  buffersize = strlen(buffer);
+  int piraha_active = 1;
 
-  buffer = ParseDefines(buffer, &buffersize);
-  /* ParseBuffer can get confused with detecting the end of the buffer
-     (when in a comment or in a string), and may overrun.  Therefore
-     we allocate a buffer that is a bit longer.  */
-  {
-    buffer = realloc (buffer, strlen(buffer) + 10);
-    memset (buffer+strlen(buffer), '\0', 10);
+  if(piraha_active) {
+      // the new way
+	  buffersize = strlen(buffer);
+
+	  retval = PirahaParser(buffer,buffersize,set_function);
+  } else {
+      // The old way
+	  /* Ensure Unix line endings */
+	  convert_crlf_to_lf(buffer);
+	  buffersize = strlen(buffer);
+
+	  buffer = ParseDefines(buffer, &buffersize);
+	  /* ParseBuffer can get confused with detecting the end of the buffer
+ (when in a comment or in a string), and may overrun.  Therefore
+ we allocate a buffer that is a bit longer.  */
+	  {
+		  buffer = realloc (buffer, strlen(buffer) + 10);
+		  memset (buffer+strlen(buffer), '\0', 10);
+	  }
+	  retval = ParseBuffer(buffer, set_function, ConfigData);
+	  free(buffer);
   }
-  retval = ParseBuffer(buffer, set_function, ConfigData);
-  free(buffer);
   return retval;
 }
 
@@ -316,7 +328,6 @@ int main(int argc, char *argv[])
 static char *ReadFile(FILE *file, unsigned long *filesize)
 {
   char *buffer;
-  size_t bytes_read;
 
   if (!file)
   {
@@ -335,13 +346,7 @@ static char *ReadFile(FILE *file, unsigned long *filesize)
     return NULL;
   }
   /* Read file into buffer and return */
-  bytes_read = fread(buffer, 1, *filesize, file);
-  if (bytes_read != *filesize)
-  {
-    fprintf(stderr, "File size changed while reading.\n");
-    free(buffer);
-    return NULL;
-  }
+  fread(buffer, *filesize, 1, file);
   /* Protect buffer for string operations */
   buffer[*filesize] = '\0';
   return buffer;
