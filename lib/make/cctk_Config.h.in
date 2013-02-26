@@ -341,12 +341,36 @@ typedef enum {false, true} bool;
 #  define CCTK_ATTRIBUTE_HOT
 #endif
 
+/* Whether __attribute__((format(...))) exists. */
+#undef HAVE_CCTK_CXX_ATTRIBUTE_FORMAT
+#ifdef HAVE_CCTK_CXX_ATTRIBUTE_FORMAT
+#  define CCTK_ATTRIBUTE_FORMAT(archetype, format, firstarg) __attribute__((__format__(archetype, format, firstarg)))
+#else
+#  define CCTK_ATTRIBUTE_FORMAT(archetype, format, firstarg)
+#endif
+
+/* Whether __attribute__((noreturn)) exists. */
+#undef HAVE_CCTK_CXX_ATTRIBUTE_NORETURN
+#ifdef HAVE_CCTK_CXX_ATTRIBUTE_NORETURN
+#  define CCTK_ATTRIBUTE_NORETURN __attribute__((__noreturn__))
+#else
+#  define CCTK_ATTRIBUTE_NORETURN
+#endif
+
 /* Whether __builtin_expect exists. */
 #undef HAVE_CCTK_C_BUILTIN_EXPECT
 #ifdef HAVE_CCTK_C_BUILTIN_EXPECT
 #  define CCTK_BUILTIN_EXPECT(x,y) __builtin_expect(x,y)
 #else
 #  define CCTK_BUILTIN_EXPECT(x,y) (x)
+#endif
+
+/* Whether __builtin_unreachable exists. */
+#undef HAVE_CCTK_C_BUILTIN_UNREACHABLE
+#ifdef HAVE_CCTK_C_BUILTIN_UNREACHABLE
+#  define CCTK_BUILTIN_UNREACHABLE() __builtin_unreachable()
+#else
+#  define CCTK_BUILTIN_UNREACHABLE() ((void)0)
 #endif
 
 /* OpenMP collapse clause */
@@ -526,12 +550,36 @@ typedef enum {false, true} bool;
 #  define CCTK_ATTRIBUTE_HOT
 #endif
 
+/* Whether __attribute__((format(...))) exists. */
+#undef HAVE_CCTK_CXX_ATTRIBUTE_FORMAT
+#ifdef HAVE_CCTK_CXX_ATTRIBUTE_FORMAT
+#  define CCTK_ATTRIBUTE_FORMAT(archetype, format, firstarg) __attribute__((__format__(archetype, format, firstarg)))
+#else
+#  define CCTK_ATTRIBUTE_FORMAT(archetype, format, firstarg)
+#endif
+
+/* Whether __attribute__((noreturn)) exists. */
+#undef HAVE_CCTK_CXX_ATTRIBUTE_NORETURN
+#ifdef HAVE_CCTK_CXX_ATTRIBUTE_NORETURN
+#  define CCTK_ATTRIBUTE_NORETURN __attribute__((__noreturn__))
+#else
+#  define CCTK_ATTRIBUTE_NORETURN
+#endif
+
 /* Whether __builtin_expect exists. */
 #undef HAVE_CCTK_CXX_BUILTIN_EXPECT
 #ifdef HAVE_CCTK_CXX_BUILTIN_EXPECT
 #  define CCTK_BUILTIN_EXPECT(x,y) __builtin_expect(x,y)
 #else
 #  define CCTK_BUILTIN_EXPECT(x,y) (x)
+#endif
+
+/* Whether __builtin_unreachable exists. */
+#undef HAVE_CCTK_CXX_BUILTIN_UNREACHABLE
+#ifdef HAVE_CCTK_CXX_BUILTIN_UNREACHABLE
+#  define CCTK_BUILTIN_UNREACHABLE() __builtin_unreachable()
+#else
+#  define CCTK_BUILTIN_UNREACHABLE() ((void)0)
 #endif
 
 /* Some C++ compilers recognise the restrict keyword */

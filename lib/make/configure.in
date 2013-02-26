@@ -908,9 +908,21 @@ CCTK_CXX_ATTRIBUTE_COLD
 CCTK_C_ATTRIBUTE_HOT
 CCTK_CXX_ATTRIBUTE_HOT
 
+# Find out whether the C compiler supports __attribute__((format(...)))
+CCTK_C_ATTRIBUTE_FORMAT
+CCTK_CXX_ATTRIBUTE_FORMAT
+
+# Find out whether the C compiler supports __attribute__((noreturn))
+CCTK_C_ATTRIBUTE_NORETURN
+CCTK_CXX_ATTRIBUTE_NORETURN
+
 # Find out whether the C compiler supports __builtin_expect
 CCTK_C_BUILTIN_EXPECT
 CCTK_CXX_BUILTIN_EXPECT
+
+# Find out whether the C compiler supports __builtin_unreachable
+CCTK_C_BUILTIN_UNREACHABLE
+CCTK_CXX_BUILTIN_UNREACHABLE
 
 if test "x$REAL16_KIND" = 'x'; then
   REAL16_KIND=16

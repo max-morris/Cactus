@@ -1011,6 +1011,56 @@ fi
 
 
 
+AC_DEFUN(CCTK_C_ATTRIBUTE_FORMAT,
+[AC_CACHE_CHECK([for C __attribute__((__format__(printf(1, 2))))], cctk_cv_have_c_attribute_format,
+[cctk_cv_have_c_attribute_format=no
+AC_TRY_COMPILE(void xyzzy(const char*, ...) __attribute__((__format__(printf(1, 2))));, xyzzy("%d",42);, cctk_cv_have_c_attribute_format=yes, cctk_cv_have_c_attribute_format=no)
+])
+if test "$cctk_cv_have_c_attribute_format" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_FORMAT)
+fi
+])
+
+AC_DEFUN(CCTK_CXX_ATTRIBUTE_FORMAT,
+[AC_CACHE_CHECK([for CXX __attribute__((__format__))], cctk_cv_have_cxx_attribute_format,
+[cctk_cv_have_cxx_attribute_format=no
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(void xyzzy(const char*, ...) __attribute__((__format__(printf(1, 2))));, xyzzy("%d",42);, cctk_cv_have_cxx_attribute_format=yes, cctk_cv_have_cxx_attribute_format=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_cxx_attribute_format" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_CXX_ATTRIBUTE_FORMAT)
+fi
+])
+
+
+
+AC_DEFUN(CCTK_C_ATTRIBUTE_NORETURN,
+[AC_CACHE_CHECK([for C __attribute__((__noreturn__))], cctk_cv_have_c_attribute_noreturn,
+[cctk_cv_have_c_attribute_noreturn=no
+AC_TRY_COMPILE(void xyzzy(void) __attribute__((__noreturn__));, xyzzy(), cctk_cv_have_c_attribute_noreturn=yes, cctk_cv_have_c_attribute_noreturn=no)
+])
+if test "$cctk_cv_have_c_attribute_noreturn" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_NORETURN)
+fi
+])
+
+AC_DEFUN(CCTK_CXX_ATTRIBUTE_NORETURN,
+[AC_CACHE_CHECK([for CXX __attribute__((__noreturn__))], cctk_cv_have_cxx_attribute_noreturn,
+[cctk_cv_have_cxx_attribute_noreturn=no
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(void xyzzy(void) __attribute__((__noreturn__));, xyzzy(), cctk_cv_have_cxx_attribute_noreturn=yes, cctk_cv_have_cxx_attribute_noreturn=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_cxx_attribute_noreturn" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_CXX_ATTRIBUTE_NORETURN)
+fi
+])
+
+
+
 AC_DEFUN(CCTK_C_BUILTIN_EXPECT,
 [AC_CACHE_CHECK([for C __builtin_expect], cctk_cv_have_c_builtin_expect,
 [cctk_cv_have_c_builtin_expect=no
@@ -1031,6 +1081,31 @@ AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_builtin_expect" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_CXX_BUILTIN_EXPECT)
+fi
+])
+
+
+
+AC_DEFUN(CCTK_C_BUILTIN_UNREACHABLE,
+[AC_CACHE_CHECK([for C __builtin_unreachable], cctk_cv_have_c_builtin_unreachable,
+[cctk_cv_have_c_builtin_unreachable=no
+AC_TRY_COMPILE(, __builtin_unreachable();, cctk_cv_have_c_builtin_unreachable=yes, cctk_cv_have_c_builtin_unreachable=no)
+])
+if test "$cctk_cv_have_c_builtin_unreachable" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_C_BUILTIN_UNREACHABLE)
+fi
+])
+
+AC_DEFUN(CCTK_CXX_BUILTIN_UNREACHABLE,
+[AC_CACHE_CHECK([for CXX __builtin_unreachable], cctk_cv_have_cxx_builtin_unreachable,
+[cctk_cv_have_cxx_builtin_unreachable=no
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_LINK(, __builtin_unreachable();, cctk_cv_have_cxx_builtin_unreachable=yes, cctk_cv_have_cxx_builtin_unreachable=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_cxx_builtin_unreachable" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_CXX_BUILTIN_UNREACHABLE)
 fi
 ])
 

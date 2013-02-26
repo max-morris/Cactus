@@ -36,3 +36,5 @@
 22 Oct 2012: Check availability of isnan etc. in C++
 15 Jan 2013: Add CCTK_ATTRIBUTE_ALWAYS_INLINE
 15 Nov 2013: Introduce CCTK_REAL16_KIND
+25 Feb 2013: Auto-detect attribute((format)), attribute((noreturn)), and
+	     __builtin_unreachable()
