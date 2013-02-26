@@ -97,6 +97,9 @@ void CCTK_FCALL CCTK_FNAME (CCTK_Warn)
                            (const int *level,
                             const int *line,
                             THREE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_Error)
+                           (const int *line,
+                            THREE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_ParamWarn)
                            (TWO_FORTSTRING_ARG);
 int  CCTK_FCALL CCTK_FNAME (CCTK_MessageFormat)
@@ -438,6 +441,26 @@ void CCTK_FCALL CCTK_FNAME (CCTK_Warn)
 }
 
 
+void CCTK_Error (int line,
+                 const char *file,
+                 const char *thorn,
+                 const char *message)
+{
+  CCTK_Warn (0, line, file, thorn, message);
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_Error)
+                           (const int *line,
+                            THREE_FORTSTRING_ARG)
+{
+  THREE_FORTSTRING_CREATE (file, thorn, message)
+  CCTK_Error (*line, file, thorn, message);
+  free (thorn);
+  free (message);
+  free (file);
+}
+
+
 /*@@
    @routine    CCTK_VWarn
    @date       Sun Nov 14 00:23:29 1999
@@ -558,7 +581,7 @@ int CCTK_VWarn (int level,
 
       if (highlight_warning_messages)
       {
-        bold_stderr(ON);
+        bold_stderr (ON);
       }
 
       if (level <= error_level || cctk_full_warnings)
@@ -593,7 +616,7 @@ int CCTK_VWarn (int level,
 
       if (highlight_warning_messages)
       {
-        bold_stdout(ON);
+        bold_stdout (ON);
       }
 
       if (level <= error_level || cctk_full_warnings)
@@ -611,7 +634,7 @@ int CCTK_VWarn (int level,
 
       if (highlight_warning_messages)
       {
-        bold_stdout(OFF);
+        bold_stdout (OFF);
       }
 
       fprintf (stdout, " ");
@@ -630,6 +653,115 @@ int CCTK_VWarn (int level,
   }
 
   return 0;
+}
+
+
+void CCTK_VError (int line,
+                  const char *file,
+                  const char *thorn,
+                  const char *format,
+                  ...)
+{
+  const CCTK_INT *cctk_full_warnings_ptr, *highlight_warning_messages_ptr;
+  CCTK_INT cctk_full_warnings, highlight_warning_messages;
+  int param_type;
+  int myproc;
+  va_list ap;
+
+  /* Necessary for wrapping up the final message */
+
+  int msg_size;
+  char *message = NULL;
+  char hostname[MAXNAMELEN+1];
+
+  /* Start generating message only if the warbcallback list is not NULL */
+  if(warncallbacks)
+  {
+    va_start(ap,format);
+    msg_size = Util_vsnprintf(NULL, 0, format, ap);
+    va_end(ap);
+
+    /* Empty string is ok */
+    if(msg_size >= 0)
+    {
+      message = (char *)malloc(msg_size+1);
+    }
+    
+    /* Try to print in the allocated space. */
+    if(message)
+    {
+      va_start(ap,format);
+      Util_vsnprintf(message,msg_size+1,format,ap);
+      va_end(ap);
+    } 
+
+    /* call the callback function */
+    CCTKi_WarnCallbacksCall(0,line,file,thorn,message);
+
+    /* free the memory allocated for temp messsage */
+    free (message);
+  }  
+
+  myproc = CCTK_MyProc(NULL);
+  Util_GetHostName (hostname, MAXNAMELEN);
+
+  cctk_full_warnings_ptr =
+    CCTK_ParameterGet ("cctk_full_warnings", "Cactus", &param_type);
+  /* Default to yes */
+  cctk_full_warnings =
+    cctk_full_warnings_ptr && *cctk_full_warnings_ptr;
+
+  highlight_warning_messages_ptr =
+    CCTK_ParameterGet ("highlight_warning_messages", "Cactus", &param_type);
+  /* Default to no */
+  highlight_warning_messages =
+    ! highlight_warning_messages_ptr || *highlight_warning_messages_ptr;
+
+  /* print to stderr */
+  if (highlight_warning_messages)
+  {
+    bold_stderr (ON);
+  }
+
+  fprintf (stderr, "ERROR in thorn %s processor %d host %s\n"
+           "  (line %d of %s): \n"
+           "  ->",
+           thorn, myproc, hostname, line, file);
+
+  if (highlight_warning_messages)
+  {
+    bold_stderr (OFF);
+  }
+
+  fprintf (stderr, " ");
+  va_start (ap, format);
+  vfprintf (stderr, format, ap);
+  va_end (ap);
+  fprintf (stderr, "\n");
+
+  /* print to stdout */
+  if (highlight_warning_messages)
+  {
+    bold_stdout (ON);
+  }
+
+  fprintf (stdout, "ERROR in thorn %s processor %d host %s\n"
+           "  (line %d of %s): \n"
+           "  ->",
+           thorn, myproc, hostname, line, file);
+
+  if (highlight_warning_messages)
+  {
+    bold_stdout (OFF);
+  }
+
+  fprintf (stdout, " ");
+  va_start (ap, format);
+  vfprintf (stdout, format, ap);
+  va_end (ap);
+  fprintf (stdout, "\n");
+
+  CCTK_Abort (NULL, 0);
 }
 
 

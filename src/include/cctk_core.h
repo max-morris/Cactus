@@ -66,6 +66,7 @@ cctk_ash1,cctk_ash2,cctk_ash3
         CCTK_DECLARE(INTEGER,cctk_ash3,)&&
 
 #define CCTK_WARN(a,b) CCTK_Warn(a,__LINE__,__FORTRANFILE__,CCTK_THORNSTRING,b)
+#define CCTK_ERROR(b) CCTK_Error(__LINE__,__FORTRANFILE__,CCTK_THORNSTRING,b)
 
 #define CCTK_CoordRegisterSystem(a,b,c) CCTKi_CoordRegisterSystem(a,b,CCTK_THORNSTRING,c)
 
@@ -346,6 +347,7 @@ static inline int CCTK_VECTGFINDEX4D (const cGH *restrict cctkGH,
 #define CCTK_DELTA_TIME (cctk_delta_time/cctk_timefac)
 
 #define CCTK_WARN(a,b) CCTK_Warn(a,__LINE__,__FILE__,CCTK_THORNSTRING,b)
+#define CCTK_ERROR(b) CCTK_Error(__LINE__,__FILE__,CCTK_THORNSTRING,b)
 
 #define CCTK_MALLOC(s) CCTKi_Malloc(s,__LINE__,__FILE__)
 #define CCTK_FREE(p) CCTKi_Free(p)
@@ -354,12 +356,5 @@ static inline int CCTK_VECTGFINDEX4D (const cGH *restrict cctkGH,
 
 #define CCTK_INFO(a) CCTK_Info(CCTK_THORNSTRING,(a))
 #define CCTK_PARAMWARN(a) CCTK_ParamWarn(CCTK_THORNSTRING,(a))
-
-/*
-#define CCTK_MAKESTRING(x) CCTK_REALSTRING(x)
-#define CCTK_REALSTRING(x) #x
-#define CCTK_WARN(a,b) CCTK_Warn(a,CCTK_MAKESTRING(CCTK_THORN),b,__LINE__,__FILE__)
-*/
-
 
 #endif

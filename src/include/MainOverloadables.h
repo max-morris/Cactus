@@ -38,9 +38,14 @@
 #undef RETURN_TYPE
 #endif
 
+#ifdef ATTRIBUTES
+#undef ATTRIBUTES
+#endif
+
 #define ARGUMENTS tFleshConfig *config
 #define USE_ARGUMENTS config = config
 #define RETURN_TYPE int
+#define ATTRIBUTES
 
 OVERLOADABLE(Initialise)
 OVERLOADABLE(Evolve)
@@ -67,6 +72,7 @@ OVERLOADABLE(SetMainLoopIndex)
 #undef ARGUMENTS
 #undef USE_ARGUMENTS
 #undef RETURN_TYPE
+#undef ATTRIBUTES
 
 #undef OVERLOADABLE_CALL
 #undef OVERLOADABLE_PREFIX

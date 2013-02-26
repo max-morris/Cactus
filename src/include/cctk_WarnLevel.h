@@ -11,6 +11,8 @@
 #ifndef _CCTK_WARNLEVEL_H_
 #define _CCTK_WARNLEVEL_H_
 
+#include <cctk_Config.h>
+
 #ifdef CCODE
 
 #ifdef __cplusplus 
@@ -28,24 +30,28 @@ int CCTK_VWarn(int level,
                 const char *file, 
                 const char *thorn, 
                 const char *format, ...)
-#ifdef __GNUC__
-__attribute__ ((format (printf, 5, 6)))
-#endif
-;
+  CCTK_ATTRIBUTE_FORMAT(printf, 5, 6);
+
+void CCTK_Error(int line, 
+                const char *file, 
+                const char *thorn, 
+                const char *message)
+  CCTK_ATTRIBUTE_NORETURN;
+
+void CCTK_VError(int line, 
+                 const char *file, 
+                 const char *thorn, 
+                 const char *format, ...)
+  CCTK_ATTRIBUTE_FORMAT(printf, 4, 5)
+  CCTK_ATTRIBUTE_NORETURN;
 int CCTK_VParamWarn (const char *thorn,
                      const char *format,
                      ...)
-#ifdef __GNUC__
-__attribute__ ((format (printf, 2, 3)))
-#endif
-;
+  CCTK_ATTRIBUTE_FORMAT(printf, 2, 3);
 int CCTK_ParamWarn(const char *thorn, const char *message);
 int CCTK_Info(const char *thorn, const char *message);
 int CCTK_VInfo(const char *thorn, const char *format, ...)
-#ifdef __GNUC__
-__attribute__ ((format (printf, 2, 3)))
-#endif
-;
+  CCTK_ATTRIBUTE_FORMAT(printf, 2, 3);
 
 /* prototypes for warn/info callback routines */
 

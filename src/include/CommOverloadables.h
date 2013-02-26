@@ -40,9 +40,14 @@
 #undef RETURN_TYPE
 #endif
 
+#ifdef ATTRIBUTES
+#undef ATTRIBUTES
+#endif
+
 #define RETURN_TYPE int
 #define ARGUMENTS const cGH *GH, const char *group
 #define USE_ARGUMENTS GH = GH; group = group;
+#define ATTRIBUTES
 OVERLOADABLE(SyncGroup)
 
 OVERLOADABLE(EnableGroupStorage)
@@ -77,6 +82,8 @@ OVERLOADABLE(ParallelInit)
 #define USE_ARGUMENTS GH = GH; retval = retval;
 #undef RETURN_TYPE
 #define RETURN_TYPE int
+#undef ATTRIBUTES
+#define ATTRIBUTES CCTK_ATTRIBUTE_NORETURN
 OVERLOADABLE(Exit)
 OVERLOADABLE(Abort)
 
@@ -86,6 +93,8 @@ OVERLOADABLE(Abort)
 #define USE_ARGUMENTS config = config; convergence_level = convergence_level;
 #undef RETURN_TYPE
 #define RETURN_TYPE cGH *
+#undef ATTRIBUTES
+#define ATTRIBUTES
 OVERLOADABLE(SetupGH)
 
 #undef ARGUMENTS
@@ -159,6 +168,7 @@ OVERLOADABLE(InterpGridArrays)
 #undef ARGUMENTS
 #undef USE_ARGUMENTS
 #undef RETURN_TYPE
+#undef ATTRIBUTES
 
 #undef OVERLOADABLE_CALL
 #undef OVERLOADABLE_PREFIX

@@ -37,9 +37,14 @@
 #undef RETURN_TYPE
 #endif
 
+#ifdef ATTRIBUTES
+#undef ATTRIBUTES
+#endif
+
 #define ARGUMENTS const cGH *GH
 #define USE_ARGUMENTS GH = GH;
 #define RETURN_TYPE int
+#define ATTRIBUTES
 OVERLOADABLE(OutputGH)
 
 #undef ARGUMENTS
@@ -54,6 +59,7 @@ OVERLOADABLE(OutputVarAsByMethod)
 #undef ARGUMENTS
 #undef USE_ARGUMENTS
 #undef RETURN_TYPE
+#undef ATTRIBUTES
 
 #undef OVERLOADABLE_CALL
 #undef OVERLOADABLE_PREFIX

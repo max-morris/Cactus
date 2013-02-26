@@ -77,7 +77,7 @@ int call##Overload##name(RETURN_TYPE (*func)(ARGUMENTS))            \
 #define _OVERLOADABLE_PROTOTYPE(prefix, dummy_prefix, name)   __OVERLOADABLE_PROTOTYPE(prefix, dummy_prefix, name)
 
 #define __OVERLOADABLE_PROTOTYPE(prefix, dummy_prefix, name)       \
-extern RETURN_TYPE (*prefix##name)(ARGUMENTS);
+extern RETURN_TYPE (*prefix##name)(ARGUMENTS) ATTRIBUTES;
 
 /* This macro defines a dummy function */
 #define OVERLOADABLE_DUMMY(name)   _OVERLOADABLE_DUMMY(OVERLOADABLE_PREFIX, OVERLOADABLE_DUMMY_PREFIX, name)
@@ -97,7 +97,7 @@ RETURN_TYPE dummy_prefix##name(ARGUMENTS)                       \
 #define _OVERLOADABLE_DUMMYPROTOTYPE(prefix, dummy_prefix, name)   __OVERLOADABLE_DUMMYPROTOTYPE(prefix, dummy_prefix, name)
 
 #define __OVERLOADABLE_DUMMYPROTOTYPE(prefix, dummy_prefix, name)        \
-RETURN_TYPE dummy_prefix##name(ARGUMENTS);
+RETURN_TYPE dummy_prefix##name(ARGUMENTS) ATTRIBUTES;
 
 
 /* This macro initialises the function to the dummy if it

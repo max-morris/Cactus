@@ -377,7 +377,6 @@ int CactusDefaultExit (cGH *GH, int retval)
   }
 #endif
   exit (retval);
-  return (0);
 }
 
 
@@ -436,7 +435,6 @@ int CactusDefaultAbort (cGH *GH, int retval)
   /*abort();*/
 #endif
   exit (retval);
-  return (retval);
 }
 
 
