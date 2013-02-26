@@ -198,6 +198,10 @@ from Fortran.
   Check a STRING or KEYWORD parameter for equality equality
   with a given string
 
+\item[\code{CCTK\_ERROR}] [\pageref{CCTK-ERROR}]
+  Macro to print a single string as error message to standard error
+  and stop the code
+
 \item[\code{CCTK\_Exit}] [\pageref{CCTK-Exit}]
   Causes normal Cactus termination
 
@@ -829,6 +833,10 @@ from Fortran.
 \item[\code{CCTK\_VarTypeSize}] [\pageref{CCTK-VarTypeSize}]
   Provides variable type size in bytes from the variable type index
 
+\item[\code{CCTK\_VError}] [\pageref{CCTK-VError}]
+  Prints a formatted string with a variable argument list as error
+  message to standard error and stops the code
+
 \item[\code{CCTK\_VInfo}] [\pageref{CCTK-VInfo}]
   Prints a formatted string with a variable argument list as an information
   message to screen
@@ -902,15 +910,19 @@ It never returns to the caller.
 \begin{SeeAlso2}{CCTK\_Exit}{CCTK-Exit}
 Exit the code cleanly
 \end{SeeAlso2}
-\begin{SeeAlso2}{CCTK\_WARN}{CCTK-WARN}
-Macro to print a single string as a warning message and possibly stop the code
+\begin{SeeAlso2}{CCTK\_ERROR}{CCTK-ERROR}
+Macro to print a single string as error message and stop the code
 \end{SeeAlso2}
-\begin{SeeAlso2}{CCTK\_Warn}{CCTK-WARN}
-Prints a single string as a warning message and possibly stops the code
+\begin{SeeAlso2}{CCTK\_VError}{CCTK-VError}
+Prints a formatted string with a variable argument list as error
+message to standard error and stops the code
 \end{SeeAlso2}
 \begin{SeeAlso2}{CCTK\_VWarn}{CCTK-VWarn}
 Prints a formatted string with a variable argument list as a warning
 message to standard error and possibly stops the code
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_WARN}{CCTK-WARN}
+Macro to print a single string as a warning message and possibly stop the code
 \end{SeeAlso2}
 \end{SeeAlsoSection}
 
@@ -2967,6 +2979,103 @@ end subroutine MyThorn_some_routine
 \end{ExampleSection}
 \end{FunctionDescription}
 
+% WarnLevel.c
+%Entering a function description for CCTK_ERROR
+\begin{FunctionDescription}{CCTK\_ERROR}
+\label{CCTK-ERROR}
+Macro to print a single string as error message and stop the code
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include <cctk.h>
+
+CCTK_ERROR(const char *message);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+#include "cctk.h"
+
+call CCTK_ERROR(message)
+character*(*) message
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{message}
+The error message to print
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+This macro can be used by thorns to print a single string as error
+message to \code{stderr}.
+
+\code{CCTK\_ERROR(message)} expands to a call to an internal function
+which is equivalent to \verb|CCTK_VError()|, but without the
+variable-number-of-arguments feature (so it can be used from
+Fortran).%%%
+\footnote{%%%
+         Some code calls this internal function directly.
+         For reference, the function is:\\
+         \texttt{\hbox{}void CCTK\_Error(int line\_number, const char* file\_name, const char* thorn\_name,}\\
+         \texttt{\hbox{}~~~~~~~~~~~~~~const char* message)}
+         }%%%
+{}  The macro automatically includes details about the origin of the warning
+(the thorn name, the source code file name and the line number where the macro
+occurs).
+
+To include variables in the error message from C, you can use the routine
+\code{CCTK\_VError} which accepts a variable argument list.
+To include variables from Fortran, a string must be constructed and passed
+in a \code{CCTK\_ERROR} macro.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_Abort}{CCTK-Abort}
+Abort the code
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_Exit}{CCTK-Exit}
+Exit the code cleanly
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_VError}{CCTK-VError}
+prints an error message with a variable argument list
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_VWarn}{CCTK-VWarn}
+Prints a formatted string with a variable argument list as a warning
+message to standard error and possibly stops the code
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_WARN}{CCTK-WARN}
+Macro to print a single string as a warning message and possibly stop the code
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+#include <cctk.h>
+
+CCTK_ERROR("Divide by 0");
+\end{verbatim}
+\end{Example}
+\begin{Example}{Fortran}
+\begin{verbatim}
+#include "cctk.h"
+
+integer       myint
+CCTK_REAL     myreal
+character*200 message
+
+write(message, '(A32, G12.7, A5, I8)')
+&     'Your error message, including ', myreal, ' and ', myint
+call CCTK_ERROR(message)
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
+
 % CommOverloadables.c
 \begin{FunctionDescription}{CCTK\_Exit}{Exit the code cleanly}
 \label{CCTK-Exit}
@@ -2994,6 +3103,25 @@ the return code to abort with
 This routine causes an immediate, regular termination of Cactus.
 It never returns to the caller.
 \end{Discussion}
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_Abort}{CCTK-Abort}
+Abort the code
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_ERROR}{CCTK-ERROR}
+Macro to print a single string as error message and stop the code
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_VError}{CCTK-VError}
+Prints a formatted string with a variable argument list as error
+message to standard error and stops the code
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_VWarn}{CCTK-VWarn}
+Prints a formatted string with a variable argument list as a warning
+message to standard error and possibly stops the code
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_WARN}{CCTK-WARN}
+Macro to print a single string as a warning message and possibly stop the code
+\end{SeeAlso2}
+\end{SeeAlsoSection}
 \end{FunctionDescription}
 
 
@@ -5784,8 +5912,7 @@ Macro to print a single string as an information message to screen
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
-#include "cctk.h"
-#include "cctk_WarnLevel.h"
+#include <cctk.h>
 
 CCTK_INFO(const char *message);
 \end{verbatim}
@@ -5828,17 +5955,31 @@ in a \code{CCTK\_INFO} macro.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{CCTK\_VInfo()}
+\begin{SeeAlso2} {CCTK\_ERROR} {CCTK-ERROR}
+macro to print an error message with a single string argument and stop
+the code
+\end{SeeAlso2}
+\begin{SeeAlso2} {CCTK\_VError} {CCTK-VError}
+prints a formatted string with a variable argument list as error
+message and stops the code
+\end{SeeAlso2}
+\begin{SeeAlso2} {CCTK\_VInfo()} {CCTK-VInfo}
 prints a formatted string with a variable argument list as an info message to
 screen
-\end{SeeAlso}
+\end{SeeAlso2}
+\begin{SeeAlso2} {CCTK\_VWarn} {CCTK-VWarn}
+prints a warning message with a variable argument list
+\end{SeeAlso2}
+\begin{SeeAlso2} {CCTK\_WARN} {CCTK-WARN}
+macro to print a warning message with a single string argument and
+possibly stop the code
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
-#include "cctk.h"
-#include "cctk_WarningLevel.h"
+#include <cctk.h>
 
 CCTK_INFO("Output is disabled");
 \end{verbatim}
@@ -5866,8 +6007,7 @@ addition to printing them to screen
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
-#include "cctk.h"
-#include "cctk_WarnLevel.h"
+#include <cctk.h>
 
 CCTK_InfoCallbackRegister(void *data, cctk_infofunc callback);
 
@@ -12805,6 +12945,87 @@ function returns the size in bytes of the corresponding data type
 \end{FunctionDescription}
 
 
+%Entering a function description for CCTK_VError
+\begin{FunctionDescription}{CCTK\_VError}
+\label{CCTK-VError}
+Prints a formatted string with a variable argument list as error
+message and stops the code
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include <cctk.h>
+
+void CCTK_VError(int line,
+                 const char *file,
+                 const char *thorn,
+                 const char *format,
+                 ...);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{line}
+The line number in the originating source file where the \code{CCTK\_VError} call
+occured. You can use the standardized \code{\_\_LINE\_\_} preprocessor macro here.
+\end{Parameter}
+\begin{Parameter}{file}
+The file name of the originating source file where the \code{CCTK\_VError} call
+occured. You can use the standardized \code{\_\_FILE\_\_} preprocessor macro here.
+\end{Parameter}
+\begin{Parameter}{thorn}
+The thorn name of the originating source file where the \code{CCTK\_VError} call occured. You can use the \code{CCTK\_THORNSTRING} macro here (defined in \code{cctk.h}).
+\end{Parameter}
+\begin{Parameter}{format}
+The \code{printf}-like format string to use for printing the warning message.
+\end{Parameter}
+\begin{Parameter}{...}
+The variable argument list.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+This routine can be used by thorns to print a formatted string
+followed by a variable argument list as error message to
+\code{stderr}. After printing the message, Cactus aborts the run (and
+\code{CCTK\_VError} does \emph{not} return to the caller).
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_Abort}{CCTK-Abort}
+Abort the code
+\end{SeeAlso2}
+\begin{SeeAlso2} {CCTK\_ERROR} {CCTK-ERROR}
+macro to print an error message with a single string argument
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_Exit}{CCTK-Exit}
+Exit the code cleanly
+\end{SeeAlso2}
+\begin{SeeAlso2} {CCTK\_VWarn} {CCTK-VWarn}
+Possibly prints a formatted string with a variable argument list as
+warning message and/or stops the code
+\end{SeeAlso2}
+\begin{SeeAlso2} {CCTK\_WARN} {CCTK-WARN}
+macro to print a warning message with a single string argument
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+#include <cctk.h>
+
+const char *outdir;
+
+CCTK_VError(__LINE__, __FILE__, CCTK_THORNSTRING,
+           "Output directory '%s' could not be created", outdir);
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
+
+
 \begin{FunctionDescription}{CCTK\_VInfo}
 \label{CCTK-VInfo}
 Prints a formatted string with a variable argument list as an info message
@@ -12813,8 +13034,7 @@ to sceen
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
-#include "cctk.h"
-#include "cctk_WarnLevel.h"
+#include <cctk.h>
 
 int status = CCTK_VInfo(const char *thorn,
                         const char *format,
@@ -12851,13 +13071,27 @@ semantics is equivalent to \code{printf}.
 \begin{SeeAlso2} {CCTK\_INFO} {CCTK-INFO}
 macro to print an info message with a single string argument
 \end{SeeAlso2}
+\begin{SeeAlso2} {CCTK\_ERROR} {CCTK-ERROR}
+macro to print an error message with a single string argument and stop
+the code
+\end{SeeAlso2}
+\begin{SeeAlso2} {CCTK\_VError} {CCTK-VError}
+prints a formatted string with a variable argument list as error
+message and stops the code
+\end{SeeAlso2}
+\begin{SeeAlso2} {CCTK\_VWarn} {CCTK-VWarn}
+prints a warning message with a variable argument list
+\end{SeeAlso2}
+\begin{SeeAlso2} {CCTK\_WARN} {CCTK-WARN}
+macro to print a warning message with a single string argument and
+possibly stop the code
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
 #include "cctk.h"
-#include "cctk_WarningLevel.h"
 
 const char *outdir;
 
@@ -12877,8 +13111,7 @@ warning message and/or stops the code
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
-#include "cctk.h"
-#include "cctk_WarnLevel.h"
+#include <cctk.h>
 
 int status = CCTK_VWarn(int level,
                         int line,
@@ -12985,6 +13218,27 @@ print everything.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_Abort}{CCTK-Abort}
+Abort the code
+\end{SeeAlso2}
+\begin{SeeAlso2} {CCTK\_ERROR} {CCTK-ERROR}
+macro to print an error message with a single string argument and stop
+the code
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_Exit}{CCTK-Exit}
+Exit the code cleanly
+\end{SeeAlso2}
+\begin{SeeAlso2} {CCTK\_INFO} {CCTK-INFO}
+macro to print an info message with a single string argument
+\end{SeeAlso2}
+\begin{SeeAlso2} {CCTK\_VInfo()} {CCTK-VInfo}
+prints a formatted string with a variable argument list as an info message to
+screen
+\end{SeeAlso2}
+\begin{SeeAlso2} {CCTK\_VError} {CCTK-VError}
+prints a formatted string with a variable argument list as error
+message and stops the code
+\end{SeeAlso2}
 \begin{SeeAlso2} {CCTK\_WARN} {CCTK-WARN}
 macro to print a warning message with a single string argument
 \end{SeeAlso2}
@@ -12993,8 +13247,7 @@ macro to print a warning message with a single string argument
 \begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
-#include "cctk.h"
-#include "cctk_WarningLevel.h"
+#include <cctk.h>
 
 const char *outdir;
 
@@ -13023,8 +13276,7 @@ Macro to print a single string as a warning message and possibly stop the code
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
-#include "cctk.h"
-#include "cctk_WarnLevel.h"
+#include <cctk.h>
 
 CCTK_WARN(int level, const char *message);
 \end{verbatim}
@@ -13077,9 +13329,30 @@ in a \code{CCTK\_WARN} macro.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso}{CCTK\_VWarn()}
+\begin{SeeAlso2}{CCTK\_Abort}{CCTK-Abort}
+Abort the code
+\end{SeeAlso2}
+\begin{SeeAlso2} {CCTK\_ERROR} {CCTK-ERROR}
+macro to print an error message with a single string argument and stop
+the code
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_Exit}{CCTK-Exit}
+Exit the code cleanly
+\end{SeeAlso2}
+\begin{SeeAlso2} {CCTK\_INFO} {CCTK-INFO}
+macro to print an info message with a single string argument
+\end{SeeAlso2}
+\begin{SeeAlso2} {CCTK\_VError} {CCTK-VError}
+prints a formatted string with a variable argument list as error
+message and stops the code
+\end{SeeAlso2}
+\begin{SeeAlso2} {CCTK\_VInfo()} {CCTK-VInfo}
+prints a formatted string with a variable argument list as an info message to
+screen
+\end{SeeAlso2}
+\begin{SeeAlso2} {CCTK\_VWarn} {CCTK-VWarn}
 prints a warning message with a variable argument list
-\end{SeeAlso}
+\end{SeeAlso2}
 \end{SeeAlsoSection}
 
 \begin{ExampleSection}
@@ -13115,8 +13388,7 @@ addition to printing them to standard error
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
 \begin{verbatim}
-#include "cctk.h"
-#include "cctk_WarnLevel.h"
+#include <cctk.h>
 
 CCTK_WarnCallbackRegister(int minlevel,
                           int maxlevel,

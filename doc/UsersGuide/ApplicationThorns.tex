@@ -3157,18 +3157,9 @@ But in Fortran you have to do the following
   call CCTK_INFO (message)
 \end{verbatim}
 
-In Fortran 90, you can also do
-\begin{verbatim}
-  integer        myint
-  character(200) message
-
-  write (message, '("The integer is ",i4)') myint
-  call CCTK_INFO (message)
-\end{verbatim}
-
 Note that
 \begin{itemize}
-\item{} \texttt{CCTK\_INFO} is just a macro which expands to a call to
+\item{} \texttt{CCTK\_INFO} is a macro which expands to a call to
         the internal function \texttt{CCTK\_Info()} and automatically includes
         the thorn name in function call.
 
@@ -3184,6 +3175,10 @@ Note that
 \subsection{Error Handling, Warnings and Code Termination}
 \subsectionmark{Error handling, ...}
 \label{sec:erhawancote}
+The Cactus function \texttt{CCTK\_VError()}, and its accompanying
+\texttt{CCTK\_ERROR} macro, should be used to output error messages
+and abort the code.
+
 The Cactus function \texttt{CCTK\_VWarn()}, and its accompanying
 \texttt{CCTK\_WARN} macro, should be used to issue warning messages
 during code execution.
@@ -3232,16 +3227,25 @@ The syntax from Fortran is
 \begin{verbatim}
   call CCTK_WARN(CCTK_WARN_ALERT, "Your warning message")
 \end{verbatim}
+\begin{verbatim}
+  call CCTK_ERROR("Your error message")
+\end{verbatim}
 
 and from C
 \begin{verbatim}
   CCTK_WARN(CCTK_WARN_ALERT, "Your warning message");
 \end{verbatim}
+\begin{verbatim}
+  CCTK_ERROR("Your error message");
+\end{verbatim}
 
-Note that \texttt{CCTK\_WARN} is just a macro which expands to a call
-to an internal function.  The macro automatically includes the thorn name, the source code file name and line number in the message.%%%
+Note that \texttt{CCTK\_ERROR} and \texttt{CCTK\_WARN} are macros
+which expand to calls to an internal function. The macros
+automatically include the thorn name, the source code file name and
+line number in the message.%%%
 \footnote{%%%
-         In calling \texttt{CCTK\_VWarn()}, you need to
+         In calling \texttt{CCTK\_VError()} or \texttt{CCTK\_VWarn()},
+         you need to
          provide this information yourself.  Cactus
          provides the macro \texttt{CCTK\_THORNSTRING},
          which is the character-string name of the
@@ -3259,9 +3263,11 @@ source file name and line number will be printed to standard error along with
 the originating processor number, the thorn name and the warning message.
 The default is to omit the source file name and line number.
 
-Note that the routine \texttt{CCTK\_VWarn()} can only be called from C, because
+Note that the routines \texttt{CCTK\_VError()} and
+\texttt{CCTK\_VWarn()} can only be called from C, because
 Fortran doesn't know about variable argument lists. So including variables in
-the warning message using \texttt{CCTK\_WARN}, is currently more tricky, since
+the warning message using \texttt{CCTK\_ERROR} or \texttt{CCTK\_WARN},
+is currently more tricky since
 you need to build the string to be output.
 
 For example, in C you would just write
@@ -3284,17 +3290,7 @@ But in Fortran you have to do the following
   call CCTK_WARN (CCTK_WARN_ALERT, message)
 \end{verbatim}
 
-In Fortran 90, you can also do
-\begin{verbatim}
-  integer myint
-  real myreal
-  character(200) message
-
-  write (message, '("Your warning message, including ",g12.7," and ",i8)') myreal, myint
-  call CCTK_WARN (CCTK_WARN_ALERT, message)
-\end{verbatim}
-
-Besides the default methods to handle warning and information
+Beside the default methods to handle error, warning, and information
 messages, the flesh also implements a callback scheme to let thorn
 writers get information and warning messages as they are produced.\footnote{For the moment, these
 functions can only be used from C.}
