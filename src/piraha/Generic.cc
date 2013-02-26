@@ -1,6 +1,8 @@
 #include "Piraha.hpp"
 #include <fstream>
 
+using namespace piraha;
+
 void read_file(const char *file,std::string& buf) {
     std::ifstream in;
     in.open(file);
