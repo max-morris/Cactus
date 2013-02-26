@@ -1,5 +1,7 @@
 #include "Piraha.hpp"
 
+using namespace piraha;
+
 smart_ptr<Grammar> AutoGrammar::reparserGenerator() {
     smart_ptr<Grammar> g = new Grammar();
     g->patterns.put("named",new Seq(

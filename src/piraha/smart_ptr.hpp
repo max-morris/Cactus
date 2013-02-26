@@ -20,8 +20,7 @@ extern std::vector<void*> ptrs;
 inline void add(std::vector<void*>& v,void *t) {
     if(t == NULL)
         return;
-    typedef typename std::vector<void*>::iterator iter;
-    for(iter i=v.begin();i != v.end();++i) {
+    for(std::vector<void*>::iterator i=v.begin();i != v.end();++i) {
         assert(*i != t);
     }
     v.push_back(t);
@@ -30,8 +29,7 @@ inline void add(std::vector<void*>& v,void *t) {
 inline void remove(std::vector<void*>& v,void* t) {
     if(t == NULL)
         return;
-    typedef typename std::vector<void*>::iterator iter;
-    for(iter i=v.begin();i != v.end();++i) {
+    for(std::vector<void*>::iterator i=v.begin();i != v.end();++i) {
         if(*i == t) {
             v.erase(i);
             return;

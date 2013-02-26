@@ -2,6 +2,8 @@
 #include <stdarg.h>
 #include "Piraha.hpp"
 
+using namespace piraha;
+
 Seq::Seq(Pattern *p,...) {
     va_list ap;
     va_start(ap,p);

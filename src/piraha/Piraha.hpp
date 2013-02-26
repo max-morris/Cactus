@@ -7,6 +7,8 @@
 #include <iostream>
 #include <smart_ptr.hpp>
 
+namespace piraha {
+
 const int max_int = 10000;
 
 using std::map;
@@ -290,5 +292,7 @@ public:
 extern smart_ptr<Grammar> pegGrammar;
 extern smart_ptr<Pattern> compile(smart_ptr<Group> g,bool ignCase,smart_ptr<Grammar> gram);
 extern void compileFile(smart_ptr<Grammar> g,const char *buffer,signed long buffersize=-1);
+
+}
 
 #endif

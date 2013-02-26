@@ -1,6 +1,8 @@
 #include <iostream>
 #include "Piraha.hpp"
 
+using namespace piraha;
+
 bool Multi::match(Matcher *m) {
     unsigned int save;
     int iter = 0;

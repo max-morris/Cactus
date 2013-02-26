@@ -1,5 +1,7 @@
 #include "Piraha.hpp"
 
+using namespace piraha;
+
 typedef vector<smart_ptr<Range> >::iterator range_iter;
 
 bool Range::match(Matcher *m) {
@@ -91,7 +93,7 @@ bool Bracket::match(Matcher *m) {
     }
 }
 
-std::ostream& operator<<(std::ostream& o,Bracket& b) {
+std::ostream& piraha::operator<<(std::ostream& o,Bracket& b) {
     for(range_iter r = b.ranges.begin();r != b.ranges.end(); ++r) {
     	char lo = (*r)->lo, hi = (*r)->hi;
     	if(lo == hi) {

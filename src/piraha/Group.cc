@@ -1,5 +1,7 @@
 #include "Piraha.hpp"
 
+using namespace piraha;
+
 void Group::dump(int indent) {
     for(int i=0;i<indent;i++)
         std::cout << ' ';

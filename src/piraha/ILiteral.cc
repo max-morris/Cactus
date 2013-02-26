@@ -1,5 +1,7 @@
 #include "Piraha.hpp"
 
+using namespace piraha;
+
 ILiteral::ILiteral(char b) : lc(lc_(b)), uc(uc_(b)) {}
 
 bool ILiteral::match(Matcher *m) {

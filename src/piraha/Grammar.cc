@@ -1,5 +1,7 @@
 #include "Piraha.hpp"
 
+using namespace piraha;
+
 extern smart_ptr<Pattern> compile(smart_ptr<Group> g,bool ignCase,smart_ptr<Grammar> gram);
 
 smart_ptr<Grammar> pegGrammar = AutoGrammar::reparserGenerator();

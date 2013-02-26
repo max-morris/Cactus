@@ -7,6 +7,8 @@
 #include <map>
 #include <math.h>
 
+namespace piraha {
+
 #define VAR(X) " " #X "=" << X
 
 extern "C" int CCTK_ParameterFilename(int len, char *filename);
@@ -58,7 +60,7 @@ bool lookup_var(smart_ptr<Group> gr,std::string& res) {
 		return true;
 	} else if(gr->group(0)->substring() == "pi") {
 		std::ostringstream ostr;
-		ostr << (4.0*atan2(1,1)) << std::flush;
+		ostr << (4.0*atan2(1.,1.)) << std::flush;
 		res = ostr.str();
 		return true;
 	}
@@ -176,9 +178,10 @@ void meval(smart_ptr<Group> gr,std::string& val) {
 	}
 }
 
-extern "C" int PirahaParser(const char *buffer,unsigned long buffersize,int (*set_function)(const char *, const char *, int)) {
+extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int (*set_function)(const char *, const char *, int)) {
 	const char *par_file_src =
 			"skipper = ([ \\t\\r\\n]|\\#.*)*\n"
+			"skipeol = ([ \\t\\r]|\\#.*)*\\n\n"
 
 			"# Note that / occurs in some par files. It is my\n"
 			"# feeling that this should require quote marks.\n"
@@ -187,7 +190,7 @@ extern "C" int PirahaParser(const char *buffer,unsigned long buffersize,int (*se
 			"inquot = ({var}|\\\\.|[^\\\\\"])*\n"
 			"fname = \\.?/[-\\./0-9a-zA-Z_]+\n"
 			"quot = \"{inquot}\"|{fname}\n"
-			"num = [-+]?([0-9]+(\\.[0-9]*|)|\\.[0-9]+)(e[+-][0-9]+|)\n"
+			"num = [-+]?([0-9]+(\\.[0-9]*|)|\\.[0-9]+)(e[+-]?[0-9]+|)\n"
 			"env = ENV\\{{name}\\}\n"
 			"var = \\$({env}|{name}|\\{{name}\\})\n"
 
@@ -205,7 +208,7 @@ extern "C" int PirahaParser(const char *buffer,unsigned long buffersize,int (*se
 			"int = [0-9]+\n"
 			"index = \\[ {int} \\]\n"
 			"active = (?i:ActiveThorns)\n"
-			"set = ({active}|{par}( {index}|)) = ({array}|{aexpr})\n"
+			"set = ({active}|{par}( {index}|)) = ({array}|{aexpr}){-skipeol}\n"
 			"file = ( !DESC {quot}|)( ({set} )*)$\n";
 
 	smart_ptr<Grammar> g = new Grammar();
@@ -278,4 +281,6 @@ extern "C" int PirahaParser(const char *buffer,unsigned long buffersize,int (*se
     	return 1;
     }
     return 0;
+}
+
 }

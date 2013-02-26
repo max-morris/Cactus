@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+namespace piraha {
+
 char getChar(smart_ptr<Group> gr) {
     if(gr->groupCount()==1) {
         std::string sub = gr->group(0)->substring();
@@ -73,7 +75,7 @@ void compileFile(smart_ptr<Grammar> g,const char *buffer,signed long buffersize)
 
 	for(int i=0;i<m->groupCount();i++) {
 		smart_ptr<Group> rule = m->group(i);
-		smart_ptr<Pattern> ptmp = ::compile(rule->group(1), false, g);
+		smart_ptr<Pattern> ptmp = compile(rule->group(1), false, g);
         std::string nm = rule->group(0)->substring();
 		g->patterns.put(nm,ptmp);
         g->default_rule = nm;
@@ -187,4 +189,6 @@ smart_ptr<Pattern> compile(smart_ptr<Group> g,bool ignCase,smart_ptr<Grammar> gr
         return new BackRef(g->substring()[1]-'0', ignCase);
     }
     return NULL;
+}
+
 }

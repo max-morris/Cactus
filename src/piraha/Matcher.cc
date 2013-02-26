@@ -1,6 +1,8 @@
 #include <string.h>
 #include "Piraha.hpp"
 
+using namespace piraha;
+
 Matcher::Matcher(smart_ptr<Grammar> g_,const char *pat_,const char *input_,int input_size_) :
     Group(pat_,input_),
     input(input_), g(g_), input_size(input_size_),

@@ -119,7 +119,7 @@ static int lineno = 1;
    @endreturndesc
 @@*/
 
-int PirahaParser(const char *buffer,unsigned long buffersize,int (*set_function)(const char *, const char *, int));
+int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int (*set_function)(const char *, const char *, int));
 
 int ParseFile(FILE *ifp,
               int (*set_function)(const char *, const char *, int),
@@ -137,7 +137,7 @@ int ParseFile(FILE *ifp,
       // the new way
 	  buffersize = strlen(buffer);
 
-	  retval = PirahaParser(buffer,buffersize,set_function);
+	  retval = cctk_PirahaParser(buffer,buffersize,set_function);
   } else {
       // The old way
 	  /* Ensure Unix line endings */
