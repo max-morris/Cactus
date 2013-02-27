@@ -35,6 +35,7 @@ export PERL        = @PERL@
 # MAKE needs no definition, since make will set this variable automatically
 export MAKE
 export TAR         = @TAR@
+export XARGS       = @XARGS@
 # GZIP is used by gzip for a list of default options, thus we use GZIP_CMD
 export GZIP_CMD    = @GZIP_CMD@
 export PATCH       = @PATCH@

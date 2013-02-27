@@ -205,6 +205,10 @@ if test -z "$TAR" ; then
   AC_CHECK_PROGS(TAR, gtar tar)
 fi
 
+if test -z "$XARGS" ; then
+  AC_CHECK_PROGS(XARGS, xargs)
+fi
+
 if test -z "$GZIP_CMD" ; then
   AC_CHECK_PROGS(GZIP_CMD, gzip)
 fi
