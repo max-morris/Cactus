@@ -38,3 +38,4 @@
 15 Nov 2013: Introduce CCTK_REAL16_KIND
 25 Feb 2013: Auto-detect attribute((format)), attribute((noreturn)), and
 	     __builtin_unreachable()
+28 Feb 2013: Add variable XARGS
