@@ -3488,7 +3488,7 @@ rest of the line is a comment. If the last non-blank character of a
 line in a config file is a backslash `\texttt{$\backslash$}', the
 following line is treated as a continuation of the current line.
 Options include test specific absolute and relative tolerances, thorn
-specific absolute and relative tolerances, the number of procesors required
+specific absolute and relative tolerances, the number of processors required
 to run, and file extensions. The configuration file has the form:
 
 \begin{alltt}
@@ -3521,8 +3521,8 @@ matching as long as there are no whitespaces in the regular expression.
 For example:
 
 \begin{alltt}
-ABSTOL ^Psi4.[xy] 1e-8
-RELTOL gxx 1e-12
+ABSTOL 1e-8 ^Psi4.[xy]
+RELTOL 1e-12 gxx
 \end{alltt}
 
 More specific tolerances can be specified for all the tests of a thorn
