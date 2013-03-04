@@ -1012,9 +1012,9 @@ fi
 
 
 AC_DEFUN(CCTK_C_ATTRIBUTE_FORMAT,
-[AC_CACHE_CHECK([for C __attribute__((__format__(printf(1, 2))))], cctk_cv_have_c_attribute_format,
+[AC_CACHE_CHECK([for C __attribute__((__format__(printf, 1, 2)))], cctk_cv_have_c_attribute_format,
 [cctk_cv_have_c_attribute_format=no
-AC_TRY_COMPILE(void xyzzy(const char*, ...) __attribute__((__format__(printf(1, 2))));, xyzzy("%d",42);, cctk_cv_have_c_attribute_format=yes, cctk_cv_have_c_attribute_format=no)
+AC_TRY_COMPILE(void xyzzy(const char*, ...) __attribute__((__format__(printf, 1, 2)));, xyzzy("%d",42);, cctk_cv_have_c_attribute_format=yes, cctk_cv_have_c_attribute_format=no)
 ])
 if test "$cctk_cv_have_c_attribute_format" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_FORMAT)
@@ -1022,11 +1022,11 @@ fi
 ])
 
 AC_DEFUN(CCTK_CXX_ATTRIBUTE_FORMAT,
-[AC_CACHE_CHECK([for CXX __attribute__((__format__))], cctk_cv_have_cxx_attribute_format,
+[AC_CACHE_CHECK([for CXX __attribute__((__format__(printf, 1, 2)))], cctk_cv_have_cxx_attribute_format,
 [cctk_cv_have_cxx_attribute_format=no
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE(void xyzzy(const char*, ...) __attribute__((__format__(printf(1, 2))));, xyzzy("%d",42);, cctk_cv_have_cxx_attribute_format=yes, cctk_cv_have_cxx_attribute_format=no)
+AC_TRY_COMPILE(void xyzzy(const char*, ...) __attribute__((__format__(printf, 1, 2)));, xyzzy("%d",42);, cctk_cv_have_cxx_attribute_format=yes, cctk_cv_have_cxx_attribute_format=no)
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_attribute_format" = "yes" ; then
