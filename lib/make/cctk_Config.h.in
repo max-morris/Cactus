@@ -342,16 +342,16 @@ typedef enum {false, true} bool;
 #endif
 
 /* Whether __attribute__((format(...))) exists. */
-#undef HAVE_CCTK_CXX_ATTRIBUTE_FORMAT
-#ifdef HAVE_CCTK_CXX_ATTRIBUTE_FORMAT
+#undef HAVE_CCTK_C_ATTRIBUTE_FORMAT
+#ifdef HAVE_CCTK_C_ATTRIBUTE_FORMAT
 #  define CCTK_ATTRIBUTE_FORMAT(archetype, format, firstarg) __attribute__((__format__(archetype, format, firstarg)))
 #else
 #  define CCTK_ATTRIBUTE_FORMAT(archetype, format, firstarg)
 #endif
 
 /* Whether __attribute__((noreturn)) exists. */
-#undef HAVE_CCTK_CXX_ATTRIBUTE_NORETURN
-#ifdef HAVE_CCTK_CXX_ATTRIBUTE_NORETURN
+#undef HAVE_CCTK_C_ATTRIBUTE_NORETURN
+#ifdef HAVE_CCTK_C_ATTRIBUTE_NORETURN
 #  define CCTK_ATTRIBUTE_NORETURN __attribute__((__noreturn__))
 #else
 #  define CCTK_ATTRIBUTE_NORETURN
