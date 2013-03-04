@@ -7,40 +7,32 @@
 #ifndef SMART_PTR_HPP
 #define SMART_PTR_HPP
 #include <assert.h>
-#include <vector>
+#include <set>
 #include <iostream>
 
 #ifndef NULL
 #define NULL ((void*)0)
 #endif
 
-extern std::vector<void*> ptrs;
+extern std::set<void*> *ptrs;
 
-#ifndef NDEBUG
-inline void add(std::vector<void*>& v,void *t) {
+#ifdef NDEBUG
+inline void add(std::set<void*>& v,void *t) {
     if(t == NULL)
         return;
-    for(std::vector<void*>::iterator i=v.begin();i != v.end();++i) {
-        assert(*i != t);
-    }
-    v.push_back(t);
+    assert(v.find(t) == v.end());
+    v.insert(t);
 }
 
-inline void remove(std::vector<void*>& v,void* t) {
-    if(t == NULL)
-        return;
-    for(std::vector<void*>::iterator i=v.begin();i != v.end();++i) {
-        if(*i == t) {
-            v.erase(i);
-            return;
-        }
-    }
-    assert(false);
+inline void remove(std::set<void*>& v,void* t) {
+	std::set<void*>::iterator it = v.find(t);
+	assert(it != v.end());
+	v.erase(it);
 }
 #else
-inline void add(std::vector<void*>& v,void* t) {
+inline void add(std::set<void*>& v,void* t) {
 }
-inline void remove(std::vector<void*>& v,void* t) {
+inline void remove(std::set<void*>& v,void* t) {
 }
 #endif
 
@@ -55,12 +47,12 @@ class smart_ptr_guts {
     bool array;
     smart_ptr_guts(int rc,T *p,bool array_) : ref_count(rc), ptr(p), array(array_) {
         if(ptr != NULL) {
-            add(ptrs,(void*)ptr);
+            add(*ptrs,(void*)ptr);
         }
     }
     ~smart_ptr_guts() {
         if(ptr != NULL) {
-            remove(ptrs,(void*)ptr);
+            remove(*ptrs,(void*)ptr);
             if(array)
                 delete[] ptr;
             else
@@ -155,7 +147,7 @@ class smart_ptr {
         assert(guts != NULL);
         return guts->ptr;
     }
-    bool valid() {
+    bool valid() const {
         return guts != NULL && guts->ptr != NULL;
     }
     int ref_count() {

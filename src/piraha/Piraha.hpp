@@ -55,8 +55,10 @@ public:
     smart_ptr<Group> group(const char *nm,int ix=0) {
     	for(unsigned int i=0;i<children.size();i++) {
     		if(children[i]->getPatternName() == nm) {
-    			if(ix-- == 0)
+    			if(ix == 0) {
     				return children[i];
+    			}
+    			ix--;
     		}
     	}
     	smart_ptr<Group> ret;
@@ -100,10 +102,12 @@ public:
 inline std::ostream& operator<<(std::ostream& o,JMap& jmap) {
     typedef map<std::string,smart_ptr<Pattern> >::iterator mit;
     mit mb = jmap.m.begin();
-    mit me = jmap.m.begin();
+    mit me = jmap.m.end();
+    o << "{";
 	for(mit i = mb; i != me;++i) {
 		o << "[" << i->first << "]";
 	}
+	o << "}";
 	return o;
 }
 

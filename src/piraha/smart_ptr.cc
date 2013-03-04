@@ -1,3 +1,3 @@
 #include "smart_ptr.hpp"
 
-std::vector<void*> ptrs;
+std::set<void*> *ptrs = new std::set<void*>();

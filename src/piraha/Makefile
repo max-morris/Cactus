@@ -1,7 +1,7 @@
 # Build the standalone tool
 #
 CXX = g++
-CXXFLAGS =  -Wall
+CXXFLAGS =  -Wall -Wreturn-type
 SRCS = AutoGrammar.cc Bracket.cc Dot.cc End.cc \
 	Generic.cc Grammar.cc Group.cc ILiteral.cc \
 	Literal.cc Lookup.cc Matcher.cc Multi.cc \

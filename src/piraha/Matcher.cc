@@ -16,6 +16,7 @@ bool Matcher::matches() {
     smart_ptr<Pattern> p = g->patterns.get(pat);
     if(!p.valid()) {
         std::cout << "Grammar does not contain \"" << pat << "\"" << std::endl;
+        std::cout << g->patterns << std::endl;
     }
     assert(p.valid());
     pos = 0;
@@ -53,9 +54,9 @@ void Matcher::showError() {
 		start_of_previous_line[i] = 0;
 	for(int i=0;i<input_size;i++) {
 		if(i == max_pos) {
-            std::cout << "In rule '" << inrule_max
-			    <<  "' Line=" << line << std::endl;
 			error_pos = i;
+		    std::cout << "In rule '" << inrule_max
+			    <<  "' Line=" << line << std::endl;
 			while(input[i] == '\n'||input[i] == '\r') {
 				line++;
 				for(int j=1;j<num_previous_lines;j++) {
