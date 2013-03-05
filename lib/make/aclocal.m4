@@ -1064,7 +1064,7 @@ fi
 AC_DEFUN(CCTK_C_BUILTIN_EXPECT,
 [AC_CACHE_CHECK([for C __builtin_expect], cctk_cv_have_c_builtin_expect,
 [cctk_cv_have_c_builtin_expect=no
-AC_TRY_COMPILE(, __builtin_expect(0,0);, cctk_cv_have_c_builtin_expect=yes, cctk_cv_have_c_builtin_expect=no)
+AC_TRY_LINK(, __builtin_expect(0,0);, cctk_cv_have_c_builtin_expect=yes, cctk_cv_have_c_builtin_expect=no)
 ])
 if test "$cctk_cv_have_c_builtin_expect" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_C_BUILTIN_EXPECT)
@@ -1089,7 +1089,7 @@ fi
 AC_DEFUN(CCTK_C_BUILTIN_UNREACHABLE,
 [AC_CACHE_CHECK([for C __builtin_unreachable], cctk_cv_have_c_builtin_unreachable,
 [cctk_cv_have_c_builtin_unreachable=no
-AC_TRY_COMPILE(, __builtin_unreachable();, cctk_cv_have_c_builtin_unreachable=yes, cctk_cv_have_c_builtin_unreachable=no)
+AC_TRY_LINK(, __builtin_unreachable();, cctk_cv_have_c_builtin_unreachable=yes, cctk_cv_have_c_builtin_unreachable=no)
 ])
 if test "$cctk_cv_have_c_builtin_unreachable" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_C_BUILTIN_UNREACHABLE)

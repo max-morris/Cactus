@@ -370,7 +370,7 @@ typedef enum {false, true} bool;
 #ifdef HAVE_CCTK_C_BUILTIN_UNREACHABLE
 #  define CCTK_BUILTIN_UNREACHABLE() __builtin_unreachable()
 #else
-#  define CCTK_BUILTIN_UNREACHABLE() CCTK_Abort()
+#  define CCTK_BUILTIN_UNREACHABLE() CCTK_Abort(0, 1)
 #endif
 
 /* OpenMP collapse clause */
@@ -579,7 +579,7 @@ typedef enum {false, true} bool;
 #ifdef HAVE_CCTK_CXX_BUILTIN_UNREACHABLE
 #  define CCTK_BUILTIN_UNREACHABLE() __builtin_unreachable()
 #else
-#  define CCTK_BUILTIN_UNREACHABLE() ((void)0)
+#  define CCTK_BUILTIN_UNREACHABLE() CCTK_Abort(0, 1)
 #endif
 
 /* Some C++ compilers recognise the restrict keyword */
