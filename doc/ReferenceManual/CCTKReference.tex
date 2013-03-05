@@ -874,16 +874,17 @@ Abnormal Cactus termination.
 \begin{verbatim}
 #include "cctk.h"
 
-int dummy = CCTK_Abort(const cGH *cctkGH);
+int dummy = CCTK_Abort(const cGH *cctkGH, int exitcode);
 \end{verbatim}
 \end{Synopsis}
 \begin{Synopsis}{Fortran}
 \begin{verbatim}
 #include "cctk.h"
 
-subroutine CCTK_Abort (dummy, cctkGH)
+subroutine CCTK_Abort (dummy, cctkGH, exitcode)
    integer      dummy
    CCTK_POINTER cctkGH
+   integer      exitcode
 end subroutine CCTK_Abort
 \end{verbatim}
 \end{Synopsis}
@@ -898,6 +899,9 @@ The function never returns, and hence never produces a result.
 \begin{ParameterSection}
 \begin{Parameter}{GH ($\ne$ NULL)}
 Pointer to a valid Cactus grid hierarchy.
+\end{Parameter}
+\begin{Parameter}{exitcode}
+Exit code that is passed to the operating system
 \end{Parameter}
 \end{ParameterSection}
 
@@ -3096,7 +3100,7 @@ integer value \end{verbatim}
 pointer to CCTK grid hierarchy
 \end{Parameter}
 \begin{Parameter}{value}
-the return code to abort with
+the return code to exit with
 \end{Parameter}
 \end{ParameterSection}
 \begin{Discussion}
