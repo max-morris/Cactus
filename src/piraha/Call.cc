@@ -261,6 +261,28 @@ smart_ptr<Value> lookup_var(smart_ptr<Group> gr) {
 	return ret;
 }
 
+
+std::string string_reparser(std::string s) {
+	smart_ptr<Matcher> m = new Matcher(par_file_grammar,"stringparser",s.c_str(),s.length());
+	if(m->matches()) {
+		std::string out = "";
+		for(int i=0;i < m->groupCount(); i++) {
+			std::string pn = m->group(i)->getPatternName();
+			if(pn == "any" || pn == "name") {
+				out += m->group(i)->substring();
+			} else if(pn == "stringcomment") {
+				;
+			} else {
+				smart_ptr<Value> val = lookup_var(m->group(i));
+				out += val->copy();
+			}
+		}
+		return out;
+	} else {
+		return s;
+	}
+}
+
 /**
  * The meval() function takes any node within
  * the parse tree and creates a Value object
@@ -380,7 +402,7 @@ smart_ptr<Value> meval(smart_ptr<Group> gr) {
 		msg << "Unknown func: " << fn << "(" << val->type << ")" << std::endl;
 		std::string par = get_parfile();
 		CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
-	} else if(pn == "name") {
+	} else if(pn == "name"||pn == "dname") {
 		std::string s = gr->substring();
 		s = mklower(s);
 		if(s == "no" || s == "false") {
@@ -453,7 +475,7 @@ smart_ptr<Value> meval(smart_ptr<Group> gr) {
 		}
 	} else if(pn == "quot") {
 		ret->type = PIR_STRING;
-		ret->sdata = gr->group(0)->substring();
+		ret->sdata = string_reparser(gr->group(0)->substring());
 	} else if(pn == "inquot") {
 		ret->type = PIR_STRING;
 		ret->sdata = gr->substring();
@@ -602,7 +624,9 @@ smart_ptr<Value> meval(smart_ptr<Group> gr) {
 			} else if(v1->type == PIR_STRING && v2->type == PIR_INT) {
 				ret->type = PIR_STRING;
 				if(mulop == "*") {
-					ret->sdata = v1->sdata + v2->sdata;
+					ret->sdata = "";
+					for(int i=0;i<v2->idata;i++)
+						ret->sdata += v1->sdata;
 				} else {
 					std::ostringstream msg;
 					msg << "Unknown mul operator: " << v1->type << mulop << v2->type << std::endl;
@@ -692,15 +716,19 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
 	const char *par_file_src =
 			"skipper = ([ \\t\\r\\n]|\\#.*)*\n"
 			"skipeol = ([ \\t\\r]|\\#.*)*\\n\n"
+			"any = [^]\n"
+			"stringcomment = #.*\n"
+			"stringparser = ^({stringcomment}|{var}|{name}|{any})*$\n"
 
 			"# Note that / occurs in some par files. It is my\n"
 			"# feeling that this should require quote marks.\n"
 
 			"name = [@a-zA-Z_][@/a-zA-Z0-9_-]*\n"
+			"dname = [01-9][ab-zA-Z_]{2,}\n"
 			"inquot = ({var}|\\\\.|[^\\\\\"])*\n"
 			"fname = \\.?/[-\\./0-9a-zA-Z_]+\n"
 			"quot = \"{inquot}\"|{fname}\n"
-			"num = (inf|nan|([0-9]+(\\.[0-9]*|)|\\.[0-9]+)(e[+-]?[0-9]+|))\n"
+			"num = (inf|nan|([0-9]+(\\.[0-9]*|)|\\.[0-9]+)([ed][+-]?[0-9]+|))\n"
 			"env = ENV\\{{name}\\}\n"
 			"var = \\$({env}|{name}|\\{{name}\\})\n"
 
@@ -722,7 +750,7 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
 			"func = {name} \\( {expr} \\)\n"
 			"array = \\[ {expr}( , {expr})* \\]\n"
 
-			"value = {unop}?({par}|{func}|{paren}|{num}|{quot}|{name}|{var})\n"
+			"value = {unop}?({par}|{func}|{paren}|{dname}|{num}|{quot}|{name}|{var})\n"
 			"unop = [-!]\n"
 
 			"int = [0-9]+\n"

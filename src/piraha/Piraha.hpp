@@ -117,8 +117,6 @@ public:
     Grammar() {}
     virtual ~Grammar() {}
     JMap patterns;
-    void compile(std::string name,std::string pattern);
-    void compile(std::string name,smart_ptr<Group> pattern);
     std::string default_rule;
 };
 
@@ -296,6 +294,8 @@ public:
 extern smart_ptr<Grammar> pegGrammar;
 extern smart_ptr<Pattern> compile(smart_ptr<Group> g,bool ignCase,smart_ptr<Grammar> gram);
 extern void compileFile(smart_ptr<Grammar> g,const char *buffer,signed long buffersize=-1);
+void compile(smart_ptr<Grammar> thisg,std::string name,std::string pattern);
+void compile(smart_ptr<Grammar> thisg,std::string name,smart_ptr<Group> pattern);
 
 }
 
