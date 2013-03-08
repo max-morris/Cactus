@@ -34,45 +34,37 @@ typedef const char * CCTK_STRING;
 #define HAVE_CCTK_CHAR 1
 #define HAVE_CCTK_STRING 1
 
-/* Structures for complex types */
+/* Declarations for complex types */
+
+#ifdef __cplusplus
+#  include <complex>
+#endif
 
 #ifdef HAVE_CCTK_REAL16
-#define HAVE_CCTK_COMPLEX32 1
-typedef struct CCTK_COMPLEX32
-{
-  CCTK_REAL16 Re;
-  CCTK_REAL16 Im;
-#ifdef __cplusplus
-  CCTK_REAL16 real() const { return Re; }
-  CCTK_REAL16 imag() const { return Im; }
-#endif
-} CCTK_COMPLEX32;
+#  define HAVE_CCTK_COMPLEX32 1
+#  ifdef __cplusplus
+typedef std::complex<CCTK_REAL16> CCTK_COMPLEX32;
+#  else
+typedef long double _Complex CCTK_COMPLEX32;
+#  endif
 #endif
 
 #ifdef HAVE_CCTK_REAL8
 #define HAVE_CCTK_COMPLEX16 1
-typedef struct CCTK_COMPLEX16
-{
-  CCTK_REAL8 Re;
-  CCTK_REAL8 Im;
-#ifdef __cplusplus
-  CCTK_REAL8 real() const { return Re; }
-  CCTK_REAL8 imag() const { return Im; }
-#endif
-} CCTK_COMPLEX16;
+#  ifdef __cplusplus
+typedef std::complex<CCTK_REAL8> CCTK_COMPLEX16;
+#  else
+typedef double _Complex CCTK_COMPLEX16;
+#  endif
 #endif
 
 #ifdef HAVE_CCTK_REAL4
-#define HAVE_CCTK_COMPLEX8 1
-typedef struct CCTK_COMPLEX8
-{
-  CCTK_REAL4 Re;
-  CCTK_REAL4 Im;
-#ifdef __cplusplus
-  CCTK_REAL4 real() const { return Re; }
-  CCTK_REAL4 imag() const { return Im; }
-#endif
-} CCTK_COMPLEX8;
+#  define HAVE_CCTK_COMPLEX8 1
+#  ifdef __cplusplus
+typedef std::complex<CCTK_REAL4> CCTK_COMPLEX8;
+#  else
+typedef float _Complex CCTK_COMPLEX8;
+#  endif
 #endif
 
 /* Small positive integer type */
@@ -262,7 +254,7 @@ typedef unsigned char CCTK_BYTE;
 
 /* We have __attribute__((unused)), so use it */
 #define CCTK_DECLARE_INIT(typ,nam,val)          \
-  typ nam __attribute__((unused)) = (val);
+  typ nam CCTK_ATTRIBUTE_UNUSED = (val);
 
 #else
 

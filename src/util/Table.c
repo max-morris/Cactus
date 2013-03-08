@@ -94,6 +94,7 @@ typedef int bool;
 #endif
 
 #include "cctk_Types.h"
+#include "cctk_Complex.h"
 #include "cctk_Constants.h"
 #include "cctk_Groups.h"
 #include "cctk_Flesh.h"
@@ -5591,8 +5592,8 @@ int Util_TablePrint(FILE *stream, int handle)
           for (i = 0 ; i < tep->N_elements ; ++i)
           {
             fprintf(stream, "\t(%g,%g)",
-                     (double) value_ptr_complex[i].Re,
-                     (double) value_ptr_complex[i].Im);
+                    (double) CCTK_CmplxReal(value_ptr_complex[i]),
+                    (double) CCTK_CmplxImag(value_ptr_complex[i]));
           }
             }
           break;
@@ -5729,8 +5730,8 @@ int Util_TablePrintPretty(FILE *stream, int handle)
             fprintf(stream, " ");
           }
           fprintf(stream, "(%#.17g,%#.17g)",
-                  (double)value_ptr_complex[i].Re,
-                  (double)value_ptr_complex[i].Im);
+                  (double)CCTK_CmplxReal(value_ptr_complex[i]),
+                  (double)CCTK_CmplxImag(value_ptr_complex[i]));
         }
         if (tep->N_elements != 1)
         {

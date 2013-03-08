@@ -12,92 +12,32 @@
 #define _CCTK_COMPLEX_H_
 
 #ifdef __cplusplus
-#  define EXTERN_C_BEGIN extern "C" {
-#  define EXTERN_C_END   }
-#else
-#  define EXTERN_C_BEGIN
-#  define EXTERN_C_END
-#endif
-
-
-#ifndef DEFINE_CCTK_COMPLEX_EXTERN_FUNCTIONS
-#  define PREFIX static inline
-#else
-#  define PREFIX
-#endif
-
-
-#ifdef __cplusplus
-  /* declare C++ overloaded operators */
-#  include <complex>
-#  include <ostream>
-#  define DECLARE_CMPLX_CXX_OPERATORS(CCTK_Cmplx, cctk_real, cctk_complex) \
-PREFIX cctk_complex operator+  (cctk_complex const & a);                \
-PREFIX cctk_complex operator-  (cctk_complex const & a);                \
-PREFIX cctk_complex conj       (cctk_complex const & a);                \
-PREFIX cctk_real    abs        (cctk_complex const & a);                \
-PREFIX cctk_real    arg        (cctk_complex const & a);                \
-PREFIX cctk_real    norm       (cctk_complex const & a);                \
-PREFIX cctk_complex operator+  (cctk_complex const & a, cctk_complex const & b); \
-PREFIX cctk_complex operator+  (cctk_real    const & a, cctk_complex const & b); \
-PREFIX cctk_complex operator+  (cctk_complex const & a, cctk_real    const & b); \
-PREFIX cctk_complex operator-  (cctk_complex const & a, cctk_complex const & b); \
-PREFIX cctk_complex operator-  (cctk_real    const & a, cctk_complex const & b); \
-PREFIX cctk_complex operator-  (cctk_complex const & a, cctk_real    const & b); \
-PREFIX cctk_complex operator*  (cctk_complex const & a, cctk_complex const & b); \
-PREFIX cctk_complex operator*  (cctk_real    const & a, cctk_complex const & b); \
-PREFIX cctk_complex operator*  (cctk_complex const & a, cctk_real    const & b); \
-PREFIX cctk_complex operator/  (cctk_complex const & a, cctk_complex const & b); \
-PREFIX cctk_complex operator/  (cctk_real    const & a, cctk_complex const & b); \
-PREFIX cctk_complex operator/  (cctk_complex const & a, cctk_real    const & b); \
-PREFIX cctk_complex operator+= (cctk_complex       & a, cctk_complex const & b); \
-PREFIX cctk_complex operator+= (cctk_complex       & a, cctk_real    const & b); \
-PREFIX cctk_complex operator-= (cctk_complex       & a, cctk_complex const & b); \
-PREFIX cctk_complex operator-= (cctk_complex       & a, cctk_real    const & b); \
-PREFIX cctk_complex operator*= (cctk_complex       & a, cctk_complex const & b); \
-PREFIX cctk_complex operator*= (cctk_complex       & a, cctk_real    const & b); \
-PREFIX cctk_complex operator/= (cctk_complex       & a, cctk_complex const & b); \
-PREFIX cctk_complex operator/= (cctk_complex       & a, cctk_real    const & b); \
-PREFIX cctk_complex pow        (cctk_complex const & a, int                  i); \
-PREFIX cctk_complex pow        (cctk_complex const & a, cctk_real    const & r); \
-PREFIX cctk_complex pow        (cctk_complex const & a, cctk_complex const & b); \
-PREFIX cctk_complex sin        (cctk_complex const & a);                \
-PREFIX cctk_complex cos        (cctk_complex const & a);                \
-PREFIX cctk_complex exp        (cctk_complex const & a);                \
-PREFIX cctk_complex log        (cctk_complex const & a);                \
-PREFIX cctk_complex sqrt       (cctk_complex const & a);                \
-PREFIX std::ostream & operator << (std::ostream & os, cctk_complex const & a);
-#else
-  /* declare no C++ overloaded operators */
-#  define DECLARE_CMPLX_CXX_OPERATORS(CCTK_Cmplx, cctk_real, cctk_complex)
+extern "C" {
 #endif
 
 
 /* macro to declare a set of complex functions for a given precision */
 #define DECLARE_CMPLX_FUNCTIONS(CCTK_Cmplx, cctk_real, cctk_complex)    \
-EXTERN_C_BEGIN                                                          \
-PREFIX cctk_complex CCTK_Cmplx        (cctk_real Re, cctk_real Im);     \
-PREFIX cctk_real    CCTK_Cmplx##Real  (cctk_complex a);                 \
-PREFIX cctk_real    CCTK_Cmplx##Imag  (cctk_complex a);                 \
-PREFIX cctk_complex CCTK_Cmplx##Neg   (cctk_complex a);                 \
-PREFIX cctk_complex CCTK_Cmplx##Conjg (cctk_complex a);                 \
-PREFIX cctk_real    CCTK_Cmplx##Abs   (cctk_complex a);                 \
-PREFIX cctk_real    CCTK_Cmplx##Arg   (cctk_complex a);                 \
-PREFIX cctk_real    CCTK_Cmplx##Norm  (cctk_complex a);                 \
-PREFIX cctk_complex CCTK_Cmplx##Add   (cctk_complex a, cctk_complex b); \
-PREFIX cctk_complex CCTK_Cmplx##Sub   (cctk_complex a, cctk_complex b); \
-PREFIX cctk_complex CCTK_Cmplx##Mul   (cctk_complex a, cctk_complex b); \
-PREFIX cctk_complex CCTK_Cmplx##Div   (cctk_complex a, cctk_complex b); \
-PREFIX cctk_complex CCTK_Cmplx##CPow  (cctk_complex a, cctk_complex b); \
-PREFIX cctk_complex CCTK_Cmplx##Sin   (cctk_complex a);                 \
-PREFIX cctk_complex CCTK_Cmplx##Cos   (cctk_complex a);                 \
-PREFIX cctk_complex CCTK_Cmplx##Exp   (cctk_complex a);                 \
-PREFIX cctk_complex CCTK_Cmplx##Log   (cctk_complex a);                 \
-PREFIX cctk_complex CCTK_Cmplx##Sqrt  (cctk_complex a);                 \
-PREFIX cctk_complex CCTK_Cmplx##Pow   (cctk_complex a, cctk_real b);    \
-PREFIX cctk_complex CCTK_Cmplx##IPow  (cctk_complex a, int b);          \
-EXTERN_C_END                                                            \
-DECLARE_CMPLX_CXX_OPERATORS(CCTK_Cmplx, cctk_real, cctk_complex)
+cctk_complex CCTK_Cmplx        (cctk_real Re, cctk_real Im);            \
+cctk_real    CCTK_Cmplx##Real  (cctk_complex a);                        \
+cctk_real    CCTK_Cmplx##Imag  (cctk_complex a);                        \
+cctk_complex CCTK_Cmplx##Neg   (cctk_complex a);                        \
+cctk_complex CCTK_Cmplx##Conjg (cctk_complex a);                        \
+cctk_real    CCTK_Cmplx##Abs   (cctk_complex a);                        \
+cctk_real    CCTK_Cmplx##Arg   (cctk_complex a);                        \
+cctk_real    CCTK_Cmplx##Norm  (cctk_complex a);                        \
+cctk_complex CCTK_Cmplx##Add   (cctk_complex a, cctk_complex b);        \
+cctk_complex CCTK_Cmplx##Sub   (cctk_complex a, cctk_complex b);        \
+cctk_complex CCTK_Cmplx##Mul   (cctk_complex a, cctk_complex b);        \
+cctk_complex CCTK_Cmplx##Div   (cctk_complex a, cctk_complex b);        \
+cctk_complex CCTK_Cmplx##CPow  (cctk_complex a, cctk_complex b);        \
+cctk_complex CCTK_Cmplx##Sin   (cctk_complex a);                        \
+cctk_complex CCTK_Cmplx##Cos   (cctk_complex a);                        \
+cctk_complex CCTK_Cmplx##Exp   (cctk_complex a);                        \
+cctk_complex CCTK_Cmplx##Log   (cctk_complex a);                        \
+cctk_complex CCTK_Cmplx##Sqrt  (cctk_complex a);                        \
+cctk_complex CCTK_Cmplx##Pow   (cctk_complex a, cctk_real b);           \
+cctk_complex CCTK_Cmplx##IPow  (cctk_complex a, int b);
 
 
 /* declare complex functions for all available precisions */
@@ -112,8 +52,6 @@ DECLARE_CMPLX_FUNCTIONS (CCTK_Cmplx16, CCTK_REAL8, CCTK_COMPLEX16)
 #ifdef HAVE_CCTK_REAL16
 DECLARE_CMPLX_FUNCTIONS (CCTK_Cmplx32, CCTK_REAL16, CCTK_COMPLEX32)
 #endif
-
-#undef PREFIX
 
 
 /* declare the default precision complex functions as #define'd macros */
@@ -182,10 +120,8 @@ DECLARE_CMPLX_FUNCTIONS (CCTK_Cmplx32, CCTK_REAL16, CCTK_COMPLEX32)
 #define CCTK_CmplxIPow  CCTK_Cmplx32IPow
 #endif
 
-#ifndef DEFINE_CCTK_COMPLEX_EXTERN_FUNCTIONS
-#  define DEFINE_CCTK_COMPLEX_INLINE_FUNCTIONS
-#  include "../main/Complex.c"
-#  undef DEFINE_CCTK_COMPLEX_INLINE_FUNCTIONS
+#ifdef __cplusplus
+}
 #endif
 
 #endif /* _CCTK_COMPLEX_H_ */
