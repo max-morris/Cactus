@@ -258,7 +258,7 @@ int CCTK_VInfo (const char *thorn, const char *format, ...)
   static int info_format_decoded = 0;   /* are the following two flags valid? */
   /* Boolean flags decoded from  cactus::info_format */
   static int info_format_numeric = 0;         /* print a numeric timestamp? */
-  static int info_format_human_readable = 0;  /* print a human-readable timestamrrp? */
+  static int info_format_human_readable = 0;  /* print a human-readable timestamp? */
 
   /* necessary for wrapping up the final message */
   int msg_size;
