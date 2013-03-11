@@ -815,7 +815,6 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
 					val = smv->copy();
     				assert(smv.valid());
     				values[thorn][key] = smv;
-    				std::cout << "set_function(" << key << "," << val << ")" << std::endl;
     				smv->integerize();
     				if(data != NULL) {
         				if(data->type == PARAMETER_REAL)
@@ -837,7 +836,6 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
     					smart_ptr<Value> smv = meval(aexpr);
     					val = smv->copy();
         				values[thorn][keyi.str()] = smv;
-        				std::cout << "set_function_array(" << keyi.str() << "," << val << ")" << std::endl;
         				if(data != NULL) {
             				if(data->type == PARAMETER_REAL)
             					smv->integerize();
