@@ -183,7 +183,7 @@ sub CreateFortranCommonDeclaration
 
     push(@data, $line);
 
-    $sepchar = ',';
+    $sepchar = ', ';
   }
 
   push(@data, $definition);
@@ -202,7 +202,7 @@ sub get_fortran_type_string
      $type eq 'STRING'  ||
      $type eq 'SENTENCE')
   {
-    $type_string = 'CCTK_STRING ';
+    $type_string = 'CCTK_STRING';
   }
   elsif($type eq 'BOOLEAN' ||
         $type eq 'INT')
@@ -211,7 +211,7 @@ sub get_fortran_type_string
   }
   elsif($type eq 'REAL')
   {
-    $type_string = 'CCTK_REAL ';
+    $type_string = 'CCTK_REAL';
   }
   else
   {
