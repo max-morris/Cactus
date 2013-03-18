@@ -296,20 +296,12 @@ smart_ptr<Value> meval(smart_ptr<Group> gr) {
 	if(pn == "num") {
 		std::string s = gr->substring();
 		s = mklower(s);
-		if(s == "nan") {
-			ret->ddata = NAN;
+		ret->ddata = atof(s.c_str());
+		ret->idata = ret->ddata;
+		if(ret->idata == ret->ddata && (s.find('.') == std::string::npos))
+			ret->type = PIR_INT;
+		else
 			ret->type = PIR_REAL;
-		} else if(s == "inf") {
-			ret->ddata = INFINITY;
-			ret->type = PIR_REAL;
-		} else {
-			ret->ddata = atof(s.c_str());
-			ret->idata = ret->ddata;
-			if(ret->idata == ret->ddata && (s.find('.') == std::string::npos))
-				ret->type = PIR_INT;
-			else
-				ret->type = PIR_REAL;
-		}
 	} else if(pn == "paren" || pn == "parindex") {
 		return meval(gr->group(0));
 	} else if(pn == "func") {
@@ -405,7 +397,13 @@ smart_ptr<Value> meval(smart_ptr<Group> gr) {
 	} else if(pn == "name"||pn == "dname") {
 		std::string s = gr->substring();
 		s = mklower(s);
-		if(s == "no" || s == "false") {
+		if(s == "nan") {
+			ret->ddata = NAN;
+			ret->type = PIR_REAL;
+		} else if(s == "inf") {
+			ret->ddata = INFINITY;
+			ret->type = PIR_REAL;
+		} else if(s == "no" || s == "false") {
 			ret->type = PIR_BOOL;
 			ret->idata = 0;
 		} else if(s == "yes" || s == "true") {
@@ -719,9 +717,6 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
 			"any = [^]\n"
 			"stringcomment = #.*\n"
 			"stringparser = ^({stringcomment}|{var}|{name}|{any})*$\n"
-			"any = [^]\n"
-			"stringcomment = #.*\n"
-			"stringparser = ^({stringcomment}|{var}|{name}|{any})*$\n"
 
 			"# Note that / occurs in some par files. It is my\n"
 			"# feeling that this should require quote marks.\n"
@@ -731,7 +726,7 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
 			"inquot = ({var}|\\\\.|[^\\\\\"])*\n"
 			"fname = \\.?/[-\\./0-9a-zA-Z_]+\n"
 			"quot = \"{inquot}\"|{fname}\n"
-			"num = (inf|nan|([0-9]+(\\.[0-9]*|)|\\.[0-9]+)([ed][+-]?[0-9]+|))\n"
+			"num = ([0-9]+(\\.[0-9]*|)|\\.[0-9]+)([ed][+-]?[0-9]+|)\n"
 			"env = ENV\\{{name}\\}\n"
 			"var = \\$({env}|{name}|\\{{name}\\})\n"
 
