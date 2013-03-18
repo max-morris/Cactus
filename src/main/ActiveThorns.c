@@ -936,7 +936,7 @@ int CCTKi_ActivateThorns(const char *activethornlist)
   n_warnings = 0;
 
   /* Parse list of activated thorns */
-  for(token = strtok(local_list, " \t\n"); token; token = strtok(NULL," \t\n"))
+  for(token = strtok(local_list, " \r\t\n"); token; token = strtok(NULL," \r\t\n"))
   {
     switch (Util_StringListAdd(activated_thorns, token))
     {
