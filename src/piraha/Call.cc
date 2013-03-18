@@ -715,7 +715,10 @@ void check_types(const char *thorn,int line,ValueType v,int t) {
 extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int (*set_function)(const char *, const char *, int)) {
 	const char *par_file_src =
 			"skipper = ([ \\t\\r\\n]|\\#.*)*\n"
-			"skipeol = ([ \\t\\r]|\\#.*)*\\n\n"
+			"skipeol = ([ \\t\\r]|\\#.*)*($|\\n)\n"
+			"any = [^]\n"
+			"stringcomment = #.*\n"
+			"stringparser = ^({stringcomment}|{var}|{name}|{any})*$\n"
 			"any = [^]\n"
 			"stringcomment = #.*\n"
 			"stringparser = ^({stringcomment}|{var}|{name}|{any})*$\n"
@@ -758,7 +761,7 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
 			"parindex = \\[ {expr} \\]\n"
 			"active = (?i:ActiveThorns)\n"
 			"set = ({active} = ({quot}|{name})|{par}( {index}|) = ({array}|\\+?{expr})){-skipeol}\n"
-			"file = ^( !DESC {quot}|)( ({set}|{active}) )*$\n";
+			"file = ^( !DESC {quot}|)( ({set}|{active}) )*$";
 
 	compileFile(par_file_grammar,par_file_src,strlen(par_file_src));
 
