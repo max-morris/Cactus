@@ -713,6 +713,7 @@ void check_types(const char *thorn,int line,ValueType v,int t) {
 extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int (*set_function)(const char *, const char *, int)) {
 	const char *par_file_src =
 			"skipper = ([ \\t\\r\\n]|\\#.*)*\n"
+			"# comment\n"
 			"skipeol = ([ \\t\\r]|\\#.*)*($|\\n)\n"
 			"any = [^]\n"
 			"stringcomment = #.*\n"
@@ -722,7 +723,7 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
 			"# feeling that this should require quote marks.\n"
 
 			"name = [@a-zA-Z_][@/a-zA-Z0-9_-]*\n"
-			"dname = [01-9][ab-zA-Z_]{2,}\n"
+			"dname = [0-9][a-zA-Z_]{2,}\n"
 			"inquot = ({var}|\\\\.|[^\\\\\"])*\n"
 			"fname = \\.?/[-\\./0-9a-zA-Z_]+\n"
 			"quot = \"{inquot}\"|{fname}\n"

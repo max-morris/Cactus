@@ -55,8 +55,9 @@ void Matcher::showError() {
 	for(int i=0;i<input_size;i++) {
 		if(i == max_pos) {
 			error_pos = i;
+			int column = i - start_of_previous_line[0]+1;
 		    std::cout << "In rule '" << inrule_max
-			    <<  "' Line=" << line << std::endl;
+			    <<  "' Line=" << line << ", Column=" << column << std::endl;
 			while(input[i] == '\n'||input[i] == '\r') {
 				line++;
 				for(int j=1;j<num_previous_lines;j++) {
@@ -76,11 +77,15 @@ void Matcher::showError() {
 			start_of_line = i+1;
 		}
 	}
+    bool eol = false;
 	for(int i=start_of_previous_line[0];i<input_size;i++) {
 		std::cout << input[i];
-		if(i > error_pos && input[i] == '\n')
+		if(i > error_pos && input[i] == '\n') {
+            eol = true;
 			break;
+        }
 	}
+    if(!eol) std::cout << std::endl;
 	for(int i=start_of_line;i<=error_pos;i++)
 		std::cout << ' ';
 	std::cout << "^" << std::endl;

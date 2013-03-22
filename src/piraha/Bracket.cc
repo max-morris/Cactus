@@ -1,4 +1,5 @@
 #include "Piraha.hpp"
+#include <string.h>
 
 using namespace piraha;
 
@@ -69,8 +70,9 @@ static void fail(Bracket *b,Matcher *m) {
 }
 
 bool Bracket::match(Matcher *m) {
-    if(m->pos >= (int)m->input_size)
+    if(m->pos >= (int)m->input_size) {
         return false;
+    }
     for(range_iter r = ranges.begin();r != ranges.end(); ++r) {
         if((*r)->match(m)) {
             if(neg) {
@@ -93,24 +95,35 @@ bool Bracket::match(Matcher *m) {
     }
 }
 
-std::ostream& piraha::operator<<(std::ostream& o,Bracket& b) {
-    for(range_iter r = b.ranges.begin();r != b.ranges.end(); ++r) {
+void insertc(std::ostream& o,char c) {
+    if(c == '-') {
+        o << "\\-";
+    } else if(c == '\n') {
+        o << "\\n";
+    } else if(c == '\r') {
+        o << "\\r";
+    } else if(c == '\t') {
+        o << "\\t";
+    } else if(strchr("[]-",c)>=0) {
+        o << "\\" << c;
+    } else {
+        o << c;
+    }
+}
+
+void Bracket::insert(std::ostream& o) {
+    o << "[";
+    if(neg)
+        o << "^";
+    for(range_iter r = ranges.begin();r != ranges.end(); ++r) {
     	char lo = (*r)->lo, hi = (*r)->hi;
     	if(lo == hi) {
-    		if(lo == '-') {
-    			o << "\\-";
-            } else if(lo == '\n') {
-                o << "\\n";
-            } else if(lo == '\r') {
-                o << "\\r";
-            } else if(lo == '\t') {
-                o << "\\t";
-    		} else {
-    			o << lo;
-    		}
+            insertc(o,lo);
     	} else {
-    		o << lo << '-' << hi;
+            insertc(o,lo);
+            o << '-';
+            insertc(o,hi);
     	}
     }
-    return o;
+    o << "]";
 }

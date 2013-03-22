@@ -76,7 +76,13 @@ public:
     Pattern() {}
     virtual ~Pattern() {}
     virtual std::string fmt() { return "blank"; }
+    virtual void insert(std::ostream& o) { o << "{?}"; }
 };
+
+inline std::ostream& operator<<(std::ostream& o,Pattern& p) {
+    p.insert(o);
+    return o;
+}
 
 class JMap {
     map<std::string,smart_ptr<Pattern> > m;
@@ -127,6 +133,10 @@ public:
     Seq(vector<smart_ptr<Pattern> > patterns,bool ign,bool show);
     virtual ~Seq() {}
     bool match(Matcher *m);
+    virtual void insert(std::ostream& o) {
+        for(int i=0;i<patterns.size();i++)
+            o << *patterns[i];
+    }
 };
 
 class Or : public Pattern {
@@ -137,6 +147,14 @@ public:
     Or(Pattern *p,...);
     virtual ~Or() {}
     bool match(Matcher *m);
+    virtual void insert(std::ostream& o) {
+        o << "(";
+        for(int i=0;i<patterns.size();i++) {
+            if(i > 0) o << "|";
+            o << *patterns[i];
+        }
+        o << ")";
+    }
 };
 
 class Literal : public Pattern {
@@ -148,6 +166,24 @@ public:
         std::string s = "literal(";
         s += c+")";
         return s;
+    }
+    virtual void insert(std::ostream& o) {
+        if(c == '\n')
+            o << "\\n";
+        else if(c == '\r')
+            o << "\\r";
+        else if(c == '\t')
+            o << "\\t";
+        else if(c == '\b')
+            o << "\\b";
+        else if(c >= 'a' && c <= 'z')
+            o << c;
+        else if(c >= 'A' && c <= 'Z')
+            o << c;
+        else if(c >= '0' && c <= '9')
+            o << c;
+        else
+            o << "\\" << c;
     }
 };
 
@@ -164,6 +200,27 @@ public:
         s += ")";
         return s;
     }
+    virtual void insert(std::ostream& o) {
+        char c = lc;
+        if(lc != uc)
+            o << "[" << lc << uc << "]";
+        else if(c == '\n')
+            o << "\\n";
+        else if(c == '\r')
+            o << "\\r";
+        else if(c == '\t')
+            o << "\\t";
+        else if(c == '\b')
+            o << "\\b";
+        else if(c >= 'a' && c <= 'z')
+            o << c;
+        else if(c >= 'A' && c <= 'Z')
+            o << c;
+        else if(c >= '0' && c <= '9')
+            o << c;
+        else
+            o << "\\" << c;
+    }
 };
 
 class Lookup : public Pattern {
@@ -177,6 +234,9 @@ public:
     std::string fmt() {
         return "Literal:"+name;
     }
+    virtual void insert(std::ostream& o) {
+        o << "{" << name << "}";
+    }
 };
 
 class Nothing : public Pattern {
@@ -189,18 +249,21 @@ class Start : public Pattern {
 public:
     Start() {}
     bool match(Matcher *m);
+    virtual void insert(std::ostream& o) { o << "^"; }
 };
 
 class End : public Pattern {
 public:
     End() {}
     bool match(Matcher *m);
+    virtual void insert(std::ostream& o) { o << "$"; }
 };
 
 class Dot : public Pattern {
 public:
     Dot() {}
     bool match(Matcher *m);
+    virtual void insert(std::ostream& o) { o << "."; }
 };
 
 class Multi : public Pattern {
@@ -211,6 +274,9 @@ public:
     Multi(Pattern *p,int min_,int max_) : minv(min_), maxv(max_), pattern(p) {}
     virtual ~Multi() {}
     bool match(Matcher *m);
+    virtual void insert(std::ostream& o) {
+        o << *pattern << "{" << minv << "," << maxv << "}";
+    }
 };
 
 class Range : public Pattern {
@@ -230,8 +296,8 @@ public:
     Bracket *addRange(char lo,char hi);
     Bracket *addRange(char lo,char hi,bool ign);
     bool match(Matcher *m);
+    virtual void insert(std::ostream& o);
 };
-extern std::ostream& operator<<(std::ostream&,Bracket&);
 
 class NegLookAhead : public Pattern {
 public:
