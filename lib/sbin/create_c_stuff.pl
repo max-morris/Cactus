@@ -175,7 +175,13 @@ sub CreateCStructureParameterHeader
   my($line,@data);
   my(%parameters);
   my($type, $type_string);
-  my(@definition);
+  my(@definition, @definition2);
+
+  # determine thorn name from structure name
+  # TODO: pass thorn name explicitly
+  my $thorn = $structure;
+  $thorn =~ s{^[^_]*_}{};       # remove PRIVATE_ or RESTRICTED_ prefix
+  $thorn =~ s{_STRUCT$}{};
 
   # Create the structure
   push(@data, '#ifdef __cplusplus');
@@ -185,7 +191,6 @@ sub CreateCStructureParameterHeader
   push(@data, '');
   push(@data, 'extern struct');
   push(@data, '{');
-  my $delim = ' ';
 
   foreach $parameter (&order_params($rhparameters, $rhparameter_db))
   {
@@ -206,8 +211,12 @@ sub CreateCStructureParameterHeader
     my $realname = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E realname"};
 
     push(@data, "  $type_string $realname$suffix;");
-    push(@definition, "  CCTK_DECLARE_INIT ($type_string$varprefix const, $parameter, $structure.$realname); \\");
-    $delim = ',';
+    #push(@definition, "  CCTK_DECLARE_INIT ($type_string$varprefix const, $parameter, $structure.$realname); \\");
+    push(@definition, "  CCTK_DECLARE_INIT ($type_string$varprefix const, $parameter, CCTK_PARAMETER__${thorn}__$realname); \\");
+    push(@definition2,
+         "#ifndef CCTK_PARAMETER__${thorn}__$realname\n" .
+         "#  define CCTK_PARAMETER__${thorn}__$realname $structure.$realname\n" .
+         "#endif");
   }
 
   # Some compilers don't like an empty structure.
@@ -226,8 +235,8 @@ sub CreateCStructureParameterHeader
 
   push(@data, "#define DECLARE_${structure}_PARAMS \\");
   push(@data, @definition);
-
-  push(@data, "\n");   # workaround for perl 5.004_04 to add a trailing newline
+  push(@data, "\n");
+  push(@data, @definition2);
 
   return join ("\n", @data);
 }

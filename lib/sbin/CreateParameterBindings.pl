@@ -202,7 +202,9 @@ sub CreateParameterBindings
     push(@data, "  DECLARE_PRIVATE_\U$thorn\E_STRUCT_PARAMS \\")
       if($header_files{"\U$thorn\E PRIVATE"});
 
-    my $delim = ' ';
+    # double this loop, add #defines for RESTRICTED_STRUCT.$realname, set these via #ifdef, use these #defines
+
+    my @data2;
     foreach $friend (split(' ',$rhparameter_db->{"\U$thorn\E SHARES implementations"}))
     {
       $rhinterface_db->{"IMPLEMENTATION \U$friend\E THORNS"} =~ m:([^ ]*):;
@@ -223,11 +225,17 @@ sub CreateParameterBindings
           $varprefix = ' const *';
         }
 
-        push(@data, "  CCTK_DECLARE_INIT ($type_string$varprefix const, $parameter, RESTRICTED_\U$friend\E_STRUCT.$realname); \\");
-	$delim = ',';
+        #push(@data, "  CCTK_DECLARE_INIT ($type_string$varprefix const, $parameter, RESTRICTED_\U$friend\E_STRUCT.$realname); \\");
+        push(@data, "  CCTK_DECLARE_INIT ($type_string$varprefix const, $parameter, CCTK_PARAMETER__${friend_thorn}__${realname}); \\");
+        push(@data2, 
+             "#ifndef CCTK_PARAMETER__${friend_thorn}__${realname}\n" .
+             "#  define CCTK_PARAMETER__${friend_thorn}__${realname} RESTRICTED_\U$friend\E_STRUCT.$realname\n" .
+             "#endif");
       }
     }
 
+    push(@data, '');
+    push(@data, @data2);
     push(@data, '');
     push(@data, "#endif  /* _\U$thorn\E_PARAMETERS_H_ */");
     push(@data, "\n");  # workaround for perl 5.004_04 to add a trailing newline
