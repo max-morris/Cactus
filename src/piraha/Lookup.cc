@@ -23,6 +23,14 @@ bool Lookup::match(Matcher *m) {
     m->inrule = save_name;
     int e = m->pos;
     if(b) {
+        /*
+        if(capture) {
+            std::cout << "Matched: {" << name << "}={";
+            for(int i=s;i<e;i++)
+                insertc(std::cout,m->input[i]);
+            std::cout << "}" << std::endl;
+        }
+        */
         smart_ptr<Group> g = new Group(name,m->input,s,e,m->children);
         if(capture)
             chSave.push_back(g);

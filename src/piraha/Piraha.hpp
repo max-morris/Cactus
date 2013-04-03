@@ -35,6 +35,10 @@ public:
     int start_,end_;
     vector<smart_ptr<Group> > children;
 
+    Group(const char *p,const char *value)
+        : pattern(p), input(value), start_(0) {
+            for(end_=0;value[end_] != '\0';end_++);
+        }
     Group(std::string p,const char *input_)
         : pattern(p), input(input_), start_(0), end_(0), children() {}
     Group(std::string p,const char *input_,int s,int e,
@@ -49,7 +53,10 @@ public:
     std::string getPatternName();
     std::string substring();
     smart_ptr<Group> child(int i);
-    void dump(int indent=0);
+    void dump(std::ostream& o=std::cout);
+    void dump(int n,std::ostream& o,int indent=0);
+    void dumpPerl(std::ostream&o=std::cout);
+    void dumpPerl(std::ostream&o,int indent);
     int groupCount() { return children.size(); }
     smart_ptr<Group> group(int i) { return children[i]; }
     smart_ptr<Group> group(const char *nm,int ix=0) {
@@ -134,7 +141,7 @@ public:
     virtual ~Seq() {}
     bool match(Matcher *m);
     virtual void insert(std::ostream& o) {
-        for(int i=0;i<patterns.size();i++)
+        for(unsigned int i=0;i<patterns.size();i++)
             o << *patterns[i];
     }
 };
@@ -149,7 +156,7 @@ public:
     bool match(Matcher *m);
     virtual void insert(std::ostream& o) {
         o << "(";
-        for(int i=0;i<patterns.size();i++) {
+        for(unsigned int i=0;i<patterns.size();i++) {
             if(i > 0) o << "|";
             o << *patterns[i];
         }
@@ -304,7 +311,7 @@ public:
     smart_ptr<Pattern> pattern;
     NegLookAhead(smart_ptr<Pattern> p) : pattern(p) {}
     virtual ~NegLookAhead() {}
-    bool match(Matcher *m) { return true; }//TODO: Fill in
+    bool match(Matcher *m);
 };
 
 class LookAhead : public Pattern {
@@ -312,15 +319,15 @@ public:
     smart_ptr<Pattern> pattern;
     LookAhead(smart_ptr<Pattern> p) : pattern(p) {}
     virtual ~LookAhead() {}
-    bool match(Matcher *m) { return true; }//TODO: Fill in
+    bool match(Matcher *m) { assert(false); }//TODO: Fill in
 };
 
 class Boundary : public Pattern {
-    bool match(Matcher *m) { return true; }//TODO: Fill in
+    virtual bool match(Matcher *m);
 };
 
 class Break : public Pattern {
-    bool match(Matcher *m) { return true; }//TODO: Fill in
+    virtual bool match(Matcher *m) { assert(false); }//TODO: Fill in
 };
 
 class BackRef : public Pattern {
@@ -328,7 +335,7 @@ public:
     int index;
     bool ignCase;
     BackRef(int in,bool ign) : index(in), ignCase(ign) {}
-    bool match(Matcher *m) { return true; }//TODO: Fill in
+    virtual bool match(Matcher *m) { assert(false); }//TODO: Fill in
 };
 
 class AutoGrammar {
@@ -362,6 +369,7 @@ extern smart_ptr<Pattern> compile(smart_ptr<Group> g,bool ignCase,smart_ptr<Gram
 extern void compileFile(smart_ptr<Grammar> g,const char *buffer,signed long buffersize=-1);
 void compile(smart_ptr<Grammar> thisg,std::string name,std::string pattern);
 void compile(smart_ptr<Grammar> thisg,std::string name,smart_ptr<Group> pattern);
+void insertc(std::ostream& o,char c);
 
 }
 

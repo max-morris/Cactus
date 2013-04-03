@@ -1,14 +1,17 @@
 # Build the standalone tool
 #
-CXX = g++
-CXXFLAGS =  -Wall -Wreturn-type
+BIN ?= .
+CXX ?= c++
+CXXFLAGS ?= -g -O2
 SRCS = AutoGrammar.cc Bracket.cc Dot.cc End.cc \
 	Generic.cc Grammar.cc Group.cc ILiteral.cc \
 	Literal.cc Lookup.cc Matcher.cc Multi.cc \
-	Or.cc ReParse.cc Seq.cc smart_ptr.cc Start.cc
+	Or.cc ReParse.cc Seq.cc smart_ptr.cc Start.cc \
+	Boundary.cc NegLookAhead.cc
 
-generic : $(SRCS) Piraha.hpp smart_ptr.hpp
-	$(CXX) -I . -g -o generic $(SRCS)
+$(BIN)/generic : $(SRCS) Piraha.hpp smart_ptr.hpp
+	mkdir -p $(BIN)
+	$(CXX) $(CXXFLAGS) -I . -o $(BIN)/generic $(SRCS)
 
 clean :
-	rm -f generic
+	rm -f $(BIN)/generic

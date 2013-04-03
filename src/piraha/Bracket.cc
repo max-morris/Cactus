@@ -95,7 +95,7 @@ bool Bracket::match(Matcher *m) {
     }
 }
 
-void insertc(std::ostream& o,char c) {
+void piraha::insertc(std::ostream& o,char c) {
     if(c == '-') {
         o << "\\-";
     } else if(c == '\n') {
@@ -104,7 +104,9 @@ void insertc(std::ostream& o,char c) {
         o << "\\r";
     } else if(c == '\t') {
         o << "\\t";
-    } else if(strchr("[]-",c)>=0) {
+    } else if(c == '\b') {
+        o << "\\b";
+    } else if(strchr("\\\"[]-",c) != 0) {
         o << "\\" << c;
     } else {
         o << c;
