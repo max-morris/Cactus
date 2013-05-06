@@ -868,15 +868,6 @@ char *CCTK_ParameterValString (const char *param_name, const char *thorn)
   return (retval);
 }
 
-const int slen(const char *s) {
-    int n = 0;
-    while(*s != '\0') {
-        s++;
-        n++;
-    }
-    return n;
-}
-
 /*@@
    @routine    CCTK_PARAMETERVALSTRING
    @date       Thu Jan 21 2000
@@ -919,7 +910,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_ParameterValString)
   c_string = CCTK_ParameterValString (param, thorn);
   if (c_string)
   {
-    *nchars = c_strlen = slen (c_string);
+    *nchars = c_strlen = strlen (c_string);
     if (c_strlen > (size_t) cctk_strlen3)
     {
       CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
@@ -1090,8 +1081,8 @@ int CCTK_ParameterWalk (int first,
               prefix = CCTK_ThornImplementation (prefix);
             }
 
-            *pfullname = malloc (slen (prefix) +
-                                 slen (startpoint->props->name) + 3);
+            *pfullname = malloc (strlen (prefix) +
+                                 strlen (startpoint->props->name) + 3);
             if(*pfullname)
             {
                 sprintf (*pfullname, "%s::%s",
@@ -2308,7 +2299,7 @@ static int ParameterSetReal (t_param *param, const char *value)
    * to do the actual conversion) only groks [eE].
    */
   temp = strdup (value);
-  for (unsigned int p = 0; p < slen (temp); p++)
+  for (unsigned int p = 0; p < strlen (temp); p++)
   {
     if (temp[p] == 'E' || temp[p] == 'd' || temp[p] == 'D')
     {
@@ -2499,7 +2490,7 @@ static void GetBaseName(const char *name, char **basename, int *array_index)
   }
   else
   {
-    baselen = slen(name);
+    baselen = strlen(name);
     *array_index = -1;
   }
 
@@ -2542,7 +2533,7 @@ static char *ArrayParamName(const char *basename,int array_index)
   char *retval;
 
   /* Assume the string representation of an integer is no greater than 40 chars */
-  retval = (char *)malloc(slen(basename)+2+40+1);
+  retval = (char *)malloc(strlen(basename)+2+40+1);
 
   if(retval)
   {
@@ -2751,7 +2742,7 @@ static int SetVarEvaluator(int nvars, const char * const *vars, uExpressionValue
          * to do the actual conversion) only groks [eE].
          */
         temp = strdup (vars[i]);
-        for (unsigned int p = 0; p < slen (temp); p++)
+        for (unsigned int p = 0; p < strlen (temp); p++)
         {
           if (temp[p] == 'E' || temp[p] == 'd' || temp[p] == 'D')
           {
