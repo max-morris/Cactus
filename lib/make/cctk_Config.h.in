@@ -169,6 +169,14 @@
 #undef CCTK_REAL8
 #undef CCTK_REAL4
 
+/* Disable 'restrict' for compiler versions known to be buggy */
+# if (defined __INTEL_COMPILER                && \
+      __INTEL_COMPILER_BUILD_DATE >= 20121010 && \
+      __INTEL_COMPILER_BUILD_DATE <= 20130313 && \
+      !defined CCTK_INTEL_COMPILER_DONT_DISABLE_RESTRICT )
+  #define CCTK_DISABLE_RESTRICT 1
+#endif
+
 /****************************************************************************/
 /* C specific stuff */
 /****************************************************************************/
@@ -187,8 +195,13 @@
 #undef const
 
 /* Define to empty if the 'restrict' keyword does not work. */
-#undef HAVE_CCTK_C_RESTRICT
-#undef CCTK_C_RESTRICT
+#ifdef CCTK_DISABLE_RESTRICT
+#  define CCTK_C_RESTRICT
+#else
+#  undef HAVE_CCTK_C_RESTRICT
+#  undef CCTK_C_RESTRICT
+#endif
+
 #ifdef CCTK_C_RESTRICT
 #  define restrict CCTK_C_RESTRICT
 #endif
@@ -583,9 +596,14 @@ typedef enum {false, true} bool;
 #endif
 
 /* Some C++ compilers recognise the restrict keyword */
-#undef HAVE_CCTK_CXX_RESTRICT
-#undef CCTK_CXX_RESTRICT
 /* Define to empty if the keyword does not work. */
+#ifdef CCTK_DISABLE_RESTRICT
+#  define CCTK_CXX_RESTRICT
+#else
+#  undef HAVE_CCTK_CXX_RESTRICT
+#  undef CCTK_CXX_RESTRICT
+#endif
+
 #ifdef CCTK_CXX_RESTRICT
 #  define restrict CCTK_CXX_RESTRICT
 #endif
