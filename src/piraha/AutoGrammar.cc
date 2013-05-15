@@ -1,6 +1,6 @@
 #include "Piraha.hpp"
 
-using namespace piraha;
+using namespace cctki_piraha;
 
 smart_ptr<Grammar> AutoGrammar::reparserGenerator() {
     smart_ptr<Grammar> g = new Grammar();

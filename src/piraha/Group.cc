@@ -1,6 +1,6 @@
 #include "Piraha.hpp"
 
-using namespace piraha;
+using namespace cctki_piraha;
 
 void Group::dump(std::ostream& o) {
 	dump(-1,o,0);

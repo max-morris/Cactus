@@ -1,6 +1,6 @@
 #include "Piraha.hpp"
 
-using namespace piraha;
+using namespace cctki_piraha;
 
 ILiteral::ILiteral(char b) : lc(lc_(b)), uc(uc_(b)) {}
 

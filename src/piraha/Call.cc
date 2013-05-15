@@ -12,7 +12,7 @@
 #include <limits>
 #include <fstream>
 
-namespace piraha {
+namespace cctki_piraha {
 
 #define VAR(X) " " #X "=" << X
 

@@ -8,6 +8,8 @@
 #define NULL ((void*)0)
 #endif
 
+namespace cctki_piraha {
+
 extern std::set<void*> *ptrs;
 
 // TODO: This code is disabled because it leads to segfaults during
@@ -19,11 +21,15 @@ extern std::set<void*> *ptrs;
 inline void add(std::set<void*>& v,void *t) {
     if(t == NULL)
         return;
+    // TODO: Don't separate finding and inserting; do it in one go to
+    // save a lookup.
     assert(v.find(t) == v.end());
     v.insert(t);
 }
 
 inline void remove(std::set<void*>& v,void* t) {
+        // TODO: Don't separate finding and erasing; do it in one go
+        // to save a lookup.
 	std::set<void*>::iterator it = v.find(t);
 	assert(it != v.end());
 	v.erase(it);
@@ -163,4 +169,6 @@ class smart_ptr {
     template<typename C>
     friend class smart_ptr;
 };
+
+}
 #endif

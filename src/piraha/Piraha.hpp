@@ -7,7 +7,7 @@
 #include <iostream>
 #include <smart_ptr.hpp>
 
-namespace piraha {
+namespace cctki_piraha {
 
 const int max_int = 10000;
 

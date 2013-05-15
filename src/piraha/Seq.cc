@@ -2,7 +2,7 @@
 #include <stdarg.h>
 #include "Piraha.hpp"
 
-using namespace piraha;
+using namespace cctki_piraha;
 
 Seq::Seq(Pattern *p,...) {
     va_list ap;

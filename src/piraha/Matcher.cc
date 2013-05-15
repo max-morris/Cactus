@@ -1,7 +1,7 @@
 #include <string.h>
 #include "Piraha.hpp"
 
-using namespace piraha;
+using namespace cctki_piraha;
 
 Matcher::Matcher(smart_ptr<Grammar> g_,const char *pat_,const char *input_,int input_size_) :
     Group(pat_,input_),

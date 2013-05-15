@@ -1,6 +1,6 @@
 #include "Piraha.hpp"
 
-using namespace piraha;
+using namespace cctki_piraha;
 
 bool NegLookAhead::match(Matcher *m) {
     int pos = m->pos;

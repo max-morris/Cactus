@@ -1,7 +1,7 @@
 #include <iostream>
 #include "Piraha.hpp"
 
-using namespace piraha;
+using namespace cctki_piraha;
 
 bool Multi::match(Matcher *m) {
     vector<smart_ptr<Group> > chSave;

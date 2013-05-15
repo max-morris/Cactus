@@ -1,6 +1,6 @@
 #include "Piraha.hpp"
 
-using namespace piraha;
+using namespace cctki_piraha;
 
 bool is_c_ident(char c) {
     return ('a' <= c && c <= 'z')

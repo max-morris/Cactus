@@ -1,6 +1,6 @@
 #include "Piraha.hpp"
 
-using namespace piraha;
+using namespace cctki_piraha;
 
 Lookup::Lookup(std::string name_,smart_ptr<Grammar> g) : gram(g), name(name_), capture(true) {
     if(name[0] == '-') {

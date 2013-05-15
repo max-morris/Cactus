@@ -1,7 +1,7 @@
 #include "Piraha.hpp"
 #include <string.h>
 
-using namespace piraha;
+using namespace cctki_piraha;
 
 typedef vector<smart_ptr<Range> >::iterator range_iter;
 
@@ -95,7 +95,7 @@ bool Bracket::match(Matcher *m) {
     }
 }
 
-void piraha::insertc(std::ostream& o,char c) {
+void cctki_piraha::insertc(std::ostream& o,char c) {
     if(c == '-') {
         o << "\\-";
     } else if(c == '\n') {

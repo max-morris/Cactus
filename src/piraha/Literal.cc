@@ -1,6 +1,6 @@
 #include "Piraha.hpp"
 
-using namespace piraha;
+using namespace cctki_piraha;
 
 bool Literal::match(Matcher *m) {
     if(m->pos - m->input_size >= 0) {

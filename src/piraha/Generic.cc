@@ -2,7 +2,7 @@
 #include <fstream>
 #include <stdlib.h>
 
-using namespace piraha;
+using namespace cctki_piraha;
 
 void read_file(const char *file,std::string& buf) {
     std::ifstream in;

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-namespace piraha {
+namespace cctki_piraha {
 
 char getChar(smart_ptr<Group> gr) {
     if(gr->groupCount()==1) {
