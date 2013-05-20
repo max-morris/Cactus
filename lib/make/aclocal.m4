@@ -1111,6 +1111,21 @@ fi
 
 
 
+AC_DEFUN(CCTK_CXX_STATIC_ASSERT,
+[AC_CACHE_CHECK([for CXX static_assert], cctk_cv_have_cxx_static_assert,
+[cctk_cv_have_cxx_static_assert=no
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_LINK(, static_assert(1, "good");, cctk_cv_have_cxx_static_assert=yes, cctk_cv_have_cxx_static_assert=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_cxx_static_assert" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_CXX_STATIC_ASSERT)
+fi
+])
+
+
+
 dnl Check for a function that may be provided by cmath or math.h
 AC_DEFUN(CCTK_CHECK_CXX_STDMATHFUNC,
 [cctk_func=`echo $1 | sed 'y%./+-%__p_%'`

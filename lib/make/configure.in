@@ -876,57 +876,60 @@ CCTK_C__PRAGMA
 # Ranger.  Don't know whether this is a problem with the compiler or
 # with how the function annotations are used here.
 #
-## Find out whether the C compiler supports __attribute__((const))
+## Find out whether the compiler supports __attribute__((const))
 #CCTK_C_ATTRIBUTE_CONST
 #CCTK_CXX_ATTRIBUTE_CONST
 #CCTK_CXX_MEMBER_ATTRIBUTE_CONST
 #
-## Find out whether the C compiler supports __attribute__((pure))
+## Find out whether the compiler supports __attribute__((pure))
 #CCTK_C_ATTRIBUTE_PURE
 #CCTK_CXX_ATTRIBUTE_PURE
 #CCTK_CXX_MEMBER_ATTRIBUTE_PURE
 
-# Find out whether the C compiler supports __attribute__((noinline))
+# Find out whether the compiler supports __attribute__((noinline))
 CCTK_C_ATTRIBUTE_NOINLINE
 CCTK_CXX_ATTRIBUTE_NOINLINE
 CCTK_CXX_MEMBER_ATTRIBUTE_NOINLINE
 
-# Find out whether the C compiler supports __attribute__((always_inline))
+# Find out whether the compiler supports __attribute__((always_inline))
 CCTK_C_ATTRIBUTE_ALWAYS_INLINE
 CCTK_CXX_ATTRIBUTE_ALWAYS_INLINE
 CCTK_CXX_MEMBER_ATTRIBUTE_ALWAYS_INLINE
 
-# Find out whether the C compiler supports __attribute__((unused))
+# Find out whether the compiler supports __attribute__((unused))
 CCTK_C_ATTRIBUTE_UNUSED
 CCTK_CXX_ATTRIBUTE_UNUSED
 
-# Find out whether the C compiler supports __attribute__((aligned(...)))
+# Find out whether the compiler supports __attribute__((aligned(...)))
 CCTK_C_ATTRIBUTE_ALIGNED
 CCTK_CXX_ATTRIBUTE_ALIGNED
 
-# Find out whether the C compiler supports __attribute__((cold))
+# Find out whether the compiler supports __attribute__((cold))
 CCTK_C_ATTRIBUTE_COLD
 CCTK_CXX_ATTRIBUTE_COLD
 
-# Find out whether the C compiler supports __attribute__((hot))
+# Find out whether the compiler supports __attribute__((hot))
 CCTK_C_ATTRIBUTE_HOT
 CCTK_CXX_ATTRIBUTE_HOT
 
-# Find out whether the C compiler supports __attribute__((format(...)))
+# Find out whether the compiler supports __attribute__((format(...)))
 CCTK_C_ATTRIBUTE_FORMAT
 CCTK_CXX_ATTRIBUTE_FORMAT
 
-# Find out whether the C compiler supports __attribute__((noreturn))
+# Find out whether the compiler supports __attribute__((noreturn))
 CCTK_C_ATTRIBUTE_NORETURN
 CCTK_CXX_ATTRIBUTE_NORETURN
 
-# Find out whether the C compiler supports __builtin_expect
+# Find out whether the compiler supports __builtin_expect
 CCTK_C_BUILTIN_EXPECT
 CCTK_CXX_BUILTIN_EXPECT
 
-# Find out whether the C compiler supports __builtin_unreachable
+# Find out whether the compiler supports __builtin_unreachable
 CCTK_C_BUILTIN_UNREACHABLE
 CCTK_CXX_BUILTIN_UNREACHABLE
+
+# Find out whether the compiler supports static_assert
+CCTK_CXX_STATIC_ASSERT
 
 if test "x$REAL16_KIND" = 'x'; then
   REAL16_KIND=16

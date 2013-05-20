@@ -595,6 +595,15 @@ typedef enum {false, true} bool;
 #  define CCTK_BUILTIN_UNREACHABLE() CCTK_Abort(0, 1)
 #endif
 
+/* Whether static_assert exists. */
+#undef HAVE_CCTK_CXX_STATIC_ASSERT
+#ifdef HAVE_CCTK_CXX_STATIC_ASSERT
+#  define CCTK_STATIC_ASSERT(cond,msg) static_assert(cond,msg)
+#else
+#  define CCTK_STATIC_ASSERT(cond,msg) do { typedef int ai[(cond) ? 1 : -1]; } while(0)
+#  define static_assert(cond,msg) CCTK_STATIC_ASSERT(cond,msg)
+#endif
+
 /* Some C++ compilers recognise the restrict keyword */
 /* Define to empty if the keyword does not work. */
 #ifdef CCTK_DISABLE_RESTRICT
