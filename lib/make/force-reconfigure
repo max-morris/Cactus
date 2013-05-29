@@ -39,3 +39,4 @@
 25 Feb 2013: Auto-detect attribute((format)), attribute((noreturn)), and
 	     __builtin_unreachable()
 28 Feb 2013: Add variable XARGS
+20 May 2013: Auto-configure static_assert
