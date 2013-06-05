@@ -754,6 +754,15 @@ sub parse_interface_ccl
 
       }
 
+      if($funcname eq $provided_by) {
+        my $message = "The providing function $provided_by in thorn $thorn " .
+                      "has a name that is identical to the name of the provided " .
+                      "function $funcname. The names must be different.";
+        my $hint = "Rename the providing function by prefixing its name with ".
+                   "'${thorn}_'.";
+        &CST_error(0, $message, $hint, __LINE__, __FILE__);
+      }
+
       $interface_data_ref->{"\U$thorn PROVIDES FUNCTION\E"} .= "$funcname ";
       $interface_data_ref->{"\U$thorn PROVIDES FUNCTION\E $funcname WITH"} .= "$provided_by ";
       $interface_data_ref->{"\U$thorn PROVIDES FUNCTION\E $funcname LANG"} .= "$provided_by_language ";
