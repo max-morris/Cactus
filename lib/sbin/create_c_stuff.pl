@@ -237,6 +237,7 @@ sub CreateCStructureParameterHeader
   push(@data, @definition);
   push(@data, "\n");
   push(@data, @definition2);
+  push(@data, "\n");
 
   return join ("\n", @data);
 }
