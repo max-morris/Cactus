@@ -11,6 +11,18 @@
 #  include <cctk_WarnLevel.h>
 #  include <cGH.h>
 #  include <assert.h>
+
+#  ifndef CCTK_DISABLE_OMP_COLLAPSE
+#    define CCTK_PRAGMA_OMP_FOR_COLLAPSE_1 _Pragma("omp for collapse(1)")
+#    define CCTK_PRAGMA_OMP_FOR_COLLAPSE_2 _Pragma("omp for collapse(2)")
+#    define CCTK_PRAGMA_OMP_FOR_COLLAPSE_3 _Pragma("omp for collapse(3)")
+#    define CCTK_PRAGMA_OMP_FOR_COLLAPSE_4 _Pragma("omp for collapse(4)")
+#  else
+#    define CCTK_PRAGMA_OMP_FOR_COLLAPSE_1 _Pragma("omp for")
+#    define CCTK_PRAGMA_OMP_FOR_COLLAPSE_2 _Pragma("omp for")
+#    define CCTK_PRAGMA_OMP_FOR_COLLAPSE_3 _Pragma("omp for")
+#    define CCTK_PRAGMA_OMP_FOR_COLLAPSE_4 _Pragma("omp for")
+#  endif
 #endif /* #ifdef CCODE */
 
 
@@ -68,7 +80,7 @@
 #define CCTK_ENDLOOP1STR_NORMAL(name) \
       } \
     } \
-    typedef cctki0_loop1_normal_##name cctki0_ensure_proper_nesting; \
+    typedef cctki0_loop1_normal_##name cctki0_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 
@@ -145,7 +157,7 @@
 
 #define CCTK_ENDLOOP1STR_INTERIOR(name) \
     } CCTK_ENDLOOP1STR(name##_interior); \
-    typedef cctki2_loop1_interior_##name cctki2_ensure_proper_nesting; \
+    typedef cctki2_loop1_interior_##name cctki2_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while(0) \
 
 
@@ -215,7 +227,7 @@
         } CCTK_ENDLOOP1STR_NORMAL(name##_boundaries); \
       } /* if bbox */ \
     } /* for dir */ \
-    typedef cctki2_loop1_boundaries_##name cctki2_ensure_proper_nesting; \
+    typedef cctki2_loop1_boundaries_##name cctki2_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 
@@ -287,7 +299,7 @@
         } CCTK_ENDLOOP1STR_NORMAL(name##_intboundaries); \
       } /* if bbox */ \
     } /* for dir */ \
-    typedef cctki2_loop1_intboundaries_##name cctki2_ensure_proper_nesting; \
+    typedef cctki2_loop1_intboundaries_##name cctki2_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 
@@ -323,7 +335,7 @@
 
 #define CCTK_ENDLOOP1STR_ALL(name) \
     } CCTK_ENDLOOP1STR(name##_all); \
-    typedef cctki3_loop1_all_##name cctki3_ensure_proper_nesting; \
+    typedef cctki3_loop1_all_##name cctki3_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 
@@ -366,7 +378,7 @@
 
 #define CCTK_ENDLOOP1STR_INT(name) \
     } CCTK_ENDLOOP1STR_INTERIOR(name##_int); \
-    typedef cctki3_loop1_int_##name cctki3_ensure_proper_nesting; \
+    typedef cctki3_loop1_int_##name cctki3_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 
@@ -415,7 +427,7 @@
 
 #define CCTK_ENDLOOP1STR_BND(name) \
     } CCTK_ENDLOOP1STR_BOUNDARIES(name##_bnd); \
-    typedef cctki3_loop1_bnd_##name cctki3_ensure_proper_nesting; \
+    typedef cctki3_loop1_bnd_##name cctki3_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 
@@ -464,7 +476,7 @@
 
 #define CCTK_ENDLOOP1STR_INTBND(name) \
     } CCTK_ENDLOOP1STR_INTBOUNDARIES(name##_intbnd); \
-    typedef cctki3_loop1_intbnd_##name cctki3_ensure_proper_nesting; \
+    typedef cctki3_loop1_intbnd_##name cctki3_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 #endif /* #ifdef CCODE */
@@ -1041,7 +1053,7 @@
     int const cctki0_istr = (cctki0_istr_); \
     int const imin CCTK_ATTRIBUTE_UNUSED = cctki0_imin; \
     int const imax CCTK_ATTRIBUTE_UNUSED = cctki0_imax; \
-    _Pragma("omp for collapse(1)") \
+    CCTK_PRAGMA_OMP_FOR_COLLAPSE_1 \
     for (int j=cctki0_jmin; j<cctki0_jmax; ++j) { \
      \
     int const cctki0_ioff = (cctki0_imin+cctki0_iash*(j)) % cctki0_istr; \
@@ -1055,7 +1067,7 @@
       } \
     } \
     } \
-    typedef cctki0_loop2_normal_##name cctki0_ensure_proper_nesting; \
+    typedef cctki0_loop2_normal_##name cctki0_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 
@@ -1134,7 +1146,7 @@
 
 #define CCTK_ENDLOOP2STR_INTERIOR(name) \
     } CCTK_ENDLOOP2STR(name##_interior); \
-    typedef cctki2_loop2_interior_##name cctki2_ensure_proper_nesting; \
+    typedef cctki2_loop2_interior_##name cctki2_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while(0) \
 
 
@@ -1210,7 +1222,7 @@
       } /* if bbox */ \
     } /* for dir */ \
     } /* for dir */ \
-    typedef cctki2_loop2_boundaries_##name cctki2_ensure_proper_nesting; \
+    typedef cctki2_loop2_boundaries_##name cctki2_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 
@@ -1289,7 +1301,7 @@
       } /* if bbox */ \
     } /* for dir */ \
     } /* for dir */ \
-    typedef cctki2_loop2_intboundaries_##name cctki2_ensure_proper_nesting; \
+    typedef cctki2_loop2_intboundaries_##name cctki2_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 
@@ -1327,7 +1339,7 @@
 
 #define CCTK_ENDLOOP2STR_ALL(name) \
     } CCTK_ENDLOOP2STR(name##_all); \
-    typedef cctki3_loop2_all_##name cctki3_ensure_proper_nesting; \
+    typedef cctki3_loop2_all_##name cctki3_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 
@@ -1370,7 +1382,7 @@
 
 #define CCTK_ENDLOOP2STR_INT(name) \
     } CCTK_ENDLOOP2STR_INTERIOR(name##_int); \
-    typedef cctki3_loop2_int_##name cctki3_ensure_proper_nesting; \
+    typedef cctki3_loop2_int_##name cctki3_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 
@@ -1419,7 +1431,7 @@
 
 #define CCTK_ENDLOOP2STR_BND(name) \
     } CCTK_ENDLOOP2STR_BOUNDARIES(name##_bnd); \
-    typedef cctki3_loop2_bnd_##name cctki3_ensure_proper_nesting; \
+    typedef cctki3_loop2_bnd_##name cctki3_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 
@@ -1468,7 +1480,7 @@
 
 #define CCTK_ENDLOOP2STR_INTBND(name) \
     } CCTK_ENDLOOP2STR_INTBOUNDARIES(name##_intbnd); \
-    typedef cctki3_loop2_intbnd_##name cctki3_ensure_proper_nesting; \
+    typedef cctki3_loop2_intbnd_##name cctki3_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 #endif /* #ifdef CCODE */
@@ -2086,7 +2098,7 @@
     int const cctki0_istr = (cctki0_istr_); \
     int const imin CCTK_ATTRIBUTE_UNUSED = cctki0_imin; \
     int const imax CCTK_ATTRIBUTE_UNUSED = cctki0_imax; \
-    _Pragma("omp for collapse(2)") \
+    CCTK_PRAGMA_OMP_FOR_COLLAPSE_2 \
     for (int k=cctki0_kmin; k<cctki0_kmax; ++k) { \
     for (int j=cctki0_jmin; j<cctki0_jmax; ++j) { \
      \
@@ -2103,7 +2115,7 @@
     } \
     } \
     } \
-    typedef cctki0_loop3_normal_##name cctki0_ensure_proper_nesting; \
+    typedef cctki0_loop3_normal_##name cctki0_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 
@@ -2184,7 +2196,7 @@
 
 #define CCTK_ENDLOOP3STR_INTERIOR(name) \
     } CCTK_ENDLOOP3STR(name##_interior); \
-    typedef cctki2_loop3_interior_##name cctki2_ensure_proper_nesting; \
+    typedef cctki2_loop3_interior_##name cctki2_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while(0) \
 
 
@@ -2266,7 +2278,7 @@
     } /* for dir */ \
     } /* for dir */ \
     } /* for dir */ \
-    typedef cctki2_loop3_boundaries_##name cctki2_ensure_proper_nesting; \
+    typedef cctki2_loop3_boundaries_##name cctki2_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 
@@ -2352,7 +2364,7 @@
     } /* for dir */ \
     } /* for dir */ \
     } /* for dir */ \
-    typedef cctki2_loop3_intboundaries_##name cctki2_ensure_proper_nesting; \
+    typedef cctki2_loop3_intboundaries_##name cctki2_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 
@@ -2392,7 +2404,7 @@
 
 #define CCTK_ENDLOOP3STR_ALL(name) \
     } CCTK_ENDLOOP3STR(name##_all); \
-    typedef cctki3_loop3_all_##name cctki3_ensure_proper_nesting; \
+    typedef cctki3_loop3_all_##name cctki3_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 
@@ -2435,7 +2447,7 @@
 
 #define CCTK_ENDLOOP3STR_INT(name) \
     } CCTK_ENDLOOP3STR_INTERIOR(name##_int); \
-    typedef cctki3_loop3_int_##name cctki3_ensure_proper_nesting; \
+    typedef cctki3_loop3_int_##name cctki3_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 
@@ -2484,7 +2496,7 @@
 
 #define CCTK_ENDLOOP3STR_BND(name) \
     } CCTK_ENDLOOP3STR_BOUNDARIES(name##_bnd); \
-    typedef cctki3_loop3_bnd_##name cctki3_ensure_proper_nesting; \
+    typedef cctki3_loop3_bnd_##name cctki3_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 
@@ -2533,7 +2545,7 @@
 
 #define CCTK_ENDLOOP3STR_INTBND(name) \
     } CCTK_ENDLOOP3STR_INTBOUNDARIES(name##_intbnd); \
-    typedef cctki3_loop3_intbnd_##name cctki3_ensure_proper_nesting; \
+    typedef cctki3_loop3_intbnd_##name cctki3_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 #endif /* #ifdef CCODE */
@@ -3192,7 +3204,7 @@
     int const cctki0_istr = (cctki0_istr_); \
     int const imin CCTK_ATTRIBUTE_UNUSED = cctki0_imin; \
     int const imax CCTK_ATTRIBUTE_UNUSED = cctki0_imax; \
-    _Pragma("omp for collapse(3)") \
+    CCTK_PRAGMA_OMP_FOR_COLLAPSE_3 \
     for (int l=cctki0_lmin; l<cctki0_lmax; ++l) { \
     for (int k=cctki0_kmin; k<cctki0_kmax; ++k) { \
     for (int j=cctki0_jmin; j<cctki0_jmax; ++j) { \
@@ -3212,7 +3224,7 @@
     } \
     } \
     } \
-    typedef cctki0_loop4_normal_##name cctki0_ensure_proper_nesting; \
+    typedef cctki0_loop4_normal_##name cctki0_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 
@@ -3295,7 +3307,7 @@
 
 #define CCTK_ENDLOOP4STR_INTERIOR(name) \
     } CCTK_ENDLOOP4STR(name##_interior); \
-    typedef cctki2_loop4_interior_##name cctki2_ensure_proper_nesting; \
+    typedef cctki2_loop4_interior_##name cctki2_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while(0) \
 
 
@@ -3383,7 +3395,7 @@
     } /* for dir */ \
     } /* for dir */ \
     } /* for dir */ \
-    typedef cctki2_loop4_boundaries_##name cctki2_ensure_proper_nesting; \
+    typedef cctki2_loop4_boundaries_##name cctki2_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 
@@ -3476,7 +3488,7 @@
     } /* for dir */ \
     } /* for dir */ \
     } /* for dir */ \
-    typedef cctki2_loop4_intboundaries_##name cctki2_ensure_proper_nesting; \
+    typedef cctki2_loop4_intboundaries_##name cctki2_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 
@@ -3518,7 +3530,7 @@
 
 #define CCTK_ENDLOOP4STR_ALL(name) \
     } CCTK_ENDLOOP4STR(name##_all); \
-    typedef cctki3_loop4_all_##name cctki3_ensure_proper_nesting; \
+    typedef cctki3_loop4_all_##name cctki3_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 
@@ -3561,7 +3573,7 @@
 
 #define CCTK_ENDLOOP4STR_INT(name) \
     } CCTK_ENDLOOP4STR_INTERIOR(name##_int); \
-    typedef cctki3_loop4_int_##name cctki3_ensure_proper_nesting; \
+    typedef cctki3_loop4_int_##name cctki3_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 
@@ -3610,7 +3622,7 @@
 
 #define CCTK_ENDLOOP4STR_BND(name) \
     } CCTK_ENDLOOP4STR_BOUNDARIES(name##_bnd); \
-    typedef cctki3_loop4_bnd_##name cctki3_ensure_proper_nesting; \
+    typedef cctki3_loop4_bnd_##name cctki3_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 
@@ -3659,7 +3671,7 @@
 
 #define CCTK_ENDLOOP4STR_INTBND(name) \
     } CCTK_ENDLOOP4STR_INTBOUNDARIES(name##_intbnd); \
-    typedef cctki3_loop4_intbnd_##name cctki3_ensure_proper_nesting; \
+    typedef cctki3_loop4_intbnd_##name cctki3_ensure_proper_nesting CCTK_ATTRIBUTE_UNUSED; \
   } while (0) \
 
 #endif /* #ifdef CCODE */
