@@ -603,12 +603,18 @@ int CCTK_ParameterSet (const char *name, const char *thorn, const char *value)
       {
         if (strcmp (old_value, value))
         {
-          CCTK_VWarn (2, __LINE__, __FILE__, "Cactus",
-                      "CCTK_ParameterSet: Non-steerable parameter '%s::%s' is "
-                      "not set from the parameter file but recovered from the "
-                      "checkpoint file",
+          CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                      "CCTK_ParameterSet: Non-steerable parameter '%s::%s' "
+                      "cannot be set from the parameter file but is recovered "
+                      "from the checkpoint file",
                       thorn, name);
-          retval = ParameterSet (param, value);
+          /* we ignore a possible error code from ParameterSet, instead always
+           * returning "this parameter has already been set" to our caller.
+           * We expect the caller to terminate, but in case they do not, we use
+           * the value of the parameter recovered from the checkpoint file.
+           */
+          ParameterSet (param, value);
+          retval = -10;
         }
         else
         {
