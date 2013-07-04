@@ -168,6 +168,7 @@ typedef struct
 
   int n_variables;
 
+  /* 1 for scalar groups, number of vector elements for vector groups */
   int vectorlength;
 
   /* *size[dim]  - pointers to parameter data*/

@@ -2229,7 +2229,7 @@ static int ParameterSetInteger (t_param *param, const char *value)
       }
       else if(fabs(round(val.value.rval) - val.value.rval) < 1e-12) /* enforce integer result */
       {
-        inval = (int)rint(round(val.value.rval));
+        inval = (int)lrint(val.value.rval);
       }
       else
       {
@@ -2388,7 +2388,7 @@ static int ParameterSetReal (t_param *param, const char *value)
 
 static int ParameterSetBoolean (t_param *param, const char *value)
 {
-  const int type = PARAMETER_BOOLEAN;
+  int type = PARAMETER_BOOLEAN;
   int retval, inval;
   uExpressionValue val;
   uExpression *expr;
@@ -2419,7 +2419,7 @@ static int ParameterSetBoolean (t_param *param, const char *value)
       }
       else if(fabs(round(val.value.rval) - val.value.rval) < 1e-12) /* enforce integer result */
       {
-        inval = (int)round(val.value.rval);
+        inval = (int)lrint(val.value.rval);
         retval = 0;
       }
       else
@@ -2590,9 +2590,7 @@ static char *ArrayParamName(const char *basename,int array_index)
 static int AccVarEvaluator(int nvars, const char * const *vars, uExpressionValue *vals, const void *data)
 {
   int i;
-  uExpressionValue *exps;
-
-  exps = (uExpressionValue *)data;
+  const uExpressionValue *exps = (const uExpressionValue *)data;
 
   for(i=0; i < nvars; i++)
   {
@@ -2661,7 +2659,7 @@ static int AccVarEvaluator(int nvars, const char * const *vars, uExpressionValue
  @@*/
 static int SetVarEvaluator(int nvars, const char * const *vars, uExpressionValue *vals, const void *data)
 {
-  const int restype = *(int *)data;
+  const int restype = *(const int *)data;
   int retval = 0;
 
   for (int i=0; i < nvars; i++)
@@ -2684,17 +2682,17 @@ static int SetVarEvaluator(int nvars, const char * const *vars, uExpressionValue
           {
             case PARAMETER_REAL:
               vals[i].type = rval;
-              vals[i].value.rval = *(CCTK_REAL *)paramval;
+              vals[i].value.rval = *(const CCTK_REAL *)paramval;
               ierr = 0;
               break;
             case PARAMETER_INT:
               vals[i].type = ival;
-              vals[i].value.ival = *(CCTK_INT *)paramval;
+              vals[i].value.ival = *(const CCTK_INT *)paramval;
               ierr = 0;
               break;
             case PARAMETER_BOOLEAN:
               vals[i].type = ival;
-              vals[i].value.ival = *(CCTK_INT *)paramval;
+              vals[i].value.ival = *(const CCTK_INT *)paramval;
               ierr = 0;
               break;
             default:

@@ -688,8 +688,9 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
 
   if (fracpart >= mypow10 (max))
   {
+    LDOUBLE fmax = mypow10 (max);
     intpart++;
-    fracpart -= (long)mypow10 (max);
+    fracpart -= (long)fmax;
   }
 
 #ifdef DEBUG_SNPRINTF
