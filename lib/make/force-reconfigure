@@ -40,3 +40,4 @@
 	     __builtin_unreachable()
 28 Feb 2013: Add variable XARGS
 20 May 2013: Auto-configure static_assert
+16 Jun 2013: Auto-configure __builtin_assume_aligned

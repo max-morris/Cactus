@@ -928,6 +928,10 @@ CCTK_CXX_BUILTIN_EXPECT
 CCTK_C_BUILTIN_UNREACHABLE
 CCTK_CXX_BUILTIN_UNREACHABLE
 
+# Find out whether the compiler supports __builtin_assume_aligned
+CCTK_C_BUILTIN_ASSUME_ALIGNED
+CCTK_CXX_BUILTIN_ASSUME_ALIGNED
+
 # Find out whether the compiler supports static_assert
 CCTK_CXX_STATIC_ASSERT
 

@@ -373,7 +373,7 @@ typedef enum {false, true} bool;
 /* Whether __builtin_expect exists. */
 #undef HAVE_CCTK_C_BUILTIN_EXPECT
 #ifdef HAVE_CCTK_C_BUILTIN_EXPECT
-#  define CCTK_BUILTIN_EXPECT(x,y) __builtin_expect(x,y)
+#  define CCTK_BUILTIN_EXPECT __builtin_expect
 #else
 #  define CCTK_BUILTIN_EXPECT(x,y) (x)
 #endif
@@ -381,9 +381,17 @@ typedef enum {false, true} bool;
 /* Whether __builtin_unreachable exists. */
 #undef HAVE_CCTK_C_BUILTIN_UNREACHABLE
 #ifdef HAVE_CCTK_C_BUILTIN_UNREACHABLE
-#  define CCTK_BUILTIN_UNREACHABLE() __builtin_unreachable()
+#  define CCTK_BUILTIN_UNREACHABLE __builtin_unreachable
 #else
 #  define CCTK_BUILTIN_UNREACHABLE() CCTK_Abort(0, 1)
+#endif
+
+/* Whether __builtin_assume_aligned exists. */
+#undef HAVE_CCTK_C_BUILTIN_ASSUME_ALIGNED
+#ifdef HAVE_CCTK_C_BUILTIN_ASSUME_ALIGNED
+#  define CCTK_BUILTIN_ASSUME_ALIGNED __builtin_assume_aligned
+#else
+#  define CCTK_BUILTIN_ASSUME_ALIGNED(exp, ...) (exp)
 #endif
 
 /* OpenMP collapse clause */
@@ -582,7 +590,7 @@ typedef enum {false, true} bool;
 /* Whether __builtin_expect exists. */
 #undef HAVE_CCTK_CXX_BUILTIN_EXPECT
 #ifdef HAVE_CCTK_CXX_BUILTIN_EXPECT
-#  define CCTK_BUILTIN_EXPECT(x,y) __builtin_expect(x,y)
+#  define CCTK_BUILTIN_EXPECT __builtin_expect
 #else
 #  define CCTK_BUILTIN_EXPECT(x,y) (x)
 #endif
@@ -590,9 +598,17 @@ typedef enum {false, true} bool;
 /* Whether __builtin_unreachable exists. */
 #undef HAVE_CCTK_CXX_BUILTIN_UNREACHABLE
 #ifdef HAVE_CCTK_CXX_BUILTIN_UNREACHABLE
-#  define CCTK_BUILTIN_UNREACHABLE() __builtin_unreachable()
+#  define CCTK_BUILTIN_UNREACHABLE __builtin_unreachable
 #else
 #  define CCTK_BUILTIN_UNREACHABLE() CCTK_Abort(0, 1)
+#endif
+
+/* Whether __builtin_assume_aligned exists. */
+#undef HAVE_CCTK_CXX_BUILTIN_ASSUME_ALIGNED
+#ifdef HAVE_CCTK_CXX_BUILTIN_ASSUME_ALIGNED
+#  define CCTK_BUILTIN_ASSUME_ALIGNED __builtin_assume_aligned
+#else
+#  define CCTK_BUILTIN_ASSUME_ALIGNED(exp, ...) (exp)
 #endif
 
 /* Whether static_assert exists. */

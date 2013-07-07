@@ -1111,6 +1111,37 @@ fi
 
 
 
+AC_DEFUN(CCTK_C_BUILTIN_ASSUME_ALIGNED,
+[AC_CACHE_CHECK([for C __builtin_assume_aligned], cctk_cv_have_c_builtin_assume_aligned,
+[cctk_cv_have_c_builtin_assume_aligned=no
+AC_TRY_LINK(,
+__builtin_assume_aligned((void*)1000, 10);
+__builtin_assume_aligned((void*)1001, 10, 1);
+, cctk_cv_have_c_builtin_assume_aligned=yes, cctk_cv_have_c_builtin_assume_aligned=no)
+])
+if test "$cctk_cv_have_c_builtin_assume_aligned" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_C_BUILTIN_ASSUME_ALIGNED)
+fi
+])
+
+AC_DEFUN(CCTK_CXX_BUILTIN_ASSUME_ALIGNED,
+[AC_CACHE_CHECK([for CXX __builtin_assume_aligned], cctk_cv_have_cxx_builtin_assume_aligned,
+[cctk_cv_have_cxx_builtin_assume_aligned=no
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_LINK(,
+__builtin_assume_aligned((void*)1000, 10);
+__builtin_assume_aligned((void*)1001, 10, 1);
+, cctk_cv_have_cxx_builtin_assume_aligned=yes, cctk_cv_have_cxx_builtin_assume_aligned=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_cxx_builtin_assume_aligned" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_CXX_BUILTIN_ASSUME_ALIGNED)
+fi
+])
+
+
+
 AC_DEFUN(CCTK_CXX_STATIC_ASSERT,
 [AC_CACHE_CHECK([for CXX static_assert], cctk_cv_have_cxx_static_assert,
 [cctk_cv_have_cxx_static_assert=no
