@@ -109,13 +109,12 @@ sub ProcessConfiguration
   }
 
   # Now setup the environment
-  # FIXME: Would like to restrict this to just the @allowed_opts, but then
-  # flesh configuration options like MPI or arch specific ones like
-  # IRIX_BITS would not be propogated 8-(
-
-  foreach $option (keys %$configinfo)
+  foreach $option (@allowed_opts)
   {
-    $ENV{$option} = $configinfo->{$option};
+    if (defined($configinfo->{$option}))
+    {
+      $ENV{$option} = $configinfo->{$option};
+    }
   }
 
   # Ok, can now run the configuration scripts.
