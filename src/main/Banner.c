@@ -82,7 +82,7 @@ void CCTKi_CactusBanner (void)
   char buffer[DATALENGTH+1];
   const char *banner = "       10                                  \n"
                        "  1   0101       ************************  \n"
-                       "  01  1010 10      The Cactus Code V4.0    \n"
+                       "  01  1010 10      The Cactus Code V%s    \n"
                        " 1010 1101 011      www.cactuscode.org     \n"
                        "  1001 100101    ************************  \n"
                        "    00010101                               \n"
@@ -92,7 +92,7 @@ void CCTKi_CactusBanner (void)
 
 
   puts (delimiter);
-  puts (banner);
+  printf (banner, CCTK_FullVersion ());
   puts (delimiter);
 
   printf ("Cactus version:    %s\n", CCTK_FullVersion ());
