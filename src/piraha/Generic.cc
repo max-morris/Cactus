@@ -17,7 +17,7 @@ void read_file(const char *file,std::string& buf) {
 }
 
 void usage() {
-    std::cerr << "usage: generic [--perl] grammar input" << std::endl;
+    std::cerr << "usage: generic [--perl|--python] grammar input" << std::endl;
     exit(2);
 }
 
@@ -50,6 +50,7 @@ bool newEnd(std::string& in,const char *new_end,std::string& out) {
 int main(int argc,char **argv) {
 	std::string grammarArg, inputArg;
 	bool perlFlag = false;
+    bool pythonFlag = false;
 	bool oFlag = false;
     std::string outFile;
     int narg = 0;
@@ -57,6 +58,8 @@ int main(int argc,char **argv) {
     	std::string arg = argv[n];
     	if(arg == "--perl") {
     		perlFlag = true;
+        } else if(arg == "--python") {
+            pythonFlag =  true;
     	} else if(arg == "-o") {
     		outFile = argv[++n];
     		oFlag = true;
@@ -76,6 +79,8 @@ int main(int argc,char **argv) {
     if(!oFlag) {
     	if(perlFlag) {
     		newEnd(inputArg,".pm",outFile);
+        } else if(pythonFlag) {
+    		newEnd(inputArg,".py",outFile);
     	} else {
     		newEnd(inputArg,".pegout",outFile);
     	}
@@ -101,6 +106,8 @@ int main(int argc,char **argv) {
         mg->children.push_back(src_file);
     	if(perlFlag) {
     		mg->dumpPerl(o);
+        } else if(pythonFlag) {
+            mg->dumpPython(o);
     	} else {
     		mg->dump(o);
         }

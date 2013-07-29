@@ -57,6 +57,8 @@ public:
     void dump(int n,std::ostream& o,int indent=0);
     void dumpPerl(std::ostream&o=std::cout);
     void dumpPerl(std::ostream&o,int indent);
+    void dumpPython(std::ostream&o=std::cout);
+    void dumpPython(std::ostream&o,int indent);
     int groupCount() { return children.size(); }
     smart_ptr<Group> group(int i) { return children[i]; }
     smart_ptr<Group> group(const char *nm,int ix=0) {

@@ -80,6 +80,60 @@ void Group::dumpPerl(std::ostream &o,int indent) {
 	o << "}" << std::endl;
 }
 
+void Group::dumpPython(std::ostream& o) {
+	o << "VAR = ";
+	dumpPython(o,0);
+}
+void Group::dumpPython(std::ostream &o,int indent) {
+	for(int i=0;i<indent;i++)
+		o << ' ';
+	o << "{" << std::endl;
+	indent += 2;
+	for(int i=0;i<indent;i++)
+		o << ' ';
+	o << "'name' : \"" << getPatternName() << "\"," << std::endl;
+	if(children.size()==0) {
+		for(int i=0;i<indent;i++)
+			o << ' ';
+		o << "'children' : []," << std::endl;
+		for(int i=0;i<indent;i++)
+			o << ' ';
+		o << "'text' : \"";
+		for(int i=start_;i<end_;i++)
+			insertc(o,input[i]);
+		o << "\"," << std::endl;
+	} else {
+		for(int i=0;i<indent;i++)
+			o << ' ';
+		o << "'children' : [" << std::endl;
+		typedef vector<smart_ptr<Group> >::iterator group_iter;
+		for(group_iter gi = children.begin();
+				gi != children.end();
+				++gi) {
+			(*gi)->dumpPython(o,indent+2);
+			for(int i=0;i<indent;i++)
+				o << ' ';
+			o << "," << std::endl;
+		}
+		for(int i=0;i<indent;i++)
+			o << ' ';
+		o << "]," << std::endl;
+	}
+	for(int i=0;i<indent;i++)
+		o << ' ';
+	o << "'start' : " << start() << "," << std::endl;
+	for(int i=0;i<indent;i++)
+		o << ' ';
+	o << "'end' : " << end() << "," << std::endl;
+	for(int i=0;i<indent;i++)
+		o << ' ';
+	o << "'line' : " << line() << "," << std::endl;
+	indent -= 2;
+	for(int i=0;i<indent;i++)
+		o << ' ';
+	o << "}" << std::endl;
+}
+
 std::string Group::substring() {
     std::string sub;
     for(int i=start_;i<end_;i++) {
