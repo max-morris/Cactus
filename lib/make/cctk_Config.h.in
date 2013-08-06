@@ -401,7 +401,7 @@ typedef enum {false, true} bool;
 /* see http://software.intel.com/en-us/articles/intel-professional-edition-compilers-111-fixes-list/ */
 #  define collapse(N)
 #  ifndef CCTK_DISABLE_OMP_COLLAPSE
-#    error "OpenMP collapse directive disabled for C, but enabled for Fortran -- likely an error in the option list"
+#    error "OpenMP collapse directive disabled for C, but enabled for Fortran -- likely an error in the option list. Please add -DCCTK_DISABLE_OMP_COLLAPSE to FPPFLAGS and CPPFLAGS."
 #  endif
 #else
 #  undef collapse
