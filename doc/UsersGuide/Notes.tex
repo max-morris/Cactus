@@ -1313,8 +1313,8 @@ this is not mandatory.
 
 A parameter file is a text file whose lines are either comments
 or parameter statements.
-Comments are blank lines or lines that begin with either
-`\texttt{\#}' or `\texttt{!}'.
+Comments are blank lines or lines that begin with 
+`\texttt{\#}'.
 A parameter statement
 consists of one or more parameter names, followed by
 an `\texttt{=}', followed by the value(s) for this (these) parameter(s).
@@ -1323,20 +1323,26 @@ Note that all string parameters are case insensitive.
 Parameters statements of numeric or boolean type can use arithmetic
 expressions in place of explicit values. The usual arithmetic operations
 as well as C-like transcendental functions and relational operations are
-supported. Integer division is handled as in C, and any non-null value is
-interpreted as logical true, which the relational operators return as unity.
-The return value of any function whose arguments are integers will be
-truncated towards zero.
-The remainder operator \verb|%| is internally mapped to the \verb|fmod|
-function for both integer and real valued arguments so inherits its
-semantics.
-The exponentiation operator \verb|**| as well as the unary operators
-associate to the left which differs from the common convention in
-mathematics. When in doubt use explicit parenthesis to force a desired
-order of evaluation.
+supported. Integer division is handled as in C. Logical comparisons and
+variables expect a boolean type, but any non-null value is
+interpreted as logical true (although a warning is generated).
+The exponentiation operator \verb|**| is supported, but can only apply to two values.
+The expression \verb|3**4**2| is not supported, but \verb|(3**4)**2| or
+\verb|3**(4**2)| is supported. 
+Operator precedence follows the C language, but when in doubt use explicit
+parenthesis to force a desired order of evaluation.
 Table~\ref{tab:expression_functions} lists the supported functions.
-Expressions can refer to already set parameters by using the fully qualified
+Expressions can refer to parameters which are already set by using the fully qualified
 name \texttt{thorn::parameter} as described below.
+
+The parameter parser knows about four types: integers, reals, booleans, and strings.
+The \verb|%| operator is applicable only to ints. In cases where this is
+clear, types will be converted, e.g. \verb|3.0| will convert to an integer, but not \verb|3.1|.
+If you wish to prevent the parser from evaluating an expression, you can put it
+in double quotes and make it a string.
+
+Please see the file \texttt{par.peg} in the directory
+\texttt{Cactus/src/piraha/pegs} for the full grammar describing the par file.
 \begin{table}
     \begin{tabular}{|ll@{\hspace{.5cm}}|ll|}
         \hline
@@ -1360,13 +1366,13 @@ name \texttt{thorn::parameter} as described below.
         \hline
         \verb|>=| & tests for greater or equal	       & \verb|exp| & exponentiation $e^x$\\
         \hline
-        \multicolumn{2}{|c|}{Binary operators}	       & \verb|fabs| & absolute value $|x|$\\
+        \multicolumn{2}{|c|}{Binary operators}	       & \verb|abs| & absolute value $|x|$\\
         \hline
         \verb|+| & addition		               & \verb|floor| & round down to nearest integer \\
         \hline
         \verb|-| & subtraction		               & \verb|log| & natural logarithm \\
         \hline
-        \verb|/| & C-like division		       & \verb|log10| & base-10 logarithm \\
+        \verb|/| & C-like division		       & \verb|bool,int,real| & convert to bool, int, or real \\
         \hline
         \verb|%| & remainder of division	       & \verb|sin| & sine \\
         \hline
@@ -1388,7 +1394,11 @@ name \texttt{thorn::parameter} as described below.
 
 The first parameter statement in any parameter file should set \texttt{ActiveThorns},
 which is a special parameter that tells the
-program which \textit{thorns} are to be activated.  Only parameters from active
+program which \textit{thorns} are to be activated. However, one may set \texttt{ActiveThorns}
+on any line or lines of the par file. In the case where multiple specifications of
+ActiveThorns are supplied, the values will be concatenated.
+
+Only parameters belonging to active
 thorns can be set (and only those routines \textit{scheduled} by active thorns
 are run).  By default, all thorns are inactive. For example, the first
 entry in a parameter file which is using just the two thorns
@@ -1396,14 +1406,14 @@ entry in a parameter file which is using just the two thorns
 
 \texttt{ActiveThorns = "PUGH CartGrid3D"}
 
-All parameters following the \texttt{ActiveThorns} parameter all have names
+All parameters following the \texttt{ActiveThorns} parameter have names
 whose syntax depends on the scope
 (see Section~\ref{sec:Cactus_parameters.scope})
 of the parameter:
 \begin{Lentry}
-\item [\texttt{Global parameters}]
-Just the name of the parameter itself. Global parameters are to be avoided;
-there are none in the flesh and Cactus Toolkits.
+%\item [\texttt{Global parameters}]
+%Just the name of the parameter itself. Global parameters are to be avoided;
+%there are none in the flesh and Cactus Toolkits.
 \item [\texttt{Restricted parameters}]
 The name of the \textit{implementation} which defined the parameter, followed
 by two colons,
