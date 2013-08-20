@@ -663,8 +663,8 @@ void CCTK_VError (int line,
                   const char *format,
                   ...)
 {
-  const CCTK_INT *cctk_full_warnings_ptr, *highlight_warning_messages_ptr;
-  CCTK_INT cctk_full_warnings, highlight_warning_messages;
+  const CCTK_INT *highlight_warning_messages_ptr;
+  CCTK_INT highlight_warning_messages;
   int param_type;
   int myproc;
   va_list ap;
@@ -705,12 +705,6 @@ void CCTK_VError (int line,
 
   myproc = CCTK_MyProc(NULL);
   Util_GetHostName (hostname, MAXNAMELEN);
-
-  cctk_full_warnings_ptr =
-    CCTK_ParameterGet ("cctk_full_warnings", "Cactus", &param_type);
-  /* Default to yes */
-  cctk_full_warnings =
-    cctk_full_warnings_ptr && *cctk_full_warnings_ptr;
 
   highlight_warning_messages_ptr =
     CCTK_ParameterGet ("highlight_warning_messages", "Cactus", &param_type);
