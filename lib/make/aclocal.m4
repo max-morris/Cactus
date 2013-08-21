@@ -1210,7 +1210,8 @@ AC_TRY_COMPILE(,
 // Test C99 comments
 // Test variable declarations in the middle of blocks
 0;
-int x;
+int x = 1;
+for (int i=0; i<10; ++i) x+=i;
 , cctk_cv_have_c99=yes, cctk_cv_have_c99=no)
 ])
 if test "$cctk_cv_have_c99" = "yes" ; then
