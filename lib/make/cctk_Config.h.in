@@ -391,7 +391,7 @@ typedef enum {false, true} bool;
 #ifdef HAVE_CCTK_C_BUILTIN_ASSUME_ALIGNED
 #  define CCTK_BUILTIN_ASSUME_ALIGNED __builtin_assume_aligned
 #else
-#  define CCTK_BUILTIN_ASSUME_ALIGNED(exp, ...) (exp)
+#  define CCTK_BUILTIN_ASSUME_ALIGNED(expr, ...) (expr)
 #endif
 
 /* OpenMP collapse clause */
@@ -608,7 +608,7 @@ typedef enum {false, true} bool;
 #ifdef HAVE_CCTK_CXX_BUILTIN_ASSUME_ALIGNED
 #  define CCTK_BUILTIN_ASSUME_ALIGNED __builtin_assume_aligned
 #else
-#  define CCTK_BUILTIN_ASSUME_ALIGNED(exp, ...) (exp)
+#  define CCTK_BUILTIN_ASSUME_ALIGNED(expr, ...) (expr)
 #endif
 
 /* Whether static_assert exists. */
