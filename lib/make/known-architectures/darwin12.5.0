@@ -1,10 +1,10 @@
 #! /bin/sh
 # /*@@
-#   @file    darwin12.4.0
-#   @date    2013-06-07
+#   @file    darwin12.5.0
+#   @date    2013-09-14
 #   @author  Erik Schnetter
 #   @desc
-#            Known architecture stuff for OS X (Darwin) release 12.4.0
+#            Known architecture stuff for OS X (Darwin) release 12.5.0
 #   @enddesc
 #   @version $Header$
 # @@*/
