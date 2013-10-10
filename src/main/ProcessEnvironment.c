@@ -110,24 +110,20 @@ char MPI_Active = 0;
    @endreturndesc
 
 @@*/
-int CCTKi_ProcessEnvironment(int *argc, char ***argv,tFleshConfig *ConfigData)
+int CCTKi_ProcessEnvironment(int *argc, char ***argv, tFleshConfig *ConfigData)
 {
-  /* avoid compiler warning about unused argument */
-  ConfigData = ConfigData;
-  
-  /* Check if MPI compiled in but choosing not to use MPI. */  
-
-#ifdef CCTK_MPI
-  if(!getenv("CACTUS_NOMPI"))
-  {
-    MPI_Active = 1;
-
-    CACTUS_MPI_ERROR(MPI_Init(argc, argv));
-      
-  }
-#else
+  /* avoid compiler warnings about unused arguments */
   argc = argc;
   argv = argv;
+  ConfigData = ConfigData;
+
+  /* Check if MPI compiled in but choosing not to use MPI. */  
+#ifdef CCTK_MPI
+  if (!getenv("CACTUS_NOMPI"))
+  {
+    MPI_Active = 1;
+    CACTUS_MPI_ERROR(MPI_Init(argc, argv));
+  }
 #endif
 
   return 0;
