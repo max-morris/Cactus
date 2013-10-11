@@ -526,7 +526,7 @@ else
  # Cache stuff
  if test -z "$CACHELINE_BYTES" ; then
    case "$host_cpu" in
-     i?86 | powerpc)
+     i?86 | powerpc | armv6l)
        CACHELINE_BYTES=32
        ;;
      ia64)
