@@ -297,6 +297,14 @@ for and to preprocess Fortran code.
 \item [\texttt{PERL}]   The name of the Perl executable.
 \end{Lentry}
 
+\item {Output Directory}
+
+By default, Cactus generates intermediate and object files
+underneath a directory named ``configs'' inside the Cactus
+directory. This location may be changed through the use
+of the \texttt{CACTUS\_CONFIGS\_DIR} environment variable.
+See the section on File Layout~\ref{file_layout}.
+
 \item {Compilation and tool flags}
 
 Flags which are passed to the compilers and the tools.
@@ -787,9 +795,15 @@ preprocessor defines necessary for compiling multithreaded code.
 
 
 \section{File Layout}
+\label{file_layout}
 
 The configuration process sets up various subdirectories and files in the
-\texttt{configs} directory to contain the configuration specific files; these
+configuration
+directory (this is either a directory
+\texttt{configs} insde the main Cactus directory, or the
+directory pointed to by the \texttt{CACTUS\_CONFIGS\_DIR} environment
+variable).
+to contain the configuration specific files; these
 are placed in a directory with the name of the configuration.
 
 \begin{Lentry}
