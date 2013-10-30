@@ -170,15 +170,15 @@
 #undef CCTK_REAL4
 
 /* Disable 'restrict' for compiler versions known to be buggy */
-/* Note that at the time of writing this comment, only versions up to and
- * including 20130313 have been tested. Newer versions might actually not
- * show this bug and the workaround could then be removed. At the moment
- * the workaround is enabled for any version >= 20121010 to be on the
- * safe side.
-# if (defined __INTEL_COMPILER                && \
-      __INTEL_COMPILER_BUILD_DATE >= 20121010 && \
-      !defined CCTK_INTEL_COMPILER_DONT_DISABLE_RESTRICT )
-  #define CCTK_DISABLE_RESTRICT 1
+/* Note that at the time of writing this comment (2013-10-19), only
+ * versions up to and including 20130313 have been tested. Newer
+ * versions might actually not show this bug and the workaround could
+ * then be removed. At the moment the workaround is enabled for any
+ * version >= 20121010 to be on the safe side. */
+#if (defined __INTEL_COMPILER                &&                 \
+     __INTEL_COMPILER_BUILD_DATE >= 20121010 &&                 \
+     !defined CCTK_INTEL_COMPILER_DONT_DISABLE_RESTRICT)
+#  define CCTK_DISABLE_RESTRICT 1
 #endif
 
 /****************************************************************************/
