@@ -15,6 +15,20 @@ die "Unable to find CCTK sbin directory - tried $sbin_dir\n"
 
 require "$sbin_dir/CSTUtils.pl";
 
+
+############################################################
+=pod 
+
+=over 
+
+=item Configure($config, $home_dir, $prompt)
+ Sets $config_data with $home_dir and $prompt.
+
+=back
+
+=cut
+
+############################################################
 sub Configure
 {
   my($config,$home_dir,$prompt) = @_;
@@ -57,6 +71,21 @@ sub Configure
   return $config_data;
 }
 
+
+############################################################
+=pod 
+
+=over 
+
+=item MissingThorns($active, $allthorns)
+ Counts missing thorns and assembles a list of those
+ missing. 
+
+=back
+
+=cut
+
+############################################################
 sub MissingThorns
 {
   my($active,$allthorns) = @_;
@@ -89,7 +118,21 @@ sub MissingThorns
 
 }
 
+############################################################
+=pod 
 
+=over 
+
+=item ParseParFile($thorn, $arrangement, $parfile, $config_data)
+ This subroutine parses the parameter file for active
+ thorns and returns a list of those thorns and their
+ descriptions.
+
+=back
+
+=cut
+
+############################################################
 sub ParseParFile
 {
   my($thorn,$arrangement,$parfile,$config_data) = @_;
@@ -144,6 +187,20 @@ sub ParseParFile
 
 }
 
+############################################################
+=pod 
+
+=over 
+
+=item ParseTestConfigs($testdata, $config_data, $rundata)
+ Parses the test.ccl files for absolute
+ and relative tolerance and nprocs used. 
+
+=back
+
+=cut
+
+############################################################
 sub ParseTestConfigs
 {
   my($testdata,$config_data,$rundata) = @_;
@@ -223,6 +280,19 @@ sub ParseTestConfigs
   return $testdata;
 }
 
+############################################################
+=pod 
+
+=over 
+
+=item ParseTestBlock($line_number, $data)
+ This subroutine parses for ABSTOL, RELTOL, and NPROCS.
+
+=back
+
+=cut
+
+############################################################
 sub ParseTestBlock
 {
   my ($line_number, $data) = @_;
@@ -284,7 +354,20 @@ sub ParseTestBlock
   return ($Test, \%ABSTOL, \%RELTOL, $NPROCS, $line_number);
 }
 
-# Find archive files for one particular test
+############################################################
+=pod 
+
+=over 
+
+=item Configure()
+ Finds archive files for a test if there are any and returns
+ the location of the test results.
+
+=back
+
+=cut
+
+############################################################
 sub FindTestArchiveFiles
 {
   my($test,$thorn,$testdata) = @_;
@@ -326,6 +409,20 @@ sub FindTestArchiveFiles
 }
 
 
+############################################################
+=pod 
+
+=over 
+
+=item FindTestParameterFiles($testdata, $config_data)
+ For each thorn, finds the parameter files residing in
+ the test directory.
+
+=back
+
+=cut
+
+############################################################
 sub FindTestParameterFiles
 {
   my($testdata,$config_data) = @_;
@@ -400,6 +497,19 @@ sub FindTestParameterFiles
   return $testdata;
 }
 
+############################################################
+=pod 
+
+=over 
+
+=item FindExecutionDetails($config_data)
+ Finds the executable to be used. 
+
+=back
+
+=cut
+
+############################################################
 sub FindExecutionDetails
 {
   my($config_data) = @_;
@@ -451,6 +561,26 @@ sub FindExecutionDetails
   return $config_data;
 }
 
+############################################################
+=pod 
+
+=over 
+
+=item FindRunCommand($config_data)
+ Sets the mpirun command to run the testsuite. 
+
+=over
+
+=item Run Command Form
+ mpirun -np $nprocs $exe $parfile
+
+=back
+
+=back
+
+=cut
+
+############################################################
 sub FindRunCommand
 {
   my($config_data) = @_;
@@ -490,6 +620,19 @@ sub FindRunCommand
   return $config_data;
 }
 
+############################################################
+=pod 
+
+=over 
+
+=item defprompt($pr, $de)
+ Handles prompts.
+
+=back
+
+=cut
+
+############################################################
 sub defprompt
 {
   my ($pr, $de) = @_;
@@ -519,6 +662,20 @@ sub defprompt
   return $res;
 }
 
+############################################################
+=pod 
+
+=over 
+
+=item ParseExtras($config_data)
+ Parses extra definitions present in 
+ config-data/cctk_Extradefs.h
+
+=back
+
+=cut
+
+############################################################
 sub ParseExtras
 {
   my($config_data) = @_;
@@ -566,6 +723,28 @@ sub ParseExtras
   return $mpi;
 }
 
+############################################################
+=pod 
+
+=over 
+
+=item InitialiseTestData()
+ Sets $testdata to its null values.
+
+=over 
+
+=item $testdata
+ Consists of FULL, NNODATAFILES, NRUNNABLE, NUNRUNNABLE,
+ RUNNABLETHORNS, UNRUNNABLETHORNS, RUNNABLEARRANGEMENTS,
+ and UNRUNNABLEARRANGEMENTS.
+
+=back
+
+=back
+
+=cut
+
+############################################################
 sub InitialiseTestData
 {
   my($testdata);
@@ -584,6 +763,27 @@ sub InitialiseTestData
   return $testdata;
 }
 
+############################################################
+=pod 
+
+=over 
+
+=item InitialiseRunData()
+ This subroutine sets $runconfig data.
+
+=over
+
+=item $runconfig
+ $runconfig consists of ABSTOL (default 1e-12) and
+ RELTOL (1e-12).
+
+=back
+
+=back
+
+=cut
+
+############################################################
 sub InitialiseRunData
 {
   my(%runconfig);
@@ -594,6 +794,19 @@ sub InitialiseRunData
   return %runconfig;
 }
 
+############################################################
+=pod 
+
+=over 
+
+=item PrintDataBase($database)
+ Prints any $database.
+
+=back
+
+=cut
+
+############################################################
 sub PrintDataBase
 {
   my($database) = @_;
@@ -625,6 +838,19 @@ sub PrintDataBase
   }
 }
 
+############################################################
+=pod 
+
+=over 
+
+=item PrintToleranceTable($test, $thorn, $testdata, $runconfig)
+ Prints the ABSTOL and RELTOL for the given thorn.
+
+=back
+
+=cut
+
+############################################################
 sub PrintToleranceTable
 {
   my($test,$thorn,$testdata,$runconfig) = @_;
@@ -678,6 +904,19 @@ sub PrintToleranceTable
   print "\n";
 }
 
+############################################################
+=pod 
+
+=over 
+
+=item GetToleranceFiles()
+ Gets the relative and absolute tolerances from test.ccl (?).
+
+=back
+
+=cut
+
+############################################################
 sub GetFileTolerances
 {
   my($test,$thorn,$runconfig,$file) = @_;
@@ -765,6 +1004,19 @@ sub GetFileTolerances
 
 }
 
+############################################################
+=pod 
+
+=over 
+
+=item CleanDir($dir)
+ Deletes all files in $dir.
+
+=back
+
+=cut
+
+############################################################
 sub CleanDir
 {
   my($dir) = @_;
@@ -778,6 +1030,19 @@ sub CleanDir
   closedir (DIR);
 }
 
+############################################################
+=pod 
+
+=over 
+
+=item RunCactus($output, $testname, $command)
+ Runs Cactus and returns $retcode.
+
+=back
+
+=cut
+
+############################################################
 sub RunCactus
 {
   my($output,$testname,$command) = @_;
@@ -810,6 +1075,19 @@ sub RunCactus
 }
 
 
+############################################################
+=pod 
+
+=over 
+
+=item fpabs($val)
+ Returns absolute value of $val.
+
+=back
+
+=cut
+
+############################################################
 sub fpabs
 {
   my ($val) = $_[0];
@@ -817,6 +1095,19 @@ sub fpabs
 }
 
 
+############################################################
+=pod 
+
+=over 
+
+=item PrintHeader()
+ Prints the header.
+
+=back
+
+=cut
+
+############################################################
 sub PrintHeader
 {
   print <<EOT;
@@ -829,6 +1120,20 @@ EOT
 }
 
 
+############################################################
+=pod 
+
+=over 
+
+=item FindFiles($dir, $testdata)
+ Finds files by extension in $testdata->{"EXTENSIONS"}
+ and returns $unrecognizedfiles and $recognizedfiles.
+
+=back
+
+=cut
+
+############################################################
 sub FindFiles
 {
   my ($dir,$testdata) = @_;
@@ -863,6 +1168,19 @@ sub FindFiles
 }
 
 
+############################################################
+=pod 
+
+=over 
+
+=item WriteFullResults($rundata, $testdata, $config_data)
+ This subroutine writes a summary of the test results.
+
+=back
+
+=cut
+
+############################################################
 sub WriteFullResults
 {
   my ($rundata,$testdata,$config_data) = @_;
@@ -1093,6 +1411,20 @@ sub WriteFullResults
   close (LOG);
 }
 
+############################################################
+=pod 
+
+=over 
+
+=item ChooseTests($choice, $testdata)
+ Allows the user to choose which tests to execute
+ per thorn.
+
+=back
+
+=cut
+
+############################################################
 sub ChooseTests
 {
   my ($choice,$testdata) = @_;
@@ -1216,6 +1548,20 @@ sub ChooseTests
 }
 
 
+############################################################
+=pod 
+
+=over 
+
+=item RunTest($output, $test, $thorn, $config_data, $testdata)
+ This subroutine runs $test of $thorn with $config_data
+ and returns $testdata.
+
+=back
+
+=cut
+
+############################################################
 sub RunTest
 {
   my ($output,$test,$thorn,$config_data,$testdata) = @_;
@@ -1262,7 +1608,19 @@ sub RunTest
   return $testdata;
 }
 
-# Compares output from one particular testsuite
+############################################################
+=pod 
+
+=over 
+
+=item CompareTestFiles($test, $thorn, $runconfig, $rundata, $config_data, $testdata)
+ Compares output from a particular testsuite.
+
+=back
+
+=cut
+
+############################################################
 sub CompareTestFiles
 {
   my ($test,$thorn,$runconfig,$rundata,$config_data,$testdata) = @_;
@@ -1492,7 +1850,20 @@ sub CompareTestFiles
   return $rundata;
 }
 
-# Reports on one particular test
+############################################################
+=pod 
+
+=over 
+
+=item ReportOnTest($test, $thorn, $rundata, $testdata)
+ Prints a report of a specific test, e.g. NFAILSTRONG,
+ NNANNOTFOUND, NINF, NINFNOTFOUND, NFAILSTRONG. 
+
+=back
+
+=cut
+
+############################################################
 sub ReportOnTest
 {
   my($test,$thorn,$rundata,$testdata) = @_;
@@ -1640,6 +2011,19 @@ sub ReportOnTest
 }
 
 
+############################################################
+=pod 
+
+=over 
+
+=item ResetTestStatistics($rundata, $testdata)
+ Resets $rundata values NFAILED, NPASSED to null values.
+
+=back
+
+=cut
+
+############################################################
 sub ResetTestStatistics
 {
   my($rundata,$testdata) = @_;
@@ -1657,6 +2041,19 @@ sub ResetTestStatistics
 
 
 
+############################################################
+=pod 
+
+=over 
+
+=item ParseAllParameterFiles($testdata, $config_data, $rundata)
+ Given tests to do in $testdata, determines 
+
+=back
+
+=cut
+
+############################################################
 sub ParseAllParameterFiles
 {
   my($testdata, $config_data, $rundata) = @_;
@@ -1738,6 +2135,19 @@ sub ParseAllParameterFiles
 
 
 
+############################################################
+=pod 
+
+=over 
+
+=item MakeTestRunDir($dir)
+ Given the name $dir, creates test run directory.
+
+=back
+
+=cut
+
+############################################################
 sub MakeTestRunDir
 {
   my($dir) = @_;
@@ -1750,6 +2160,19 @@ sub MakeTestRunDir
 }
 
 # Views results from one particular test
+############################################################
+=pod 
+
+=over 
+
+=item ViewResults($test, $thorn, $runconfig, $rundata, $testdata)
+ View the results of a test in a list or graphical format.
+
+=back
+
+=cut
+
+############################################################
 sub ViewResults
 {
   my($test,$thorn,$runconfig,$rundata,$testdata) = @_;
@@ -1887,6 +2310,19 @@ sub ViewResults
 
 }
 
+############################################################
+=pod 
+
+=over 
+
+=item TransformDirs($in)
+ Transforms directory for use with Cygwin.
+
+=back
+
+=cut
+
+############################################################
 sub TransformDirs
 {
   my ($in) = @_;
