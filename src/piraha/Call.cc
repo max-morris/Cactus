@@ -322,12 +322,19 @@ smart_ptr<Value> meval(smart_ptr<Group> gr) {
 	if(pn == "num") {
 		std::string s = gr->substring();
 		s = mklower(s);
+        std::replace(s.begin(),s.end(),'d','e');
 		ret->ddata = atof(s.c_str());
 		ret->idata = ret->ddata;
-		if(ret->idata == ret->ddata && (s.find('.') == std::string::npos))
-			ret->type = PIR_INT;
-		else
-			ret->type = PIR_REAL;
+        if(s.find('.') == std::string::npos) {
+            if(ret->idata != ret->ddata) {
+                std::ostringstream msg;
+                msg << "Not a valid integer value \"" << s << "\"" << std::endl;
+                std::string par = get_parfile();
+                CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
+            }
+            ret->type = PIR_INT;
+        } else
+            ret->type = PIR_REAL;
 	} else if(pn == "paren" || pn == "parindex") {
 		return meval(gr->group(0));
 	} else if(pn == "func") {
@@ -763,7 +770,7 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
 			"inquot = ({var}|\\\\.|[^\\\\\"])*\n"
 			"fname = \\.?/[-\\./0-9a-zA-Z_]+\n"
 			"quot = \"{inquot}\"|{fname}\n"
-			"num = ([0-9]+(\\.[0-9]*|)|\\.[0-9]+)([ed][+-]?[0-9]+|)\n"
+			"num = ([0-9]+(\\.[0-9]*|)|\\.[0-9]+)([edDE][+-]?[0-9]+|)\n"
 			"env = ENV\\{{name}\\}\n"
 			"var = \\$({env}|{name}|\\{{name}\\})\n"
 
