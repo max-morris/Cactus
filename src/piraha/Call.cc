@@ -323,18 +323,20 @@ smart_ptr<Value> meval(smart_ptr<Group> gr) {
 		std::string s = gr->substring();
 		s = mklower(s);
         std::replace(s.begin(),s.end(),'d','e');
-		ret->ddata = atof(s.c_str());
-		ret->idata = ret->ddata;
-        if(s.find('.') == std::string::npos) {
-            if(ret->idata != ret->ddata) {
-                std::ostringstream msg;
-                msg << "Not a valid integer value \"" << s << "\"" << std::endl;
-                std::string par = get_parfile();
-                CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
-            }
-            ret->type = PIR_INT;
-        } else
-            ret->type = PIR_REAL;
+        std::istringstream iss(s);
+        if(iss >> ret->ddata) {
+            ret->ddata = atof(s.c_str());
+            ret->idata = ret->ddata;
+            if(ret->idata == ret->ddata && (s.find('.') == std::string::npos))
+                ret->type = PIR_INT;
+            else
+                ret->type = PIR_REAL;
+        } else {
+            std::ostringstream msg;
+            msg << "Invalid numerical value: " << s << std::endl;
+            std::string par = get_parfile();
+            CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
+        }
 	} else if(pn == "paren" || pn == "parindex") {
 		return meval(gr->group(0));
 	} else if(pn == "func") {
@@ -444,7 +446,7 @@ smart_ptr<Value> meval(smart_ptr<Group> gr) {
 			ret->idata = 1;
 		} else {
 			ret->type = PIR_STRING;
-			ret->sdata = gr->substring();
+		    ret->sdata = gr->substring();
 		}
 		return ret;
 	} else if(pn == "par") {
@@ -714,7 +716,8 @@ smart_ptr<Value> eval_expr(std::string input) {
 	return ret;
 }
 
-void check_types(const char *thorn,int line,ValueType v,int t) {
+void check_types(const char *thorn,int line,smart_ptr<Value> svm,int t) {
+    ValueType v = svm->type;
 	bool ok = false;
 	if(v == PIR_STRING && (t == PARAMETER_STRING || t == PARAMETER_KEYWORD))
 		ok = true;
@@ -727,7 +730,7 @@ void check_types(const char *thorn,int line,ValueType v,int t) {
 	if(!ok) {
 		std::string par = get_parfile();
 		std::ostringstream msg;
-		msg << "Parameter type mismatch ";
+        msg << "Invalid assignment: Attempting to set a variable of type ";
 		switch(t) {
 		case PARAMETER_BOOLEAN:
 			msg << "BOOL";
@@ -748,7 +751,7 @@ void check_types(const char *thorn,int line,ValueType v,int t) {
 			msg << "type(" << t << ")";
 			break;
 		}
-		msg << " != " << v << std::endl;
+        msg << " with " << svm << std::endl;
 		CCTK_Error(line,par.c_str(),thorn,msg.str().c_str());
 	}
 }
@@ -866,7 +869,7 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
         					smv->integerize();
         				if(data->type == PARAMETER_BOOLEAN)
         					smv->booleanize(gr);
-    					check_types(thorn.c_str(),aexpr->line(),smv->type,data->type);
+    					check_types(thorn.c_str(),aexpr->line(),smv,data->type);
     				}
     				set_function(
     						strdup(key.c_str()),
@@ -885,7 +888,7 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
             					smv->integerize();
             				if(data->type == PARAMETER_BOOLEAN)
             					smv->booleanize(gr);
-        					check_types(thorn.c_str(),aexpr->line(),smv->type,data->type);
+        					check_types(thorn.c_str(),aexpr->line(),smv,data->type);
         				}
         				set_function(
         						strdup(keyi.str().c_str()),
