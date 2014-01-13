@@ -2,6 +2,6 @@
 
 namespace cctki_piraha {
 
-std::set<void*> *ptrs = new std::set<void*>();
+std::set<void*> *ptrs = 0;
 
 }

@@ -10,34 +10,41 @@
 
 namespace cctki_piraha {
 
+// This global debug variable is used to detect the case
+// where the same pointer is accidentally tracked by two
+// independent smart_ptr_guts objects.
+//
+// This can come about if the programmer does this:
+// foo *f = new foo();
+// smart_ptr<foo> f1(f);
+// smart_ptr<foo> f2(f);
 extern std::set<void*> *ptrs;
 
-// TODO: This code is disabled because it leads to segfaults during
-// startup. Most likely, this code is used during initialisation of
-// global variables, but also implicitly assumes that all global
-// variables have already been initialised.
-#if 0
-//#ifndef NDEBUG
-inline void add(std::set<void*>& v,void *t) {
+#ifndef NDEBUG
+inline void add(void *t) {
     if(t == NULL)
         return;
+    if(ptrs == 0)
+        ptrs = new std::set<void*>();
     // TODO: Don't separate finding and inserting; do it in one go to
     // save a lookup.
-    assert(v.find(t) == v.end());
-    v.insert(t);
+    assert(ptrs->find(t) == ptrs->end());
+    ptrs->insert(t);
 }
 
-inline void remove(std::set<void*>& v,void* t) {
-        // TODO: Don't separate finding and erasing; do it in one go
-        // to save a lookup.
-	std::set<void*>::iterator it = v.find(t);
-	assert(it != v.end());
-	v.erase(it);
+inline void remove(void* t) {
+    if(t == NULL)
+        return;
+    // TODO: Don't separate finding and erasing; do it in one go
+    // to save a lookup.
+    std::set<void*>::iterator it = ptrs->find(t);
+    assert(it != ptrs->end());
+    ptrs->erase(it);
 }
 #else
-inline void add(std::set<void*>& v,void* t) {
+inline void add(void* t) {
 }
-inline void remove(std::set<void*>& v,void* t) {
+inline void remove(void* t) {
 }
 #endif
 
@@ -52,12 +59,12 @@ class smart_ptr_guts {
     bool array;
     smart_ptr_guts(int rc,T *p,bool array_) : ref_count(rc), ptr(p), array(array_) {
         if(ptr != NULL) {
-            add(*ptrs,(void*)ptr);
+            add((void*)ptr);
         }
     }
     ~smart_ptr_guts() {
         if(ptr != NULL) {
-            remove(*ptrs,(void*)ptr);
+            remove((void*)ptr);
             if(array)
                 delete[] ptr;
             else
