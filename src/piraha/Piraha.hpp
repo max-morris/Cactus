@@ -355,15 +355,19 @@ public:
     int input_size;
     int pos;
     int max_pos;
+    int match_to;
     const char *pat;
     bool matches();
+    bool matchesTo(int mt);
     Bracket expected;
+    void showError(std::ostream& out);
     void showError();
     std::string inrule;
     std::string inrule_max;
     int err_pos;
     void fail(Bracket *ex);
     void fail(char lo,char hi);
+    char foundChar() { return input[max_pos+1]; }
 };
 
 extern smart_ptr<Grammar> pegGrammar;

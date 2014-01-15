@@ -24,6 +24,8 @@ bool Seq::match(Matcher *m) {
     for(pattern_iter p = patterns.begin();p != patterns.end();++p) {
         if(!(*p)->match(m))
             return false;
+        if(m->max_pos == m->match_to)
+            return true;
     }
     return true;
 }

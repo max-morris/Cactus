@@ -6,13 +6,21 @@ using namespace cctki_piraha;
 Matcher::Matcher(smart_ptr<Grammar> g_,const char *pat_,const char *input_,int input_size_) :
     Group(pat_,input_),
     input(input_), g(g_), input_size(input_size_),
-    pos(0), max_pos(-1), pat(pat_), expected(), err_pos(-1) {
+    pos(0), max_pos(-1), match_to(-2), pat(pat_), expected(), err_pos(-1) {
     inrule = pat_;
 	if(input_size < 0)
 		input_size=strlen(input);
 }
 
 bool Matcher::matches() {
+    // -2 is used just to make sure
+    // we can't actually get to that
+    // position, even in an error
+    // condition.
+    return matchesTo(-2);
+}
+
+bool Matcher::matchesTo(int match_to_) {
     smart_ptr<Pattern> p = g->patterns.get(pat);
     if(!p.valid()) {
         std::cout << "Grammar does not contain \"" << pat << "\"" << std::endl;
@@ -21,6 +29,7 @@ bool Matcher::matches() {
     assert(p.valid());
     pos = 0;
     max_pos = -1;
+    match_to = match_to_;
     err_pos = -1;
     children.clear();
     bool b = p->match(this);
@@ -45,6 +54,10 @@ void Matcher::fail(char lo,char hi) {
 }
 
 void Matcher::showError() {
+    showError(std::cout);
+}
+
+void Matcher::showError(std::ostream& out) {
 	int line = 1;
 	int error_pos = -1;
 	const int num_previous_lines = 4;
@@ -56,7 +69,7 @@ void Matcher::showError() {
 		if(i == max_pos) {
 			error_pos = i;
 			int column = i - start_of_previous_line[0]+1;
-		    std::cout << "In rule '" << inrule_max
+		    out << "In rule '" << inrule_max
 			    <<  "' Line=" << line << ", Column=" << column << std::endl;
 			while(input[i] == '\n'||input[i] == '\r') {
 				line++;
@@ -79,15 +92,15 @@ void Matcher::showError() {
 	}
     bool eol = false;
 	for(int i=start_of_previous_line[0];i<input_size;i++) {
-		std::cout << input[i];
+		out << input[i];
 		if(i > error_pos && input[i] == '\n') {
             eol = true;
 			break;
         }
 	}
-    if(!eol) std::cout << std::endl;
+    if(!eol) out << std::endl;
 	for(int i=start_of_line;i<=error_pos;i++)
-		std::cout << ' ';
-	std::cout << "^" << std::endl;
-    std::cout << "Expected one of the following characters: " << expected << std::endl;
+		out << ' ';
+	out << "^" << std::endl;
+    out << "Expected one of the following characters: " << expected << std::endl;
 }
