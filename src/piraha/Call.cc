@@ -872,8 +872,8 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
                         check_types(thorn.c_str(),aexpr->line(),smv,data->type);
                     }
                     set_function(
-                            strdup(key.c_str()),
-                            strdup(val.c_str()),
+                            key.c_str(),
+                            val.c_str(),
                             gr->group(0)->line());
                 } else {
                     smart_ptr<Group> arr = gr->group("array");
@@ -891,8 +891,8 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
                             check_types(thorn.c_str(),aexpr->line(),smv,data->type);
                         }
                         set_function(
-                                strdup(keyi.str().c_str()),
-                                strdup(val.c_str()),
+                                keyi.str().c_str(),
+                                val.c_str(),
                                 aexpr->line());
                     }
                 }
