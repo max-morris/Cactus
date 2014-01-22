@@ -37,43 +37,16 @@ sub ParseConfigScript
         next if ! $line;
         
         # Parse the line
-        if ($line =~ m/^\s*BEGIN\s+DEFINE\s*/i) {
-            $line = <$lines>; chomp $line; ++$line_number;
-            while ($line !~ m/^\s*END\s+DEFINE\s*/i) {
-                $cfg->{"\U$thorn $provides\E DEFINE"} .= "$line\n";
-                $line = <$lines>; chomp $line; ++$line_number;
-            }
-        } elsif ($line =~ m/^\s*BEGIN\s+INCLUDE\s*/i) {
-            $line = <$lines>; chomp $line; ++$line_number;
-            while ($line !~ m/^\s*END\s+INCLUDE\s*/i) {
-                $cfg->{"\U$thorn $provides\E INCLUDE"} .= "$line\n";
-                $line = <$lines>; chomp $line; ++$line_number;
-            }
-        } elsif ($line =~ m/^\s*BEGIN\s+ERROR\s*/i) {
-            $line = <$lines>; chomp $line; ++$line_number;
-            while ($line !~ m/^\s*END\s+ERROR\s*/i) {
-                $cfg->{"\U$thorn $provides\E ERROR"} .= "$line\n";
-                print "ERROR: $line\n";
-                $line = <$lines>; chomp $line; ++$line_number;
-            }
-        } elsif ($line =~ m/^\s*BEGIN\s+MESSAGE\s*/i) {
-            $line = <$lines>; chomp $line; ++$line_number;
-            while ($line !~ m/^\s*END\s+MESSAGE\s*/i) {
-                $cfg->{"\U$thorn $provides\E MESSAGE"} .= "$line\n";
-                print "$line\n";
-                $line = <$lines>; chomp $line; ++$line_number;
-            }
-        } elsif ($line =~ m/^\s*BEGIN\s+MAKE_DEFINITION\s*/i) {
-            $line = <$lines>; chomp $line; ++$line_number;
-            while ($line !~ m/^\s*END\s+MAKE_DEFINITION\s*/i) {
-                $cfg->{"\U$thorn $provides\E MAKE_DEFINITION"} .= "$line\n";
-                $line = <$lines>; chomp $line; ++$line_number;
-            }
-        } elsif ($line =~ m/^\s*BEGIN\s+MAKE_DEPENDENCY\s*/i) {
-            $line = <$lines>; chomp $line; ++$line_number;
-            while ($line !~ m/^\s*END\s+MAKE_DEPENDENCY\s*/i) {
-                $cfg->{"\U$thorn $provides\E MAKE_DEPENDENCY"} .= "$line\n";
-                $line = <$lines>; chomp $line; ++$line_number;
+        if ($line =~ m/^\s*BEGIN\s+(DEFINE|INCLUDE|ERROR|MESSAGE|MAKE_DEFINITION|MAKE_DEPENDENCY)\s*/i) {
+            my $terminal = "\U$1";
+            while(($line = <$lines>) && ($line !~ m/^\s*END\s+${terminal}\s*/i)) {
+                chomp $line; ++$line_number;
+                $cfg->{"\U$thorn $provides\E ${terminal}"} .= "$line\n";
+                if($terminal eq "MESSAGE") {
+                    print "$line\n";
+                } elsif($terminal eq "ERROR") {
+                    print "ERROR: $line\n";
+                }
             }
         } elsif ($line =~ m/^\s*INCLUDE_DIRECTORY\s+(.*)$/i) {
             $cfg->{"\U$thorn $provides\E INCLUDE_DIRECTORY"} .= " $1";
