@@ -41,11 +41,17 @@ std::string get_parfile() {
     } else {
         value++;
     }
-    int n = strlen(value);
-    if(n > 4 && strcmp(value+n-4,".par")==0) {
-        value[n-4] = '\0';
+    std::string s(value);
+    return s;
+}
+std::string get_parfilename() {
+    std::string ending = ".par";
+    std::string s = get_parfile();
+    int ns = s.length();
+    int ne = ending.length();
+    if(ns > ne && s.substr(ns-ne).compare(ending)==0) {
+        s = s.substr(0,ns-ne);
     }
-    std::string s = value;
     return s;
 }
 
@@ -272,7 +278,7 @@ smart_ptr<Value> lookup_var(smart_ptr<Group> gr) {
     } else if(gr->group(0)->substring() == "parfile") {
         ret = new Value(gr);
         ret->type = PIR_STRING;
-        ret->sdata = get_parfile();
+        ret->sdata = get_parfilename();
     } else if(gr->group(0)->substring() == "pi") {
         ret = new Value(gr);
         ret->type = PIR_REAL;
@@ -422,6 +428,56 @@ smart_ptr<Value> meval(smart_ptr<Group> gr) {
             } else if(fn == "real") {
                 val->type = PIR_REAL;
                 val->ddata = val->idata;
+                return val;
+            }
+        } else if(val->type == PIR_STRING) {
+            if(fn == "int") {
+                val->type = PIR_INT;
+                std::istringstream buf(val->sdata);
+                if(!(buf >> val->idata)) {
+                    std::ostringstream msg;
+                    msg << "Invalid numerical value: " << val->sdata << std::endl;
+                    std::string par = get_parfile();
+                    CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
+                }
+                std::string extra;
+                if(buf >> extra) {
+                    std::ostringstream msg;
+                    msg << "Trailing input in numerical value: " << val->sdata << std::endl;
+                    std::string par = get_parfile();
+                    CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
+                }
+                return val;
+            } else if(fn == "real") {
+                val->type = PIR_REAL;
+                std::istringstream buf(val->sdata);
+                if(!(buf >> val->ddata)) {
+                    std::ostringstream msg;
+                    msg << "Invalid numerical value: " << val->sdata << std::endl;
+                    std::string par = get_parfile();
+                    CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
+                }
+                std::string extra;
+                if(buf >> extra) {
+                    std::ostringstream msg;
+                    msg << "Trailing input in numerical value: " << val->sdata << std::endl;
+                    std::string par = get_parfile();
+                    CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
+                }
+                return val;
+            } else if(fn == "bool") {
+                val->type = PIR_BOOL;
+                std::string s = mklower(val->sdata);
+                if(s == "no" || s == "false") {
+                    ret->idata = 0;
+                } else if(s == "yes" || s == "true") {
+                    ret->idata = 1;
+                } else {
+                    std::ostringstream msg;
+                    msg << "Invalid boolean value: " << val->sdata << std::endl;
+                    std::string par = get_parfile();
+                    CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
+                }
                 return val;
             }
         }
@@ -924,7 +980,6 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
             m2->showError(msg);
         }
         std::string par = get_parfile();
-        par += ".par";
         CCTK_Warn(0,m2->line(),par.c_str(),"cactus",msg.str().c_str());
         return 1;
     }
