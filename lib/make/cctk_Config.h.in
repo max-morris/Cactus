@@ -177,7 +177,6 @@
  * version >= 20121010 to be on the safe side. */
 #if (defined __INTEL_COMPILER                &&                 \
      __INTEL_COMPILER_BUILD_DATE >= 20121010 &&                 \
-     __INTEL_COMPILER_BUILD_DATE < 20131008  &&                 \
      !defined CCTK_INTEL_COMPILER_DONT_DISABLE_RESTRICT)
 #  define CCTK_DISABLE_RESTRICT 1
 #endif

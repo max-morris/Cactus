@@ -854,7 +854,7 @@ sub PrintDataBase
 sub PrintToleranceTable
 {
   my($test,$thorn,$testdata,$runconfig) = @_;
-  my($fileabstol,$filereltol,$maxfilenamelen);
+  my($fileabstol,$filereltol);
 
   # Get default tolerances for the test
   if (defined($runconfig{"$thorn $test ABSTOL"}->{".*"}))
@@ -882,22 +882,15 @@ sub PrintToleranceTable
   {
      $testreltol=$runconfig{"RELTOL"};
   }
-
-  # longest file name for table alignment
-  $maxfilenamelen = length("(.*)");
-  foreach $file (split(" ",$testdata->{"$thorn $test DATAFILES"}))
-  {
-     $maxfilenamelen = length($file) if ($maxfilenamelen < length($file));
-  }
-
+    
   # Print test's default tolerances and any deviations
   print "------------------------------------------------------------------------\n\n";
   print "  Test $thorn: $test \n";
   print "    \"$testdata->{\"$thorn $test DESC\"}\"\n";
 
-  print "    File"," "x($maxfilenamelen-4),"\tAbs Tol\t\tRel Tol\n";
+  print "    File\t\tAbs Tol\t\tRel Tol\n";
   print "    --------------------------------------------------------------------\n";
-  print "    (.*)"," "x($maxfilenamelen-4),"\t$testabstol\t\t$testreltol\n";
+  print "    (.*)\t\t$testabstol\t\t$testreltol\n";
   foreach $file (split(" ",$testdata->{"$thorn $test DATAFILES"}))
   {
      ($fileabstol, $filereltol)=&GetFileTolerances($test,$thorn,\%runconfig,$file);
@@ -905,7 +898,7 @@ sub PrintToleranceTable
      if ( $filereltol == $testreltol ) { $filereltol="--"; }
      if ( $fileabstol ne "--" || $filereltol ne "--" )
      {
-        print "    $file"," "x($maxfilenamelen-length($file)),"\t$fileabstol\t\t$filereltol\n";
+        print "    $file\t\t$fileabstol\t\t$filereltol\n";
      }
   }
   print "\n";
