@@ -5289,7 +5289,7 @@ fi
 
 echo "$ac_t""$cctk_cv_cxx_func" 1>&6
 case "$cctk_cv_cxx_func" in
-  no) echo "$ac_t""no" 1>&6 ;;
+  no) : ;;
   *)  cat >> confdefs.h <<EOF
 #define CCTK_CXX_$cctk_tr_func $cctk_cv_cxx_func
 EOF
@@ -5368,7 +5368,7 @@ fi
 
 echo "$ac_t""$cctk_cv_cxx_func" 1>&6
 case "$cctk_cv_cxx_func" in
-  no) echo "$ac_t""no" 1>&6 ;;
+  no) : ;;
   *)  cat >> confdefs.h <<EOF
 #define CCTK_CXX_$cctk_tr_func $cctk_cv_cxx_func
 EOF
@@ -5447,7 +5447,7 @@ fi
 
 echo "$ac_t""$cctk_cv_cxx_func" 1>&6
 case "$cctk_cv_cxx_func" in
-  no) echo "$ac_t""no" 1>&6 ;;
+  no) : ;;
   *)  cat >> confdefs.h <<EOF
 #define CCTK_CXX_$cctk_tr_func $cctk_cv_cxx_func
 EOF
@@ -5526,7 +5526,7 @@ fi
 
 echo "$ac_t""$cctk_cv_cxx_func" 1>&6
 case "$cctk_cv_cxx_func" in
-  no) echo "$ac_t""no" 1>&6 ;;
+  no) : ;;
   *)  cat >> confdefs.h <<EOF
 #define CCTK_CXX_$cctk_tr_func $cctk_cv_cxx_func
 EOF
@@ -5605,7 +5605,7 @@ fi
 
 echo "$ac_t""$cctk_cv_cxx_func" 1>&6
 case "$cctk_cv_cxx_func" in
-  no) echo "$ac_t""no" 1>&6 ;;
+  no) : ;;
   *)  cat >> confdefs.h <<EOF
 #define CCTK_CXX_$cctk_tr_func $cctk_cv_cxx_func
 EOF
@@ -5684,7 +5684,7 @@ fi
 
 echo "$ac_t""$cctk_cv_cxx_func" 1>&6
 case "$cctk_cv_cxx_func" in
-  no) echo "$ac_t""no" 1>&6 ;;
+  no) : ;;
   *)  cat >> confdefs.h <<EOF
 #define CCTK_CXX_$cctk_tr_func $cctk_cv_cxx_func
 EOF
@@ -5763,7 +5763,7 @@ fi
 
 echo "$ac_t""$cctk_cv_cxx_func" 1>&6
 case "$cctk_cv_cxx_func" in
-  no) echo "$ac_t""no" 1>&6 ;;
+  no) : ;;
   *)  cat >> confdefs.h <<EOF
 #define CCTK_CXX_$cctk_tr_func $cctk_cv_cxx_func
 EOF
@@ -8259,7 +8259,7 @@ cat > conftest.$ac_ext <<EOF
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
     builtin and then its argument prototype would still apply.  */
-char 2MRzqR;
+char Wofk9G;
 
 int main() {
 mkstemp()

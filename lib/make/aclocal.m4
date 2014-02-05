@@ -1195,7 +1195,7 @@ eval cctk_cv_cxx_$cctk_func=\$cctk_cv_cxx_func
 ])
 AC_MSG_RESULT($cctk_cv_cxx_func)
 case "$cctk_cv_cxx_func" in
-  no) AC_MSG_RESULT(no) ;;
+  no) : ;;
   *)  AC_DEFINE_UNQUOTED(CCTK_CXX_$cctk_tr_func, $cctk_cv_cxx_func)
       AC_DEFINE_UNQUOTED(HAVE_CCTK_CXX_$cctk_tr_func, 1) ;;
 esac
