@@ -252,7 +252,7 @@ ifeq ($(strip $(CCTK_DEBUG_MODE)),yes)
 endif
 
 # Is this an optimising configuration ?
-CCTK_OPTIMISE_MODE = @OPTIMISE_MODE@
+export CCTK_OPTIMISE_MODE = @OPTIMISE_MODE@
 
 ifeq ($(strip $(CCTK_OPTIMISE_MODE)),yes)
   CPPFLAGS  += $(CPP_OPTIMISE_FLAGS)
@@ -271,7 +271,7 @@ else
 endif
 
 # Is this a profiling configuration ?
-CCTK_PROFILE_MODE = @PROFILE_MODE@
+export CCTK_PROFILE_MODE = @PROFILE_MODE@
 
 ifeq ($(strip $(CCTK_PROFILE_MODE)),yes)
   CPPFLAGS  += $(CPP_PROFILE_FLAGS)
@@ -284,7 +284,7 @@ ifeq ($(strip $(CCTK_PROFILE_MODE)),yes)
 endif
 
 # Are we building with OpenMP support ?
-CCTK_OPENMP_MODE = @OPENMP_MODE@
+export CCTK_OPENMP_MODE = @OPENMP_MODE@
 
 ifeq ($(strip $(CCTK_OPENMP_MODE)),yes)
   CPPFLAGS  += $(CPP_OPENMP_FLAGS)
