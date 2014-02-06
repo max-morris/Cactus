@@ -37,6 +37,8 @@ else
 
   if test "`$CC --version 2>&1 | head -n 1 | grep -i gcc`" ; then
       MAC_C_COMP=gcc
+  elif test "`$CC --version 2>&1 | head -n 1 | grep -i clang`" ; then
+      MAC_C_COMP=clang
   elif test "`$CC -version 2>&1 | grep xlc`" ; then
       MAC_C_COMP=ibm
   elif test "`$CC -V 2>&1 | grep -i intel`" ; then
@@ -47,6 +49,8 @@ else
 
   if test "`$CXX --version 2>&1 | head -n 1 | grep -i gcc`" ; then
       MAC_CXX_COMP=gcc
+  elif test "`$CXX --version 2>&1 | head -n 1 | grep -i clang`" ; then
+      MAC_CXX_COMP=clang
   elif test "`$CXX -version 2>&1 | grep xlc`" ; then
       MAC_CXX_COMP=ibm
   elif test "`$CXX -V 2>&1 | grep -i intel`" ; then
@@ -62,6 +66,11 @@ else
       CPP_VERSION="`cpp --version | awk '{print $3; exit}'`"
       CPP_VERSION_MAJOR="`echo $CPP_VERSION | sed 's:\([^. ]*\)\.\([^. ]*\).*:\1:'`"
       CPP_VERSION_MINOR="`echo $CPP_VERSION | sed 's:\([^. ]*\)\.\([^. ]*\).*:\2:'`"
+  elif test "`$CPP --version | grep -i clang`"; then 
+      CPP_VENDOR=LLVM
+      CPP_VERSION="`cpp --version | awk '{print $3; exit}'`"
+      CPP_VERSION_MAJOR="`echo $CPP_VERSION | sed 's:\([^. ]*\)\.\([^. ]*\).*:\1:'`"
+      CPP_VERSION_MINOR="`echo $CPP_VERSION | sed 's:\([^. ]*\)\.\([^. ]*\).*:\2:'`"
   elif test "`$CPP --version | grep -i Cactus`"; then
       CPP_VENDOR=Cactus
       CPP_VERSION="`cpp --version | awk '{print $3; exit}'`"
@@ -69,7 +78,7 @@ else
       CPP_VERSION_MINOR="`echo $CPP_VERSION | sed 's:\([^. ]*\)\.\([^. ]*\).*:\2:'`"
   fi
 
-  if test "$MAC_C_COMP" = "gcc" ; then
+  if test "$MAC_C_COMP" = "gcc" -o "$MAC_C_COMP" = "clang" ; then
     : ${C_DEPEND='$(CC) -M -MP $(CPPFLAGS) $(CFLAGS)'}
     : ${CXX_DEPEND='$(CXX) -M -MP $(CPPFLAGS) $(CXXFLAGS)'}
   elif test "$MAC_C_COMP" = "intel" ; then
@@ -89,6 +98,8 @@ else
       MAC_F90_COMP=absoft
     elif test "`$F90 --version 2>&1 | head -n 1 | grep -i gcc`" ; then
       MAC_F90_COMP=gcc
+    elif test "`$F90 --version 2>&1 | head -n 1 | grep -i clang`" ; then
+      MAC_F90_COMP=clang
     elif test "`$F90 -V 2>&1 | grep -i intel`" ; then
       MAC_F90_COMP=intel
     else
@@ -128,6 +139,8 @@ else
       MAC_F77_COMP=absoft77
     elif test "`$F77 --version 2>&1 | head -n 1 | grep -i gcc`" ; then
       MAC_F77_COMP=gcc
+    elif test "`$F77 --version 2>&1 | head -n 1 | grep -i clang`" ; then
+      MAC_F77_COMP=clang
     elif test "`$F77 -V 2>&1 | grep -i intel`" ; then
       MAC_F77_COMP=intel
     else
@@ -145,6 +158,12 @@ else
  
   case "$MAC_C_COMP" in
     gcc)
+      CC_VERSION="`$CC --version 2>&1 | head -n 1`"
+      # : ${CFLAGS="-no-cpp-precomp -mlongcall"}
+      # : ${CFLAGS="-mlongcall"}
+      : ${CFLAGS=-std=gnu99}
+      ;;
+    clang)
       CC_VERSION="`$CC --version 2>&1 | head -n 1`"
       # : ${CFLAGS="-no-cpp-precomp -mlongcall"}
       # : ${CFLAGS="-mlongcall"}
@@ -169,6 +188,14 @@ else
 
   case "$MAC_CXX_COMP" in
     gcc)
+      CXX_VERSION="`$CXX --version 2>&1 | head -n 1`"
+      # : ${CXXFLAGS="-no-cpp-precomp -mlongcall"}
+      # : ${CXXFLAGS="-mlongcall"}
+      # The setting below would be desirable, but isn't available on
+      # Darwin with the default compiler
+      # : ${CXXFLAGS=-std=gnu++0x}
+      ;;
+    clang)
       CXX_VERSION="`$CXX --version 2>&1 | head -n 1`"
       # : ${CXXFLAGS="-no-cpp-precomp -mlongcall"}
       # : ${CXXFLAGS="-mlongcall"}
