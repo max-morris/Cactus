@@ -1890,31 +1890,31 @@ int CCTK_VarTypeSize (int vtype)
       var_size = sizeof (CCTK_COMPLEX);
       break;
 
-#ifdef CCTK_INT1
+#ifdef HAVE_CCTK_INT1
     case CCTK_VARIABLE_INT1:
       var_size = sizeof (CCTK_INT1);
       break;
 #endif
 
-#ifdef CCTK_INT2
+#ifdef HAVE_CCTK_INT2
     case CCTK_VARIABLE_INT2:
       var_size = sizeof (CCTK_INT2);
       break;
 #endif
 
-#ifdef CCTK_INT4
+#ifdef HAVE_CCTK_INT4
     case CCTK_VARIABLE_INT4:
       var_size = sizeof (CCTK_INT4);
       break;
 #endif
 
-#ifdef CCTK_INT8
+#ifdef HAVE_CCTK_INT8
     case CCTK_VARIABLE_INT8:
       var_size = sizeof (CCTK_INT8);
       break;
 #endif
 
-#ifdef CCTK_REAL4
+#ifdef HAVE_CCTK_REAL4
     case CCTK_VARIABLE_REAL4:
       var_size = sizeof (CCTK_REAL4);
       break;
@@ -1924,7 +1924,7 @@ int CCTK_VarTypeSize (int vtype)
       break;
 #endif
 
-#ifdef CCTK_REAL8
+#ifdef HAVE_CCTK_REAL8
     case CCTK_VARIABLE_REAL8:
       var_size = sizeof (CCTK_REAL8);
       break;
@@ -1934,7 +1934,7 @@ int CCTK_VarTypeSize (int vtype)
       break;
 #endif
 
-#ifdef CCTK_REAL16
+#ifdef HAVE_CCTK_REAL16
     case CCTK_VARIABLE_REAL16:
       var_size = sizeof (CCTK_REAL16);
       break;
