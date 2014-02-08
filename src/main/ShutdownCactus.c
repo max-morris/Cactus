@@ -91,7 +91,7 @@ int CCTKi_ShutdownCactus(tFleshConfig *ConfigData)
   fflush(stdout);
  
 #ifdef CCTK_MPI
-  if(MPI_Active)
+  if (MPI_Active)
   {
     CACTUS_MPI_ERROR(MPI_Finalize());
   }
