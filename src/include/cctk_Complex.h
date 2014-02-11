@@ -11,12 +11,82 @@
 #ifndef _CCTK_COMPLEX_H_
 #define _CCTK_COMPLEX_H_
 
+#include "cctk_Config.h"
+
 #ifdef __cplusplus
-extern "C" {
-#endif
 
+#include <complex>
+/* Macro to declare a set of complex functions for a given precision */
+/* Note: We do not declare these as extern "C" since that they are
+   different from their C counterparts */
+#define DECLARE_CMPLX_FUNCTIONS(CCTK_Cmplx, cctk_real, cctk_complex)          \
+static inline cctk_complex CCTK_Cmplx(cctk_real Re, cctk_real Im) {           \
+  return cctk_complex(Re,Im);                                                 \
+}                                                                             \
+static inline cctk_real    CCTK_Cmplx##Real(cctk_complex a) {                 \
+  return std::real(a);                                                        \
+}                                                                             \
+static inline cctk_real    CCTK_Cmplx##Imag(cctk_complex a) {                 \
+  return std::imag(a);                                                        \
+}                                                                             \
+static inline cctk_complex CCTK_Cmplx##Neg(cctk_complex a) {                  \
+  return -a;                                                                  \
+}                                                                             \
+static inline cctk_complex CCTK_Cmplx##Conjg(cctk_complex a) {                \
+  return std::conj(a);                                                        \
+}                                                                             \
+static inline cctk_real    CCTK_Cmplx##Abs(cctk_complex a) {                  \
+  return std::abs(a);                                                         \
+}                                                                             \
+static inline cctk_real    CCTK_Cmplx##Arg(cctk_complex a) {                  \
+  return std::arg(a);                                                         \
+}                                                                             \
+static inline cctk_real    CCTK_Cmplx##Norm(cctk_complex a) {                 \
+  return std::norm(a);                                                        \
+}                                                                             \
+static inline cctk_complex CCTK_Cmplx##Add(cctk_complex a, cctk_complex b) {  \
+  return a+b;                                                                 \
+}                                                                             \
+static inline cctk_complex CCTK_Cmplx##Sub(cctk_complex a, cctk_complex b) {  \
+  return a-b;                                                                 \
+}                                                                             \
+static inline cctk_complex CCTK_Cmplx##Mul(cctk_complex a, cctk_complex b) {  \
+  return a*b;                                                                 \
+}                                                                             \
+static inline cctk_complex CCTK_Cmplx##Div(cctk_complex a, cctk_complex b) {  \
+  return a/b;                                                                 \
+}                                                                             \
+static inline cctk_complex CCTK_Cmplx##CPow(cctk_complex a, cctk_complex b) { \
+  return pow(a,b);                                                            \
+}                                                                             \
+static inline cctk_complex CCTK_Cmplx##Sin(cctk_complex a) {                  \
+  return std::sin(a);                                                         \
+}                                                                             \
+static inline cctk_complex CCTK_Cmplx##Cos(cctk_complex a) {                  \
+  return std::cos(a);                                                         \
+}                                                                             \
+static inline cctk_complex CCTK_Cmplx##Exp(cctk_complex a) {                  \
+  return std::exp(a);                                                         \
+}                                                                             \
+static inline cctk_complex CCTK_Cmplx##Log(cctk_complex a) {                  \
+  return std::log(a);                                                         \
+}                                                                             \
+static inline cctk_complex CCTK_Cmplx##Sqrt(cctk_complex a) {                 \
+  return std::sqrt(a);                                                        \
+}                                                                             \
+static inline cctk_complex CCTK_Cmplx##Pow(cctk_complex a, cctk_real b) {     \
+  return std::pow(a,b);                                                       \
+}                                                                             \
+static inline cctk_complex CCTK_Cmplx##IPow(cctk_complex a, int b) {          \
+  return std::pow(a,(cctk_real)b);                                            \
+}
 
-/* macro to declare a set of complex functions for a given precision */
+#else
+
+/* Macro to declare a set of complex functions for a given precision */
+/* Note: We do not provide inline implementations here, since this
+   would require including <complex.h>, which pushes the identifier
+   "I" into the global namespace. */
 #define DECLARE_CMPLX_FUNCTIONS(CCTK_Cmplx, cctk_real, cctk_complex)    \
 cctk_complex CCTK_Cmplx        (cctk_real Re, cctk_real Im);            \
 cctk_real    CCTK_Cmplx##Real  (cctk_complex a);                        \
@@ -38,6 +108,7 @@ cctk_complex CCTK_Cmplx##Log   (cctk_complex a);                        \
 cctk_complex CCTK_Cmplx##Sqrt  (cctk_complex a);                        \
 cctk_complex CCTK_Cmplx##Pow   (cctk_complex a, cctk_real b);           \
 cctk_complex CCTK_Cmplx##IPow  (cctk_complex a, int b);
+#endif
 
 
 /* declare complex functions for all available precisions */
@@ -118,10 +189,6 @@ DECLARE_CMPLX_FUNCTIONS (CCTK_Cmplx32, CCTK_REAL16, CCTK_COMPLEX32)
 #define CCTK_CmplxSqrt  CCTK_Cmplx32Sqrt
 #define CCTK_CmplxPow   CCTK_Cmplx32Pow
 #define CCTK_CmplxIPow  CCTK_Cmplx32IPow
-#endif
-
-#ifdef __cplusplus
-}
 #endif
 
 #endif /* _CCTK_COMPLEX_H_ */
