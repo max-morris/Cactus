@@ -1358,7 +1358,7 @@ A negative return value indicates an error.
 \end{FunctionDescription}
 
 
-\begin{FunctionDescription}{CCTK\_Cmplx}{Turns two real numbers into a complex number}
+\begin{FunctionDescription}{CCTK\_Cmplx}{Turns two real numbers into a complex number (deprecated)}
 \label{CCTK-Cmplx}
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -1377,6 +1377,10 @@ The imaginary part of the complex number
 \end{Parameter}
 \end{ParameterSection}
 
+\begin{Discussion}
+This function is deprecated in favor of the native complex number support in
+C99 and C++.
+\end{Discussion}
 \begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
@@ -1387,7 +1391,7 @@ cmpno = CCTK_Cmplx(re,im);
 \end{FunctionDescription}
 
 
-\begin{FunctionDescription}{CCTK\_CmplxAbs}{Absolute value of a complex number}
+\begin{FunctionDescription}{CCTK\_CmplxAbs}{Absolute value of a complex number (deprecated)}
 \label{CCTK-CmplxAbs}
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -1403,6 +1407,10 @@ The complex number who absolute value is to be returned
 \end{Parameter}
 \end{ParameterSection}
 
+\begin{Discussion}
+This function is deprecated in favor of the native complex number support in
+C99 and C++.
+\end{Discussion}
 \begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
@@ -1413,7 +1421,7 @@ absval = CCTK_CmplxAbs(inval);
 \end{FunctionDescription}
 
 
-\begin{FunctionDescription}{CCTK\_CmplxAdd}{Sum of two complex numbers}
+\begin{FunctionDescription}{CCTK\_CmplxAdd}{Sum of two complex numbers (deprecated)}
 \label{CCTK-CmplxAdd}
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -1432,6 +1440,10 @@ The second complex number to be summed
 \end{Parameter}
 \end{ParameterSection}
 
+\begin{Discussion}
+This function is deprecated in favor of the native complex number support in
+C99 and C++.
+\end{Discussion}
 \begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
@@ -1441,7 +1453,7 @@ addval = CCTK_CmplxAdd(inval1,inval2);
 \end{ExampleSection}
 \end{FunctionDescription}
 
-\begin{FunctionDescription}{CCTK\_CmplxConjg}{Complex conjugate of a complex number}
+\begin{FunctionDescription}{CCTK\_CmplxConjg}{Complex conjugate of a complex number (deprecated)}
 \label{CCTK-CmplxConjg}
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -1457,6 +1469,10 @@ The complex number to be conjugated
 \end{Parameter}
 \end{ParameterSection}
 
+\begin{Discussion}
+This function is deprecated in favor of the native complex number support in
+C99 and C++.
+\end{Discussion}
 \begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
@@ -1466,7 +1482,7 @@ conjgval = CCTK_CmplxConjg(inval);
 \end{ExampleSection}
 \end{FunctionDescription}
 
-\begin{FunctionDescription}{CCTK\_CmplxCos}{Cosine of a complex number}
+\begin{FunctionDescription}{CCTK\_CmplxCos}{Cosine of a complex number (deprecated)}
 \label{CCTK-CmplxCos}
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -1482,7 +1498,8 @@ The complex number to be cosined
 \end{Parameter}
 \end{ParameterSection}
 \begin{Discussion}
-{\bf NOT YET AVAILABLE}
+This function is deprecated in favor of the native complex number support in
+C99 and C++.
 \end{Discussion}
 \begin{ExampleSection}
 \begin{Example}{C}
@@ -1494,7 +1511,7 @@ cosval = CCTK_CmplxCos(inval);
 \end{FunctionDescription}
 
 
-\begin{FunctionDescription}{CCTK\_CmplxDiv}{Division of two complex numbers}
+\begin{FunctionDescription}{CCTK\_CmplxDiv}{Division of two complex numbers (deprecated)}
 \label{CCTK-CmplxDiv}
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -1513,6 +1530,10 @@ The denominator
 \end{Parameter}
 \end{ParameterSection}
 
+\begin{Discussion}
+This function is deprecated in favor of the native complex number support in
+C99 and C++.
+\end{Discussion}
 \begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
@@ -1523,7 +1544,7 @@ divval = CCTK_CmplxDiv(inval1,inval2);
 \end{FunctionDescription}
 
 
-\begin{FunctionDescription}{CCTK\_CmplxExp}{Exponent of a complex number}
+\begin{FunctionDescription}{CCTK\_CmplxExp}{Exponent of a complex number (deprecated)}
 \label{CCTK-CmplxExp}
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -1539,7 +1560,8 @@ The complex number to be exponented
 \end{Parameter}
 \end{ParameterSection}
 \begin{Discussion}
-{\bf NOT YET AVAILABLE}
+This function is deprecated in favor of the native complex number support in
+C99 and C++.
 \end{Discussion}
 \begin{ExampleSection}
 \begin{Example}{C}
@@ -1550,7 +1572,7 @@ expval = CCTK_CmplxExp(inval);
 \end{ExampleSection}
 \end{FunctionDescription}
 
-\begin{FunctionDescription}{CCTK\_CmplxImag}{Imaginary part of a complex number}
+\begin{FunctionDescription}{CCTK\_CmplxImag}{Imaginary part of a complex number (deprecated)}
 \label{CCTK-CmplxImag}
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -1566,6 +1588,9 @@ The complex number
 \end{Parameter}
 \end{ParameterSection}
 \begin{Discussion}
+This function is deprecated in favor of the native complex number support in
+C99 and C++.
+
 The imaginary part of a complex number $z=a+bi$ is $b$.
 \end{Discussion}
 \begin{ExampleSection}
@@ -1577,7 +1602,7 @@ imval = CCTK_CmplxImag(inval);
 \end{ExampleSection}
 \end{FunctionDescription}
 
-\begin{FunctionDescription}{CCTK\_CmplxLog}{Logarithm of a complex number}
+\begin{FunctionDescription}{CCTK\_CmplxLog}{Logarithm of a complex number (deprecated)}
 \label{CCTK-CmplxLog}
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -1593,7 +1618,8 @@ The complex number
 \end{Parameter}
 \end{ParameterSection}
 \begin{Discussion}
-{\bf NOT YET AVAILABLE}
+This function is deprecated in favor of the native complex number support in
+C99 and C++.
 \end{Discussion}
 \begin{ExampleSection}
 \begin{Example}{C}
@@ -1604,7 +1630,7 @@ logval = CCTK_CmplxLog(inval);
 \end{ExampleSection}
 \end{FunctionDescription}
 
-\begin{FunctionDescription}{CCTK\_CmplxMul}{Multiplication of two complex numbers}
+\begin{FunctionDescription}{CCTK\_CmplxMul}{Multiplication of two complex numbers (deprecated)}
 \label{CCTK-CmplxMul}
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -1623,6 +1649,9 @@ Second complex number to be multiplied
 \end{Parameter}
 \end{ParameterSection}
 \begin{Discussion}
+This function is deprecated in favor of the native complex number support in
+C99 and C++.
+
 The product of two complex numbers $z_1=a_1+b_1 i$ and $z_2=a_2+b_2 i$ is
 $z=(a_1 a_2 - b_1 b_2) + (a_1 b_2 + a_2 b_1)i$.
 \end{Discussion}
@@ -1637,7 +1666,7 @@ mulval = CCTK_CmplxMul(inval1,inval2);
 
 
 
-\begin{FunctionDescription}{CCTK\_CmplxReal}{Real part of a complex number}
+\begin{FunctionDescription}{CCTK\_CmplxReal}{Real part of a complex number (deprecated)}
 \label{CCTK-CmplxReal}
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -1653,6 +1682,9 @@ The complex number
 \end{Parameter}
 \end{ParameterSection}
 \begin{Discussion}
+This function is deprecated in favor of the native complex number support in
+C99 and C++.
+
 The real part of a complex number $z=a+bi$ is $a$.
 \end{Discussion}
 \begin{ExampleSection}
@@ -1664,7 +1696,7 @@ reval = CCTK_CmplxReal(inval);
 \end{ExampleSection}
 \end{FunctionDescription}
 
-\begin{FunctionDescription}{CCTK\_CmplxSin}{Sine of a complex number}
+\begin{FunctionDescription}{CCTK\_CmplxSin}{Sine of a complex number (deprecated)}
 \label{CCTK-CmplxSin}
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -1680,7 +1712,8 @@ The complex number to be Sined
 \end{Parameter}
 \end{ParameterSection}
 \begin{Discussion}
-{\bf NOT YET AVAILABLE}
+This function is deprecated in favor of the native complex number support in
+C99 and C++.
 \end{Discussion}
 \begin{ExampleSection}
 \begin{Example}{C}
@@ -1691,7 +1724,7 @@ sinval = CCTK_CmplxSin(inval);
 \end{ExampleSection}
 \end{FunctionDescription}
 
-\begin{FunctionDescription}{CCTK\_CmplxSqrt}{Square root of a complex number}
+\begin{FunctionDescription}{CCTK\_CmplxSqrt}{Square root of a complex number (deprecated)}
 \label{CCTK-CmplxSqrt}
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -1707,7 +1740,8 @@ The complex number to be square rooted
 \end{Parameter}
 \end{ParameterSection}
 \begin{Discussion}
-{\bf NOT YET AVAILABLE}
+This function is deprecated in favor of the native complex number support in
+C99 and C++.
 \end{Discussion}
 \begin{ExampleSection}
 \begin{Example}{C}
@@ -1718,7 +1752,7 @@ sqrtval = CCTK_CmplxSqrt(inval);
 \end{ExampleSection}
 \end{FunctionDescription}
 
-\begin{FunctionDescription}{CCTK\_CmplxSub}{Subtraction of two complex numbers}
+\begin{FunctionDescription}{CCTK\_CmplxSub}{Subtraction of two complex numbers (deprecated)}
 \label{CCTK-CmplxSub}
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
@@ -1737,6 +1771,9 @@ The complex number to subtract
 \end{Parameter}
 \end{ParameterSection}
 \begin{Discussion}
+This function is deprecated in favor of the native complex number support in
+C99 and C++.
+
 If $z_1=a_1 + b_1 i$ and $z_2 = a_2+ b_2 i$ then
 $$
 z_1-z_2 = (a_1-a_2)+ (b_1 - b_2)i

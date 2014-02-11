@@ -1840,16 +1840,16 @@ void MyCRoutine(CCTK_ARGUMENTS)
 
 \paragraph{Complex variables}
 
-Cactus supports complex grid variables, and since there is no
-complex data type in C, Cactus provides a number
-of functions for manipulating complex numbers to mirror the
-functionality available in Fortran. These functions are \texttt{CCTK\_Cmplx},
-\texttt{CCTK\_CmplxReal}, \texttt{CCTK\_CmplxImag}, \texttt{CCTK\_CmplxConjg},
-\texttt{CCTK\_CmplxAdd}, \texttt{CCTK\_CmplxSub}, \texttt{CCTK\_CmplxMul},
-\texttt{CCTK\_CmplxDiv}, \texttt{CCTK\_CmplxExp}, \texttt{CCTK\_CmplSin},
-\texttt{CCTK\_CmplxAbs}, \texttt{CCTK\_CmplxLog}, and \texttt{CCTK\_CmplSqrt}.
-See the Reference Manual for more details.
+Cactus supports complex grid variables of type \texttt{CCTK\_COMPLEX} which
+are realized through the types \texttt{complex}, \texttt{std::complex} and
+\texttt{COMPLEX} in C, C++ and Fortran respectively. Complex number support is
+available in C in the C99 language standard which Cactus requires.
 
+There is a known incompatibility when \emph{returning} complex numbers from C
+and Fortran functions to C++ callers on some architectures. Access to
+variables through pointers and in arrays is not affected. A workaround is not
+to return values but instead pass in a pointer to a local variable to hold the
+return value.
 
 \paragraph{Specifically for C Programmers}
 
