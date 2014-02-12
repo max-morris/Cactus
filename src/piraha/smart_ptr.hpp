@@ -135,6 +135,8 @@ class smart_ptr {
     }
     void operator=(const smart_ptr<T>& s) {
         assert(this != NULL);
+        if(guts == s.guts)
+            return;
         clean();
         guts = s.guts;
         if(guts != NULL)
@@ -162,7 +164,7 @@ class smart_ptr {
     bool valid() const {
         return guts != NULL && guts->ptr != NULL;
     }
-    int ref_count() {
+    int ref_count() const {
         assert(guts != NULL);
         return guts->ref_count_();
     }
