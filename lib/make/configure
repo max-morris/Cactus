@@ -8259,7 +8259,7 @@ cat > conftest.$ac_ext <<EOF
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
     builtin and then its argument prototype would still apply.  */
-char Wofk9G;
+char PMHTlY;
 
 int main() {
 mkstemp()
@@ -8489,45 +8489,45 @@ fi
 
 case "x$ac_cv_sizeof_long_long" in
     'x8')
-      CCTK_INT8='long long' ;;
+      CCTK_INT8_TYPE='long long' ;;
     'x4')
-      CCTK_INT4='long long' ;;
+      CCTK_INT4_TYPE='long long' ;;
     'x2')
-      CCTK_INT2='long long' ;;
+      CCTK_INT2_TYPE='long long' ;;
 esac
 
 case "x$ac_cv_sizeof_long_int" in
     'x8')
-      CCTK_INT8='long int' ;;
+      CCTK_INT8_TYPE='long int' ;;
     'x4')
-      CCTK_INT4='long int' ;;
+      CCTK_INT4_TYPE='long int' ;;
     'x2')
-      CCTK_INT2='long int' ;;
+      CCTK_INT2_TYPE='long int' ;;
 esac
 
 case "x$ac_cv_sizeof_int" in
     'x8')
-      CCTK_INT8='int' ;;
+      CCTK_INT8_TYPE='int' ;;
     'x4')
-      CCTK_INT4='int' ;;
+      CCTK_INT4_TYPE='int' ;;
     'x2')
-      CCTK_INT2='int' ;;
+      CCTK_INT2_TYPE='int' ;;
 esac
 
 case "x$ac_cv_sizeof_short_int" in
     'x8')
-      CCTK_INT8='short int' ;;
+      CCTK_INT8_TYPE='short int' ;;
     'x4')
-      CCTK_INT4='short int' ;;
+      CCTK_INT4_TYPE='short int' ;;
     'x2')
-      CCTK_INT2='short int' ;;
+      CCTK_INT2_TYPE='short int' ;;
 esac
 
-CCTK_INT1='signed char'
+CCTK_INT1_TYPE='signed char'
 
-if test -n "$CCTK_INT8" ; then
+if test -n "$CCTK_INT8_TYPE" ; then
   cat >> confdefs.h <<EOF
-#define CCTK_INT8 $CCTK_INT8
+#define CCTK_INT8_TYPE $CCTK_INT8_TYPE
 EOF
 
   cat >> confdefs.h <<\EOF
@@ -8536,9 +8536,9 @@ EOF
 
 fi
 
-if test -n "$CCTK_INT4" ; then
+if test -n "$CCTK_INT4_TYPE" ; then
   cat >> confdefs.h <<EOF
-#define CCTK_INT4 $CCTK_INT4
+#define CCTK_INT4_TYPE $CCTK_INT4_TYPE
 EOF
 
   cat >> confdefs.h <<\EOF
@@ -8547,9 +8547,9 @@ EOF
 
 fi
 
-if test -n "$CCTK_INT2" ; then
+if test -n "$CCTK_INT2_TYPE" ; then
   cat >> confdefs.h <<EOF
-#define CCTK_INT2 $CCTK_INT2
+#define CCTK_INT2_TYPE $CCTK_INT2_TYPE
 EOF
 
   cat >> confdefs.h <<\EOF
@@ -8558,9 +8558,9 @@ EOF
 
 fi
 
-if test -n "$CCTK_INT1" ; then
+if test -n "$CCTK_INT1_TYPE" ; then
   cat >> confdefs.h <<EOF
-#define CCTK_INT1 $CCTK_INT1
+#define CCTK_INT1_TYPE $CCTK_INT1_TYPE
 EOF
 
   cat >> confdefs.h <<\EOF
@@ -8572,38 +8572,38 @@ fi
 # Float types
 case "x$ac_cv_sizeof_long_double" in
     'x16')
-      CCTK_REAL16='long double' ;;
+      CCTK_REAL16_TYPE='long double' ;;
     'x8')
-      CCTK_REAL8='long double' ;;
+      CCTK_REAL8_TYPE='long double' ;;
     'x4')
-      CCTK_REAL4='long double' ;;
+      CCTK_REAL4_TYPE='long double' ;;
 esac
 
 case "x$ac_cv_sizeof_double" in
     'x16')
-      CCTK_REAL16='double' ;;
+      CCTK_REAL16_TYPE='double' ;;
     'x8')
-      CCTK_REAL8='double' ;;
+      CCTK_REAL8_TYPE='double' ;;
     'x4')
-      CCTK_REAL4='double' ;;
+      CCTK_REAL4_TYPE='double' ;;
 esac
 
 case "x$ac_cv_sizeof_float" in
     'x16')
-      CCTK_REAL16='float' ;;
+      CCTK_REAL16_TYPE='float' ;;
     'x8')
-      CCTK_REAL8='float' ;;
+      CCTK_REAL8_TYPE='float' ;;
     'x4')
-      CCTK_REAL4='float' ;;
+      CCTK_REAL4_TYPE='float' ;;
 esac
 
 if test "x$DISABLE_REAL16" != 'xyes' -a "x$DISABLE_REAL16" != 'xno' -a "x$DISABLE_REAL16" != 'x'; then
     { echo "configure: error: Didn't recognise setting of DISABLE_REAL16=\"$DISABLE_REAL16\"; should be either \"yes\" or \"no\" or \"\" (empty)" 1>&2; exit 1; }
 fi
 
-if test -n "$CCTK_REAL16" -a \( "x$F77" = 'xnone' -o \( "x$cctk_cv_have_fortran_real16" = 'xyes' -a "x$cctk_cv_have_fortran_complex32" = 'xyes' \) \) -a "x$DISABLE_REAL16" != 'xyes' ; then
+if test -n "$CCTK_REAL16_TYPE" -a \( "x$F77" = 'xnone' -o \( "x$cctk_cv_have_fortran_real16" = 'xyes' -a "x$cctk_cv_have_fortran_complex32" = 'xyes' \) \) -a "x$DISABLE_REAL16" != 'xyes' ; then
   cat >> confdefs.h <<EOF
-#define CCTK_REAL16 $CCTK_REAL16
+#define CCTK_REAL16_TYPE $CCTK_REAL16_TYPE
 EOF
 
   cat >> confdefs.h <<\EOF
@@ -8620,9 +8620,9 @@ EOF
 
 fi
 
-if test -n "$CCTK_REAL8" -a \( "x$F77" = 'xnone' -o \( "x$cctk_cv_have_fortran_real8" -a "x$cctk_cv_have_fortran_complex16" = 'xyes' \) \); then
+if test -n "$CCTK_REAL8_TYPE" -a \( "x$F77" = 'xnone' -o \( "x$cctk_cv_have_fortran_real8" -a "x$cctk_cv_have_fortran_complex16" = 'xyes' \) \); then
   cat >> confdefs.h <<EOF
-#define CCTK_REAL8 $CCTK_REAL8
+#define CCTK_REAL8_TYPE $CCTK_REAL8_TYPE
 EOF
 
   cat >> confdefs.h <<\EOF
@@ -8631,9 +8631,9 @@ EOF
 
 fi
 
-if test -n "$CCTK_REAL4" -a \( "x$F77" = 'xnone' -o \( "x$cctk_cv_have_fortran_real4" = 'xyes' -a "x$cctk_cv_have_fortran_complex8" = 'xyes' \) \); then
+if test -n "$CCTK_REAL4_TYPE" -a \( "x$F77" = 'xnone' -o \( "x$cctk_cv_have_fortran_real4" = 'xyes' -a "x$cctk_cv_have_fortran_complex8" = 'xyes' \) \); then
   cat >> confdefs.h <<EOF
-#define CCTK_REAL4 $CCTK_REAL4
+#define CCTK_REAL4_TYPE $CCTK_REAL4_TYPE
 EOF
 
   cat >> confdefs.h <<\EOF

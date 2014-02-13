@@ -14,9 +14,7 @@
 /* Make sure that cctk_config.h is available in case someone includes
  * this by hand.
  */
-#ifndef _CCTK_CONFIG_H_
 #include "cctk_Config.h"
-#endif
 
 /* Define stuff for C. */
 #ifdef CCODE
@@ -34,6 +32,18 @@ typedef const char * CCTK_STRING;
 #define HAVE_CCTK_CHAR 1
 #define HAVE_CCTK_STRING 1
 
+/* Floating point types */
+
+#ifdef HAVE_CCTK_REAL16
+typedef CCTK_REAL16_TYPE CCTK_REAL16;
+#endif
+#ifdef HAVE_CCTK_REAL8
+typedef CCTK_REAL8_TYPE CCTK_REAL8;
+#endif
+#ifdef HAVE_CCTK_REAL4
+typedef CCTK_REAL4_TYPE CCTK_REAL4;
+#endif
+
 /* Declarations for complex types */
 
 #ifdef __cplusplus
@@ -50,7 +60,7 @@ typedef long double _Complex CCTK_COMPLEX32;
 #endif
 
 #ifdef HAVE_CCTK_REAL8
-#define HAVE_CCTK_COMPLEX16 1
+#  define HAVE_CCTK_COMPLEX16 1
 #  ifdef __cplusplus
 typedef std::complex<CCTK_REAL8> CCTK_COMPLEX16;
 #  else
@@ -71,9 +81,24 @@ typedef float _Complex CCTK_COMPLEX8;
 typedef unsigned char CCTK_BYTE;
 #define HAVE_CCTK_BYTE 1
 
+/* Integer types */
+
+#ifdef HAVE_CCTK_INT8
+typedef CCTK_INT8_TYPE CCTK_INT8;
+#endif
+#ifdef HAVE_CCTK_INT4
+typedef CCTK_INT4_TYPE CCTK_INT4;
+#endif
+#ifdef HAVE_CCTK_INT2
+typedef CCTK_INT2_TYPE CCTK_INT2;
+#endif
+#ifdef HAVE_CCTK_INT1
+typedef CCTK_INT1_TYPE CCTK_INT1;
+#endif
+
 #endif /* CCODE */
 
-/* Define stuff for fortran. */
+/* Define stuff for Fortran. */
 #ifdef FCODE
 
 #define CCTK_POINTER          integer*SIZEOF_CHAR_P
@@ -94,34 +119,34 @@ typedef unsigned char CCTK_BYTE;
 #define HAVE_CCTK_STRING 1
 
 #ifdef HAVE_CCTK_INT8
-#define CCTK_INT8 INTEGER*8
+#  define CCTK_INT8 INTEGER*8
 #endif
 #ifdef HAVE_CCTK_INT4
-#define CCTK_INT4 INTEGER*4
+#  define CCTK_INT4 INTEGER*4
 #endif
 #ifdef HAVE_CCTK_INT2
-#define CCTK_INT2 INTEGER*2
+#  define CCTK_INT2 INTEGER*2
 #endif
 #ifdef HAVE_CCTK_INT1
-#define CCTK_INT1 INTEGER*1
+#  define CCTK_INT1 INTEGER*1
 #endif
 
 #ifdef HAVE_CCTK_REAL16
-#define CCTK_REAL16 REAL*CCTK_REAL16_KIND
-#define HAVE_CCTK_COMPLEX32 1
-#define CCTK_COMPLEX32  COMPLEX*CCTK_COMPLEX32_KIND
+#  define CCTK_REAL16 REAL*CCTK_REAL16_KIND
+#  define HAVE_CCTK_COMPLEX32 1
+#  define CCTK_COMPLEX32  COMPLEX*CCTK_COMPLEX32_KIND
 #endif
 
 #ifdef HAVE_CCTK_REAL8
-#define CCTK_REAL8  REAL*8
-#define HAVE_CCTK_COMPLEX16 1
-#define CCTK_COMPLEX16  COMPLEX*16
+#  define CCTK_REAL8  REAL*8
+#  define HAVE_CCTK_COMPLEX16 1
+#  define CCTK_COMPLEX16  COMPLEX*16
 #endif
 
 #ifdef HAVE_CCTK_REAL4
-#define CCTK_REAL4  REAL*4
-#define HAVE_CCTK_COMPLEX8 1
-#define CCTK_COMPLEX8   COMPLEX*8
+#  define CCTK_REAL4  REAL*4
+#  define HAVE_CCTK_COMPLEX8 1
+#  define CCTK_COMPLEX8   COMPLEX*8
 #endif
 
 /* Should be unsigned, but Fortran doesn't have that */
@@ -134,59 +159,57 @@ typedef unsigned char CCTK_BYTE;
 
 /* Floating point precision */
 #ifdef CCTK_REAL_PRECISION_16
-#define CCTK_REAL_PRECISION 16
-#define CCTK_REAL CCTK_REAL16
+#  define CCTK_REAL_PRECISION 16
+#  define CCTK_REAL CCTK_REAL16
 #endif
 
 #ifdef CCTK_REAL_PRECISION_8
-#define CCTK_REAL_PRECISION 8
-#define CCTK_REAL CCTK_REAL8
+#  define CCTK_REAL_PRECISION 8
+#  define CCTK_REAL CCTK_REAL8
 #endif
 
 #ifdef CCTK_REAL_PRECISION_4
-#define CCTK_REAL_PRECISION 4
-#define CCTK_REAL CCTK_REAL4
+#  define CCTK_REAL_PRECISION 4
+#  define CCTK_REAL CCTK_REAL4
 #endif
 
 /* Integer precision */
 
 #ifdef CCTK_INTEGER_PRECISION_8
-#define CCTK_INTEGER_PRECISION 8
-#define CCTK_INT CCTK_INT8
+#  define CCTK_INTEGER_PRECISION 8
+#  define CCTK_INT CCTK_INT8
 #endif
 
 #ifdef CCTK_INTEGER_PRECISION_4
-#define CCTK_INTEGER_PRECISION 4
-#define CCTK_INT CCTK_INT4
+#  define CCTK_INTEGER_PRECISION 4
+#  define CCTK_INT CCTK_INT4
 #endif
 
 #ifdef CCTK_INTEGER_PRECISION_2
-#define CCTK_INTEGER_PRECISION 2
-#define CCTK_INT CCTK_INT2
+#  define CCTK_INTEGER_PRECISION 2
+#  define CCTK_INT CCTK_INT2
 #endif
 
 #ifdef CCTK_INTEGER_PRECISION_1
-#define CCTK_INTEGER_PRECISION 1
-#define CCTK_INT CCTK_INT1
+#  define CCTK_INTEGER_PRECISION 1
+#  define CCTK_INT CCTK_INT1
 #endif
 
 /* Complex precision */
 #ifdef CCTK_REAL_PRECISION_16
-#define CCTK_COMPLEX_PRECISION 32
-#define CCTK_COMPLEX CCTK_COMPLEX32
+#  define CCTK_COMPLEX_PRECISION 32
+#  define CCTK_COMPLEX CCTK_COMPLEX32
 #endif
 
 #ifdef CCTK_REAL_PRECISION_8
-#define CCTK_COMPLEX_PRECISION 16
-#define CCTK_COMPLEX CCTK_COMPLEX16
+#  define CCTK_COMPLEX_PRECISION 16
+#  define CCTK_COMPLEX CCTK_COMPLEX16
 #endif
 
 #ifdef CCTK_REAL_PRECISION_4
-#define CCTK_COMPLEX_PRECISION 8
-#define CCTK_COMPLEX CCTK_COMPLEX8
+#  define CCTK_COMPLEX_PRECISION 8
+#  define CCTK_COMPLEX CCTK_COMPLEX8
 #endif
-
-#endif /* CCODE */
 
 /* Determine whether we have a traditional or an ANSI cpp. */
 #ifdef FCODE
@@ -230,7 +253,7 @@ typedef unsigned char CCTK_BYTE;
   integer, parameter :: cctki_use_/**/nam = kind(nam)
 #endif
 
-#else /* F90CODE */
+#else /* #ifndef F90CODE */
 
 /* Just declare it; FORTRAN 77 has no good way of marking it as used
    within a block of declarations  */
@@ -264,5 +287,7 @@ typedef unsigned char CCTK_BYTE;
   enum cctki_use_##nam { cctki_use0_##nam = sizeof nam };
 
 #endif /* HAVE_..._ATTRIBUTE_UNUSED */
+
+#endif /* CCODE */
 
 #endif /*_CCTK_TYPES_H_ */

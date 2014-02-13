@@ -41,3 +41,4 @@
 28 Feb 2013: Add variable XARGS
 20 May 2013: Auto-configure static_assert
 16 Jun 2013: Auto-configure __builtin_assume_aligned
+07 Feb 2014: Change CCTK_REAL8 etc. from #define to typedef

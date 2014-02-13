@@ -159,15 +159,15 @@
 #ifdef CCODE
 
 /* CCTK C/C++ Integer datatypes */
-#undef CCTK_INT8
-#undef CCTK_INT4
-#undef CCTK_INT2
-#undef CCTK_INT1
+#undef CCTK_INT8_TYPE
+#undef CCTK_INT4_TYPE
+#undef CCTK_INT2_TYPE
+#undef CCTK_INT1_TYPE
 
 /* CCTK C/C++ Float datatypes */
-#undef CCTK_REAL16
-#undef CCTK_REAL8
-#undef CCTK_REAL4
+#undef CCTK_REAL16_TYPE
+#undef CCTK_REAL8_TYPE
+#undef CCTK_REAL4_TYPE
 
 /* Disable 'restrict' for compiler versions known to be buggy */
 /* Note that at the time of writing this comment (2013-10-19), only
