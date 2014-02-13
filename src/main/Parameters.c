@@ -2206,9 +2206,12 @@ static int ParameterSetInteger (t_param *param, const char *value)
   retval = 0;
 
   /* try parsing as number */
-  inval = strtol (value, &endptr, 0);
+  if (strcmp(value, "") == 0) /* strtol returns 0 in this case */
+    retval = -6;
+  else
+    inval = strtol (value, &endptr, 0);
 
-  if (*endptr) /* if we could not parse as a number, try an expression */
+  if (!retval && *endptr) /* if we cannot parse as a number, try expression */
   {
     int type = PARAMETER_INT;
     uExpressionValue val;
@@ -2315,9 +2318,12 @@ static int ParameterSetReal (t_param *param, const char *value)
   }
 
   /* try parsing as number */
-  inval = strtod (temp, &endptr);
+  if (strcmp(value, "") == 0) /* strtod returns 0. in this case */
+    retval = -6;
+  else
+    inval = strtod (temp, &endptr);
 
-  if (*endptr) /* if we cannot parse as a number, try expression */
+  if (!retval && *endptr) /* if we cannot parse as a number, try expression */
   {
     int type = PARAMETER_REAL;
     uExpressionValue val;
