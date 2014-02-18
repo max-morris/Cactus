@@ -4,13 +4,13 @@
 using namespace cctki_piraha;
 
 bool Multi::match(Matcher *m) {
-    vector<smart_ptr<Group> > chSave;
+    int chSize;
     for(int i=0;i<maxv;i++) {
         int save = m->pos;
-        chSave = m->children;
+        chSize = m->children->size();
         if(!pattern->match(m) || m->pos == save) {
             m->pos = save;
-            m->children = chSave;
+            m->children->resize(chSize);
             return i >= minv;
         }
     }

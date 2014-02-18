@@ -22,11 +22,10 @@ Or::Or(Pattern *p,...) : patterns() {
 bool Or::match(Matcher *m) {
     typedef vector<smart_ptr<Pattern> >::iterator pattern_iter;
     int save = m->pos;
-    vector<smart_ptr<Group> > chSave;
-    chSave = m->children;
+    int chSave = m->children->size();
     for(pattern_iter p = patterns.begin();p != patterns.end();++p) {
         m->pos = save;
-        m->children = chSave;
+        m->children->resize(chSave);
         if((*p)->match(m))
             return true;
     }

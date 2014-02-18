@@ -27,11 +27,12 @@ bool Matcher::matchesTo(int match_to_) {
         std::cout << g->patterns << std::endl;
     }
     assert(p.valid());
+    //packrat.clear();
     pos = 0;
     max_pos = -1;
     match_to = match_to_;
     err_pos = -1;
-    children.clear();
+    children->clear();
     bool b = p->match(this);
     end_ = pos;
     return b;

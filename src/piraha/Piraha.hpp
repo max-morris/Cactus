@@ -6,10 +6,12 @@
 #include <vector>
 #include <iostream>
 #include <smart_ptr.hpp>
+#include <climits>
+#include <string.h>
 
 namespace cctki_piraha {
 
-const int max_int = 10000;
+const int max_int = INT_MAX-1;
 
 using std::map;
 using std::vector;
@@ -33,16 +35,15 @@ public:
     std::string pattern;
     const char *input;
     int start_,end_;
-    vector<smart_ptr<Group> > children;
+    smart_ptr<vector<smart_ptr<Group> > > children;
 
     Group(const char *p,const char *value)
-        : pattern(p), input(value), start_(0) {
-            for(end_=0;value[end_] != '\0';end_++);
+        : pattern(p), input(value), start_(0), end_(strlen(value)), children(new vector<smart_ptr<Group> >()) {
         }
     Group(std::string p,const char *input_)
-        : pattern(p), input(input_), start_(0), end_(0), children() {}
+        : pattern(p), input(input_), start_(0), end_(0), children(new vector<smart_ptr<Group> >()) {}
     Group(std::string p,const char *input_,int s,int e,
-        vector<smart_ptr<Group> > ch)
+        smart_ptr<vector<smart_ptr<Group> > > ch)
         : pattern(p), input(input_), start_(s), end_(e), children(ch) {}
 
     virtual ~Group() {}
@@ -59,13 +60,13 @@ public:
     void dumpPerl(std::ostream&o,int indent);
     void dumpPython(std::ostream&o=std::cout);
     void dumpPython(std::ostream&o,int indent);
-    int groupCount() { return children.size(); }
-    smart_ptr<Group> group(int i) { return children[i]; }
+    int groupCount() { return children->size(); }
+    smart_ptr<Group> group(int i) { return (*children)[i]; }
     smart_ptr<Group> group(const char *nm,int ix=0) {
-    	for(unsigned int i=0;i<children.size();i++) {
-    		if(children[i]->getPatternName() == nm) {
+    	for(unsigned int i=0;i<children->size();i++) {
+    		if((*children)[i]->getPatternName() == nm) {
     			if(ix == 0) {
-    				return children[i];
+    				return (*children)[i];
     			}
     			ix--;
     		}
@@ -350,6 +351,8 @@ class Matcher : public Group {
 public:
     Matcher(smart_ptr<Grammar> g,const char *pat_,const char *input_,int input_size=-1);
     virtual ~Matcher() {}
+
+    //std::map<std::string,std::vector<smar_ptr<Group> > > packrat;
     const char *input;
     smart_ptr<Grammar> g;
     int input_size;

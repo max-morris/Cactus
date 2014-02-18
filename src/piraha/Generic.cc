@@ -103,7 +103,7 @@ int main(int argc,char **argv) {
         std::cout << "writing file: " << outFile << std::endl;
         smart_ptr<Group> src_file =
             new Group("annot:src_file",inputArg.c_str());
-        mg->children.push_back(src_file);
+        mg->children->push_back(src_file);
     	if(perlFlag) {
     		mg->dumpPerl(o);
         } else if(pythonFlag) {

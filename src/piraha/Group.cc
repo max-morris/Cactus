@@ -12,15 +12,15 @@ void Group::dump(int n,std::ostream& o,int indent) {
     	o << "[" << n << "] ";
     }
     o << pattern << ": ";
-    if(children.size()==0) {
+    if(children->size()==0) {
         for(int i=start_;i<end_;i++)
             o << input[i];
     }
     o << std::endl;
     typedef vector<smart_ptr<Group> >::iterator group_iter;
     int nn = 0;
-    for(group_iter gi = children.begin();
-            gi != children.end();
+    for(group_iter gi = children->begin();
+            gi != children->end();
             ++gi) {
         (*gi)->dump(nn++,o,indent+2);
     }
@@ -38,7 +38,7 @@ void Group::dumpPerl(std::ostream &o,int indent) {
 	for(int i=0;i<indent;i++)
 		o << ' ';
 	o << "name=> \"" << getPatternName() << "\"," << std::endl;
-	if(children.size()==0) {
+	if(children->size()==0) {
 		for(int i=0;i<indent;i++)
 			o << ' ';
 		o << "children=>[]," << std::endl;
@@ -53,8 +53,8 @@ void Group::dumpPerl(std::ostream &o,int indent) {
 			o << ' ';
 		o << "children=>[" << std::endl;
 		typedef vector<smart_ptr<Group> >::iterator group_iter;
-		for(group_iter gi = children.begin();
-				gi != children.end();
+		for(group_iter gi = children->begin();
+				gi != children->end();
 				++gi) {
 			(*gi)->dumpPerl(o,indent+2);
 			for(int i=0;i<indent;i++)
@@ -92,7 +92,7 @@ void Group::dumpPython(std::ostream &o,int indent) {
 	for(int i=0;i<indent;i++)
 		o << ' ';
 	o << "'name' : \"" << getPatternName() << "\"," << std::endl;
-	if(children.size()==0) {
+	if(children->size()==0) {
 		for(int i=0;i<indent;i++)
 			o << ' ';
 		o << "'children' : []," << std::endl;
@@ -107,8 +107,8 @@ void Group::dumpPython(std::ostream &o,int indent) {
 			o << ' ';
 		o << "'children' : [" << std::endl;
 		typedef vector<smart_ptr<Group> >::iterator group_iter;
-		for(group_iter gi = children.begin();
-				gi != children.end();
+		for(group_iter gi = children->begin();
+				gi != children->end();
 				++gi) {
 			(*gi)->dumpPython(o,indent+2);
 			for(int i=0;i<indent;i++)
@@ -153,4 +153,12 @@ int Group::line() {
 			line++;
 	}
 	return line;
+}
+
+int Group::childCount() {
+    return children->size();
+}
+
+smart_ptr<Group> Group::child(int n) {
+    return (*children)[n];
 }

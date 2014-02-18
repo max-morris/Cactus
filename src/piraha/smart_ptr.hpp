@@ -8,6 +8,8 @@
 #define NULL ((void*)0)
 #endif
 
+#define NDEBUG
+
 namespace cctki_piraha {
 
 // This global debug variable is used to detect the case
@@ -22,6 +24,7 @@ extern std::set<void*> *ptrs;
 
 #ifndef NDEBUG
 inline void add(void *t) {
+    abort();
     if(t == NULL)
         return;
     if(ptrs == 0)
