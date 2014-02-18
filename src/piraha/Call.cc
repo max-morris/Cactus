@@ -869,10 +869,10 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
 
     std::string active;
     smart_ptr<Matcher> m2 = new Matcher(par_file_grammar,"file",buffer,buffersize);
-    std::clock_t st = std::clock();
+    //std::clock_t st = std::clock();
     bool b = m2->matches();
-    std::clock_t en = std::clock();
-    std::cout << "PARSE TIME = " << ((en-st)/CLOCKS_PER_SEC) << std::endl;
+    //std::clock_t en = std::clock();
+    //std::cout << "PARSE TIME = " << ((en-st)/CLOCKS_PER_SEC) << std::endl;
     if(b) {
         int line = -1;
         for(int i=0;i<m2->groupCount();i++) {
