@@ -5,8 +5,8 @@ name = (?i:[a-z_][a-z0-9_]*)
 filename = (?i:([.a-z0-9_]|\\[^])*)
 accname = {-name}(::{-name})*
 inum = [1248]
-rnum = [48]
-cnum = 8|16
+rnum = [48]|16
+cnum = 8|16|32
 type = (void|CCTK_INT{inum}?|CCTK_REAL{rnum}?|CCTK_COMPLEX{cnum}?|CCTK|CCTK_POINTER|CCTK_TO_CONST)
 
 num = [0-9]+
