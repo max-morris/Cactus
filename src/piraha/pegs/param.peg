@@ -12,7 +12,7 @@ steerable = (?i:never|always|recover)
 accumexpr = \( ([^()]+|{accumexpr}) \)
 
 # Note slop on shared
-access = (?i: global : | restricted : | private : | shares :([\ \t]*{name}|) )
+access = (?i:global : |restricted : |private : |shares :([\ \t]*{name}|) )
 #access = (?i: global : | restricted : | private : | shares : {name} )
 
 quote = "(\\{any}|[^"])*"
@@ -33,14 +33,15 @@ string = {quote}|{name}|(\\[^]|[^\\ \t\r\n\b}])+
 keyword = {name}|{quote}
 
 intguts = (?i:
-	(CCTK_|)INT {name}(\[{num}\]|)
+	(CCTK_|)INT {name}( \[{num}\]|)
 	({quote}|)
     (as {name} |)
     (steerable = {steerable} |accumulator = {accumexpr} |accumulator-base = {accname} )*
   )
   
+uses_or_extends = (?i:uses|extends)
 intpar = (?i:
-	(uses|extends) {intguts}
+	{uses_or_extends} {intguts}
     ( \{
     	( {intrange} (:: {quote}|) )*
     \} |)|
@@ -62,7 +63,7 @@ realguts = (?i:
   )
   
 realpar = (?i:
-	(uses|extends) {realguts} 
+	{uses_or_extends} {realguts} 
     (\{
     	( {realrange} (:: {quote} |) )*
     \}|)|
@@ -75,7 +76,7 @@ realpar = (?i:
   )
   
 keywordguts = (?i:
-	(CCTK_|)KEYWORD {name}(\[{num}\]|)
+	(CCTK_|)KEYWORD {name}( \[{num}\]|)
 	({quote}|)
     (as {name} |)
     (steerable = {steerable}|)
@@ -95,14 +96,14 @@ keywordpar = (?i:
   )
   
 stringguts = (?i:
-	(CCTK_|)STRING {name}(\[{num}\]|)
+	(CCTK_|)STRING {name}( \[{num}\]|)
 	({quote}|)
     (as {name} |)
     (steerable = {steerable} |accumulator = {accumexpr} |accumulator-base = {accname} )*
   )
   
 stringpar = (?i:
-	(uses|extends) {stringguts} 
+	{uses_or_extends} {stringguts} 
     (\{
     	( {string} (, {string})* (:: {quote}|) )*
     \}|)|
@@ -116,7 +117,7 @@ stringpar = (?i:
   )
 
 boolguts = (?i:
-	(CCTK_|)BOOLEAN {name}(\[{num}\]|)
+	(CCTK_|)BOOLEAN {name}( \[{num}\]|)
 	({quote}|)
     (as {name} |)
     (steerable = {steerable}|)
@@ -125,7 +126,7 @@ boolguts = (?i:
   )
   
 boolpar = (?i:
-	(uses|extends) {boolguts} 
+	{uses_or_extends} {boolguts} 
     (\{
     ({bool} (:: {quote} |))*
     \}|)|
@@ -138,4 +139,4 @@ boolpar = (?i:
     \} {bool}|)
   )
   
-pars = ^ ({access}|{intpar}|{realpar}|{keywordpar}|{stringpar}|{boolpar})* $
+pars = ^ ( {access}|{intpar}|{realpar}|{keywordpar}|{stringpar}|{boolpar})* $
