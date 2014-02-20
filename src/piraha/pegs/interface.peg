@@ -2,7 +2,7 @@ skipper = (([ \t\n\r\b]|\#[^\n\r]*|\\[\r\n])+|\b)
 
 any = [^]
 name = (?i:[a-z_][a-z0-9_]*)
-filename = (?i:([.a-z0-9_]|\\[^])*)
+filename = (?i:([/.a-z0-9_]|\\[^])*)
 accname = {-name}(::{-name})*
 inum = [1248]
 rnum = [48]|16
