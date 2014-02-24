@@ -391,7 +391,7 @@ else
      major_version=`echo $CC_VERSION | cut -f3 -d' ' | cut -f1 -d'.'`
      minor_version=`echo $CC_VERSION | cut -f3 -d' ' | cut -f2 -d'.'`
      # only GCC versions 4.1 and higher support OpenMP
-     if test ! \( $major_version -lt 4 -o \( $major_version = 4 -a $minor_version -lt 1 \) \) ; then
+     if test ! \( $major_version -lt 4 -o \( $major_version -eq 4 -a $minor_version -lt 1 \) \) ; then
        : ${C_OPENMP_FLAGS='-fopenmp'}
      fi
      ;;
