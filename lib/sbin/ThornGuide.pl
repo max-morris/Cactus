@@ -527,6 +527,7 @@ print OUT  <<EOC;
 \\usepackage{$cactus_style_file}
 
 \\usepackage{minitoc}
+\\usepackage{color}
 
 
 \% mini table of contents stuff
