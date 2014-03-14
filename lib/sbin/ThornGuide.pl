@@ -424,7 +424,8 @@ sub Add_Section
 $thorn = ThornUtils::CleanForLatex($thorn);
 print OUT <<EOC;
 
-\\chapter{$thorn}
+\\chapter*{$thorn}
+\\addcontentsline{toc}{chapter}{$thorn}
 
 $contents
 EOC

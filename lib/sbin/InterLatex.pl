@@ -1,7 +1,7 @@
 #!/usr/bin/perl -s
 
 #use strict;
-use vars qw($cctk_home $debug $verbose $h $help $document_type $outdir $directory $thornlist); 
+use vars qw($cctk_home $debug $verbose $h $help $document_type $outdir $directory $thornlist $thorn);
 
 #/*@@
 #  @file      InterLatex.pl
@@ -27,6 +27,7 @@ if ($h || $help) {
    print "--> InterLatex.pl <--\n";
    print "Options:\n";
    print "\t-thornlist=     : thornlist to process\n";
+   print "\t-thorn=         : (opt) specific thorn to process\n";
    print "\t-directory=     : directory of arrangements (default arrangements/)\n";
    print "\t-outdir=        : directory to dump output files, default is .\n";
    print "\t-document_type= : create a 'document' or 'section'\n";
@@ -110,6 +111,8 @@ if (defined $thornlist) {
    # provided by MakeUtils.pl, returns a hash with a list of the thorns in our thornlist
    %thorns       = &ReadThornlist($thornlist);
    @listOfThorns = sort keys %thorns;
+} elsif (defined $thorn) {
+   @listOfThorns = $thorn;
 } else {
    # we don't have a thornlist, go find all thorns in arrangements directory
    @listOfThorns = ThornUtils::CreateThornlist($arrangements_dir);
@@ -331,7 +334,7 @@ sub LatexTableElement
             # print nothign as we are dealing with the same group
             if (! $firstpass) {
                print "~ &"; 
-	       $firstpass = 0;
+               $firstpass = 0;
             }
 
             my $new_counter = 1;

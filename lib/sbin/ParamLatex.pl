@@ -4,7 +4,7 @@
 # the following variables in the 'use vars' statement, that can be passed in from 
 # the command.
 use strict;
-use vars qw($h $help $cctk_home $thornlist $outdir $verbose $debug $arrangements_dir $document_type);
+use vars qw($h $help $cctk_home $thornlist $outdir $verbose $debug $arrangements_dir $document_type $thorn);
 
 #########################
 # ->> ParamLatex.pl <<- #
@@ -19,6 +19,7 @@ This program will take as input a thornlist, and outputs a latex table that cont
 	-cctk_home=        : root directory of Cactus 
 	-arrangements_dir= : arrangements directory
 	-thornlist=        : thornlist to process
+	-thorn=            : specific thorn to process
 	-outdir=           : where to place resulting output files
 	-document_type=    : is this a self containted 'document' or 'section'
 
@@ -111,6 +112,8 @@ if (defined $thornlist) {
    # provided by MakeUtils.pl, returns a hash with a list of the thorns in our thornlist
    %thorns 	 = &ReadThornlist($thornlist);
    @listOfThorns = sort keys %thorns; 
+} elsif (defined $thorn) {
+   @listOfThorns = $thorn;
 } else {
    # we don't have a thornlist, go find all thorns in arrangements directory
    @listOfThorns = ThornUtils::CreateThornlist($arrangements_dir);
