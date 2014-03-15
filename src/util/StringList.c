@@ -3,12 +3,13 @@
    @date      Mon May 21 16:55:14 2001
    @author    Tom Goodale
    @desc 
-   Stuff for fixed-size lists of sorted unique strings.
+   Stuff for lists of sorted unique strings.
    @enddesc
    @version $Header$
  @@*/
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #ifndef TEST_STRINGLIST
 #include "cctk.h"
@@ -30,6 +31,7 @@ CCTK_FILEVERSION(util_StringList_c);
 /********************************************************************
  ********************* Local Routine Prototypes *********************
  ********************************************************************/
+static int Utili_StringListExpand(uStringList *list);
 
 /********************************************************************
  ********************* Other Routine Prototypes *********************
@@ -56,7 +58,7 @@ CCTK_FILEVERSION(util_StringList_c);
  
    @endhistory 
    @var     size
-   @vdesc   Size of the list
+   @vdesc   Initial size of the list
    @vtype   int
    @vio     in
    @vcomment 
@@ -132,6 +134,10 @@ int Util_StringListAdd(uStringList *list, const char *item)
   {
     if (list->max_size < list->fill + 1)
     {
+      Utili_StringListExpand(list);
+    }
+    if (list->max_size < list->fill + 1)
+    {
       retval = -2;
     }
     else
@@ -151,6 +157,10 @@ int Util_StringListAdd(uStringList *list, const char *item)
     {
       if((position = Util_StrCmpi(item,this->string)) < 0)
       {
+        if (list->max_size < list->fill + 1)
+        {
+          Utili_StringListExpand(list);
+        }
         if (list->max_size < list->fill + 1)
         {
           retval = -2;
@@ -184,6 +194,10 @@ int Util_StringListAdd(uStringList *list, const char *item)
     
     if(!this)
     {
+      if (list->max_size < list->fill + 1)
+      {
+        Utili_StringListExpand(list);
+      }
       if (list->max_size < list->fill + 1)
       {
         retval = -2;
@@ -294,6 +308,62 @@ void Util_StringListDestroy(uStringList *this)
 /********************************************************************
  *********************     Local Routines   *************************
  ********************************************************************/
+
+ /*@@
+   @routine    Util_StringListExpand
+   @date       Sat Mar 15 15:27:08 PDT 2014
+   @author     Roland Haas
+   @desc
+   Doubles size of a stringlist.
+   @enddesc
+   @calls
+   @calledby
+   @history
+
+   @endhistory
+   @var     this
+   @vdesc   The stringlist object
+   @vtype   uStringList
+   @vio     inout
+   @vcomment
+
+   @endvar
+
+   @returntype int
+   @returndesc
+   1 if memory could be allocated
+   0 on failure
+   @endreturndesc
+@@*/
+static int Utili_StringListExpand(uStringList *list)
+{
+  int retval;
+
+  struct iInternalStringList *temp =
+    realloc(list->list,(2*list->max_size+1)*sizeof(struct iInternalStringList));
+  if(temp)
+  {
+    memset(temp+list->max_size+1, 0,
+           list->max_size*sizeof(struct iInternalStringList));
+    /* re-link entries based on their position in the (old) array */
+    for(int i=0; i < list->fill; i++)
+    {
+      temp[i].next = temp[i].next ? temp+(temp[i].next-list->list) : NULL;
+    }
+    list->head = list->head ? temp+(list->head-list->list) : NULL;
+    list->current = list->current ? temp+(list->current-list->list) : NULL;
+    list->list = temp;
+    list->max_size = 2*list->max_size;
+
+    retval = 1;
+  }
+  else
+  {
+    retval = 0;
+  }
+
+  return retval;
+}
 
 #ifdef TEST_STRINGLIST
 

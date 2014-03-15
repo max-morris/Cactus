@@ -977,7 +977,8 @@ int CCTKi_ActivateThorns(const char *activethornlist)
             new_thorn = this_thorn->activates_thorns[i];
             if (! CCTK_IsThornActive(new_thorn))
             {
-              switch (Util_StringListAdd(new_thorns, new_thorn))
+              const int ierr = Util_StringListAdd(new_thorns, new_thorn);
+              switch (ierr)
               {
               case 0:
                 /* Thorn already scheduled for activation */
@@ -988,7 +989,8 @@ int CCTKi_ActivateThorns(const char *activethornlist)
                 did_add_thorns = 1;
                 break;
               default:
-                CCTK_Warn(0, __LINE__, __FILE__, "Cactus", "Internal error");
+                CCTK_VError(__LINE__, __FILE__, "Cactus", "Internal error: %d",
+                            ierr);
               }
             }
           }
