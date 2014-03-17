@@ -51,7 +51,7 @@ endef
 define NOTIFY_COPYING
 endef
 define NOTIFY_COMPILING
-	echo COMPILING $<
+	echo COMPILING $(subst $(CCTK_HOME)/,,$<)
 endef
 define NOTIFY_POSTPROCESSING
 endef
