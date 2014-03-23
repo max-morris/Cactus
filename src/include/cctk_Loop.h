@@ -205,7 +205,7 @@
     int const cctki2_lsh[] = { cctki2_cctkGH->cctk_lsh[0] }; \
     int const cctki2_istr CCTK_ATTRIBUTE_UNUSED = (cctki2_istr_); \
     for (int cctki2_idir=-1; cctki2_idir<=+1; ++cctki2_idir) { \
-      int cctki2_any_bbox = \
+      int const cctki2_any_bbox = \
         (cctki2_idir<0 ? cctki2_bbox[0] : 0) || (cctki2_idir>0 ? cctki2_bbox[1] : 0); \
       if (cctki2_any_bbox) { \
         int const cctki2_bmin[] = { \
@@ -275,9 +275,9 @@
     int const cctki2_lsh[] = { cctki2_cctkGH->cctk_lsh[0] }; \
     int const cctki2_istr CCTK_ATTRIBUTE_UNUSED = (cctki2_istr_); \
     for (int cctki2_idir=-1; cctki2_idir<=+1; ++cctki2_idir) { \
-      int cctki2_any_bbox = \
+      int const cctki2_any_bbox = \
         (cctki2_idir<0 ? cctki2_bbox[0] : 0) || (cctki2_idir>0 ? cctki2_bbox[1] : 0); \
-      int cctki2_all_bbox = \
+      int const cctki2_all_bbox = \
         (cctki2_idir<0 ? cctki2_bbox[0] : 1) && (cctki2_idir>0 ? cctki2_bbox[1] : 1); \
       if (cctki2_all_bbox && cctki2_any_bbox) { \
         int const cctki2_bmin[] = { \
@@ -1195,8 +1195,8 @@
     int const cctki2_istr CCTK_ATTRIBUTE_UNUSED = (cctki2_istr_); \
     for (int cctki2_jdir=-1; cctki2_jdir<=+1; ++cctki2_jdir) { \
     for (int cctki2_idir=-1; cctki2_idir<=+1; ++cctki2_idir) { \
-      int cctki2_any_bbox = \
-        (cctki2_idir<0 ? cctki2_bbox[0] : 0) || (cctki2_idir>0 ? cctki2_bbox[1] : 0)|| \
+      int const cctki2_any_bbox = \
+        (cctki2_idir<0 ? cctki2_bbox[0] : 0) || (cctki2_idir>0 ? cctki2_bbox[1] : 0) || \
         (cctki2_jdir<0 ? cctki2_bbox[2] : 0) || (cctki2_jdir>0 ? cctki2_bbox[3] : 0); \
       if (cctki2_any_bbox) { \
         int const cctki2_bmin[] = { \
@@ -1271,11 +1271,11 @@
     int const cctki2_istr CCTK_ATTRIBUTE_UNUSED = (cctki2_istr_); \
     for (int cctki2_jdir=-1; cctki2_jdir<=+1; ++cctki2_jdir) { \
     for (int cctki2_idir=-1; cctki2_idir<=+1; ++cctki2_idir) { \
-      int cctki2_any_bbox = \
-        (cctki2_idir<0 ? cctki2_bbox[0] : 0) || (cctki2_idir>0 ? cctki2_bbox[1] : 0)|| \
+      int const cctki2_any_bbox = \
+        (cctki2_idir<0 ? cctki2_bbox[0] : 0) || (cctki2_idir>0 ? cctki2_bbox[1] : 0) || \
         (cctki2_jdir<0 ? cctki2_bbox[2] : 0) || (cctki2_jdir>0 ? cctki2_bbox[3] : 0); \
-      int cctki2_all_bbox = \
-        (cctki2_idir<0 ? cctki2_bbox[0] : 1) && (cctki2_idir>0 ? cctki2_bbox[1] : 1)&& \
+      int const cctki2_all_bbox = \
+        (cctki2_idir<0 ? cctki2_bbox[0] : 1) && (cctki2_idir>0 ? cctki2_bbox[1] : 1) && \
         (cctki2_jdir<0 ? cctki2_bbox[2] : 1) && (cctki2_jdir>0 ? cctki2_bbox[3] : 1); \
       if (cctki2_all_bbox && cctki2_any_bbox) { \
         int const cctki2_bmin[] = { \
@@ -2246,9 +2246,9 @@
     for (int cctki2_kdir=-1; cctki2_kdir<=+1; ++cctki2_kdir) { \
     for (int cctki2_jdir=-1; cctki2_jdir<=+1; ++cctki2_jdir) { \
     for (int cctki2_idir=-1; cctki2_idir<=+1; ++cctki2_idir) { \
-      int cctki2_any_bbox = \
-        (cctki2_idir<0 ? cctki2_bbox[0] : 0) || (cctki2_idir>0 ? cctki2_bbox[1] : 0)|| \
-        (cctki2_jdir<0 ? cctki2_bbox[2] : 0) || (cctki2_jdir>0 ? cctki2_bbox[3] : 0)|| \
+      int const cctki2_any_bbox = \
+        (cctki2_idir<0 ? cctki2_bbox[0] : 0) || (cctki2_idir>0 ? cctki2_bbox[1] : 0) || \
+        (cctki2_jdir<0 ? cctki2_bbox[2] : 0) || (cctki2_jdir>0 ? cctki2_bbox[3] : 0) || \
         (cctki2_kdir<0 ? cctki2_bbox[4] : 0) || (cctki2_kdir>0 ? cctki2_bbox[5] : 0); \
       if (cctki2_any_bbox) { \
         int const cctki2_bmin[] = { \
@@ -2328,13 +2328,13 @@
     for (int cctki2_kdir=-1; cctki2_kdir<=+1; ++cctki2_kdir) { \
     for (int cctki2_jdir=-1; cctki2_jdir<=+1; ++cctki2_jdir) { \
     for (int cctki2_idir=-1; cctki2_idir<=+1; ++cctki2_idir) { \
-      int cctki2_any_bbox = \
-        (cctki2_idir<0 ? cctki2_bbox[0] : 0) || (cctki2_idir>0 ? cctki2_bbox[1] : 0)|| \
-        (cctki2_jdir<0 ? cctki2_bbox[2] : 0) || (cctki2_jdir>0 ? cctki2_bbox[3] : 0)|| \
+      int const cctki2_any_bbox = \
+        (cctki2_idir<0 ? cctki2_bbox[0] : 0) || (cctki2_idir>0 ? cctki2_bbox[1] : 0) || \
+        (cctki2_jdir<0 ? cctki2_bbox[2] : 0) || (cctki2_jdir>0 ? cctki2_bbox[3] : 0) || \
         (cctki2_kdir<0 ? cctki2_bbox[4] : 0) || (cctki2_kdir>0 ? cctki2_bbox[5] : 0); \
-      int cctki2_all_bbox = \
-        (cctki2_idir<0 ? cctki2_bbox[0] : 1) && (cctki2_idir>0 ? cctki2_bbox[1] : 1)&& \
-        (cctki2_jdir<0 ? cctki2_bbox[2] : 1) && (cctki2_jdir>0 ? cctki2_bbox[3] : 1)&& \
+      int const cctki2_all_bbox = \
+        (cctki2_idir<0 ? cctki2_bbox[0] : 1) && (cctki2_idir>0 ? cctki2_bbox[1] : 1) && \
+        (cctki2_jdir<0 ? cctki2_bbox[2] : 1) && (cctki2_jdir>0 ? cctki2_bbox[3] : 1) && \
         (cctki2_kdir<0 ? cctki2_bbox[4] : 1) && (cctki2_kdir>0 ? cctki2_bbox[5] : 1); \
       if (cctki2_all_bbox && cctki2_any_bbox) { \
         int const cctki2_bmin[] = { \
@@ -3358,10 +3358,10 @@
     for (int cctki2_kdir=-1; cctki2_kdir<=+1; ++cctki2_kdir) { \
     for (int cctki2_jdir=-1; cctki2_jdir<=+1; ++cctki2_jdir) { \
     for (int cctki2_idir=-1; cctki2_idir<=+1; ++cctki2_idir) { \
-      int cctki2_any_bbox = \
-        (cctki2_idir<0 ? cctki2_bbox[0] : 0) || (cctki2_idir>0 ? cctki2_bbox[1] : 0)|| \
-        (cctki2_jdir<0 ? cctki2_bbox[2] : 0) || (cctki2_jdir>0 ? cctki2_bbox[3] : 0)|| \
-        (cctki2_kdir<0 ? cctki2_bbox[4] : 0) || (cctki2_kdir>0 ? cctki2_bbox[5] : 0)|| \
+      int const cctki2_any_bbox = \
+        (cctki2_idir<0 ? cctki2_bbox[0] : 0) || (cctki2_idir>0 ? cctki2_bbox[1] : 0) || \
+        (cctki2_jdir<0 ? cctki2_bbox[2] : 0) || (cctki2_jdir>0 ? cctki2_bbox[3] : 0) || \
+        (cctki2_kdir<0 ? cctki2_bbox[4] : 0) || (cctki2_kdir>0 ? cctki2_bbox[5] : 0) || \
         (cctki2_ldir<0 ? cctki2_bbox[6] : 0) || (cctki2_ldir>0 ? cctki2_bbox[7] : 0); \
       if (cctki2_any_bbox) { \
         int const cctki2_bmin[] = { \
@@ -3446,15 +3446,15 @@
     for (int cctki2_kdir=-1; cctki2_kdir<=+1; ++cctki2_kdir) { \
     for (int cctki2_jdir=-1; cctki2_jdir<=+1; ++cctki2_jdir) { \
     for (int cctki2_idir=-1; cctki2_idir<=+1; ++cctki2_idir) { \
-      int cctki2_any_bbox = \
-        (cctki2_idir<0 ? cctki2_bbox[0] : 0) || (cctki2_idir>0 ? cctki2_bbox[1] : 0)|| \
-        (cctki2_jdir<0 ? cctki2_bbox[2] : 0) || (cctki2_jdir>0 ? cctki2_bbox[3] : 0)|| \
-        (cctki2_kdir<0 ? cctki2_bbox[4] : 0) || (cctki2_kdir>0 ? cctki2_bbox[5] : 0)|| \
+      int const cctki2_any_bbox = \
+        (cctki2_idir<0 ? cctki2_bbox[0] : 0) || (cctki2_idir>0 ? cctki2_bbox[1] : 0) || \
+        (cctki2_jdir<0 ? cctki2_bbox[2] : 0) || (cctki2_jdir>0 ? cctki2_bbox[3] : 0) || \
+        (cctki2_kdir<0 ? cctki2_bbox[4] : 0) || (cctki2_kdir>0 ? cctki2_bbox[5] : 0) || \
         (cctki2_ldir<0 ? cctki2_bbox[6] : 0) || (cctki2_ldir>0 ? cctki2_bbox[7] : 0); \
-      int cctki2_all_bbox = \
-        (cctki2_idir<0 ? cctki2_bbox[0] : 1) && (cctki2_idir>0 ? cctki2_bbox[1] : 1)&& \
-        (cctki2_jdir<0 ? cctki2_bbox[2] : 1) && (cctki2_jdir>0 ? cctki2_bbox[3] : 1)&& \
-        (cctki2_kdir<0 ? cctki2_bbox[4] : 1) && (cctki2_kdir>0 ? cctki2_bbox[5] : 1)&& \
+      int const cctki2_all_bbox = \
+        (cctki2_idir<0 ? cctki2_bbox[0] : 1) && (cctki2_idir>0 ? cctki2_bbox[1] : 1) && \
+        (cctki2_jdir<0 ? cctki2_bbox[2] : 1) && (cctki2_jdir>0 ? cctki2_bbox[3] : 1) && \
+        (cctki2_kdir<0 ? cctki2_bbox[4] : 1) && (cctki2_kdir>0 ? cctki2_bbox[5] : 1) && \
         (cctki2_ldir<0 ? cctki2_bbox[6] : 1) && (cctki2_ldir>0 ? cctki2_bbox[7] : 1); \
       if (cctki2_all_bbox && cctki2_any_bbox) { \
         int const cctki2_bmin[] = { \
