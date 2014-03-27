@@ -174,7 +174,8 @@ public:
     bool match(Matcher *m);
     std::string fmt() {
         std::string s = "literal(";
-        s += c+")";
+        s += c;
+        s += ")";
         return s;
     }
     virtual void insert(std::ostream& o) {

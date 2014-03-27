@@ -24,7 +24,6 @@ extern std::set<void*> *ptrs;
 
 #ifndef NDEBUG
 inline void add(void *t) {
-    abort();
     if(t == NULL)
         return;
     if(ptrs == 0)
