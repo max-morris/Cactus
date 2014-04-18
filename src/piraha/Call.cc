@@ -252,7 +252,7 @@ smart_ptr<Value> find_val(smart_ptr<Group> gr,std::string thorn,std::string name
         case PARAMETER_KEYWORD:
             {
                 ret->type = PIR_STRING;
-                const char *s = *(const char **)result;
+                const char *s = *(const char *const *)result;
                 ret->sdata += s;
             }
             break;
