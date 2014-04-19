@@ -770,18 +770,16 @@ The following extensions are understood:
 \begin{center}
 \begin{tabular}{|l|c|c|c|}
 \hline
-Extension           & Language   & Format & Preprocess \\
+Extension            & Language               &  Preprocess \\
 \hline
-{\t .c}             & C          & -      & yes \\
-{\t .cc} or {\t .C} & C++        & -      & yes \\
-{\t .cl}            & OpenCL     & -      & yes \\
-{\t .cu}            & CUDA       & -      & yes \\
-{\t .F77}           & Fortran 77 & fixed  & yes \\
-{\t .f77}           & Fortran 77 & fixed  & no  \\
-{\t .F}             & Fortran 90 & fixed  & yes \\
-{\t .f}             & Fortran 90 & fixed  & no  \\
-{\t .F90}           & Fortran 90 & free   & yes \\
-{\t .f90}           & Fortran 90 & free   & no  \\
+{\t .c}              & C                      & yes \\
+{\t .cc} or {\t .C}  & C++                    & yes \\
+{\t .cl}             & OpenCL                 & yes \\
+{\t .cu}             & CUDA                   & yes \\
+{\t .F} or {\t .F77} & Fortran (fixed-format) & yes \\
+{\t .f} or {\t .f77} & Fortran (fixed-format) & no  \\
+{\t .F90}            & Fortran (free-format)  & yes \\
+{\t .f90}            & Fortran (free-format)  & no  \\
 \hline
 \end{tabular}
 \end{center}
@@ -790,7 +788,7 @@ In order to use Cactus \texttt{\#include} directives in a file, it must be
 preprocessed.
 
 A complete description of Fortran fixed and free format can be found in any
-textbook on Fortran 90.  The most obvious differences are that in fixed
+textbook on Fortran.  The most obvious differences are that in fixed
 format, code must begin after the 5th column and line continuations are
 indicated by a character in column 5, while in free format, lines can begin
 anywhere, and line continuations are indicated by an ampersand at the end of
@@ -802,7 +800,7 @@ The following restrictions apply to file names:
 \item For portability across all operating systems, the base names
         for any particular extension should not depend on the operating
         system being case sensitive (e.g.\ having \texttt{MyFile.c} and
-        \texttt{MYFILE.f77} is allright, but \texttt{MyFile.c} and
+        \texttt{MYFILE.f} is allright, but \texttt{MyFile.c} and
 	\texttt{MYFILE.c} could cause problems).
 \item Currently, all source files within a thorn must have distinct names,
 regardless of whether they are placed in different subdirectories.  We hope
@@ -889,15 +887,13 @@ and has a working directory of
 \item \texttt{CC}: The C compiler
 \item \texttt{CXX}: The C++ compiler
 \item \texttt{CUCC}: The CUDA compiler
-\item \texttt{F77}: The Fortran 77 compiler.  This is only used if
-  there is no Fortran 90 compiler
-\item \texttt{F90}: The Fortran 90 compiler.  If this variable is
-  set, it is also used to compile Fortran 77 files
+\item \texttt{F90}: The Fortran compiler
+\item \texttt{F77}: Same as \texttt{F90}
 \item \texttt{CFLAGS}: Flags which are passed to \texttt{CC}
 \item \texttt{CXXFLAGS}: Flags which are passed to \texttt{CXX}
 \item \texttt{CUCCFLAGS}: Flags which are passed to \texttt{CUDA}
-\item \texttt{F77FLAGS}: Flags which are passed to \texttt{F77}
 \item \texttt{F90FLAGS}: Flags which are passed to \texttt{F90}
+\item \texttt{F77FLAGS}: Same as \texttt{F90FLAGS}
 \item \texttt{LD}: The binder.  This should not be directly
   \texttt{ld}, but should be a compiler driver such as C++.
   Often, \texttt{LD} is the same as \texttt{CXX}
