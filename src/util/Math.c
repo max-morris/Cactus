@@ -10,6 +10,8 @@
  @@*/
 
 #include <math.h>
+#include <stdint.h>
+#include <string.h>
 #include <cctk_Config.h>
 #include <cctk_Math.h>
 
@@ -130,4 +132,86 @@ int CCTK_FNAME(CCTK_signbit)(double *x);
 int CCTK_FNAME(CCTK_signbit)(double *x)
 {
   return CCTK_signbit(*x);
+}
+
+
+
+int CCTK_IEEE_isfinite(double x)
+{
+  uint64_t u;
+  memcpy(&u, &x, sizeof u);
+  uint64_t e = (u & UINT64_C(0x7ff0000000000000)) >> 52;
+  return e != UINT64_C(0x7ff);
+}
+
+int CCTK_FNAME(CCTK_IEEE_isfinite)(double *x);
+int CCTK_FNAME(CCTK_IEEE_isfinite)(double *x)
+{
+  return CCTK_IEEE_isfinite(*x);
+}
+
+
+
+int CCTK_IEEE_isinf(double x)
+{
+  uint64_t u;
+  memcpy(&u, &x, sizeof u);
+  uint64_t e = (u & UINT64_C(0x7ff0000000000000)) >> 52;
+  uint64_t m = u & UINT64_C(0x000fffffffffffff);
+  return e == UINT64_C(0x7ff) && m == 0;
+}
+
+int CCTK_FNAME(CCTK_IEEE_isinf)(double *x);
+int CCTK_FNAME(CCTK_IEEE_isinf)(double *x)
+{
+  return CCTK_IEEE_isinf(*x);
+}
+
+
+
+int CCTK_IEEE_isnan(double x)
+{
+  uint64_t u;
+  memcpy(&u, &x, sizeof u);
+  uint64_t e = (u & UINT64_C(0x7ff0000000000000)) >> 52;
+  uint64_t m = u & UINT64_C(0x000fffffffffffff);
+  return e == UINT64_C(0x7ff) && m != 0;
+}
+
+int CCTK_FNAME(CCTK_IEEE_isnan)(double *x);
+int CCTK_FNAME(CCTK_IEEE_isnan)(double *x)
+{
+  return CCTK_IEEE_isnan(*x);
+}
+
+
+
+int CCTK_IEEE_isnormal(double x)
+{
+  uint64_t u;
+  memcpy(&u, &x, sizeof u);
+  uint64_t e = (u & UINT64_C(0x7ff0000000000000)) >> 52;
+  return e != 0 && e != UINT64_C(0x7ff);
+}
+
+int CCTK_FNAME(CCTK_IEEE_isnormal)(double *x);
+int CCTK_FNAME(CCTK_IEEE_isnormal)(double *x)
+{
+  return CCTK_IEEE_isnormal(*x);
+}
+
+
+
+int CCTK_IEEE_signbit(double x)
+{
+  uint64_t u;
+  memcpy(&u, &x, sizeof u);
+  uint64_t s = (u & UINT64_C(0x8000000000000000)) >> 63;
+  return s;
+}
+
+int CCTK_FNAME(CCTK_IEEE_signbit)(double *x);
+int CCTK_FNAME(CCTK_IEEE_signbit)(double *x)
+{
+  return CCTK_IEEE_signbit(*x);
 }

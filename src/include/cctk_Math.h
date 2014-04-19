@@ -41,6 +41,13 @@ int CCTK_isnan(double x);
 int CCTK_isnormal(double x);
 int CCTK_signbit(double x);
 
+  /* int CCTK_IEEE_fpclassify(double x); */
+int CCTK_IEEE_isfinite(double x);
+int CCTK_IEEE_isinf(double x);
+int CCTK_IEEE_isnan(double x);
+int CCTK_IEEE_isnormal(double x);
+int CCTK_IEEE_signbit(double x);
+
 #ifdef __cplusplus
 }   
 #endif
