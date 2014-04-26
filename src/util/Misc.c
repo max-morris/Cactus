@@ -108,19 +108,19 @@ int CCTK_Equals(const char *string1, const char *string2)
     retval = 0;
     if (!string1 && string2)
     {
-      CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
-                 "CCTK_Equals: First string null (2nd is %s)",string2);
+      CCTK_VError(__LINE__,__FILE__,"Cactus",
+                  "CCTK_Equals: First string is null (2nd is \"%s\")",string2);
 
     }
     else if (string1 && !string2)
     {
-      CCTK_VWarn(0,__LINE__,__FILE__,"Cactus",
-                 "CCTK_Equals: Second string null (1st is %s)",string1);
+      CCTK_VError(__LINE__,__FILE__,"Cactus",
+                  "CCTK_Equals: Second string is null (1st is \"%s\")",string1);
     }
     else
     {
-      CCTK_Warn(0,__LINE__,__FILE__,"Cactus",
-                "CCTK_Equals: Both strings null");
+      CCTK_Error(__LINE__,__FILE__,"Cactus",
+                 "CCTK_Equals: Both strings are null");
     }
   }
   else
@@ -238,9 +238,9 @@ char *Util_NullTerminateString(const char *instring, unsigned int len)
 
   if (len > 100000)
   {
-    CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
-               "Null Terminating a string with length %d !!\n"
-               "This is probably an error in calling a C routine from Fortran",
+    CCTK_VWarn(CCTK_WARN_ALERT,__LINE__,__FILE__,"Cactus",
+               "Null-terminating a string with length %d; "
+               "this is probably an error in calling a C routine from Fortran",
                len);
   }
 
@@ -429,7 +429,9 @@ int Util_IntInRange(int inval, const char *range)
       start = strtol(range+pmatch[2].rm_so, &endptr, 10);
       if (endptr == range+pmatch[2].rm_so)
       {
-        CCTK_Warn(1, __LINE__, __FILE__, "Flesh", "Invalid start");
+        CCTK_VWarn(CCTK_WARN_ALERT, __LINE__, __FILE__, "Cactus",
+                   "Invalid start of integer parameter range; range descriptor is \"%s\" (value is %d)",
+                   range, inval);
         start = INT_MIN;
       }
     }
@@ -451,8 +453,10 @@ int Util_IntInRange(int inval, const char *range)
         end = strtol(range+pmatch[4].rm_so, &endptr, 10);
         if (endptr == range+pmatch[4].rm_so)
         {
-          CCTK_Warn(1, __LINE__, __FILE__, "Flesh", "Invalid end");
-          end = INT_MIN;
+          CCTK_VWarn(CCTK_WARN_ALERT, __LINE__, __FILE__, "Cactus",
+                     "Invalid end of integer parameter range; range descriptor is \"%s\" (value is %d)",
+                     range, inval);
+          end = INT_MAX;
         }
       }
       else
@@ -477,7 +481,9 @@ int Util_IntInRange(int inval, const char *range)
         step = strtol(range+pmatch[6].rm_so, &endptr, 10);
         if (endptr == range+pmatch[6].rm_so)
         {
-          CCTK_Warn(1, __LINE__, __FILE__, "Flesh", "Invalid step");
+          CCTK_VWarn(CCTK_WARN_ALERT, __LINE__, __FILE__, "Cactus",
+                     "Invalid step of integer parameter range; range descriptor is \"%s\" (value is %d)",
+                    range, inval);
           step = 1;
         }
       }
@@ -494,7 +500,9 @@ int Util_IntInRange(int inval, const char *range)
     }
     if (step <= 0)
     {
-      CCTK_Warn(1, __LINE__, __FILE__, "Flesh", "Invalid step");
+      CCTK_VWarn(CCTK_WARN_ALERT, __LINE__, __FILE__, "Cactus",
+                 "Non-positive step of integer parameter range; range descriptor is \"%s\" (value is %d)",
+                 range, inval);
       step = 1;
     }
 
@@ -526,12 +534,14 @@ int Util_IntInRange(int inval, const char *range)
   }
   else if(!matched)
   {
-    CCTK_Warn(1, __LINE__, __FILE__, "Flesh", "Invalid range");
+    CCTK_VWarn(CCTK_WARN_ALERT, __LINE__, __FILE__, "Cactus",
+               "Invalid range of integer parameter range; range descriptor is \"%s\" (value is %d)",
+               range, inval);
   }
   else
   {
-    CCTK_VWarn(0, __LINE__, __FILE__, "Flesh",
-               "Invalid patten '%s' used to parse range", pattern);
+    CCTK_VError(__LINE__, __FILE__, "Cactus",
+                "Invalid patten '%s' used to parse range", pattern);
   }
 
   return retval;
@@ -636,7 +646,9 @@ int Util_DoubleInRange(double inval, const char *range)
       start = strtod(range+pmatch[2].rm_so, &endptr);
       if (endptr == range+pmatch[2].rm_so)
       {
-        CCTK_Warn(1, __LINE__, __FILE__, "Flesh", "Invalid start");
+        CCTK_VWarn(CCTK_WARN_ALERT, __LINE__, __FILE__, "Cactus",
+                   "Invalid start of real-valued parameter range; range descriptor is \"%s\" (value is %.17g)",
+                   range, inval);
         start = -HUGE_VAL;
       }
     }
@@ -658,7 +670,9 @@ int Util_DoubleInRange(double inval, const char *range)
         end = strtod(range+pmatch[4].rm_so, &endptr);
         if (endptr == range+pmatch[4].rm_so)
         {
-          CCTK_Warn(1, __LINE__, __FILE__, "Flesh", "Invalid end");
+          CCTK_VWarn(CCTK_WARN_ALERT, __LINE__, __FILE__, "Cactus",
+                     "Invalid end of real-valued parameter range; range descriptor is \"%s\" (value is %.17g)",
+                     range, inval);
           end = HUGE_VAL;
         }
       }
@@ -684,7 +698,9 @@ int Util_DoubleInRange(double inval, const char *range)
         step = strtod(range+pmatch[6].rm_so, &endptr);
         if (endptr == range+pmatch[6].rm_so)
         {
-          CCTK_Warn(1, __LINE__, __FILE__, "Flesh", "Invalid step");
+          CCTK_VWarn(CCTK_WARN_ALERT, __LINE__, __FILE__, "Cactus",
+                     "Invalid step of real-valued parameter range; range descriptor is \"%s\" (value is %.17g)",
+                     range, inval);
           step = 0;
         }
       }
@@ -701,7 +717,9 @@ int Util_DoubleInRange(double inval, const char *range)
     }
     if (step < 0)
     {
-      CCTK_Warn(1, __LINE__, __FILE__, "Flesh", "Invalid step");
+      CCTK_VWarn(CCTK_WARN_ALERT, __LINE__, __FILE__, "Cactus",
+                 "Negative step of real-valued parameter range; range descriptor is \"%s\" (value is %.17g)",
+                 range, inval);
       step = 0;
     }
 
@@ -730,7 +748,9 @@ int Util_DoubleInRange(double inval, const char *range)
   }
   else
   {
-    CCTK_Warn(1, __LINE__, __FILE__, "Flesh", "Invalid range");
+    CCTK_VWarn(CCTK_WARN_ALERT, __LINE__, __FILE__, "Cactus",
+               "Invalid range of real-valued parameter range; range descriptor is \"%s\" (value is %.17g)",
+               range, inval);
   }
 
   return retval;
