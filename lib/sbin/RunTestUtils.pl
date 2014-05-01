@@ -589,7 +589,8 @@ sub FindRunCommand
   my $have_mpi = ParseExtras($config_data);
 
   my $nprocs = (defined ($ENV{'CCTK_TESTSUITE_RUN_PROCESSORS'}) ?
-                $ENV{'CCTK_TESTSUITE_RUN_PROCESSORS'} : 2);
+                $ENV{'CCTK_TESTSUITE_RUN_PROCESSORS'} : $have_mpi ?
+                                                        2 : 1);
 
   if ($have_mpi)
   {
@@ -603,6 +604,7 @@ sub FindRunCommand
       {
           die("Cannot run on $nprocs processes without an MPI implementation\n");
       }
+      $config_data->{'NPROCS'} = 1;
   }
 
   my $command;
