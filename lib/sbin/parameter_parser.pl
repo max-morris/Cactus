@@ -390,6 +390,20 @@ sub parse_param_ccl
                          '', __LINE__, __FILE__);
             }
 
+            # check real parameter ranges
+            # regex taken from piraha's param.peg
+            my $real = '[+\-]?([0-9]+\.[0-9]+|[0-9]+\.|\.[0-9]+|[0-9]+)([eEdD][+\-]?[+\-]?[0-9]+|)';
+            if ($type eq 'REAL' && ! (
+                $new_ranges eq '*' ||
+                $new_ranges =~ /^$real$/ ||
+                $new_ranges =~ /^["(]?(\*|\(?$real)?:(\*|$real\)?)?(:$real)?[)"]?$/)) {
+              # this will become a level 0 error in the fture
+              &CST_error(1, "Invalid range '$new_ranges' for real " .
+                         "parameter '$variable' of thorn '$thorn'. ".
+                         "This will be an error in the future.",
+                         '', __LINE__, __FILE__);
+            }
+
             $parameter_db{"\U$thorn $variable\E range $parameter_db{\"\U$thorn $variable\E ranges\"} range"} = $new_ranges;
 
             # Check description
