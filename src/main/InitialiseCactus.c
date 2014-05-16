@@ -31,6 +31,7 @@ CCTK_FILEVERSION(main_InitialiseCactus_c);
  ********************* Local Routine Prototypes *********************
  ********************************************************************/
 static int CCTKi_InitialiseScheduler (tFleshConfig *ConfigData);
+static void CCTKi_RecoverParameters (tFleshConfig *config);
 
 /********************************************************************
  ********************* Other Routine Prototypes *********************
@@ -99,6 +100,8 @@ int CCTKi_InitialiseCactus (int *argc, char ***argv, tFleshConfig *config)
   CCTKi_InitialiseDataStructures (config);
 
   CCTKi_ProcessParameterDatabase (config);
+
+  CCTKi_RecoverParameters (config);
 
   CCTKi_SetupCache();
 
@@ -170,18 +173,7 @@ static int CCTKi_InitialiseScheduler (tFleshConfig *config)
 {
   int retval;
   const CCTK_INT *cctk_show_schedule;
-  extern void CCTKi_SetParameterSetMask (int mask);
 
-
-  CCTKi_SetParameterSetMask (PARAMETER_RECOVERY_IN);
-
-  config->recovered = CCTKi_BindingsParameterRecoveryInitialise ();
-  if (config->recovered < 0)
-  {
-    CCTK_Warn (0, __LINE__, __FILE__, "Cactus", "Failed to recover parameters");
-  }
-
-  CCTKi_SetParameterSetMask (PARAMETER_RECOVERY_POST);
 
   CCTKi_BindingsScheduleInitialise ();
 
@@ -200,4 +192,35 @@ static int CCTKi_InitialiseScheduler (tFleshConfig *config)
   }
 
   return (retval);
+}
+
+ /*@@
+   @routine    CCTKi_RecoverParameters
+   @date       Sat May  3 18:49:25 PDT 2014
+   @author     Roland Haas
+   @desc
+               Recover parameters from checkpoint
+               This needs to be called right after
+               CCTKi_ProcessParameterDatabase so that we always use the
+               parameter values from the checkpoint and never the default
+               values if the current parameter file does not set all
+               parameters.
+   @enddesc
+   @calls      CCTKi_SetParameterSetMask
+               CCTKi_BindingsParameterRecoveryInitialise
+@@*/
+static void CCTKi_RecoverParameters (tFleshConfig *config)
+{
+  extern void CCTKi_SetParameterSetMask (int mask);
+
+
+  CCTKi_SetParameterSetMask (PARAMETER_RECOVERY_IN);
+
+  config->recovered = CCTKi_BindingsParameterRecoveryInitialise ();
+  if (config->recovered < 0)
+  {
+    CCTK_Warn (0, __LINE__, __FILE__, "Cactus", "Failed to recover parameters");
+  }
+
+  CCTKi_SetParameterSetMask (PARAMETER_RECOVERY_POST);
 }
