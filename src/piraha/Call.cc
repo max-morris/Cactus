@@ -217,6 +217,7 @@ std::ostream& operator<<(std::ostream& o,const smart_ptr<Value>& val) {
 
 typedef std::map<std::string,std::map<std::string,smart_ptr<Value> > >::iterator th_iter;
 typedef std::map<std::string,smart_ptr<Value> >::iterator nm_iter;
+std::map<std::string,smart_ptr<Value> > variables;
 
 smart_ptr<Value> eval_expr(std::string inp);
 
@@ -283,6 +284,10 @@ smart_ptr<Value> lookup_var(smart_ptr<Group> gr) {
         ret = new Value(gr);
         ret->type = PIR_REAL;
         ret->ddata = 4.0*atan2(1.0,1.0);
+    }
+    nm_iter iter = variables.find(gr->group(0)->substring());
+    if(iter != variables.end()) {
+        ret = iter->second;
     }
     if(!ret.valid()) {
         std::ostringstream msg;
@@ -859,8 +864,9 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
         "parindex = \\[ {expr} \\]\n"
         "active = (?i:ActiveThorns)\n"
         "set = ({active} = ({quot}|{name})|{par}( {index}|) = ({array}|\\+?{expr})){-skipeol}\n"
+        "set_var = \\${name} = \\+?{expr}{-skipeol}\n"
         "desc = !DESC {quot}\n"
-        "file = ^( ({desc}|{set}|{active}) )*$";
+        "file = ^( ({desc}|{set_var}|{set}|{active}) )*$";
     //std::ofstream peg("/tmp/par.peg");
     //peg << par_file_src;
     //peg.close();
@@ -888,61 +894,41 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
         set_function("ActiveThorns",active.c_str(),line);
         for(int i=0;i<m2->groupCount();i++) {
             smart_ptr<Group> gr = m2->group(i);
-            if(gr->getPatternName() != "set")
-                continue;
-            smart_ptr<Group> par = gr->group("par");
-            if(par.valid()) {
-                // add value->quot->inquot
-                std::string key;
-                std::string thorn = par->group("name",0)->substring();
-                std::string name  = par->group("name",1)->substring();
-                key += thorn;
-                key += "::";
-                key += name;
-                const cParamData *data = CCTK_ParameterData(name.c_str(),thorn.c_str());
+            if(gr->getPatternName() == "set") {
+                smart_ptr<Group> par = gr->group("par");
+                if(par.valid()) {
+                    // add value->quot->inquot
+                    std::string key;
+                    std::string thorn = par->group("name",0)->substring();
+                    std::string name  = par->group("name",1)->substring();
+                    key += thorn;
+                    key += "::";
+                    key += name;
+                    const cParamData *data = CCTK_ParameterData(name.c_str(),thorn.c_str());
 
-                smart_ptr<Group> index = par->group("parindex");
-                if(index.valid()) {
-                    key += '[';
-                    smart_ptr<Value> vv = meval(index);
-                    if(vv->type != PIR_INT) {
-                        std::ostringstream msg;
-                        std::string par = get_parfile();
-                        msg << "bad index " << vv << std::endl;
-                        CCTK_Error(index->line(),par.c_str(),thorn.c_str(),msg.str().c_str());
+                    smart_ptr<Group> index = par->group("parindex");
+                    if(index.valid()) {
+                        key += '[';
+                        smart_ptr<Value> vv = meval(index);
+                        if(vv->type != PIR_INT) {
+                            std::ostringstream msg;
+                            std::string par = get_parfile();
+                            msg << "bad index " << vv << std::endl;
+                            CCTK_Error(index->line(),par.c_str(),thorn.c_str(),msg.str().c_str());
+                        }
+                        std::string vvstr = vv->copy();
+                        key += vvstr;
+                        key += ']';
                     }
-                    std::string vvstr = vv->copy();
-                    key += vvstr;
-                    key += ']';
-                }
 
-                std::string val;
-                smart_ptr<Group> aexpr = gr->group("expr");
-                if(aexpr.valid()) {
-                    current_thorn = thorn;
-                    smart_ptr<Value> smv = meval(aexpr);
-                    val = smv->copy();
-                    assert(smv.valid());
-                    smv->integerize();
-                    if(data != NULL) {
-                        if(data->type == PARAMETER_REAL)
-                            smv->integerize();
-                        if(data->type == PARAMETER_BOOLEAN)
-                            smv->booleanize(gr);
-                        check_types(thorn.c_str(),aexpr->line(),smv,data->type);
-                    }
-                    set_function(
-                            key.c_str(),
-                            val.c_str(),
-                            gr->group(0)->line());
-                } else {
-                    smart_ptr<Group> arr = gr->group("array");
-                    for(int i=0;i<arr->groupCount();i++) {
-                        aexpr = arr->group(i);
-                        std::ostringstream keyi;
-                        keyi << key << '[' << i << ']';
+                    std::string val;
+                    smart_ptr<Group> aexpr = gr->group("expr");
+                    if(aexpr.valid()) {
+                        current_thorn = thorn;
                         smart_ptr<Value> smv = meval(aexpr);
                         val = smv->copy();
+                        assert(smv.valid());
+                        smv->integerize();
                         if(data != NULL) {
                             if(data->type == PARAMETER_REAL)
                                 smv->integerize();
@@ -951,11 +937,33 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
                             check_types(thorn.c_str(),aexpr->line(),smv,data->type);
                         }
                         set_function(
-                                keyi.str().c_str(),
+                                key.c_str(),
                                 val.c_str(),
-                                aexpr->line());
+                                gr->group(0)->line());
+                    } else {
+                        smart_ptr<Group> arr = gr->group("array");
+                        for(int i=0;i<arr->groupCount();i++) {
+                            aexpr = arr->group(i);
+                            std::ostringstream keyi;
+                            keyi << key << '[' << i << ']';
+                            smart_ptr<Value> smv = meval(aexpr);
+                            val = smv->copy();
+                            if(data != NULL) {
+                                if(data->type == PARAMETER_REAL)
+                                    smv->integerize();
+                                if(data->type == PARAMETER_BOOLEAN)
+                                    smv->booleanize(gr);
+                                check_types(thorn.c_str(),aexpr->line(),smv,data->type);
+                            }
+                            set_function(
+                                    keyi.str().c_str(),
+                                    val.c_str(),
+                                    aexpr->line());
+                        }
                     }
                 }
+            } else if(gr->getPatternName() == "set_var") {
+                variables[gr->group(0)->substring()] = meval(gr->group(1));
             }
         }
     } else {
