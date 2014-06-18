@@ -598,10 +598,14 @@ typedef enum {false, true} bool;
 
 /* Whether __builtin_unreachable exists. */
 #undef HAVE_CCTK_CXX_BUILTIN_UNREACHABLE
-#ifdef HAVE_CCTK_CXX_BUILTIN_UNREACHABLE
-#  define CCTK_BUILTIN_UNREACHABLE __builtin_unreachable
+#ifdef __CUDACC__
+#  define CCTK_BUILTIN_UNREACHABLE() asm("trap;")
 #else
-#  define CCTK_BUILTIN_UNREACHABLE() CCTK_Abort(0, 1)
+#  ifdef HAVE_CCTK_CXX_BUILTIN_UNREACHABLE
+#    define CCTK_BUILTIN_UNREACHABLE __builtin_unreachable
+#  else
+#    define CCTK_BUILTIN_UNREACHABLE() CCTK_Abort(0, 1)
+#  endif
 #endif
 
 /* Whether __builtin_assume_aligned exists. */
