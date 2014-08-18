@@ -743,6 +743,10 @@ from Fortran.
   [\pageref{CCTK-RegisterReductionOperator}]
   Register a function as providing a reduction operation
 
+\item[\code{CCTK\_RunTime}]
+  [\pageref{CCTK-RunTime}]
+  Return the number of seconds since the run started
+
 \item[\code{CCTK\_SchedulePrintTimes}] [\pageref{CCTK-SchedulePrintTimes}]
   Output the timing results for a certain schedule item to stdout
 
@@ -11574,6 +11578,21 @@ Reduces a list of local arrays globally
 \begin{verbatim}CCTK_RegisterReductionOperator()\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
+\end{FunctionDescription}
+
+\begin{FunctionDescription}{CCTK\_RunTime}{}
+\label{CCTK-RunTime}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}int CCTK_RunTime()\end{verbatim}
+\end{Synopsis}
+Seconds since startup.
+\end{SynopsisSection}
+\begin{ResultSection}
+\begin{Result}{seconds}
+The number of seconds since the run started.
+\end{Result}
+\end{ResultSection}
 \end{FunctionDescription}
 
 
