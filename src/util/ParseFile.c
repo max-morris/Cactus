@@ -131,29 +131,31 @@ int ParseFile(FILE *ifp,
   if (!buffer)
     return 1;
 
-  int piraha_active = 1;
+  const int piraha_active = 1;
+  if(piraha_active)
+  {
+    /* the new way */
+    buffersize = strlen(buffer);
 
-  if(piraha_active) {
-      // the new way
-	  buffersize = strlen(buffer);
+    retval = cctk_PirahaParser(buffer, buffersize, set_function);
+  }
+  else
+  {
+    /* The old way */
+    /* Ensure Unix line endings */
+    convert_crlf_to_lf(buffer);
+    buffersize = strlen(buffer);
 
-	  retval = cctk_PirahaParser(buffer,buffersize,set_function);
-  } else {
-      // The old way
-	  /* Ensure Unix line endings */
-	  convert_crlf_to_lf(buffer);
-	  buffersize = strlen(buffer);
-
-	  buffer = ParseDefines(buffer, &buffersize);
-	  /* ParseBuffer can get confused with detecting the end of the buffer
- (when in a comment or in a string), and may overrun.  Therefore
- we allocate a buffer that is a bit longer.  */
-	  {
-		  buffer = realloc (buffer, strlen(buffer) + 10);
-		  memset (buffer+strlen(buffer), '\0', 10);
-	  }
-	  retval = ParseBuffer(buffer, set_function, ConfigData);
-	  free(buffer);
+    buffer = ParseDefines(buffer, &buffersize);
+    /* ParseBuffer can get confused with detecting the end of the buffer
+       (in comment or in a string), and may overrun.  Therefore
+       we te a buffer that is a bit longer.  */
+    {
+      buffer = realloc (buffer, strlen(buffer) + 10);
+      memset (buffer+strlen(buffer), '\0', 10);
+    }
+    retval = ParseBuffer(buffer, set_function, ConfigData);
+    free(buffer);
   }
   return retval;
 }
