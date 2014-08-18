@@ -542,7 +542,9 @@ smart_ptr<Value> meval(smart_ptr<Group> gr) {
                 if(ret->type == PIR_INT) {
                     ret->idata = -ret->idata;
                 } else if(ret->type == PIR_REAL) {
-                    ret->ddata = -ret->ddata;
+                    ret->ddata = std::copysign(ret->ddata,
+                                               std::signbit(ret->ddata) ?
+                                               1. : -1.);
                 } else {
                     std::ostringstream msg;
                     msg << "Unknown operation: " << unop << ret->type << std::endl;
