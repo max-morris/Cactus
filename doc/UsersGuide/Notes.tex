@@ -110,15 +110,28 @@ it is useful to install
 \label{sec:suar}
 
 Cactus runs on many machines, under a large number of operating
-systems.  Here, we list the machines we have compiled and verified
-Cactus on, including some architecture specific notes.
-%A complete
-%list of architectures supported by Cactus, along with more notes, can
-%be found at
-%\begin{center}
-%\url{http://www.cactuscode.org/Documentation/Architectures.html}.
-%\end{center}
+systems, on a large number of CPU architectures. Here, we list the
+machines we have recently (in the past few years) compiled and
+verified Cactus on, including some architecture specific notes.
 
+If your system is not on the list, the it is very likely that Cactus
+will work anyway. As a rule of thumb, if the GCC compiler is
+available, Cactus will run.
+
+Operating systems:
+\begin{Lentry}
+\item[\textbf{Linux}] (this includes Cray systems)
+\item[\textbf{OS X}]
+\end{Lentry}
+
+CPU architectures:
+\begin{Lentry}
+\item[\textbf{ARM}]
+\item[\textbf{x86}] (aka IA32)
+\item[\textbf{x86-64}] (aka AMD64)
+\end{Lentry}
+
+Systems that are of historic interest only:
 \begin{Lentry}
 \item[\textbf{SGI}] 32 or 64 bit running Irix.
 \item[\textbf{Cray T3E}]
@@ -126,10 +139,6 @@ Cactus on, including some architecture specific notes.
   Single processor
   mode and MPI supported. The Alphas need to have the GNU C/C++
   compilers installed.
-\item[\textbf{IA32}] running Linux, OpenBSD, FreeBSD, or Windows 2000/NT.
-  Single processor mode and MPI (MPICH and LAM) supported.\\
-  On Windows, Cactus compiles with Cygwin.  MPI (WMPI, HPVM, and MPIPro)
-  supported.  Please read \texttt{doc/README.NT} for details.
 \item[\textbf{IA64}]  running Linux.
 \item[\textbf{Macintosh PowerPC}] (MacOS X and Linux PPC)
 \item[\textbf{IBM SP2,SP3,SP4}] 32 or 64 bit running AIX.
@@ -137,11 +146,7 @@ Cactus on, including some architecture specific notes.
 \item[\textbf{Sun} Solaris]
 \item[\textbf{Fujitsu}]
 \item[\textbf{NEC SX-5, SX-6}]
-\end{Lentry}
-
-The following machines are only partially supported,
-\begin{Lentry}
-\item[\textbf{HP Exemplar}]
+\item[\textbf{HP Exemplar}] (only partially supported)
 \end{Lentry}
 
 \subsection{Note}
