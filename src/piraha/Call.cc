@@ -221,6 +221,24 @@ std::map<std::string,smart_ptr<Value> > variables;
 
 smart_ptr<Value> eval_expr(std::string inp);
 
+enum read_write { init, read, write };
+
+typedef std::map<std::string,read_write> read_write_tracker_type;
+read_write_tracker_type read_write_tracker;
+
+read_write& read_write_status(std::string& key) {
+  if(read_write_tracker.find(key) == read_write_tracker.end())
+    read_write_tracker[key] = init;
+  return read_write_tracker[key];
+}
+
+read_write& read_write_status(std::string& thorn,std::string& name) {
+  std::ostringstream msg;
+  msg << thorn << "::" << name;
+  std::string key = msg.str();
+  return read_write_status(key);
+}
+
 // If the value was already defined in this parameter file, look
 // it up in the map. Otherwise, get it from Cactus.
 smart_ptr<Value> find_val(smart_ptr<Group> gr,std::string thorn,std::string name) {
@@ -234,6 +252,9 @@ smart_ptr<Value> find_val(smart_ptr<Group> gr,std::string thorn,std::string name
         std::string par = get_parfile();
         CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
     }
+    read_write& status = read_write_status(thorn,name);
+    if(status == init)
+      status = read;
 
     switch(type) {
         case PARAMETER_REAL:
@@ -938,6 +959,13 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
                                 smv->booleanize(gr);
                             check_types(thorn.c_str(),aexpr->line(),smv,data->type);
                         }
+                        read_write status = read_write_status(key);
+                        if(status == read) {
+                          std::ostringstream msg;
+                          msg << "Write after read: " << key << std::endl;
+                          std::string par = get_parfile();
+                          CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
+                        } 
                         set_function(
                                 key.c_str(),
                                 val.c_str(),
@@ -957,6 +985,14 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
                                     smv->booleanize(gr);
                                 check_types(thorn.c_str(),aexpr->line(),smv,data->type);
                             }
+                            std::string keyi_str = keyi.str();
+                            read_write status = read_write_status(keyi_str);
+                            if(status == read) {
+                              std::ostringstream msg;
+                              msg << "Write after read: " << keyi.str() << std::endl;
+                              std::string par = get_parfile();
+                              CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
+                            } 
                             set_function(
                                     keyi.str().c_str(),
                                     val.c_str(),
