@@ -893,6 +893,14 @@ CCTK_CXX_ATTRIBUTE_FORMAT
 CCTK_C_ATTRIBUTE_NORETURN
 CCTK_CXX_ATTRIBUTE_NORETURN
 
+# Find out whether the compiler supports __attribute__((nonnull))
+CCTK_C_ATTRIBUTE_NONNULL
+CCTK_CXX_ATTRIBUTE_NONNULL
+
+# Find out whether the compiler supports __attribute__((returns_nonnull))
+CCTK_C_ATTRIBUTE_RETURNS_NONNULL
+CCTK_CXX_ATTRIBUTE_RETURNS_NONNULL
+
 # Find out whether the compiler supports __builtin_expect
 CCTK_C_BUILTIN_EXPECT
 CCTK_CXX_BUILTIN_EXPECT

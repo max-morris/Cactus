@@ -371,6 +371,22 @@ typedef enum {false, true} bool;
 #  define CCTK_ATTRIBUTE_NORETURN
 #endif
 
+/* Whether __attribute__((nonnull)) exists. */
+#undef HAVE_CCTK_C_ATTRIBUTE_NONNULL
+#ifdef HAVE_CCTK_C_ATTRIBUTE_NONNULL
+#  define CCTK_ATTRIBUTE_NONNULL(m) __attribute__((__nonnull__(m)))
+#else
+#  define CCTK_ATTRIBUTE_NONNULL(m)
+#endif
+
+/* Whether __attribute__((returns_nonnull)) exists. */
+#undef HAVE_CCTK_C_ATTRIBUTE_RETURNS_NONNULL
+#ifdef HAVE_CCTK_C_ATTRIBUTE_RETURNS_NONNULL
+#  define CCTK_ATTRIBUTE_RETURNS_NONNULL __attribute__((__returns_nonnull__))
+#else
+#  define CCTK_ATTRIBUTE_RETURNS_NONNULL
+#endif
+
 /* Whether __builtin_expect exists. */
 #undef HAVE_CCTK_C_BUILTIN_EXPECT
 #ifdef HAVE_CCTK_C_BUILTIN_EXPECT
@@ -586,6 +602,22 @@ typedef enum {false, true} bool;
 #  define CCTK_ATTRIBUTE_NORETURN __attribute__((__noreturn__))
 #else
 #  define CCTK_ATTRIBUTE_NORETURN
+#endif
+
+/* Whether __attribute__((nonnull)) exists. */
+#undef HAVE_CCTK_CXX_ATTRIBUTE_NONNULL
+#ifdef HAVE_CCTK_CXX_ATTRIBUTE_NONNULL
+#  define CCTK_ATTRIBUTE_NONNULL(m) __attribute__((__nonnull__(m)))
+#else
+#  define CCTK_ATTRIBUTE_NONNULL(m)
+#endif
+
+/* Whether __attribute__((returns_nonnull)) exists. */
+#undef HAVE_CCTK_CXX_ATTRIBUTE_RETURNS_NONNULL
+#ifdef HAVE_CCTK_CXX_ATTRIBUTE_RETURNS_NONNULL
+#  define CCTK_ATTRIBUTE_RETURNS_NONNULL __attribute__((__returns_nonnull__))
+#else
+#  define CCTK_ATTRIBUTE_RETURNS_NONNULL
 #endif
 
 /* Whether __builtin_expect exists. */
