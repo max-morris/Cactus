@@ -154,7 +154,7 @@ sub ScheduleCreateInterfaceFile
               }
               else
               {
-                  push (@data, "void $function (CCTK_ARGUMENTS);")
+                  push (@data, "void $function (CCTK_ARGUMENTS) CCTK_ATTRIBUTE_NONNULL(1);")
               }
               push (@data, '#endif /* CCODE */');
           }
