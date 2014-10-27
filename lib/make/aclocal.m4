@@ -1061,6 +1061,112 @@ fi
 
 
 
+AC_DEFUN(CCTK_C_ATTRIBUTE_NONNULL,
+[AC_CACHE_CHECK([for C __attribute__((__nonnull__))], cctk_cv_have_c_attribute_nonnull,
+[cctk_cv_have_c_attribute_nonnull=no
+AC_TRY_COMPILE([
+    void xyzzy1(void *dest, const void *src, int len)
+      __attribute__((__nonnull__ (1,2)));
+    void xyzzy1(void *dest, const void *src, int len)
+    {
+    }
+    void xyzzy2(void *dest, const void *src, int len)
+      __attribute__((__nonnull__));
+    void xyzzy2(void *dest, const void *src, int len)
+    {
+    }
+  ], [
+    int a, b;
+    xyzzy1(&a, &b, 1);
+    xyzzy2(&a, &b, 1);
+  ],
+  cctk_cv_have_c_attribute_nonnull=yes,
+  cctk_cv_have_c_attribute_nonnull=no)
+])
+if test "$cctk_cv_have_c_attribute_nonnull" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_NONNULL)
+fi
+])
+
+AC_DEFUN(CCTK_CXX_ATTRIBUTE_NONNULL,
+[AC_CACHE_CHECK([for CXX __attribute__((__nonnull__))], cctk_cv_have_cxx_attribute_nonnull,
+[cctk_cv_have_cxx_attribute_nonnull=no
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE([
+    void xyzzy1(void *dest, const void *src, int len)
+      __attribute__((__nonnull__ (1,2)));
+    void xyzzy1(void *dest, const void *src, int len)
+    {
+    }
+    void xyzzy2(void *dest, const void *src, int len)
+      __attribute__((__nonnull__));
+    void xyzzy2(void *dest, const void *src, int len)
+    {
+    }
+  ], [
+    int a, b;
+    xyzzy1(&a, &b, 1);
+    xyzzy2(&a, &b, 1);
+  ],
+  cctk_cv_have_cxx_attribute_nonnull=yes,
+  cctk_cv_have_cxx_attribute_nonnull=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_cxx_attribute_nonnull" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_CXX_ATTRIBUTE_NONNULL)
+fi
+])
+
+
+
+AC_DEFUN(CCTK_C_ATTRIBUTE_RETURNS_NONNULL,
+[AC_CACHE_CHECK([for C __attribute__((__returns_nonnull__))], cctk_cv_have_c_attribute_returns_nonnull,
+[cctk_cv_have_c_attribute_returns_nonnull=no
+AC_TRY_COMPILE([
+    void* xyzzy(void) __attribute__((__returns_nonnull__));
+    void* xyzzy(void)
+    {
+      static int a;
+      return &a;
+    }
+  ], [
+    void* a = xyzzy();
+  ],
+  cctk_cv_have_c_attribute_returns_nonnull=yes,
+  cctk_cv_have_c_attribute_returns_nonnull=no)
+])
+if test "$cctk_cv_have_c_attribute_returns_nonnull" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_RETURNS_NONNULL)
+fi
+])
+
+AC_DEFUN(CCTK_CXX_ATTRIBUTE_RETURNS_NONNULL,
+[AC_CACHE_CHECK([for CXX __attribute__((__returns_nonnull__))], cctk_cv_have_cxx_attribute_returns_nonnull,
+[cctk_cv_have_cxx_attribute_returns_nonnull=no
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE([
+    void* xyzzy(void) __attribute__((__returns_nonnull__));
+    void* xyzzy(void)
+    {
+      static int a;
+      return &a;
+    }
+  ], [
+    void* a = xyzzy();
+  ],
+  cctk_cv_have_cxx_attribute_returns_nonnull=yes,
+  cctk_cv_have_cxx_attribute_returns_nonnull=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_cxx_attribute_returns_nonnull" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_CXX_ATTRIBUTE_RETURNS_NONNULL)
+fi
+])
+
+
+
 AC_DEFUN(CCTK_C_BUILTIN_EXPECT,
 [AC_CACHE_CHECK([for C __builtin_expect], cctk_cv_have_c_builtin_expect,
 [cctk_cv_have_c_builtin_expect=no
