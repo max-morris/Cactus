@@ -1,14 +1,11 @@
 #ifndef SMART_PTR_HPP
 #define SMART_PTR_HPP
-#include <assert.h>
+#include <cassert>
+#include <cstddef>
 #include <set>
 #include <iostream>
 
-#ifndef NULL
-#define NULL ((void*)0)
-#endif
-
-#define NDEBUG
+#undef DEBUG_MULTIPLE_OWNERS
 
 namespace cctki_piraha {
 
@@ -22,7 +19,7 @@ namespace cctki_piraha {
 // smart_ptr<foo> f2(f);
 extern std::set<void*> *ptrs;
 
-#ifndef NDEBUG
+#ifdef DEBUG_MULTIPLE_OWNERS
 inline void add(void *t) {
     if(t == NULL)
         return;
