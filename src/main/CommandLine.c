@@ -714,68 +714,65 @@ void CCTKi_CommandLineFinished (void)
                 "is a no-op and will be ignored.");
   }
   myproc = CCTK_MyProc (NULL);
-  if (myproc)
+  /* if specified on the command line, create the output directory
+     for redirected stdout/stderr logfiles */
+  if (logdir)
   {
-    /* if specified on the command line, create the output directory
-       for redirected stdout/stderr logfiles */
-    if (logdir)
+    if (requested_stdout_redirection || requested_stderr_redirection)
     {
-      if (requested_stdout_redirection || requested_stderr_redirection)
-      {
-        if (CCTK_CreateDirectory (0755, logdir) < 0)
-        {
-          CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                      "Could not create output directory '%s' for "
-                      "stdout/stderr logfiles ! Falling back to using the "
-                      "current working directory...", logdir);
-          free (logdir);
-          logdir = Util_Strdup (".");
-        }
-      }
-    }
-    else
-    {
-      /* make cwd the default logdir */
-      logdir = Util_Strdup (".");
-    }
-
-    /* if redirection was requested on the command line
-       send stdout/stderr messages to <logdir>/CCTK_Proc<id>.{out,err}
-       otherwise redirect stdout to the NULL device */
-    logfilename = malloc (strlen (logdir) + 32);
-    if (requested_stdout_redirection)
-    {
-      sprintf (logfilename, "%s/CCTK_Proc%u.out", logdir, myproc);
-      newfile = freopen (logfilename, "w", stdout);
-      if (! newfile)
+      if (CCTK_CreateDirectory (0755, logdir) < 0)
       {
         CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                    "Could not redirect stdout to logfile '%s'", logfilename);
+                    "Could not create output directory '%s' for "
+                    "stdout/stderr logfiles ! Falling back to using the "
+                    "current working directory...", logdir);
+        free (logdir);
+        logdir = Util_Strdup (".");
       }
     }
-    else
-    {
-      newfile = freopen (NULL_DEVICE, "w", stdout);
-      if (! newfile)
-      {
-        CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                    "Could not disable stdout "
-                    "(was trying to redirect it to '%s')", NULL_DEVICE);
-      }
-    }
-
-    if (requested_stderr_redirection)
-    {
-      sprintf (logfilename, "%s/CCTK_Proc%u.err", logdir, myproc);
-      newfile = freopen (logfilename, "w", stderr);
-      if (! newfile)
-      {
-        CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
-                    "Could not redirect stderr to logfile '%s'", logfilename);
-      }
-    }
-    free (logfilename);
   }
+  else
+  {
+    /* make cwd the default logdir */
+    logdir = Util_Strdup (".");
+  }
+
+  /* if redirection was requested on the command line
+     send stdout/stderr messages to <logdir>/CCTK_Proc<id>.{out,err}
+     otherwise redirect stdout to the NULL device */
+  logfilename = malloc (strlen (logdir) + 32);
+  if (requested_stdout_redirection)
+  {
+    sprintf (logfilename, "%s/CCTK_Proc%u.out", logdir, myproc);
+    newfile = freopen (logfilename, "w", stdout);
+    if (! newfile)
+    {
+      CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                  "Could not redirect stdout to logfile '%s'", logfilename);
+    }
+  }
+  else
+  {
+    newfile = freopen (NULL_DEVICE, "w", stdout);
+    if (! newfile)
+    {
+      CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                  "Could not disable stdout "
+                  "(was trying to redirect it to '%s')", NULL_DEVICE);
+    }
+  }
+
+  if (requested_stderr_redirection)
+  {
+    sprintf (logfilename, "%s/CCTK_Proc%u.err", logdir, myproc);
+    newfile = freopen (logfilename, "w", stderr);
+    if (! newfile)
+    {
+      CCTK_VWarn (1, __LINE__, __FILE__, "Cactus",
+                  "Could not redirect stderr to logfile '%s'", logfilename);
+    }
+  }
+  free (logfilename);
   free (logdir);
   
   /* if requested, change buffering mode of stdout */
