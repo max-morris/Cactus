@@ -743,6 +743,11 @@ void CCTKi_CommandLineFinished (void)
   logfilename = malloc (strlen (logdir) + 32);
   if (requested_stdout_redirection)
   {
+    if (myproc == 0)
+      printf("Redirection of stdout to file(s) was requested. This means that "
+             "there will be no output to the screen. In order to see the "
+             "redirected output you will need to look at these files, e.g., "
+             "by using \"tail -f %s/CCTK_Proc0.out\".\n", logdir);
     sprintf (logfilename, "%s/CCTK_Proc%u.out", logdir, myproc);
     newfile = freopen (logfilename, "w", stdout);
     if (! newfile)
