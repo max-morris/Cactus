@@ -1690,12 +1690,13 @@ sub CompareTestFiles
         while ($oline = <INORIG>)
         {
           # ignore comment lines in old file
-          next if ($oline =~ /^\s*(["\#].*)?$/);
+          next if ($oline =~ /^\s*(["#].*)?$/);
 
-          # ignore comment lines in new file
+          $nline = "";
           while ($nline = <INNEW>)
           {
-              next if ($nline =~ /^\s*(["\#].*)?$/);
+            # ignore comment lines in new file
+            last unless ($nline =~ /^\s*(["#].*)?$/);
           }
 
           # Now lets see if they differ.
