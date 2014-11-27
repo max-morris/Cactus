@@ -118,17 +118,17 @@ endef
 
 # No preprocessing, just create empty dependency file
 define f77_DEPENDENCIES
-	echo "" > $@
+	: > $@
 	current_wd=`$(GET_WD)` ; cat $< | $(PERL) $(F_DEPEND_MODULES) $< $(basename $(notdir $<)).f77.o $(SRCDIR) $(USESTHORNS:%=$$current_wd/../%) $(F_DEPEND_MODULES_OUT) || { rm $@; exit 1; }
 endef
 
 define f_DEPENDENCIES
-	echo "" > $@
+	: > $@
 	current_wd=`$(GET_WD)` ; cat $< | $(PERL) $(F_DEPEND_MODULES) $< $(basename $(notdir $<)).f.o $(SRCDIR) $(USESTHORNS:%=$$current_wd/../%) $(F_DEPEND_MODULES_OUT) || { rm $@; exit 1; }
 endef
 
 define f90_DEPENDENCIES
-	echo "">  $@
+	: >  $@
 	current_wd=`$(GET_WD)` ; cat $< | $(PERL) $(F_DEPEND_MODULES) $< $(basename $(notdir $<)).f90.o $(SRCDIR) $(USESTHORNS:%=$$current_wd/../%) $(F_DEPEND_MODULES_OUT) || { rm $@; exit 1; }
 endef
 

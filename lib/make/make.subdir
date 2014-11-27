@@ -39,7 +39,7 @@ OBJS = $(SRCS:%=%.o)
 # Build all the object files
 
 $(CCTK_TARGET): $(OBJS) $(SRCDIR)/make.code.defn
-	echo "" > make.checked
+	: > make.checked
 
 # Rules to make the object files
 include $(CONFIG)/make.config.rules
