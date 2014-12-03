@@ -178,39 +178,16 @@ $(CCTK_LIBDIR)/$(LIBNAME_PREFIX)$(CCTK_LIBNAME_PREFIX)%$(LIBNAME_SUFFIX): update
         # (the mkdir below is protected against parallel makes)
 	@thorn_name=$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)$(CCTK_LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=%) ; \
 	echo "Checking status of thorn $$thorn_name" ; \
-	if [ ! -d $(SCRATCH_BUILD) ] ; \
-	then \
-		msg=`$(MKDIR) $(MKDIRFLAGS) $(SCRATCH_BUILD) 2>&1` ; \
-		if [ ! -d $(SCRATCH_BUILD) ] ; \
-		then \
-			echo "$$msg" ; \
-			exit 1 ; \
-		fi ; \
-	fi ; \
-	if [ ! -d $(BUILD_DIR) ] ; \
-	then \
-		msg=`$(MKDIR) $(MKDIRFLAGS) $(BUILD_DIR) 2>&1` ; \
-		if [ ! -d $(BUILD_DIR) ] ; \
-		then \
-			echo "$$msg" ; \
-			exit 1 ; \
-		fi ; \
-	fi ; \
-	if [ "$$thorn_name" = "Cactus" ] ; \
-	then \
+	$(MKDIR) $(MKDIRFLAGS) $(SCRATCH_BUILD) >/dev/null 2>&1 ; \
+	$(MKDIR) $(MKDIRFLAGS) $(BUILD_DIR) >/dev/null 2>&1 ; \
+	if [ "$$thorn_name" = "Cactus" ] ; then \
 		src_dir=$(CCTK_HOME)/src ; \
+	elif [ "$$thorn_name" = "CactusBindings" ] ; then \
+		src_dir=$(BINDINGS_DIR) ; \
 	else \
-		if [ "$$thorn_name" = "CactusBindings" ] ; \
-		then \
-			src_dir=$(BINDINGS_DIR) ; \
-		else \
-			src_dir=$(PACKAGE_DIR)/$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)$(CCTK_LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=$(filter %/$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)$(CCTK_LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=%), $(THORNS)))/src ; \
-		fi ; \
+		src_dir=$(PACKAGE_DIR)/$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)$(CCTK_LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=$(filter %/$(@:$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)$(CCTK_LIBNAME_PREFIX)%$(LIBNAME_SUFFIX)=%), $(THORNS)))/src ; \
 	fi ; \
-	if [ ! -d $(BUILD_DIR)/$$thorn_name ]; \
-	then \
-		$(MKDIR) $(MKDIRFLAGS) $(BUILD_DIR)/$$thorn_name ; \
-	fi ; \
+	$(MKDIR) $(MKDIRFLAGS) $(BUILD_DIR)/$$thorn_name >/dev/null 2>&1 ; \
 	cd $(BUILD_DIR)/$$thorn_name ; \
 	$(NOTIFY_DIVIDER) ; \
 	if [ -r "$$src_dir/Makefile" ] ; \
