@@ -421,20 +421,13 @@ sub CreateThornDependencyList
 
   # Find list of all thorns
   foreach my $thorn (sort keys %thorns) {
-    next if ($configuration_database->{"\U$thorn OPTIONS\E"} eq 'NO_SOURCE'
-             || "\U$thorn\E" eq "\UCactus\E");
+    next if $configuration_database->{"\U$thorn OPTIONS\E"} eq 'NO_SOURCE';
 
     # Add the thorn and the thorn's requirements
     # (The thorn name has to be lower case,
     # because the Makefile cannot convert its library names to upper case)
 
     my $line = "USESTHORNS_$thorn =";
-    # TR 29 Mar 2004:
-    # commented out following hard-coded dependency of all thorns
-    # on the flesh and bindings (which was necessary while the Fortran 90
-    # interface declarations were still included in the flesh and had to be
-    # compiled before thorns could use them)
-    # my $line = "USESTHORNS_$thorn = Cactus CactusBindings";
     foreach my $dep (sort (split (' ', $configuration_database->{"\U$thorn\E USES THORNS"})))
     {
       $line .= " $dep" if ($dep ne $thorn);
