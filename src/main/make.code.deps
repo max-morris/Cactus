@@ -8,9 +8,8 @@
 #   @version $Header$ 
 # @@*/
 
-# Rule for when there is no C++ compiler
-# In this case the flesh.cc file should be 
-# compiled as C rather than C++.
+# Rule for when there is no C++ compiler.
+# In this case the flesh.cc file should be compiled as C rather than C++.
 
 ifeq ($(strip $(CXX)),none)
 
