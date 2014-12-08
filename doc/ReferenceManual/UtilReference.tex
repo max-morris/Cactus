@@ -49,7 +49,7 @@ Here the functions are listed alphabetically within each section.
 
 \item[\code{Util\_snprintf}]
      [\pageref{Util-snprintf}]
-Safely format data into a caller-supplied buffer.
+Deprecated; use \code{snprintf} instead.
 
 \item[\code{Util\_vsnprintf}]
      [\pageref{Util-vsnprintf}]
@@ -497,130 +497,9 @@ as defined in ISO 8601 chapter 5.4.
 %Entering a function descrpition for Util\_snprintf
 \begin{FunctionDescription}{Util\_snprintf}
 \label{Util-snprintf}
-Safely format data into a caller-supplied buffer.
+Deprecated; use \code{snprintf} instead.
 
-\begin{SynopsisSection}
-\begin{Synopsis}{C}
-\begin{verbatim}
-#include "util_String.h"
-int count = Util_snprintf(char* buffer, size_t size, const char* format, ...)
-\end{verbatim}
-\end{Synopsis}
-\end{SynopsisSection}
-
-\begin{ResultSection}
-\begin{Result}{result\_len}
-The number of characters (not including the trailing NUL) that would
-have been stored in the destination string if \verb|size| had been infinite.
-\end{Result}
-\end{ResultSection}
-
-\begin{ParameterSection}
-\begin{Parameter}{buffer}
-A non-NULL pointer to the (caller-provided) buffer.
-\end{Parameter}
-\begin{Parameter}{size}
-The size of the buffer pointed to by \verb|buffer|.
-\end{Parameter}
-\begin{Parameter}{format}
-A (non-NULL pointer to a) C-style NUL-terminated string describing
-how to format any further arguments
-\end{Parameter}
-\begin{Parameter}{...}
-Zero or more further arguments, with types as specified by the
-\verb|format| argument.
-\end{Parameter}
-\end{ParameterSection}
-
-\begin{Discussion}
-C99 defines, and many systems provide, a C library function \verb|snprintf()|,
-which safely formats data into a caller-supplied buffer.  However, a few
-systems don't provide this,%%%
-\footnote{%%%
-	 There's also a related (older) API \texttt{sprintf()}.
-	 Don't use it -- it almost guarantees buffer
-	 overflows.
-	 }%%%
-{} so Cactus provides its own version, \verb|Util_snprintf()|.%%%
-\footnote{%%%
-	 Contrary to the usual Cactus convention, the
-	 ``\texttt{s}'' in ``\texttt{Util\_snprintf}''
-	 is in \emph{lower} case, not upper case.
-	 }%%%
-
-The interpretation of \verb|format| is the same as that of \verb|printf()|.
-See the \verb|printf()| documentation on your favorite computer system
-(notably, on any Unix system, type ``\verb|man printf|'') for lots and lots
-of details.
-
-\verb|Util_snprintf()| stores at most \verb|size| characters
-in the destination buffer; the last character it stores is always
-the terminating NUL character.  If \verb|result_len >= size| then
-the destination string was truncated to fit into the destination buffer.
-\end{Discussion}
-
-\begin{SeeAlsoSection}
-\begin{SeeAlso2}{Util\_vsnprintf}{Util-vsnprintf}
-Similar function which takes a \verb|<stdarg.h>| variable argument list.
-\end{SeeAlso2}
-\begin{SeeAlso}{snprintf()}
-Standard C library function which this function tries to clone.
-\end{SeeAlso}
-\begin{SeeAlso}{sprintf()}
-Unsafe and dangerous C library function similar to \verb|snprintf()|,
-which doesn't check the buffer length.
-\end{SeeAlso}
-\end{SeeAlsoSection}
-
-\begin{ErrorSection}
-\begin{Error}{$< \texttt{0}$}
-Some sort of error occured.  It's indeterminate what (if anything)
-has been stored in the destination buffer.
-\end{Error}
-\end{ErrorSection}
-
-\begin{ExampleSection}
-\begin{Example}{C}
-\begin{verbatim}
-#include "util_String.h"
-
-/* some values to be formatted */
-char   c = '@';
-int    i = 42;
-double d = 3.14159265358979323846;
-const char s[] = "this is a string to format";
-
-int len;
-#define N_BUFFER	100
-char buffer[N_BUFFER];
-
-/* safely format the values into the buffer */
-Util_snprintf(buffer, N_BUFFER,
-              "values are c='%c' i=%d d=%g s=\"%s\"",
-              c, i, d, s);
-
-/*
- * same as above example, but now explicitly check for the output
- * being truncated due to the buffer being too small
- */
-const int len = Util_snprintf(buffer, N_BUFFER,
-                              "values are c='%c' i=%d d=%g s=\"%s\"",
-                              c, i, d, s);
-if (len >= N_BUFFER)
-        {
-        /*
-         * output was truncated (i.e. buffer was too small)
-         * ( buffer  probably doesn't have all the information we wanted
-         * but the code is still "safe", in the sense that  buffer  is
-         * still NUL-terminated, and no buffer-overflow has occured)
-         */
-        }
-\end{verbatim}
-\end{Example}
-\end{ExampleSection}
-\end{FunctionDescription}
-
-%Entering a function descrpition for Util\_sprintf
+%Entering a function descrpition for Util\_vsnprintf
 \begin{FunctionDescription}{Util\_vsnprintf}
 \label{Util-vsnprintf}
 Safely format data into a caller-supplied buffer.
@@ -636,7 +515,7 @@ int count = Util_vsnprintf(char* buffer, size_t size, const char* format,
 \end{SynopsisSection}
 
 \begin{Discussion}
-This function is identical to \verb|Util_snprintf|, except that it
+This function is identical to \verb|snprintf|, except that it
 takes its data arguements in the form of a \verb|va_list| ``cookie''
 (as defined by \verb|<stdarg.h>|, which is already included by
 \verb|"util_String.h"|), instead of in the from of a variable length
@@ -644,9 +523,6 @@ argument list.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso2}{Util\_snprintf}{Util-snprintf}
-Similar function which takes a variable length argument list.
-\end{SeeAlso2}
 \begin{SeeAlso}{vsnprintf()}
 Standard C library function which this function tries to clone.
 \end{SeeAlso}
@@ -708,9 +584,6 @@ needed.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
-\begin{SeeAlso2}{Util\_snprintf}{Util-snprintf}
-Similar function which takes user supplied buffer.
-\end{SeeAlso2}
 \begin{SeeAlso}{asprintf()}
 GNU/BSD C library function which this function tries to clone.
 \end{SeeAlso}

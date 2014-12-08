@@ -13,6 +13,7 @@
 
 #include <stdarg.h>
 #include <stddef.h>
+#include <stdio.h>
 
 #ifdef __cplusplus
 extern "C" 
@@ -43,7 +44,7 @@ int Util_StrMemCmpi(const char *string1,
                     size_t len2);
 
 int Util_vsnprintf (char *str, size_t count, const char *fmt, va_list args);
-int Util_snprintf (char *str,size_t count,const char *fmt,...);
+#define Util_snprintf snprintf   /* For backward compatibility */
 
 int Util_asprintf(char **buffer, const char *fmt, ...);
 int Util_asnprintf(char **buffer, size_t size, const char *fmt, ...);
