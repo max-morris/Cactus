@@ -28,11 +28,6 @@ static const char *rcsid = "$Header$";
 #ifndef TEST_EXPRESSION_PARSER
 #include "util_String.h"
 CCTK_FILEVERSION(util_Expression_c);
-#ifdef strdup
-#undef strdup
-#endif
-#include "util_String.h"
-#define strdup(a) Util_Strdup(a)
 #else
 #define CCTK_VWarn(lvl, line, file, thorn, fmt, ...)  do { printf("(%s) L%d at %s line %d: "fmt"\n", thorn, lvl, file, line, ## __VA_ARGS__); if(lvl == 0) exit(1); } while(0)
 #endif

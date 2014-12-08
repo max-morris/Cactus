@@ -14,6 +14,7 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <string.h>
 
 #ifdef __cplusplus
 extern "C" 
@@ -32,7 +33,7 @@ int Util_SplitFilename(char **dir,
                        char **file, 
                        const char *string);
 
-char *Util_Strdup(const char *s);
+#define Util_Strdup strdup
 
 size_t Util_Strlcpy(char* dst, const char* src, size_t dst_size);
 size_t Util_Strlcat(char* dst, const char* src, size_t dst_size);

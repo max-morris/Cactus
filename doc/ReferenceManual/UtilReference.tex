@@ -170,8 +170,7 @@ Compare two strings, ignoring upper/lower case.
 
 \item[\code{Util\_Strdup}]
      [\pageref{Util-Strdup}]
-``Duplicate'' a string,
-i.e.\ copy it to a newly--\code{malloc}ed buffer.
+Deprecated; use \code{strdup} instead.
 
 \item[\code{Util\_Strlcat}]
      [\pageref{Util-Strlcat}]
@@ -740,94 +739,7 @@ else
 %Entering a function descrpition for Util\_Strdup
 \begin{FunctionDescription}{Util\_Strdup}
 \label{Util-Strdup}
-``Duplicate'' a string, i.e.\ copy it to a newly--\code{malloc}ed buffer.
-
-\begin{SynopsisSection}
-\begin{Synopsis}{C}
-\begin{verbatim}
-#include "util_String.h"
-char* copy = Util_Strdup(const char *str);
-\end{verbatim}
-\end{Synopsis}
-\end{SynopsisSection}
-
-\begin{ResultSection}
-\begin{Result}{copy}
-A pointer to a buffer obtained from \code{malloc()},
-which this function sets to a copy of the (C-style NUL-terminated)
-string \code{str}.  This buffer should be freed with \code{free()}
-when it's not needed any more.
-\end{Result}
-\end{ResultSection}
-
-\begin{ParameterSection}
-\begin{Parameter}{str}
-A non-NULL pointer to a (C-style NUL-terminated) string.
-\end{Parameter}
-\end{ParameterSection}
-
-\begin{Discussion}
-Many systems have a C library function \code{strdup()}, which
-\code{malloc}s sufficient memory for a copy of its argument string,
-does the copy, and returns a pointer to the copy.  However, some
-systems lack this function, so Cactus provides its own version,
-\code{Util\_Strdup()}.
-\end{Discussion}
-
-\begin{SeeAlsoSection}
-\begin{SeeAlso}{<stdlib.h>}
-System header file containing prototypes for
-\code{malloc()} and \code{free}.
-\end{SeeAlso}
-\begin{SeeAlso}{strcpy()}
-Standard C library function (prototype in \code{<string.h>})
-to copy a string to a buffer.
-{\em This does not check that the buffer is big enough to hold the string,
-and is thus very dangerous.  Use \code{Util\_Strlcpy()} instead!}
-\end{SeeAlso}
-\begin{SeeAlso2} {Util\_Strlcpy()} {Util-Strlcpy}
-Safely copy a string.
-\end{SeeAlso2}
-\end{SeeAlsoSection}
-
-\begin{ErrorSection}
-\begin{Error}{NULL}
-\code{malloc()} was unable to allocate memory for the buffer.
-\end{Error}
-\end{ErrorSection}
-
-\begin{ExampleSection}
-\begin{Example}{C}
-\begin{verbatim}
-#include "util_String.h"
-
-/*
- * return the (positive) answer to a question,
- * or negative if an error occured
- */
-int answer_question(const char* question)
-{
-/*
- * we need to modify the question string in the process of parsing it
- * but we must not destroy the input ==> copy it and modify the copy
- *
- * ... note the const qualifier on  question_copy  says that
- *     the pointer  question_copy  won't itself change, but
- *     we can modify the string that it points to
- */
-char* const question_copy = Util_Strdup(question);
-if (question_copy == NULL)
-        { return -1; }     /* couldn't get memory for copy buffer */
-
-/* code that will modify  question_copy */
-
-free(question_copy);
-return 42;
-}
-\end{verbatim}
-\end{Example}
-\end{ExampleSection}
-\end{FunctionDescription}
+Depredcated; use \code{strdup} instead.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1037,9 +949,6 @@ to copy a string to a buffer.
 {\em This does not check that the buffer is big enough to hold the string,
 and is thus very dangerous.  Use \code{Util\_Strlcpy()} instead!}
 \end{SeeAlso}
-\begin{SeeAlso2} {Util\_Strdup()} {Util-Strdup}
-``Duplicate'' a string, i.e.\ copy it to a newly-\code{malloc}ed buffer.
-\end{SeeAlso2}
 \begin{SeeAlso2} {Util\_Strlcat()} {Util-Strlcat}
 Safely concatenates two strings.
 \end{SeeAlso2}
@@ -1170,6 +1079,7 @@ Inferior API for splitting a string into tokens
 \begin{verbatim}
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "util_String.h"
 
 /* prototypes */
@@ -1189,7 +1099,7 @@ int i;
 char* copy_of_gridfn_list;
 char* gridfn[MAX_N_GRIDFNS];
 
-copy_of_gridfn_list = Util_Strdup(gridfn_list);
+copy_of_gridfn_list = strdup(gridfn_list);
 N_gridfns = parse_string(copy_of_gridfn_list,
                          MAX_N_GRIDFNS, gridfn);
 
@@ -1210,8 +1120,7 @@ free(copy_of_gridfn_list);
  * Adjacent sequences of whitespace are treated the same as single
  * whitespace characters.
  *
- * Note that this function this modifies its input string; see
- * Util_Strdup()  if this is a problem
+ * Note that this function this modifies its input string.
  */
 int parse_string(char* string,
                  int N_argv, char* argv[])
