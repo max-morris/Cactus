@@ -505,6 +505,61 @@ Deprecated; use \code{snprintf} instead.
 Deprecated; use \code{vsnprintf} instead.
 \end{FunctionDescription}
 
+%Entering a function descrpition for Util\_asprintf
+\begin{FunctionDescription}{Util\_asprintf}
+\label{Util-asprintf}
+   Sprintf with memory allocation.  On input
+   the buffer should point to a NULL area of memory.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "util_String.h"
+int count = Util_asprintf(char** buffer, const char* format,
+                           va_list arg)
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{buffer}
+Buffer to which to print the string.
+
+\verb|*buffer| should be NULL on entry.  The routine
+allocates the memory, so the previous contents of
+the pointer are lost.
+On exit the buffer size will be \verb|count+1| (i.e
+the length of the string plus the \verb|\0|).
+\end{Parameter}
+\begin{Parameter}{format}
+A (non-NULL pointer to a) C-style NUL-terminated string describing
+how to format any further arguments
+\end{Parameter}
+\begin{Parameter}{...}
+Zero or more further arguments, with types as specified by the
+\verb|format| argument.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+This function is identical to \verb|sprintf()|, except that it allocates a
+buffer large enough to hold the output including the terminating null byte,
+and returns a pointer to it via the first argument. This pointer should be
+passed to \verb|free()| to release the allocated storage when it is no longer
+needed.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{asprintf()}
+GNU/BSD C library function which this function tries to clone.
+\end{SeeAlso}
+\begin{SeeAlso}{sprintf()}
+Unsafe and dangerous C library function similar to \verb|snprintf()|,
+which doesn't check the buffer length.
+\end{SeeAlso}
+\end{SeeAlsoSection}
+\end{FunctionDescription}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Full Descriptions of String Functions}
