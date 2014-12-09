@@ -269,7 +269,7 @@ int CCTK_VInfo (const char *thorn, const char *format, ...)
   { 
     /* one way to get the final string size */
     va_start(ap,format);
-    msg_size = Util_vsnprintf(NULL, 0, format, ap);
+    msg_size = vsnprintf(NULL, 0, format, ap);
     va_end(ap);
 
     /* Empty string is ok */
@@ -282,7 +282,7 @@ int CCTK_VInfo (const char *thorn, const char *format, ...)
     if(message)
     {
       va_start(ap,format);
-      Util_vsnprintf(message,msg_size+1,format,ap);
+      vsnprintf(message,msg_size+1,format,ap);
       va_end(ap);
     } 
 
@@ -534,7 +534,7 @@ int CCTK_VWarn (int level,
   if(warncallbacks)
   {
     va_start(ap,format);
-    msg_size = Util_vsnprintf(NULL, 0, format, ap);
+    msg_size = vsnprintf(NULL, 0, format, ap);
     va_end(ap);
 
     /* Empty string is ok */
@@ -547,7 +547,7 @@ int CCTK_VWarn (int level,
     if(message)
     {
       va_start(ap,format);
-      Util_vsnprintf(message,msg_size+1,format,ap);
+      vsnprintf(message,msg_size+1,format,ap);
       va_end(ap);
     } 
 
@@ -679,7 +679,7 @@ void CCTK_VError (int line,
   if(warncallbacks)
   {
     va_start(ap,format);
-    msg_size = Util_vsnprintf(NULL, 0, format, ap);
+    msg_size = vsnprintf(NULL, 0, format, ap);
     va_end(ap);
 
     /* Empty string is ok */
@@ -692,7 +692,7 @@ void CCTK_VError (int line,
     if(message)
     {
       va_start(ap,format);
-      Util_vsnprintf(message,msg_size+1,format,ap);
+      vsnprintf(message,msg_size+1,format,ap);
       va_end(ap);
     } 
 

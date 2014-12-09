@@ -576,7 +576,7 @@ int Util_asprintf(char **buffer, const char *fmt, ...)
 
   va_start(args,fmt);
 
-  count = Util_vsnprintf(NULL, 0, fmt, args);
+  count = vsnprintf(NULL, 0, fmt, args);
 
   va_end(args);
 
@@ -586,7 +586,7 @@ int Util_asprintf(char **buffer, const char *fmt, ...)
   {
     va_start(args,fmt);
 
-    Util_vsnprintf(*buffer,count+1,fmt,args);
+    vsnprintf(*buffer,count+1,fmt,args);
 
     va_end(args);
   }
@@ -654,7 +654,7 @@ int Util_asnprintf(char **buffer, size_t size, const char *fmt, ...)
 
   va_start(args,fmt);
 
-  count = Util_vsnprintf(NULL, 0, fmt, args);
+  count = vsnprintf(NULL, 0, fmt, args);
 
   va_end(args);
 
@@ -671,7 +671,7 @@ int Util_asnprintf(char **buffer, size_t size, const char *fmt, ...)
   {
     va_start(args,fmt);
 
-    Util_vsnprintf(*buffer,count+1,fmt,args);
+    vsnprintf(*buffer,count+1,fmt,args);
 
     va_end(args);
   }
