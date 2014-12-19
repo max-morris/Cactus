@@ -138,7 +138,9 @@ ALLCACTUSLIBS = $(ALLCACTUSLIBS_BASE:%=$(CCTK_LIBNAME_PREFIX)%)
 $(CCTK_LIBDIR)/LINKLIST: $(patsubst %,$(CCTK_LIBDIR)/$(LIBNAME_PREFIX)$(CCTK_LIBNAME_PREFIX)%$(LIBNAME_SUFFIX),$(notdir $(THORNS) $(CACTUSLIBS)))
 	cd $(CCTK_LIBDIR); \
 	for thorn in $(notdir $(THORNS) $(CACTUSLIBS)); do \
-		$(XARGS) -n 1 -I :OBJFILE: echo $$thorn/:OBJFILE: <$(LIBNAME_PREFIX)$(CCTK_LIBNAME_PREFIX)$$thorn$(LIBNAME_SUFFIX).objectlist; \
+		for file in $$(cat $(LIBNAME_PREFIX)$(CCTK_LIBNAME_PREFIX)$$thorn$(LIBNAME_SUFFIX).objectlist); do \
+			echo $$thorn/$$file; \
+		done; \
 	done >$@.tmp
 	mv $@.tmp $@
 
