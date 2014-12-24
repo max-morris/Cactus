@@ -242,6 +242,7 @@ sub Read_New_Thorn_Doc
             }
 
             s/(\\includegraphics.*?\{)\s*?(.*?)\s*?\}/$1$path\/$2\}/g;
+            s/(\\input *)(.*)/$1$path\/$2/g;
 
             next if (/^\s*?\\tableofcontents\s*?$/);
 
@@ -358,6 +359,7 @@ sub Read_Thorn_Doc
       if ($start && ! $stop) {              # add to $contents
          s/(\\includegraphics.*?\{)\s*?(.*?)\s*?\}/$1$path\/$2\}/g;
         # s/(\\includegraphics.*?\{)\s*?(.*\.eps\s*?\})/$1$path\/$2/g;
+         s/(\\input *)(.*)/$1$path\/$2/g;
          $contents .= $_;
       } elsif (/\\begin\{document\}/) {     # don't begin yet.... 1st flag
          $document_has_begun = 1; 

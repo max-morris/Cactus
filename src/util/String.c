@@ -241,44 +241,6 @@ int Util_SplitString(char **before, char **after, const char *string, const char
   return retval;
 }
 
- /*@@
-   @routine    Util_Strdup
-   @date       Thu Mar 28 11:20:27 2000
-   @author     Gerd Lanfermann
-   @desc
-   Homegrown version of strdup, since it's not guaranteed to be there.
-   @enddesc
-   @calls
-   @calledby
-   @history
-
-   @endhistory
-   @var     s
-   @vdesc   string to be duplicated
-   @vtype   const char *
-   @vio     in
-   @vcomment
-
-   @endvar
-
-   @returntype char *
-   @returndesc
-   the duplicate string.
-   @endreturndesc
-@@*/
-char *Util_Strdup(const char *s)
-{
-  char *retstr;
-
-  retstr = (char*) malloc((strlen(s)+1)*sizeof(char));
-  if(retstr)
-  {
-    strcpy(retstr,s);
-  }
-
-  return retstr;
-}
-
 
 /*@@
   @routine  Util_Strlcpy
@@ -614,7 +576,7 @@ int Util_asprintf(char **buffer, const char *fmt, ...)
 
   va_start(args,fmt);
 
-  count = Util_vsnprintf(NULL, 0, fmt, args);
+  count = vsnprintf(NULL, 0, fmt, args);
 
   va_end(args);
 
@@ -624,7 +586,7 @@ int Util_asprintf(char **buffer, const char *fmt, ...)
   {
     va_start(args,fmt);
 
-    Util_vsnprintf(*buffer,count+1,fmt,args);
+    vsnprintf(*buffer,count+1,fmt,args);
 
     va_end(args);
   }
@@ -692,7 +654,7 @@ int Util_asnprintf(char **buffer, size_t size, const char *fmt, ...)
 
   va_start(args,fmt);
 
-  count = Util_vsnprintf(NULL, 0, fmt, args);
+  count = vsnprintf(NULL, 0, fmt, args);
 
   va_end(args);
 
@@ -709,7 +671,7 @@ int Util_asnprintf(char **buffer, size_t size, const char *fmt, ...)
   {
     va_start(args,fmt);
 
-    Util_vsnprintf(*buffer,count+1,fmt,args);
+    vsnprintf(*buffer,count+1,fmt,args);
 
     va_end(args);
   }

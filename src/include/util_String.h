@@ -13,6 +13,8 @@
 
 #include <stdarg.h>
 #include <stddef.h>
+#include <stdio.h>
+#include <string.h>
 
 #ifdef __cplusplus
 extern "C" 
@@ -31,7 +33,7 @@ int Util_SplitFilename(char **dir,
                        char **file, 
                        const char *string);
 
-char *Util_Strdup(const char *s);
+#define Util_Strdup strdup   /* for backward compatibility */
 
 size_t Util_Strlcpy(char* dst, const char* src, size_t dst_size);
 size_t Util_Strlcat(char* dst, const char* src, size_t dst_size);
@@ -42,8 +44,8 @@ int Util_StrMemCmpi(const char *string1,
                     const char *string2,
                     size_t len2);
 
-int Util_vsnprintf (char *str, size_t count, const char *fmt, va_list args);
-int Util_snprintf (char *str,size_t count,const char *fmt,...);
+#define Util_vsnprintf vsnprintf   /* for backward compatibility */
+#define Util_snprintf snprintf     /* for backward compatibility */
 
 int Util_asprintf(char **buffer, const char *fmt, ...);
 int Util_asnprintf(char **buffer, size_t size, const char *fmt, ...);

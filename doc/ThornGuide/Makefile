@@ -59,7 +59,7 @@ $(MASTER_FILE).pdf: $(MASTER_FILE).tex
 	     exit 0;                                             \
 	   fi;                                                    \
 	else                                                     \
-	   echo "  Cannot find $@, an error must have occured."; \
+	   echo "  Cannot find $@, an error must have occured. See $(DOCBUILDDIR)/LOG_LATEX_* ."; \
 	fi
 
 ThornGuideHTML: $(MASTER_FILE).tex

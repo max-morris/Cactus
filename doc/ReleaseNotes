@@ -26,6 +26,61 @@ These notices can also be found on the Cactus web pages at
 ==============================================================================
 ==============================================================================
 
+Release Notices for Cactus 4.0 ET_2014_05_v0
+============================================
+Date: 16 May 2014
+
+Released modules:
+================
+
+      CactusBase
+      CactusConnect
+      CactusElliptic
+      CactusExamples
+      CactusIO
+      CactusNumerical
+      CactusPUGH
+      CactusPUGHIO
+      CactusTest
+      CactusUtils
+      CactusWave
+
+
+
+git Tag:
+========
+
+ET_2014_05_v0
+
+
+==============================================================================
+
+CHANGES FOR ET_2014_05_v0
+=========================
+
+Flesh
+=====
+
+1) Support for native Complex grid variables in both C99 and C++.
+   Cactus' COMPLEX type now maps to the native complex types in these
+   languages and the CCTK functions to manipulate them are deprecated:
+
+     CCTK_Cmplx
+     CCTK_CmplxReal
+     CCTK_CmplxImag
+     CCTK_CmplxConjg
+     CCTK_CmplxAbs
+     CCTK_CmplxAdd
+     CCTK_CmplxSub
+     CCTK_CmplxMul
+     CCTK_CmplxDiv
+     CCTK_CmplxSqrt
+     CCTK_CmplxSin
+     CCTK_CmplxCos
+     CCTK_CmplxLog
+     CCTK_CmplxExp
+
+
 Release Notices for Cactus 4.0 beta 16
 ======================================
 Date: 2 February 2009
