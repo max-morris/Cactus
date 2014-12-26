@@ -632,7 +632,7 @@ void CCTKi_CommandLineHelp (void)
     "-E, --error-level <n>                : Sets the error level to n.\n"
     "-r, --redirect[o|e|oe|eo]            : Redirects standard output and/or\n"
     "                                       standard error to files;\n"
-    "                                       only MPI-root processes.\n"
+    "                                       only MPI-non-root processes.\n"
     "-R, --Redirect[o|e|oe|eo]            : Redirects standard output and/or\n"
     "                                       standard error to files;\n"
     "                                       all MPI processes (no screen output).\n"
