@@ -458,16 +458,21 @@ void CCTKi_CommandLineParameterLevel (const char *argument)
    @vtype      const char *
    @vio        in
    @endvar
+   @var        type
+   @vdesc      redirect type (1: all MPI ranks > 0, 2: all MPI ranks)
+   @vtype      const int
+   @vio        in
+   @endvar
 @@*/
-void CCTKi_CommandLineRedirect (const char *argument)
+void CCTKi_CommandLineRedirect (const char *argument, const int type)
 {
   if (!argument || strchr(argument,'o')) /* redirect stdout */
   {
-    requested_stdout_redirection = 1;
+    requested_stdout_redirection = type;
   }
   if (argument && strchr(argument,'e')) /* redirect stderr */
   {
-    requested_stderr_redirection = 1;
+    requested_stderr_redirection = type;
   }
 }
 
@@ -626,7 +631,11 @@ void CCTKi_CommandLineHelp (void)
     "-W, --warning-level <n>              : Sets the warning level to n.\n"
     "-E, --error-level <n>                : Sets the error level to n.\n"
     "-r, --redirect[o|e|oe|eo]            : Redirects standard output and/or\n"
-    "                                       standard error to files.\n"
+    "                                       standard error to files;\n"
+    "                                       only MPI-root processes.\n"
+    "-R, --Redirect[o|e|oe|eo]            : Redirects standard output and/or\n"
+    "                                       standard error to files;\n"
+    "                                       all MPI processes (no screen output).\n"
     "    --logdir <dir>                   : Sets the output directory for logfiles\n"
     "                                       created by the '-r' option\n"
     "-b, --buffering <no|line|full>       : Set stdout buffering mode.\n"
@@ -710,8 +719,8 @@ void CCTKi_CommandLineFinished (void)
   if (logdir && !(requested_stdout_redirection || requested_stderr_redirection))
   {
     CCTK_VWarn (CCTK_WARN_PICKY, __LINE__, __FILE__, "Cactus",
-                "Specifying the '-logdir' option without the '-r' option "
-                "is a no-op and will be ignored.");
+                "Specifying the '-logdir' option without the '-r' or '-R' "
+                "option is a no-op and will be ignored.");
   }
   myproc = CCTK_MyProc (NULL);
   /* if specified on the command line, create the output directory
@@ -741,11 +750,12 @@ void CCTKi_CommandLineFinished (void)
      send stdout/stderr messages to <logdir>/CCTK_Proc<id>.{out,err}
      otherwise redirect stdout to the NULL device */
   logfilename = malloc (strlen (logdir) + 32);
-  if (requested_stdout_redirection)
+  if ( (myproc && requested_stdout_redirection) ||
+        requested_stdout_redirection > 1 )
   {
-    if (myproc == 0)
-      printf("Redirection of stdout to file(s) was requested. This means that "
-             "there will be no output to the screen. In order to see the "
+    if (myproc == 0 && requested_stdout_redirection > 1)
+      printf("Redirection of all stdout to file(s) was requested. This means "
+             "that there will be no output to the screen. In order to see the "
              "redirected output you will need to look at these files, e.g., "
              "by using \"tail -f %s/CCTK_Proc0.out\".\n", logdir);
     sprintf (logfilename, "%s/CCTK_Proc%u.out", logdir, myproc);
@@ -756,7 +766,7 @@ void CCTKi_CommandLineFinished (void)
                   "Could not redirect stdout to logfile '%s'", logfilename);
     }
   }
-  else
+  else if (myproc && !requested_stdout_redirection)
   {
     newfile = freopen (NULL_DEVICE, "w", stdout);
     if (! newfile)
@@ -767,7 +777,8 @@ void CCTKi_CommandLineFinished (void)
     }
   }
 
-  if (requested_stderr_redirection)
+  if ( (myproc && requested_stderr_redirection) ||
+       requested_stderr_redirection > 1 )
   {
     sprintf (logfilename, "%s/CCTK_Proc%u.err", logdir, myproc);
     newfile = freopen (logfilename, "w", stderr);

@@ -22,7 +22,7 @@ void CCTKi_CommandLineLoggingLevel(const char *argument);
 void CCTKi_CommandLineWarningLevel(const char *argument);
 void CCTKi_CommandLineErrorLevel(const char *argument);
 void CCTKi_CommandLineParameterLevel(const char *argument);
-void CCTKi_CommandLineRedirect(const char *argument);
+void CCTKi_CommandLineRedirect(const char *argument, const int type);
 void CCTKi_CommandLineLogDir(const char *argument);
 void CCTKi_CommandLineSetBuffering(const char *argument);
 void CCTKi_CommandLinePrintSchedule(void);
