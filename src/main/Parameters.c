@@ -112,11 +112,11 @@ void CCTK_FCALL CCTK_FNAME (CCTK_ParameterSetNotifyRegister)
                            (int *status, cParameterSetNotifyCallbackFn callback,
                             void *data, THREE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_ParameterSetNotifyUnregister)
-                           (CCTK_INT *status, ONE_FORTSTRING_ARG);
+                           (int *status, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_ParameterValString)
-                           (CCTK_INT *nchars, THREE_FORTSTRING_ARG);
+                           (int *nchars, THREE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_ParameterSet)
-                           (CCTK_INT *status, THREE_FORTSTRING_ARG);
+                           (int *status, THREE_FORTSTRING_ARG);
 
 /********************************************************************
  ********************* Local Routine Prototypes *********************
@@ -695,7 +695,7 @@ int CCTK_ParameterSet (const char *name, const char *thorn, const char *value)
 
 
 void CCTK_FCALL CCTK_FNAME (CCTK_ParameterSet)
-                           (CCTK_INT *status, THREE_FORTSTRING_ARG)
+                           (int *status, THREE_FORTSTRING_ARG)
 {
   THREE_FORTSTRING_CREATE (name, thorn, value)
 
@@ -901,7 +901,7 @@ char *CCTK_ParameterValString (const char *param_name, const char *thorn)
    @endvar
 @@*/
 void CCTK_FCALL CCTK_FNAME (CCTK_ParameterValString)
-                           (CCTK_INT *nchars, THREE_FORTSTRING_ARG)
+                           (int *nchars, THREE_FORTSTRING_ARG)
 {
   size_t c_strlen;
   char *c_string;
@@ -1953,10 +1953,10 @@ static int ParameterSetAccumulator(t_param *param)
     switch(value.type)
     {
       case ival:
-        sprintf(newval,"%d",value.value.ival);
+        sprintf(newval,"%ld",(long)value.value.ival);
         break;
       case rval:
-        sprintf(newval,"%.20g",value.value.rval);
+        sprintf(newval,"%.20g",(double)value.value.rval);
         break;
       default :
         ;
@@ -2401,7 +2401,8 @@ static int ParameterSetReal (t_param *param, const char *value)
 static int ParameterSetBoolean (t_param *param, const char *value)
 {
   int type = PARAMETER_BOOLEAN;
-  int retval, inval;
+  int retval;
+  CCTK_INT inval;
   uExpressionValue val;
   uExpression *expr;
 

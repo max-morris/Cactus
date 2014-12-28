@@ -23,8 +23,8 @@ typedef struct
   
   union 
   {
-    double rval;
-    int    ival;
+    CCTK_REAL rval;
+    CCTK_INT  ival;
   } value;
 } uExpressionValue;
 
