@@ -782,7 +782,7 @@ AC_CACHE_VAL(cctk_cv_have___int64,
 eval "cctk_cv_have___int64=no")
 ])
 if test "$cctk_cv_have___int64" = 'yes'; then
-  CCTK_INT8='__int64'
+  CCTK_INT8_TYPE='__int64'
   AC_MSG_RESULT(yes)
 else
   AC_MSG_RESULT(no)
