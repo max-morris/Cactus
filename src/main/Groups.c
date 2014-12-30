@@ -803,6 +803,10 @@ int CCTK_VarTypeNumber (const char *type)
   {
     retval = CCTK_VARIABLE_INT8;
   }
+  else if (! strcmp (type, "INT16"))
+  {
+    retval = CCTK_VARIABLE_INT16;
+  }
   else if (! strcmp (type, "REAL"))
   {
     retval = CCTK_VARIABLE_REAL;
@@ -1911,6 +1915,12 @@ int CCTK_VarTypeSize (int vtype)
 #ifdef HAVE_CCTK_INT8
     case CCTK_VARIABLE_INT8:
       var_size = sizeof (CCTK_INT8);
+      break;
+#endif
+
+#ifdef HAVE_CCTK_INT16
+    case CCTK_VARIABLE_INT16:
+      var_size = sizeof (CCTK_INT16);
       break;
 #endif
 

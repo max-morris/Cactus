@@ -788,6 +788,20 @@ else
   AC_MSG_RESULT(no)
 fi
 
+# Check if we have __int128
+AC_MSG_CHECKING([if __int128 is defined])
+AC_CACHE_VAL(cctk_cv_have___int128,
+[AC_TRY_COMPILE(,
+[__int128 foo; return 0], eval "cctk_cv_have___int128=yes",
+eval "cctk_cv_have___int128=no")
+])
+if test "$cctk_cv_have___int128" = 'yes'; then
+  CCTK_INT16_TYPE='__int128'
+  AC_MSG_RESULT(yes)
+else
+  AC_MSG_RESULT(no)
+fi
+
 # C++ STL stuff
 
 if test "x$CXX" != 'xnone' ; then
@@ -1044,6 +1058,8 @@ AC_SUBST(EXE)
 # Integer types
 
 case "x$ac_cv_sizeof_long_long" in
+    'x16')
+      CCTK_INT16_TYPE='long long' ;;
     'x8')
       CCTK_INT8_TYPE='long long' ;;
     'x4')
@@ -1053,6 +1069,8 @@ case "x$ac_cv_sizeof_long_long" in
 esac
 
 case "x$ac_cv_sizeof_long_int" in
+    'x16')
+      CCTK_INT16_TYPE='long int' ;;
     'x8')
       CCTK_INT8_TYPE='long int' ;;
     'x4')
@@ -1062,6 +1080,8 @@ case "x$ac_cv_sizeof_long_int" in
 esac
 
 case "x$ac_cv_sizeof_int" in
+    'x16')
+      CCTK_INT16_TYPE='int' ;;
     'x8')
       CCTK_INT8_TYPE='int' ;;
     'x4')
@@ -1071,6 +1091,8 @@ case "x$ac_cv_sizeof_int" in
 esac
 
 case "x$ac_cv_sizeof_short_int" in
+    'x16')
+      CCTK_INT16_TYPE='short int' ;;
     'x8')
       CCTK_INT8_TYPE='short int' ;;
     'x4')
@@ -1080,6 +1102,11 @@ case "x$ac_cv_sizeof_short_int" in
 esac
 
 CCTK_INT1_TYPE='signed char'
+
+if test -n "$CCTK_INT16_TYPE" ; then
+  AC_DEFINE_UNQUOTED(CCTK_INT16_TYPE, $CCTK_INT16_TYPE)
+  AC_DEFINE(HAVE_CCTK_INT16)
+fi
 
 if test -n "$CCTK_INT8_TYPE" ; then
   AC_DEFINE_UNQUOTED(CCTK_INT8_TYPE, $CCTK_INT8_TYPE)

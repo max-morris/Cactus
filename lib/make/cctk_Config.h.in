@@ -121,10 +121,10 @@
 /******************************************************************************/
 
 /* Size info for various datatypes */
-#undef SIZEOF_SHORT_INT
-#undef SIZEOF_INT
-#undef SIZEOF_LONG_INT
 #undef SIZEOF_LONG_LONG
+#undef SIZEOF_LONG_INT
+#undef SIZEOF_INT
+#undef SIZEOF_SHORT_INT
 #undef SIZEOF_LONG_DOUBLE
 #undef SIZEOF_DOUBLE
 #undef SIZEOF_FLOAT
@@ -138,12 +138,14 @@
 #undef CCTK_REAL_PRECISION_4
 
 /* Integer precision */
+#undef CCTK_INTEGER_PRECISION_16
 #undef CCTK_INTEGER_PRECISION_8
 #undef CCTK_INTEGER_PRECISION_4
 #undef CCTK_INTEGER_PRECISION_2
 #undef CCTK_INTEGER_PRECISION_1
 
 /* Integer sizes */
+#undef HAVE_CCTK_INT16
 #undef HAVE_CCTK_INT8
 #undef HAVE_CCTK_INT4
 #undef HAVE_CCTK_INT2
@@ -159,6 +161,7 @@
 #ifdef CCODE
 
 /* CCTK C/C++ Integer datatypes */
+#undef CCTK_INT16_TYPE
 #undef CCTK_INT8_TYPE
 #undef CCTK_INT4_TYPE
 #undef CCTK_INT2_TYPE
