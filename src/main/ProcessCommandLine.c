@@ -125,6 +125,7 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
     error_level_option            = 'E',
     parameter_level_option        = 256,  /* no short option */
     redirect_option               = 'r',
+    Redirect_option               = 'R',
     logdir_option                 = 257,  /* no short option */
     buffering_option              = 'b',
     print_schedule_option         = 'S',
@@ -146,6 +147,7 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
     {"error-level",             required_argument, NULL, error_level_option},
     {"parameter-level",         required_argument, NULL, parameter_level_option},
     {"redirect",                optional_argument, NULL, redirect_option},
+    {"Redirect",                optional_argument, NULL, Redirect_option},
     {"logdir",                  required_argument, NULL, logdir_option},
     {"buffering",               required_argument, NULL, buffering_option},
     {"print-schedule",          no_argument,       NULL, print_schedule_option},
@@ -168,7 +170,7 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
   {
     while (1)
     {
-      c = getopt_long_only (argc, argv, "hO::o:x::L:W:E:r::b:STt:Pvi",
+      c = getopt_long_only (argc, argv, "hO::o:x::L:W:E:r::R::b:STt:Pvi",
                             long_options, &option_index);
       if (c == -1)
         break;
@@ -192,7 +194,9 @@ int CCTKi_ProcessCommandLine(int *inargc, char ***inargv, tFleshConfig *ConfigDa
           case parameter_level_option:
             CCTKi_CommandLineParameterLevel(optarg); break;
           case redirect_option:
-            CCTKi_CommandLineRedirect(optarg); break;
+            CCTKi_CommandLineRedirect(optarg, REDIRECT_NONROOT); break;
+          case Redirect_option:
+            CCTKi_CommandLineRedirect(optarg, REDIRECT_ALL); break;
           case logdir_option:
             CCTKi_CommandLineLogDir(optarg); break;
           case buffering_option:
