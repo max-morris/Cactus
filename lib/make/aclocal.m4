@@ -773,7 +773,7 @@ fi
 ])
 
 AC_DEFUN(CCTK_CXX_ATTRIBUTE_CONST,
-[AC_CACHE_CHECK([for CXX function __attribute__((__const__))], cctk_cv_have_cxx_attribute_const,
+[AC_CACHE_CHECK([for C++ function __attribute__((__const__))], cctk_cv_have_cxx_attribute_const,
 [cctk_cv_have_cxx_attribute_const=no
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
@@ -786,7 +786,7 @@ fi
 ])
 
 AC_DEFUN(CCTK_CXX_MEMBER_ATTRIBUTE_CONST,
-[AC_CACHE_CHECK([for CXX member function __attribute__((__const__))], cctk_cv_have_cxx_member_attribute_const,
+[AC_CACHE_CHECK([for C++ member function __attribute__((__const__))], cctk_cv_have_cxx_member_attribute_const,
 [cctk_cv_have_cxx_member_attribute_const=no
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
@@ -811,7 +811,7 @@ fi
 ])
 
 AC_DEFUN(CCTK_CXX_ATTRIBUTE_PURE,
-[AC_CACHE_CHECK([for CXX function __attribute__((__pure__))], cctk_cv_have_cxx_attribute_pure,
+[AC_CACHE_CHECK([for C++ function __attribute__((__pure__))], cctk_cv_have_cxx_attribute_pure,
 [cctk_cv_have_cxx_attribute_pure=no
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
@@ -824,7 +824,7 @@ fi
 ])
 
 AC_DEFUN(CCTK_CXX_MEMBER_ATTRIBUTE_PURE,
-[AC_CACHE_CHECK([for CXX member function __attribute__((__pure__))], cctk_cv_have_cxx_member_attribute_pure,
+[AC_CACHE_CHECK([for C++ member function __attribute__((__pure__))], cctk_cv_have_cxx_member_attribute_pure,
 [cctk_cv_have_cxx_member_attribute_pure=no
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
@@ -849,7 +849,7 @@ fi
 ])
 
 AC_DEFUN(CCTK_CXX_ATTRIBUTE_NOINLINE,
-[AC_CACHE_CHECK([for CXX function __attribute__((__noinline__))], cctk_cv_have_cxx_attribute_noinline,
+[AC_CACHE_CHECK([for C++ function __attribute__((__noinline__))], cctk_cv_have_cxx_attribute_noinline,
 [cctk_cv_have_cxx_attribute_noinline=no
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
@@ -862,7 +862,7 @@ fi
 ])
 
 AC_DEFUN(CCTK_CXX_MEMBER_ATTRIBUTE_NOINLINE,
-[AC_CACHE_CHECK([for CXX member function __attribute__((__noinline__))], cctk_cv_have_cxx_member_attribute_noinline,
+[AC_CACHE_CHECK([for C++ member function __attribute__((__noinline__))], cctk_cv_have_cxx_member_attribute_noinline,
 [cctk_cv_have_cxx_member_attribute_noinline=no
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
@@ -887,7 +887,7 @@ fi
 ])
 
 AC_DEFUN(CCTK_CXX_ATTRIBUTE_ALWAYS_INLINE,
-[AC_CACHE_CHECK([for CXX function __attribute__((__always_inline__))], cctk_cv_have_cxx_attribute_always_inline,
+[AC_CACHE_CHECK([for C++ function __attribute__((__always_inline__))], cctk_cv_have_cxx_attribute_always_inline,
 [cctk_cv_have_cxx_attribute_always_inline=no
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
@@ -900,7 +900,7 @@ fi
 ])
 
 AC_DEFUN(CCTK_CXX_MEMBER_ATTRIBUTE_ALWAYS_INLINE,
-[AC_CACHE_CHECK([for CXX member function __attribute__((__always_inline__))], cctk_cv_have_cxx_member_attribute_always_inline,
+[AC_CACHE_CHECK([for C++ member function __attribute__((__always_inline__))], cctk_cv_have_cxx_member_attribute_always_inline,
 [cctk_cv_have_cxx_member_attribute_always_inline=no
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
@@ -925,7 +925,7 @@ fi
 ])
 
 AC_DEFUN(CCTK_CXX_ATTRIBUTE_UNUSED,
-[AC_CACHE_CHECK([for CXX __attribute__((__unused__))], cctk_cv_have_cxx_attribute_unused,
+[AC_CACHE_CHECK([for C++ __attribute__((__unused__))], cctk_cv_have_cxx_attribute_unused,
 [cctk_cv_have_cxx_attribute_unused=no
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
@@ -950,7 +950,7 @@ fi
 ])
 
 AC_DEFUN(CCTK_CXX_ATTRIBUTE_ALIGNED,
-[AC_CACHE_CHECK([for CXX __attribute__((__aligned__(...)))], cctk_cv_have_cxx_attribute_aligned,
+[AC_CACHE_CHECK([for C++ __attribute__((__aligned__(...)))], cctk_cv_have_cxx_attribute_aligned,
 [cctk_cv_have_cxx_attribute_aligned=no
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
@@ -975,7 +975,7 @@ fi
 ])
 
 AC_DEFUN(CCTK_CXX_ATTRIBUTE_COLD,
-[AC_CACHE_CHECK([for CXX __attribute__((__cold__))], cctk_cv_have_cxx_attribute_cold,
+[AC_CACHE_CHECK([for C++ __attribute__((__cold__))], cctk_cv_have_cxx_attribute_cold,
 [cctk_cv_have_cxx_attribute_cold=no
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
@@ -1000,7 +1000,7 @@ fi
 ])
 
 AC_DEFUN(CCTK_CXX_ATTRIBUTE_HOT,
-[AC_CACHE_CHECK([for CXX __attribute__((__hot__))], cctk_cv_have_cxx_attribute_hot,
+[AC_CACHE_CHECK([for C++ __attribute__((__hot__))], cctk_cv_have_cxx_attribute_hot,
 [cctk_cv_have_cxx_attribute_hot=no
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
@@ -1025,7 +1025,7 @@ fi
 ])
 
 AC_DEFUN(CCTK_CXX_ATTRIBUTE_FORMAT,
-[AC_CACHE_CHECK([for CXX __attribute__((__format__(printf, 1, 2)))], cctk_cv_have_cxx_attribute_format,
+[AC_CACHE_CHECK([for C++ __attribute__((__format__(printf, 1, 2)))], cctk_cv_have_cxx_attribute_format,
 [cctk_cv_have_cxx_attribute_format=no
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
@@ -1050,7 +1050,7 @@ fi
 ])
 
 AC_DEFUN(CCTK_CXX_ATTRIBUTE_NORETURN,
-[AC_CACHE_CHECK([for CXX __attribute__((__noreturn__))], cctk_cv_have_cxx_attribute_noreturn,
+[AC_CACHE_CHECK([for C++ __attribute__((__noreturn__))], cctk_cv_have_cxx_attribute_noreturn,
 [cctk_cv_have_cxx_attribute_noreturn=no
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
@@ -1092,7 +1092,7 @@ fi
 ])
 
 AC_DEFUN(CCTK_CXX_ATTRIBUTE_NONNULL,
-[AC_CACHE_CHECK([for CXX __attribute__((__nonnull__))], cctk_cv_have_cxx_attribute_nonnull,
+[AC_CACHE_CHECK([for C++ __attribute__((__nonnull__))], cctk_cv_have_cxx_attribute_nonnull,
 [cctk_cv_have_cxx_attribute_nonnull=no
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
@@ -1145,7 +1145,7 @@ fi
 ])
 
 AC_DEFUN(CCTK_CXX_ATTRIBUTE_RETURNS_NONNULL,
-[AC_CACHE_CHECK([for CXX __attribute__((__returns_nonnull__))], cctk_cv_have_cxx_attribute_returns_nonnull,
+[AC_CACHE_CHECK([for C++ __attribute__((__returns_nonnull__))], cctk_cv_have_cxx_attribute_returns_nonnull,
 [cctk_cv_have_cxx_attribute_returns_nonnull=no
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
@@ -1181,7 +1181,7 @@ fi
 ])
 
 AC_DEFUN(CCTK_CXX_BUILTIN_EXPECT,
-[AC_CACHE_CHECK([for CXX __builtin_expect], cctk_cv_have_cxx_builtin_expect,
+[AC_CACHE_CHECK([for C++ __builtin_expect], cctk_cv_have_cxx_builtin_expect,
 [cctk_cv_have_cxx_builtin_expect=no
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
@@ -1206,7 +1206,7 @@ fi
 ])
 
 AC_DEFUN(CCTK_CXX_BUILTIN_UNREACHABLE,
-[AC_CACHE_CHECK([for CXX __builtin_unreachable], cctk_cv_have_cxx_builtin_unreachable,
+[AC_CACHE_CHECK([for C++ __builtin_unreachable], cctk_cv_have_cxx_builtin_unreachable,
 [cctk_cv_have_cxx_builtin_unreachable=no
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
@@ -1234,7 +1234,7 @@ fi
 ])
 
 AC_DEFUN(CCTK_CXX_BUILTIN_ASSUME_ALIGNED,
-[AC_CACHE_CHECK([for CXX __builtin_assume_aligned], cctk_cv_have_cxx_builtin_assume_aligned,
+[AC_CACHE_CHECK([for C++ __builtin_assume_aligned], cctk_cv_have_cxx_builtin_assume_aligned,
 [cctk_cv_have_cxx_builtin_assume_aligned=no
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
@@ -1252,7 +1252,7 @@ fi
 
 
 AC_DEFUN(CCTK_CXX_STATIC_ASSERT,
-[AC_CACHE_CHECK([for CXX static_assert], cctk_cv_have_cxx_static_assert,
+[AC_CACHE_CHECK([for C++ static_assert], cctk_cv_have_cxx_static_assert,
 [cctk_cv_have_cxx_static_assert=no
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS

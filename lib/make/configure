@@ -5866,8 +5866,8 @@ EOF
 
 fi
 
-echo $ac_n "checking for CXX function __attribute__((__noinline__))""... $ac_c" 1>&6
-echo "configure:5871: checking for CXX function __attribute__((__noinline__))" >&5
+echo $ac_n "checking for C++ function __attribute__((__noinline__))""... $ac_c" 1>&6
+echo "configure:5871: checking for C++ function __attribute__((__noinline__))" >&5
 if eval "test \"`echo '$''{'cctk_cv_have_cxx_attribute_noinline'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -5916,8 +5916,8 @@ EOF
 
 fi
 
-echo $ac_n "checking for CXX member function __attribute__((__noinline__))""... $ac_c" 1>&6
-echo "configure:5921: checking for CXX member function __attribute__((__noinline__))" >&5
+echo $ac_n "checking for C++ member function __attribute__((__noinline__))""... $ac_c" 1>&6
+echo "configure:5921: checking for C++ member function __attribute__((__noinline__))" >&5
 if eval "test \"`echo '$''{'cctk_cv_have_cxx_member_attribute_noinline'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -6003,8 +6003,8 @@ EOF
 
 fi
 
-echo $ac_n "checking for CXX function __attribute__((__always_inline__))""... $ac_c" 1>&6
-echo "configure:6008: checking for CXX function __attribute__((__always_inline__))" >&5
+echo $ac_n "checking for C++ function __attribute__((__always_inline__))""... $ac_c" 1>&6
+echo "configure:6008: checking for C++ function __attribute__((__always_inline__))" >&5
 if eval "test \"`echo '$''{'cctk_cv_have_cxx_attribute_always_inline'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -6053,8 +6053,8 @@ EOF
 
 fi
 
-echo $ac_n "checking for CXX member function __attribute__((__always_inline__))""... $ac_c" 1>&6
-echo "configure:6058: checking for CXX member function __attribute__((__always_inline__))" >&5
+echo $ac_n "checking for C++ member function __attribute__((__always_inline__))""... $ac_c" 1>&6
+echo "configure:6058: checking for C++ member function __attribute__((__always_inline__))" >&5
 if eval "test \"`echo '$''{'cctk_cv_have_cxx_member_attribute_always_inline'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -6140,8 +6140,8 @@ EOF
 
 fi
 
-echo $ac_n "checking for CXX __attribute__((__unused__))""... $ac_c" 1>&6
-echo "configure:6145: checking for CXX __attribute__((__unused__))" >&5
+echo $ac_n "checking for C++ __attribute__((__unused__))""... $ac_c" 1>&6
+echo "configure:6145: checking for C++ __attribute__((__unused__))" >&5
 if eval "test \"`echo '$''{'cctk_cv_have_cxx_attribute_unused'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -6227,8 +6227,8 @@ EOF
 
 fi
 
-echo $ac_n "checking for CXX __attribute__((__aligned__(...)))""... $ac_c" 1>&6
-echo "configure:6232: checking for CXX __attribute__((__aligned__(...)))" >&5
+echo $ac_n "checking for C++ __attribute__((__aligned__(...)))""... $ac_c" 1>&6
+echo "configure:6232: checking for C++ __attribute__((__aligned__(...)))" >&5
 if eval "test \"`echo '$''{'cctk_cv_have_cxx_attribute_aligned'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -6314,8 +6314,8 @@ EOF
 
 fi
 
-echo $ac_n "checking for CXX __attribute__((__cold__))""... $ac_c" 1>&6
-echo "configure:6319: checking for CXX __attribute__((__cold__))" >&5
+echo $ac_n "checking for C++ __attribute__((__cold__))""... $ac_c" 1>&6
+echo "configure:6319: checking for C++ __attribute__((__cold__))" >&5
 if eval "test \"`echo '$''{'cctk_cv_have_cxx_attribute_cold'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -6401,8 +6401,8 @@ EOF
 
 fi
 
-echo $ac_n "checking for CXX __attribute__((__hot__))""... $ac_c" 1>&6
-echo "configure:6406: checking for CXX __attribute__((__hot__))" >&5
+echo $ac_n "checking for C++ __attribute__((__hot__))""... $ac_c" 1>&6
+echo "configure:6406: checking for C++ __attribute__((__hot__))" >&5
 if eval "test \"`echo '$''{'cctk_cv_have_cxx_attribute_hot'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -6488,8 +6488,8 @@ EOF
 
 fi
 
-echo $ac_n "checking for CXX __attribute__((__format__(printf, 1, 2)))""... $ac_c" 1>&6
-echo "configure:6493: checking for CXX __attribute__((__format__(printf, 1, 2)))" >&5
+echo $ac_n "checking for C++ __attribute__((__format__(printf, 1, 2)))""... $ac_c" 1>&6
+echo "configure:6493: checking for C++ __attribute__((__format__(printf, 1, 2)))" >&5
 if eval "test \"`echo '$''{'cctk_cv_have_cxx_attribute_format'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -6575,8 +6575,8 @@ EOF
 
 fi
 
-echo $ac_n "checking for CXX __attribute__((__noreturn__))""... $ac_c" 1>&6
-echo "configure:6580: checking for CXX __attribute__((__noreturn__))" >&5
+echo $ac_n "checking for C++ __attribute__((__noreturn__))""... $ac_c" 1>&6
+echo "configure:6580: checking for C++ __attribute__((__noreturn__))" >&5
 if eval "test \"`echo '$''{'cctk_cv_have_cxx_attribute_noreturn'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -6677,8 +6677,8 @@ EOF
 
 fi
 
-echo $ac_n "checking for CXX __attribute__((__nonnull__))""... $ac_c" 1>&6
-echo "configure:6682: checking for CXX __attribute__((__nonnull__))" >&5
+echo $ac_n "checking for C++ __attribute__((__nonnull__))""... $ac_c" 1>&6
+echo "configure:6682: checking for C++ __attribute__((__nonnull__))" >&5
 if eval "test \"`echo '$''{'cctk_cv_have_cxx_attribute_nonnull'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -6788,8 +6788,8 @@ EOF
 
 fi
 
-echo $ac_n "checking for CXX __attribute__((__returns_nonnull__))""... $ac_c" 1>&6
-echo "configure:6793: checking for CXX __attribute__((__returns_nonnull__))" >&5
+echo $ac_n "checking for C++ __attribute__((__returns_nonnull__))""... $ac_c" 1>&6
+echo "configure:6793: checking for C++ __attribute__((__returns_nonnull__))" >&5
 if eval "test \"`echo '$''{'cctk_cv_have_cxx_attribute_returns_nonnull'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -6884,8 +6884,8 @@ EOF
 
 fi
 
-echo $ac_n "checking for CXX __builtin_expect""... $ac_c" 1>&6
-echo "configure:6889: checking for CXX __builtin_expect" >&5
+echo $ac_n "checking for C++ __builtin_expect""... $ac_c" 1>&6
+echo "configure:6889: checking for C++ __builtin_expect" >&5
 if eval "test \"`echo '$''{'cctk_cv_have_cxx_builtin_expect'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -6971,8 +6971,8 @@ EOF
 
 fi
 
-echo $ac_n "checking for CXX __builtin_unreachable""... $ac_c" 1>&6
-echo "configure:6976: checking for CXX __builtin_unreachable" >&5
+echo $ac_n "checking for C++ __builtin_unreachable""... $ac_c" 1>&6
+echo "configure:6976: checking for C++ __builtin_unreachable" >&5
 if eval "test \"`echo '$''{'cctk_cv_have_cxx_builtin_unreachable'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -7060,8 +7060,8 @@ EOF
 
 fi
 
-echo $ac_n "checking for CXX __builtin_assume_aligned""... $ac_c" 1>&6
-echo "configure:7065: checking for CXX __builtin_assume_aligned" >&5
+echo $ac_n "checking for C++ __builtin_assume_aligned""... $ac_c" 1>&6
+echo "configure:7065: checking for C++ __builtin_assume_aligned" >&5
 if eval "test \"`echo '$''{'cctk_cv_have_cxx_builtin_assume_aligned'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -7114,8 +7114,8 @@ fi
 
 
 # Find out whether the compiler supports static_assert
-echo $ac_n "checking for CXX static_assert""... $ac_c" 1>&6
-echo "configure:7119: checking for CXX static_assert" >&5
+echo $ac_n "checking for C++ static_assert""... $ac_c" 1>&6
+echo "configure:7119: checking for C++ static_assert" >&5
 if eval "test \"`echo '$''{'cctk_cv_have_cxx_static_assert'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -8478,7 +8478,7 @@ cat > conftest.$ac_ext <<EOF
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
     builtin and then its argument prototype would still apply.  */
-char h5pEwf;
+char E3pYDI;
 
 int main() {
 mkstemp()
