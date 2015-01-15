@@ -536,6 +536,7 @@ int CCTK_VWarn (int level,
   const char *cf_thorn = "(no thorn)";
 
   /* Determine current scheduled function */
+  /* (We should pass cctkGH instead of NULL, but NULL works fine. */
   current_function = CCTK_ScheduleQueryCurrentFunction(NULL);
   if (current_function)
   {
