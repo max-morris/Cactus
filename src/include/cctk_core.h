@@ -130,7 +130,6 @@ cctk_ash1,cctk_ash2,cctk_ash3
 
 #include "cctk_ActiveThorns.h"
 #include "cctk_Banner.h"
-#include "cctk_Cache.h"
 #include "cctk_Coord.h"
 #include "cctk_Comm.h"
 #include "cctk_CommandLine.h"

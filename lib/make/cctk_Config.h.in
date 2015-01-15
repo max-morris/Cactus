@@ -106,10 +106,6 @@
 #undef HAVE_TIME_GETRUSAGE
 #undef HAVE_TIME__FTIME
 
-/* Cache stuff */
-#undef CCTK_CACHELINE_BYTES
-#undef CCTK_CACHE_SIZE
-
 /* The name of the NULL device for redirecting things to */
 #undef NULL_DEVICE
 

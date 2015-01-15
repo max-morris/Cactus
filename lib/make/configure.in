@@ -1408,12 +1408,6 @@ AC_SUBST(GENERAL_LIBRARIES)
 AC_SUBST(PERL_BACKUP_NECESSARY)
 : ${PERL_BACKUP_NECESSARY=''}
 
-# Cache stuff - this will probably change
-: ${CACHELINE_BYTES='0'}
-: ${CACHE_SIZE='0'}
-AC_DEFINE_UNQUOTED(CCTK_CACHELINE_BYTES, $CACHELINE_BYTES)
-AC_DEFINE_UNQUOTED(CCTK_CACHE_SIZE, $CACHE_SIZE)
-
 
 #########################################################################
 #Check for extra stuff
