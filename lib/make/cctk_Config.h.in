@@ -188,7 +188,20 @@
 
 /* Define to empty if the 'inline' keyword does not work. */
 #undef HAVE_CCTK_C_INLINE
-#undef inline
+#undef HAVE_STANDARD_CCTK_C_INLINE
+#undef CCTK_C_INLINE
+
+#ifdef HAVE_CCTK_C_INLINE
+#  ifdef HAVE_STANDARD_CCTK_C_INLINE
+/* 'inline' works -- do nothing (CCTK_C_INLINE is 'inline') */
+#  else
+/* need a macro to use 'inline' */
+#    define inline CCTK_C_INLINE
+#  endif
+#else
+/* 'inline' does not work (CCTK_C_INLINE is empty ) */
+#  define inline
+#endif
 
 /* Define to 'static' if the 'static inline' keyword combination does
    not work. */

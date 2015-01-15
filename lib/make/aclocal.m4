@@ -577,10 +577,13 @@ dnl  AC_TRY_COMPILE(, [} $ac_kw int foo() {], [cctk_cv_c_inline=$ac_kw; break])
 done
 ])
 case "$cctk_cv_c_inline" in
-  inline | yes) 
-      AC_DEFINE(HAVE_CCTK_C_INLINE, 1) ;;
-  no) AC_DEFINE(inline, ) ;;
-  *)  AC_DEFINE_UNQUOTED(inline, $cctk_cv_c_inline)
+  inline) 
+      AC_DEFINE_UNQUOTED(CCTK_C_INLINE, inline)
+      AC_DEFINE(HAVE_CCTK_C_INLINE, 1)
+      AC_DEFINE(HAVE_STANDARD_CCTK_C_INLINE, 1) ;;
+  no) AC_DEFINE_UNQUOTED(CCTK_C_INLINE, )
+      AC_DEFINE(CCTK_C_INLINE, ) ;;
+  *)  AC_DEFINE_UNQUOTED(CCTK_C_INLINE, $cctk_cv_c_inline)
       AC_DEFINE(HAVE_CCTK_C_INLINE, 1) ;;
 esac
 ])
