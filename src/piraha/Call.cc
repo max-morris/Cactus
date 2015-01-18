@@ -1,13 +1,13 @@
 #include <iostream>
 #include <iomanip>
-#include <string.h>
+#include <string>
 #include "Piraha.hpp"
-#include <stdlib.h>
+#include <cstdlib>
 #include <sstream>
 #include "cctk_core.h"
 #include "cctk_Parameter.h"
 #include <map>
-#include <math.h>
+#include <cmath>
 #include <algorithm>
 #include <limits>
 #include <fstream>
@@ -107,8 +107,8 @@ std::string get_parfile() {
 std::string get_parfilename() {
     std::string ending = ".par";
     std::string s = get_parfile();
-    int ns = s.length();
-    int ne = ending.length();
+    size_t ns = s.length();
+    size_t ne = ending.length();
     if(ns > ne && s.substr(ns-ne).compare(ending)==0) {
         s = s.substr(0,ns-ne);
     }
@@ -141,8 +141,8 @@ std::string current_thorn;
 struct Value {
     /** This field holds the parse tree element associated with this Value. */
     smart_ptr<Group> hold;
-    double ddata;
-    int idata;
+    CCTK_REAL ddata;
+    CCTK_INT idata;
     std::string sdata;
     ValueType type;
     Value(smart_ptr<Group> g) : hold(g), ddata(0), idata(0), sdata(), type(PIR_VOID) { smart_ptr<Group> foo(g); }
@@ -203,25 +203,25 @@ struct Value {
         CCTK_Error(hold->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
     }
     /**
-     * Return a double value, whether the underlying
+     * Return a real value, whether the underlying
      * quantity is integer or real.
      */
-    double doubleValue() {
+    CCTK_REAL realValue() {
         if(type == PIR_REAL)
             return ddata;
         else if(type == PIR_INT)
             return idata;
         std::ostringstream msg;
-        msg << "Cannot convert " << type << " to double." << std::endl;
+        msg << "Cannot convert " << type << " to floating point." << std::endl;
         std::string par = get_parfile();
         CCTK_Error(hold->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
         return 0;
     }
-    bool intOrDouble() {
+    bool intOrreal() {
         return type == PIR_INT || type == PIR_REAL;
     }
     /**
-     * This function converts a double to a real, but
+     * This function converts a real to a real, but
      * only if this can be done without loss of precision.
      */
     void integerize() {
@@ -445,55 +445,55 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
         smart_ptr<Value> val = meval(gr->group(1),eedata);
         if(val->type == PIR_REAL || val->type == PIR_INT) {
             if(fn == "trunc") {
-                val->ddata = trunc(val->doubleValue());
+                val->ddata = trunc(val->realValue());
                 val->type = PIR_REAL;
                 return val;
             } else if(fn == "floor") {
-                val->ddata = floor(val->doubleValue());
+                val->ddata = floor(val->realValue());
                 val->type = PIR_REAL;
                 return val;
             } else if(fn == "ceil") {
-                val->ddata = ceil(val->doubleValue());
+                val->ddata = ceil(val->realValue());
                 val->type = PIR_REAL;
                 return val;
             } else if(fn == "sqrt") {
-                val->ddata = sqrt(val->doubleValue());
+                val->ddata = sqrt(val->realValue());
                 val->type = PIR_REAL;
                 return val;
             } else if(fn == "atan") {
-                val->ddata = atan(val->doubleValue());
+                val->ddata = atan(val->realValue());
                 val->type = PIR_REAL;
                 return val;
             } else if(fn == "sin") {
-                val->ddata = sin(val->doubleValue());
+                val->ddata = sin(val->realValue());
                 val->type = PIR_REAL;
                 return val;
             } else if(fn == "cos") {
-                val->ddata = cos(val->doubleValue());
+                val->ddata = cos(val->realValue());
                 val->type = PIR_REAL;
                 return val;
             } else if(fn == "tan") {
-                val->ddata = tan(val->doubleValue());
+                val->ddata = tan(val->realValue());
                 val->type = PIR_REAL;
                 return val;
             } else if(fn == "exp") {
-                val->ddata = exp(val->doubleValue());
+                val->ddata = exp(val->realValue());
                 val->type = PIR_REAL;
                 return val;
             } else if(fn == "log") {
-                val->ddata = log(val->doubleValue());
+                val->ddata = log(val->realValue());
                 val->type = PIR_REAL;
                 return val;
             } else if(fn == "abs") {
-                val->ddata = fabs(val->doubleValue());
+                val->ddata = fabs(val->realValue());
                 val->type = PIR_REAL;
                 return val;
             } else if(fn == "acos") {
-                val->ddata = acos(val->doubleValue());
+                val->ddata = acos(val->realValue());
                 val->type = PIR_REAL;
                 return val;
             } else if(fn == "asin") {
-                val->ddata = asin(val->doubleValue());
+                val->ddata = asin(val->realValue());
                 val->type = PIR_REAL;
                 return val;
             } else if(fn == "bool") {
@@ -704,7 +704,7 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
         smart_ptr<Value> v1 = meval(gr->group(0),eedata);
         smart_ptr<Value> v2 = meval(gr->group(1),eedata);
         ret->type = PIR_REAL;
-        ret->ddata = pow(v1->doubleValue(),v2->doubleValue());
+        ret->ddata = pow(v1->realValue(),v2->realValue());
     } else if(pn == "andexpr") {
         if(gr->groupCount()==1)
             return meval(gr->group(0),eedata);
@@ -738,8 +738,8 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
         if(gr->groupCount()>0) {
             std::string compop = gr->group(1)->substring();
             smart_ptr<Value> v2 = meval(gr->group(2),eedata);
-            double d1 = v1->doubleValue();
-            double d2 = v2->doubleValue();
+            CCTK_REAL d1 = v1->realValue();
+            CCTK_REAL d2 = v2->realValue();
             ret->type = PIR_BOOL;
             if(compop == "<") {
                 ret->idata = (d1 < d2);
@@ -791,12 +791,12 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
                     std::string par = get_parfile();
                     CCTK_Warn(1,gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
                 }
-            } else if(v1->intOrDouble() && v2->intOrDouble()) {
+            } else if(v1->intOrreal() && v2->intOrreal()) {
                 ret->type = PIR_REAL;
                 if(addop == "+") {
-                    ret->ddata = v1->doubleValue()+v2->doubleValue();
+                    ret->ddata = v1->realValue()+v2->realValue();
                 } else if(addop == "-") {
-                    ret->ddata = v1->doubleValue()-v2->doubleValue();
+                    ret->ddata = v1->realValue()-v2->realValue();
                 } else {
                     std::ostringstream msg;
                     msg << "Unknown add operator: " << addop << std::endl;
@@ -837,7 +837,7 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
                 ret->type = PIR_STRING;
                 if(mulop == "*") {
                     ret->sdata = "";
-                    for(int i=0;i<v2->idata;i++)
+                    for(CCTK_INT i=0;i<v2->idata;i++)
                         ret->sdata += v1->sdata;
                 } else {
                     std::ostringstream msg;
@@ -845,12 +845,12 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
                     std::string par = get_parfile();
                     CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
                 }
-            } else if(v1->intOrDouble() && v2->intOrDouble()) {
+            } else if(v1->intOrreal() && v2->intOrreal()) {
                 ret->type = PIR_REAL;
                 if(mulop == "*") {
-                    ret->ddata = v1->doubleValue()*v2->doubleValue();
+                    ret->ddata = v1->realValue()*v2->realValue();
                 } else if(mulop == "/") {
-                    ret->ddata = v1->doubleValue()/v2->doubleValue();
+                    ret->ddata = v1->realValue()/v2->realValue();
                 } else {
                     std::ostringstream msg;
                     msg << "Unknown mul operator: " << v1->type << mulop << v2->type << std::endl;
