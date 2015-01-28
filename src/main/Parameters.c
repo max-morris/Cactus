@@ -2308,7 +2308,9 @@ static int ParameterSetReal (t_param *param, const char *value)
    * to do the actual conversion) only groks [eE].
    */
   temp = strdup (value);
-  for (unsigned int p = 0; p < strlen (temp); p++)
+
+  const int n=strlen(temp);
+  for (unsigned int p = 0; p < n; p++)
   {
     if (temp[p] == 'E' || temp[p] == 'd' || temp[p] == 'D')
     {
