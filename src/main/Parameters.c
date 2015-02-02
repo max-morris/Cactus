@@ -2318,7 +2318,7 @@ static int ParameterSetReal (t_param *param, const char *value)
   }
 
   /* try parsing as number */
-  if (strcmp(value, "") == 0) /* strtod returns 0. in this case */
+  if (strcmp (value, "") == 0) /* strtod returns 0. in this case */
     retval = -6;
   else
     inval = strtod (temp, &endptr);
@@ -2345,7 +2345,7 @@ static int ParameterSetReal (t_param *param, const char *value)
       assert(val.type == ival || val.type == rval);
 
       if (val.type == ival)
-        inval =(int)val.value.ival;
+        inval = (int)val.value.ival;
       else
         inval = val.value.rval;
     }
