@@ -2303,18 +2303,16 @@ static int ParameterSetReal (t_param *param, const char *value)
   retval = 0;
 
   /*
-   * Canonicalize the string by converting all exponent letters
+   * Canonicalize the string by converting exponent letters
    * (we allow [eEdD]) to 'e', since strtod(3) (which we will use
    * to do the actual conversion) only groks [eE].
    */
   temp = strdup (value);
-
-  const int n=strlen(temp);
-  for (unsigned int p = 0; p < n; p++)
+  for (char *p = temp; *p; ++p)
   {
-    if (temp[p] == 'E' || temp[p] == 'd' || temp[p] == 'D')
+    if (*p == 'd' || *p == 'D')
     {
-      temp[p] = 'e';
+      *p = 'e';
       break;
     }
   }
