@@ -1725,6 +1725,7 @@ to a module or a subroutine after the \texttt{implicit none}
 statement, but before any executable code.
 
 \paragraph{Fortran Modules}
+\label{par:fortran_modules}
 
 Fortran modules should be placed into source files that have the same
 name as the module, followed by the corresponding file name suffix.  A
@@ -4342,6 +4343,7 @@ function reference section.
         hash mark `\texttt{\#}' or dot `\texttt{.}',
         or end with a tilde `\texttt{\~{}}', \texttt{.bak} or \texttt{.BAK}.
 \item{} Routine names have to be unique among all thorns.
+\item{} Names of global variables have to be unique among all thorns.
 
 \end{itemize}
 
@@ -4359,8 +4361,12 @@ allow for a homogeneous code.
   by an underscore. Examples: \texttt{my\_first\_parameter},
   \texttt{solve\_PDE\_equation}.
 
-\item Filenames and routine names: Prefixed by thorn name with an underscore, then capitalised words, with no spaces.
-    Examples: \texttt{MyThorn\_StartUpRoutine}, \texttt{BestSolver\_InitialDataForPDE}.
+\item Routine names and names of global variables: Prefixed by thorn name with
+    an underscore, then capitalised words, with no spaces. Fortran modules
+    should be placed into source files that have the same name as the module
+    (see section~\ref{par:fortran_modules} for details).
+    Examples: \texttt{MyThorn\_StartUpRoutine}, \texttt{BestSolver\_InitialDataForPDE},
+    \texttt{BestSolver\_SpectralGrid}.
 
 \end{itemize}
 
