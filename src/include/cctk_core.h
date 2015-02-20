@@ -18,6 +18,9 @@
 /* Include the constants */
 #include "cctk_Constants.h"
 
+/* Include definitions provided by capabilities */
+#include "cctk_Capabilities.h"
+
 /* Define some stuff */
 
 #ifdef FCODE
@@ -157,9 +160,6 @@ cctk_ash1,cctk_ash2,cctk_ash3
 #include "cctk_Timers.h"
 #include "cctk_Termination.h"
 #include "cctk_WarnLevel.h"
-
-/* Include definitions provided by capabilities */
-#include "cctk_Capabilities.h"
 
 
 
