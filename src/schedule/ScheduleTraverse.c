@@ -12,6 +12,7 @@
 #include <stdlib.h>
 
 #include "cctk_Flesh.h"
+#include "cctk_WarnLevel.h"
 
 #include "cctki_Schedule.h"
 #include "StoreHandledData.h"
@@ -395,8 +396,12 @@ static int ScheduleTraverseGroup(cHandledData *schedule_groups,
                                 function_process,
                                 data);
           break;
+        case sched_item_none :
+          /* FALLTHROUGH */
         default :
-          fprintf(stderr, "Unknown schedule item type %d\n", group->scheditems[group->order[item]].type);
+          CCTK_VWarn(CCTK_WARN_ALERT, __LINE__, __FILE__, "Cactus",
+                     "Unknown schedule item type %d\n", group->scheditems[group->order[item]].type);
+          break;
       }
     }
 
