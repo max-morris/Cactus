@@ -598,7 +598,10 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
           ret->type = PIR_STRING;
           ret->sdata = gr->substring();
           bool evaluated = false;
-          const char *vname = gr->substring().c_str();
+          // vname_string needs to be an actual variable and not just a
+          // temporary so that c_str() stays valid
+          const std::string vname_string = gr->substring();
+          const char *vname = vname_string.c_str();
           if(eedata != 0) {
             uExpressionValue uval;
             std::map<std::string,uExpressionValue>::iterator iter = eedata->values.find(vname);
