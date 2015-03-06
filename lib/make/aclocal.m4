@@ -1386,6 +1386,28 @@ fi
 
 
 
+dnl CCTK_CHECK_HAS_PROTOTYPE(FUNCTION, [ADDITIONAL_CODE [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
+AC_DEFUN(CCTK_CHECK_HAS_PROTOTYPE,
+[dnl Do the transliteration at runtime so arg 1 can be a shell variable.
+cctk_safe=`echo "$1" | sed 'y%./+-%__p_%'`
+AC_MSG_CHECKING([for $1])
+AC_CACHE_VAL(cctk_cv_has_prototype_$cctk_safe,
+[AC_TRY_COMPILE([$2
+/* this will FAIL to compile if a prototype exists */
+int $1();
+], [ ], eval "cctk_cv_has_prototype_$cctk_safe=no",
+  eval "cctk_cv_has_prototype_$cctk_safe=yes")])dnl
+if eval "test \"`echo '$cctk_cv_has_prototype_'$cctk_safe`\" = yes"; then
+  AC_MSG_RESULT(yes)
+  ifelse([$3], , :, [$3])
+else
+  AC_MSG_RESULT(no)
+ifelse([$4], , , [$4])
+fi
+])
+
+
+
 AC_DEFUN(CCTK_FORTRAN_CRAY_POINTERS,
 [AC_CACHE_CHECK([for Fortran Cray pointers], cctk_cv_have_fortran_cray_pointers,
 [cctk_cv_have_fortran_cray_pointers=no
