@@ -488,8 +488,22 @@ fi
 
 dnl Check for M_PI
 CCTK_CHECK_DEFINED(M_PI, [#include <math.h>], [],
-AC_MSG_ERROR(M_PI not defined. Please define _BSD_SOURCE.)
+AC_MSG_ERROR(M_PI not defined. Please add -D_BSD_SOURCE to CFLAGS.)
 )
+
+dnl Check for prototype of strdup
+CCTK_CHECK_HAS_PROTOTYPE(strdup, [#include <string.h>], [],
+AC_MSG_ERROR(strdup has no prototype. Please add -D_BSD_SOURCE to CFLAGS.)
+)
+
+dnl This will most likely never trigger since libstdc++ required _GNU_SOURCE to
+dnl be set. See https://gcc.gnu.org/onlinedocs/libstdc++/faq.html#faq.predefined
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+CCTK_CHECK_HAS_PROTOTYPE(strdup, [#include <cstring>], [],
+AC_MSG_ERROR(strdup has no prototype. Please add -D_BSD_SOURCE to CXXFLAGS.)
+)
+AC_LANG_RESTORE
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 
