@@ -1386,6 +1386,28 @@ fi
 
 
 
+dnl CCTK_CHECK_DEFINED(DEFINED, [ADDITIONAL_CODE [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
+AC_DEFUN(CCTK_CHECK_DEFINED,
+[dnl Do the transliteration at runtime so arg 1 can be a shell variable.
+cctk_safe=`echo "$1" | sed 'y%./+-%__p_%'`
+AC_MSG_CHECKING([for $1])
+AC_CACHE_VAL(cctk_cv_defined_$cctk_safe,
+[AC_TRY_COMPILE([$2
+#ifndef $1
+#error "$1 not defined"
+#endif], [ ], eval "cctk_cv_defined_$cctk_safe=yes",
+  eval "cctk_cv_defined_$cctk_safe=no")])dnl
+if eval "test \"`echo '$cctk_cv_defined_'$cctk_safe`\" = yes"; then
+  AC_MSG_RESULT(yes)
+  ifelse([$3], , :, [$3])
+else
+  AC_MSG_RESULT(no)
+ifelse([$4], , , [$4])
+fi
+])
+
+
+
 dnl CCTK_CHECK_HAS_PROTOTYPE(FUNCTION, [ADDITIONAL_CODE [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 AC_DEFUN(CCTK_CHECK_HAS_PROTOTYPE,
 [dnl Do the transliteration at runtime so arg 1 can be a shell variable.
