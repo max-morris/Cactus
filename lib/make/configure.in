@@ -486,6 +486,11 @@ if test "$cctk_cv_have_c99" = "no" ; then
   exit 1
 fi
 
+dnl Check for M_PI
+CCTK_CHECK_DEFINED(M_PI, [#include <math.h>], [],
+AC_MSG_ERROR(M_PI not defined. Please define _BSD_SOURCE.)
+)
+
 dnl Checks for typedefs, structures, and compiler characteristics.
 
 if test "x$cross_compiling" = 'xno' ; then
