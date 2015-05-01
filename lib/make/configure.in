@@ -1108,7 +1108,11 @@ esac
 
 CCTK_INT1_TYPE='signed char'
 
-if test -n "$CCTK_INT16_TYPE" ; then
+if test "x$DISABLE_INT16" != 'xyes' -a "x$DISABLE_INT16" != 'xno' -a "x$DISABLE_INT16" != 'x'; then
+    AC_ERROR([Didn't recognise setting of DISABLE_INT16=\"$DISABLE_INT16\"; should be either \"yes\" or \"no\" or \"\" (empty)])
+fi
+
+if test -n "$CCTK_INT16_TYPE" -a "x$DISABLE_INT16" != 'xyes' ; then
   AC_DEFINE_UNQUOTED(CCTK_INT16_TYPE, $CCTK_INT16_TYPE)
   AC_DEFINE(HAVE_CCTK_INT16)
 fi
