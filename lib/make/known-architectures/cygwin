@@ -2,7 +2,7 @@
 # /*@@
 #   @file      cygwin
 #   @date      Sat Mar 28 12:00:00 2015
-#   @author    Michele Mottini
+#   @author    Tom Goodale, Michele Mottini
 #   @desc 
 #   Known architecture file for Windows using cygwin.
 #   @enddesc 
@@ -36,7 +36,11 @@ else
 
   CYGWIN_CC_COMP=
 
-  if test "`$CC 2>&1 | grep -i $CC`" ; then
+  if test "`$CC 2>&1 | grep -i microsoft`" ; then 
+    CYGWIN_CC_COMP=microsoft
+  elif test "`$CC 2>&1 | grep -i intel`" ; then 
+    CYGWIN_CC_COMP=intel
+  elif test "`$CC 2>&1 | grep -i $CC`" ; then
     CYGWIN_CC_COMP=gnu
   else
     echo Unknown Windows C compiler.
@@ -49,7 +53,11 @@ else
 
   CYGWIN_CXX_COMP=
 
-  if test "`$CXX 2>&1 | grep -i $CXX`" ; then
+  if test "`$CXX 2>&1 | grep -i microsoft`" ; then 
+    CYGWIN_CXX_COMP=microsoft
+  elif test "`$CXX 2>&1 | grep -i intel`" ; then 
+    CYGWIN_CXX_COMP=intel
+  elif test "`$CXX 2>&1 | grep -i $CXX`" ; then
     CYGWIN_CXX_COMP=gnu
   else
     echo Unknown Windows C++ compiler.
@@ -83,17 +91,34 @@ else
     CYGWIN_F90_COMP=none
   fi
 
+# /Gd means use __cdecl, it's /Gz for __stdcall
+
   case "$CYGWIN_CC_COMP" in
+    microsoft|intel)
+      : ${CFLAGS="/nologo /Gd"}
+      : ${C_OPTIMISE_FLAGS="/Oxy-"}
+      : ${CCOMPILEONLY="/c /Fo"}
+      : ${OPTIONSEP="# not even a single a single space under cygwin"}
+	  ;;
     gnu)
       : ${CFLAGS="-pipe -std=gnu99"}
       : ${C_OPTIMISE_FLAGS="-O2"}
-	  : ${DISABLE_REAL16="yes"}
+      : ${DISABLE_REAL16="yes"}
       ;;
     *)
       ;;
   esac
 
   case "$CYGWIN_CXX_COMP" in
+    microsoft|intel)
+      : ${CXXFLAGS="/nologo /Gd"}
+      : ${CXX_OPTIMISE_FLAGS="/Oxy-"}
+      : ${CREATEEXE="/Fe"}
+      : ${CCOMPILEONLY="/c /Fo"}
+      : ${CACTUSLIBLINKLINE='/link /libpath:"$(call TRANSFORM_DIRS,$(CCTK_LIBDIR))" $(foreach lib,$(ALLCACTUSLIBS), $(LIBNAME_PREFIX)$(lib)$(LIBNAME_SUFFIX))'}
+      GENERAL_LIBRARIES='$(foreach i,$(LIBDIRS),/libpath:"$(call TRANSFORM_DIRS,$(i))") $(LIBS:%=%.lib) /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmt'
+      : ${OPTIONSEP="# not even a single a single space under cygwin"}
+	  ;;
     gnu)
       : ${CXX_OPTIMISE_FLAGS="-O2"}
 	  : ${DISABLE_REAL16="yes"}
