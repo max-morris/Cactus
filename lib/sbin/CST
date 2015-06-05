@@ -47,6 +47,34 @@ $system_database{'CCTK_HOME'} = $cctk_home;
 $bindings_dir = "$top/bindings" if (! $bindings_dir);
 $system_database{'BINDINGS_DIR'} = $bindings_dir;
 
+# Stop the make process if there were any errors
+sub CheckCSTErrors
+{
+  my $comment1, $comment2;
+  if ($CST_errors)
+  {
+    if ($CST_errors == 1)
+    {
+      $comment1 = 'was 1 error';
+      $comment2 = 'This';
+    }
+    else
+    {
+      $comment1 = "were $CST_errors errors";
+      $comment2 = 'These';
+    }
+    print "\n\n------------------------------------------------------\n";
+    print "There $comment1 during execution of the CST\n";
+    print "$comment2 must be corrected before compilation can proceed\n";
+    print "------------------------------------------------------\n\n";
+    &CST_PrintErrors;
+    exit(1);
+  }
+  else
+  {
+    &CST_PrintErrors;
+  }
+}
 
 ########################################################################
 # Require certain arrangements
@@ -113,6 +141,8 @@ print "Parsing parameter files...\n";
 print "Parsing schedule files...\n";
 %schedule_database = &create_schedule_database(%source_thorns);
 
+&CheckCSTErrors();
+
 # Run any configuration scripts.
 print "Running any thorn-provided configuration scripts...\n";
 
@@ -158,29 +188,7 @@ for my $header (@$definethisthornheader) {
 $make_thornlist = &CreateMakeThornlist(\%thorns, \%interface_database, $configuration_database);
 
 # Stop the make process if there were any errors
-if ($CST_errors)
-{
-  if ($CST_errors == 1)
-  {
-    $comment1 = 'was 1 error';
-    $comment2 = 'This';
-  }
-  else
-  {
-    $comment1 = "were $CST_errors errors";
-    $comment2 = 'These';
-  }
-  print "\n\n------------------------------------------------------\n";
-  print "There $comment1 during execution of the CST\n";
-  print "$comment2 must be corrected before compilation can proceed\n";
-  print "------------------------------------------------------\n\n";
-  &CST_PrintErrors;
-  exit(1);
-}
-else
-{
-  &CST_PrintErrors;
-}
+&CheckCSTErrors();
 
 &WriteFile("$config_dir/make.thornlist", \$make_thornlist);
 
