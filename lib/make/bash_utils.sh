@@ -16,7 +16,7 @@ function find_files {
     done
     if [ $FOUND -eq 1 ]; then
       FOUND=$dir
-      return
+      return 0
     fi
   done
   FOUND=
@@ -34,7 +34,7 @@ function find_libs {
     local FILES=`echo "$LIBS" | perl -pe 's/(^| )+([^ \n]+)/ lib\2.'"$libext"'/g'`
     find_files "$DIRS" "$FILES"
     if [ -n "$FOUND" ]; then
-      return
+      return 0
     fi
   done
 }
@@ -74,11 +74,11 @@ function pkg_config {
   local MINVERSION=$3
   local PKGCONFIG=pkg-config
   local STATIC=" --static"
-  $PKGCONFIG --version 2>&1 >/dev/null && : || return
+  $PKGCONFIG --version 2>&1 >/dev/null && : || return 0
   if [ -z "$MINVERSION" ]; then
-    $PKGCONFIG --exists $LIBNAME 2>&1 > /dev/null && : || return
+    $PKGCONFIG --exists $LIBNAME 2>&1 > /dev/null && : || return 0
   else
-    $PKGCONFIG --atleast-version=$MINVERSION $LIBNAME 2>&1 > /dev/null && : || return
+    $PKGCONFIG --atleast-version=$MINVERSION $LIBNAME 2>&1 > /dev/null && : || return 0
   fi
   # NOTE: This breaks if pkg-config returns quotes strings, i.e., path names
   #       with strings in them. It doesn't seems to happen in practice.
@@ -91,7 +91,7 @@ function pkg_config {
   set_make_vars "$PREFIX" "$LIBS" "$LIB_DIRS" "$INC_DIRS"
 
   PKG_CONFIG_SUCCESS=yes
-  return
+  return 0
 }
 
 # find_standardlib: find a library installed in the 'standard' way
@@ -127,7 +127,7 @@ function find_standardlib {
         if [ $FOUND -eq 1 ]; then
           FOUND=$dir
           set_make_vars "$PREFIX" "$LIBS" "$dir/$ldir" "$dir/include"
-          return
+          return 0
         fi
       done
     done
