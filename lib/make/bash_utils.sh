@@ -74,11 +74,11 @@ function pkg_config {
   local MINVERSION=$3
   local PKGCONFIG=pkg-config
   local STATIC=" --static"
-  $PKGCONFIG --version 2>&1 >/dev/null || return
+  $PKGCONFIG --version 2>&1 >/dev/null && : || return
   if [ -z "$MINVERSION" ]; then
-    $PKGCONFIG --exists $LIBNAME 2>&1 > /dev/null || return
+    $PKGCONFIG --exists $LIBNAME 2>&1 > /dev/null && : || return
   else
-    $PKGCONFIG --atleast-version=$MINVERSION $LIBNAME 2>&1 > /dev/null || return
+    $PKGCONFIG --atleast-version=$MINVERSION $LIBNAME 2>&1 > /dev/null && : || return
   fi
   # NOTE: This breaks if pkg-config returns quotes strings, i.e., path names
   #       with strings in them. It doesn't seems to happen in practice.
