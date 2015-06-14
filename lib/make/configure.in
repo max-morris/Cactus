@@ -472,13 +472,13 @@ AC_SUBST(LIBLINK_PREFIX)
 : ${LIBLINK_PREFIX='-l'}
 : ${LIBLINK_SUFFIX=''}
 
-dnl Checks for libraries.
+# Checks for libraries.
 
-dnl Checks for header files.
+# Checks for header files.
 
 AC_HEADER_STDC
 
-dnl Check for C99
+# Check for C99
 
 CCTK_CHECK_C99
 if test "$cctk_cv_have_c99" = "no" ; then
@@ -486,26 +486,31 @@ if test "$cctk_cv_have_c99" = "no" ; then
   exit 1
 fi
 
-dnl Check for M_PI
+# Check for M_PI
 CCTK_CHECK_DEFINED(M_PI, [#include <math.h>], [],
-AC_MSG_ERROR(M_PI not defined. Try adding -D_XOPEN_SOURCE to CFLAGS.)
+AC_MSG_ERROR(M_PI not defined. Try adding -D_XOPEN_SOURCE to CPPFLAGS.)
 )
 
-dnl Check for prototype of strdup
-CCTK_CHECK_HAS_PROTOTYPE(strdup, [#include <string.h>], [],
-AC_MSG_ERROR(strdup has no prototype. Try adding -D_XOPEN_SOURCE_EXTENDED to CFLAGS.)
-)
+# Check for prototype of strdup
+# TODO: Rename to CCTK_CHECK_HAS_C_PROTOTYPE
+# TODO: Disabled since CCTK_CHECK_HAS_PROTOTYPE does not work with icc
+# CCTK_CHECK_HAS_PROTOTYPE(strdup, [#include <string.h>], [],
+# AC_MSG_ERROR(strdup has no prototype. Try adding -D_XOPEN_SOURCE -D_XOPEN_SOURCE_EXTENDED to CPPFLAGS.)
+# )
 
-dnl This will most likely never trigger since libstdc++ required _GNU_SOURCE to
-dnl be set. See https://gcc.gnu.org/onlinedocs/libstdc++/faq.html#faq.predefined
-AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-CCTK_CHECK_HAS_PROTOTYPE(strdup, [#include <cstring>], [],
-AC_MSG_ERROR(strdup has no prototype. Try adding -D_XOPEN_SOURCE_EXTENDED to CXXFLAGS.)
-)
-AC_LANG_RESTORE
+# This will most likely never trigger since libstdc++ required
+# _GNU_SOURCE to be set. See
+# https://gcc.gnu.org/onlinedocs/libstdc++/faq.html#faq.predefined
+# TODO: Introduce CCTK_CHECK_HAS_CXX_PROTOTYPE for this.
+# TODO: Disabled since CCTK_CHECK_HAS_PROTOTYPE does not work with icc
+# AC_LANG_SAVE
+# AC_LANG_CPLUSPLUS
+# CCTK_CHECK_HAS_PROTOTYPE(strdup, [#include <cstring>], [],
+# AC_MSG_ERROR(strdup has no C++ prototype. Try adding -D_XOPEN_SOURCE -D_XOPEN_SOURCE_EXTENDED to CPPFLAGS.)
+# )
+# AC_LANG_RESTORE
 
-dnl Checks for typedefs, structures, and compiler characteristics.
+# Checks for typedefs, structures, and compiler characteristics.
 
 if test "x$cross_compiling" = 'xno' ; then
   AC_C_BIGENDIAN

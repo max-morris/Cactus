@@ -1408,25 +1408,27 @@ fi
 
 
 
-dnl CCTK_CHECK_HAS_PROTOTYPE(FUNCTION, [ADDITIONAL_CODE [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
-AC_DEFUN(CCTK_CHECK_HAS_PROTOTYPE,
-[dnl Do the transliteration at runtime so arg 1 can be a shell variable.
-cctk_safe=`echo "$1" | sed 'y%./+-%__p_%'`
-AC_MSG_CHECKING([for $1])
-AC_CACHE_VAL(cctk_cv_has_prototype_$cctk_safe,
-[AC_TRY_COMPILE([$2
-/* this will FAIL to compile if a prototype exists */
-int $1();
-], [ ], eval "cctk_cv_has_prototype_$cctk_safe=no",
-  eval "cctk_cv_has_prototype_$cctk_safe=yes")])dnl
-if eval "test \"`echo '$cctk_cv_has_prototype_'$cctk_safe`\" = yes"; then
-  AC_MSG_RESULT(yes)
-  ifelse([$3], , :, [$3])
-else
-  AC_MSG_RESULT(no)
-ifelse([$4], , , [$4])
-fi
-])
+dnl This does not work with the Intel compiler, since icc does not abort
+dnl for duplicate mis-matching declarations.
+dnl dnl CCTK_CHECK_HAS_PROTOTYPE(FUNCTION, [ADDITIONAL_CODE [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
+dnl AC_DEFUN(CCTK_CHECK_HAS_PROTOTYPE,
+dnl [dnl Do the transliteration at runtime so arg 1 can be a shell variable.
+dnl cctk_safe=`echo "$1" | sed 'y%./+-%__p_%'`
+dnl AC_MSG_CHECKING([for $1])
+dnl AC_CACHE_VAL(cctk_cv_has_prototype_$cctk_safe,
+dnl [AC_TRY_COMPILE([$2
+dnl /* this will FAIL to compile if a prototype exists */
+dnl struct x $1();
+dnl ], [ ], eval "cctk_cv_has_prototype_$cctk_safe=no",
+dnl   eval "cctk_cv_has_prototype_$cctk_safe=yes")])dnl
+dnl if eval "test \"`echo '$cctk_cv_has_prototype_'$cctk_safe`\" = yes"; then
+dnl   AC_MSG_RESULT(yes)
+dnl   ifelse([$3], , :, [$3])
+dnl else
+dnl   AC_MSG_RESULT(no)
+dnl ifelse([$4], , , [$4])
+dnl fi
+dnl ])
 
 
 
