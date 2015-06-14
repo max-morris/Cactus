@@ -617,7 +617,7 @@ fi
 ])
 
 AC_DEFUN(CCTK_CXX_BOOL,
-[AC_CACHE_CHECK([for CXX bool], cctk_cv_have_cxx_bool,
+[AC_CACHE_CHECK([for C++ bool], cctk_cv_have_cxx_bool,
 [cctk_cv_have_cxx_bool=no
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
