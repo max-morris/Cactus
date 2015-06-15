@@ -493,22 +493,20 @@ AC_MSG_ERROR(M_PI not defined. Try adding -D_XOPEN_SOURCE to CPPFLAGS.)
 
 # Check for prototype of strdup
 # TODO: Rename to CCTK_CHECK_HAS_C_PROTOTYPE
-# TODO: Disabled since CCTK_CHECK_HAS_PROTOTYPE does not work with icc
-# CCTK_CHECK_HAS_PROTOTYPE(strdup, [#include <string.h>], [],
-# AC_MSG_ERROR(strdup has no prototype. Try adding -D_XOPEN_SOURCE -D_XOPEN_SOURCE_EXTENDED to CPPFLAGS.)
-# )
+CCTK_CHECK_HAS_PROTOTYPE(strdup, [#include <string.h>], [],
+AC_MSG_ERROR(strdup has no prototype. Try adding -D_XOPEN_SOURCE -D_XOPEN_SOURCE_EXTENDED to CPPFLAGS.)
+)
 
 # This will most likely never trigger since libstdc++ required
 # _GNU_SOURCE to be set. See
 # https://gcc.gnu.org/onlinedocs/libstdc++/faq.html#faq.predefined
 # TODO: Introduce CCTK_CHECK_HAS_CXX_PROTOTYPE for this.
-# TODO: Disabled since CCTK_CHECK_HAS_PROTOTYPE does not work with icc
-# AC_LANG_SAVE
-# AC_LANG_CPLUSPLUS
-# CCTK_CHECK_HAS_PROTOTYPE(strdup, [#include <cstring>], [],
-# AC_MSG_ERROR(strdup has no C++ prototype. Try adding -D_XOPEN_SOURCE -D_XOPEN_SOURCE_EXTENDED to CPPFLAGS.)
-# )
-# AC_LANG_RESTORE
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+CCTK_CHECK_HAS_PROTOTYPE(strdup, [#include <string.h>], [],
+AC_MSG_ERROR(strdup has no C++ prototype. Try adding -D_XOPEN_SOURCE -D_XOPEN_SOURCE_EXTENDED to CPPFLAGS.)
+)
+AC_LANG_RESTORE
 
 # Checks for typedefs, structures, and compiler characteristics.
 
