@@ -488,13 +488,13 @@ fi
 
 # Check for M_PI
 CCTK_CHECK_DEFINED(M_PI, [#include <math.h>], [],
-AC_MSG_ERROR(M_PI not defined. Try adding -D_XOPEN_SOURCE to CPPFLAGS.)
+AC_MSG_ERROR(M_PI not defined. Try adding -D_XOPEN_SOURCE to CFLAGS.)
 )
 
 # Check for prototype of strdup
 # TODO: Rename to CCTK_CHECK_HAS_C_PROTOTYPE
 CCTK_CHECK_HAS_PROTOTYPE(strdup, [#include <string.h>], [],
-AC_MSG_ERROR(strdup has no C prototype. Try adding -D_XOPEN_SOURCE -D_XOPEN_SOURCE_EXTENDED to CPPFLAGS.)
+AC_MSG_ERROR(strdup has no C prototype. Try adding -D_XOPEN_SOURCE -D_XOPEN_SOURCE_EXTENDED to CFLAGS.)
 )
 
 # This will most likely never trigger since libstdc++ required
@@ -504,7 +504,7 @@ AC_MSG_ERROR(strdup has no C prototype. Try adding -D_XOPEN_SOURCE -D_XOPEN_SOUR
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 CCTK_CHECK_HAS_PROTOTYPE(strdup, [#include <string.h>], [],
-AC_MSG_ERROR(strdup has no C++ prototype. Try adding -D_XOPEN_SOURCE -D_XOPEN_SOURCE_EXTENDED to CPPFLAGS.)
+AC_MSG_ERROR(strdup has no C++ prototype. Try adding -D_XOPEN_SOURCE -D_XOPEN_SOURCE_EXTENDED to CXXFLAGS.)
 )
 AC_LANG_RESTORE
 
