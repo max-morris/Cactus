@@ -1412,12 +1412,13 @@ dnl CCTK_CHECK_HAS_PROTOTYPE(FUNCTION, [ADDITIONAL_CODE [, ACTION-IF-FOUND [, AC
 AC_DEFUN(CCTK_CHECK_HAS_PROTOTYPE,
 [dnl Do the transliteration at runtime so arg 1 can be a shell variable.
 cctk_safe=`echo "$1" | sed 'y%./+-%__p_%'`
+cctk_lang=AC_LANG
 AC_MSG_CHECKING([for $1])
-AC_CACHE_VAL(cctk_cv_has_prototype_$cctk_safe,
+AC_CACHE_VAL(cctk_cv_has_${cctk_lang}_prototype_$cctk_safe,
 [AC_TRY_COMPILE([$2
-], [char *p = (char*) $1;], eval "cctk_cv_has_prototype_$cctk_safe=yes",
-  eval "cctk_cv_has_prototype_$cctk_safe=no")])dnl
-if eval "test \"`echo '$cctk_cv_has_prototype_'$cctk_safe`\" = yes"; then
+], [char *p = (char*) $1;], eval "cctk_cv_has_${cctk_lang}_prototype_$cctk_safe=yes",
+  eval "cctk_cv_has_${cctk_lang}_prototype_$cctk_safe=no")])dnl
+if eval "test \"`echo '$cctk_cv_has_'$cctk_lang'_prototype_'$cctk_safe`\" = yes"; then
   AC_MSG_RESULT(yes)
   ifelse([$3], , :, [$3])
 else
