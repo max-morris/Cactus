@@ -494,7 +494,7 @@ AC_MSG_ERROR(M_PI not defined. Try adding -D_XOPEN_SOURCE to CPPFLAGS.)
 # Check for prototype of strdup
 # TODO: Rename to CCTK_CHECK_HAS_C_PROTOTYPE
 CCTK_CHECK_HAS_PROTOTYPE(strdup, [#include <string.h>], [],
-AC_MSG_ERROR(strdup has no prototype. Try adding -D_XOPEN_SOURCE -D_XOPEN_SOURCE_EXTENDED to CPPFLAGS.)
+AC_MSG_ERROR(strdup has no C prototype. Try adding -D_XOPEN_SOURCE -D_XOPEN_SOURCE_EXTENDED to CPPFLAGS.)
 )
 
 # This will most likely never trigger since libstdc++ required
