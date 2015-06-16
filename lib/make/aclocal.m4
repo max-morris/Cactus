@@ -1386,7 +1386,7 @@ fi
 
 
 
-dnl CCTK_CHECK_DEFINED(DEFINED, [ADDITIONAL_CODE [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
+dnl CCTK_CHECK_DEFINED(DEFINED, [[ADDITIONAL_CODE [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 AC_DEFUN(CCTK_CHECK_DEFINED,
 [dnl Do the transliteration at runtime so arg 1 can be a shell variable.
 cctk_safe=`echo "$1" | sed 'y%./+-%__p_%'`
@@ -1408,23 +1408,44 @@ fi
 
 
 
-dnl CCTK_CHECK_HAS_PROTOTYPE(FUNCTION, [ADDITIONAL_CODE [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
+dnl CCTK_CHECK_HAS_PROTOTYPE(FUNCTION, [FEATURE-DESCRIPTION [, ADDITIONAL_CODE [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]]])
 AC_DEFUN(CCTK_CHECK_HAS_PROTOTYPE,
 [dnl Do the transliteration at runtime so arg 1 can be a shell variable.
 cctk_safe=`echo "$1" | sed 'y%./+-%__p_%'`
 cctk_lang=AC_LANG
-AC_MSG_CHECKING([for $1])
+AC_MSG_CHECKING([ifelse([$2], , [for $1], [$2])])
 AC_CACHE_VAL(cctk_cv_has_${cctk_lang}_prototype_$cctk_safe,
-[AC_TRY_COMPILE([$2
+[AC_TRY_COMPILE([$3
 ], [char *p = (char*) $1;], eval "cctk_cv_has_${cctk_lang}_prototype_$cctk_safe=yes",
   eval "cctk_cv_has_${cctk_lang}_prototype_$cctk_safe=no")])dnl
 if eval "test \"`echo '$cctk_cv_has_'$cctk_lang'_prototype_'$cctk_safe`\" = yes"; then
   AC_MSG_RESULT(yes)
-  ifelse([$3], , :, [$3])
+  ifelse([$4], , :, [$4])
 else
   AC_MSG_RESULT(no)
-ifelse([$4], , , [$4])
+ifelse([$5], , , [$5])
 fi
+])
+
+
+
+dnl CCTK_C_CHECK_HAS_PROTOTYPE(FUNCTION, [FEATURE-DESCRIPTION [, ADDITIONAL_CODE [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]]])
+AC_DEFUN(CCTK_C_CHECK_HAS_PROTOTYPE,
+[dnl short-hand for C protype check
+CCTK_CHECK_HAS_PROTOTYPE([$1], [ifelse([$2], , [for C $1], [$2])],
+[$3], [$4], [$5])dnl
+])
+
+
+
+dnl CCTK_CXX_CHECK_HAS_PROTOTYPE(FUNCTION, [FEATURE-DESCRIPTION [, ADDITIONAL_CODE [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]]])
+AC_DEFUN(CCTK_CXX_CHECK_HAS_PROTOTYPE,
+[dnl short-hand for C++ protype check
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+CCTK_CHECK_HAS_PROTOTYPE([$1], [ifelse([$2], , [for C++ $1], [$2])],
+[$3], [$4], [$5])dnl
+AC_LANG_RESTORE
 ])
 
 

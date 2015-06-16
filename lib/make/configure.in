@@ -492,21 +492,16 @@ AC_MSG_ERROR(M_PI not defined. Try adding -D_XOPEN_SOURCE to CFLAGS.)
 )
 
 # Check for prototype of strdup
-# TODO: Rename to CCTK_CHECK_HAS_C_PROTOTYPE
-CCTK_CHECK_HAS_PROTOTYPE(strdup, [#include <string.h>], [],
+CCTK_C_CHECK_HAS_PROTOTYPE(strdup, [], [#include <string.h>], [],
 AC_MSG_ERROR(strdup has no C prototype. Try adding -D_XOPEN_SOURCE -D_XOPEN_SOURCE_EXTENDED to CFLAGS.)
 )
 
 # This will most likely never trigger since libstdc++ required
 # _GNU_SOURCE to be set. See
 # https://gcc.gnu.org/onlinedocs/libstdc++/faq.html#faq.predefined
-# TODO: Introduce CCTK_CHECK_HAS_CXX_PROTOTYPE for this.
-AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-CCTK_CHECK_HAS_PROTOTYPE(strdup, [#include <string.h>], [],
+CCTK_CXX_CHECK_HAS_PROTOTYPE(strdup, [], [#include <string.h>], [],
 AC_MSG_ERROR(strdup has no C++ prototype. Try adding -D_XOPEN_SOURCE -D_XOPEN_SOURCE_EXTENDED to CXXFLAGS.)
 )
-AC_LANG_RESTORE
 
 # Checks for typedefs, structures, and compiler characteristics.
 
