@@ -2238,7 +2238,7 @@ if eval "test \"`echo '$cctk_cv_defined_'$cctk_safe`\" = yes"; then
   :
 else
   echo "$ac_t""no" 1>&6
-{ echo "configure: error: M_PI not defined. Try adding -D_XOPEN_SOURCE to CFLAGS." 1>&2; exit 1; }
+{ echo "configure: error: M_PI not defined. Try adding -D_XOPEN_SOURCE to CPPFLAGS." 1>&2; exit 1; }
 
 fi
 
@@ -2276,7 +2276,7 @@ if eval "test \"`echo '$cctk_cv_has_'$cctk_lang'_prototype_'$cctk_safe`\" = yes"
   :
 else
   echo "$ac_t""no" 1>&6
-{ echo "configure: error: strdup has no C prototype. Try adding -D_XOPEN_SOURCE -D_XOPEN_SOURCE_EXTENDED to CFLAGS." 1>&2; exit 1; }
+{ echo "configure: error: strdup has no C prototype. Try adding -D_XOPEN_SOURCE -D_XOPEN_SOURCE_EXTENDED to CPPFLAGS." 1>&2; exit 1; }
 
 fi
 
@@ -2324,7 +2324,7 @@ if eval "test \"`echo '$cctk_cv_has_'$cctk_lang'_prototype_'$cctk_safe`\" = yes"
   :
 else
   echo "$ac_t""no" 1>&6
-{ echo "configure: error: strdup has no C++ prototype. Try adding -D_XOPEN_SOURCE -D_XOPEN_SOURCE_EXTENDED to CXXFLAGS." 1>&2; exit 1; }
+{ echo "configure: error: strdup has no C++ prototype. Try adding -D_XOPEN_SOURCE -D_XOPEN_SOURCE_EXTENDED to CPPFLAGS." 1>&2; exit 1; }
 
 fi
 ac_ext=c
@@ -8803,7 +8803,7 @@ cat > conftest.$ac_ext <<EOF
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
     builtin and then its argument prototype would still apply.  */
-char EcIJiu;
+char CBgGCv;
 
 int main() {
 mkstemp()
