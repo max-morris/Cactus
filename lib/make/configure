@@ -8698,7 +8698,7 @@ cat > conftest.$ac_ext <<EOF
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
     builtin and then its argument prototype would still apply.  */
-char d3WQqv;
+char biEd4Q;
 
 int main() {
 mkstemp()
