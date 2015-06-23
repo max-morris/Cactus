@@ -272,10 +272,10 @@
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP1_BOUNDARIES can only be used in 1 dimensions"); \
     } \
-    const int cctki2_blo[] = { (cctki2_iblo_) }; \
-    const int cctki2_bhi[] = { (cctki2_ibhi_) }; \
-    const int cctki2_bbox[] = { (cctki2_ibboxlo_), (cctki2_ibboxhi_) }; \
-    const int cctki2_lsh[] = { cctki2_cctkGH->cctk_lsh[0] }; \
+    const int cctki2_blo[] = { (int)(cctki2_iblo_) }; \
+    const int cctki2_bhi[] = { (int)(cctki2_ibhi_) }; \
+    const int cctki2_bbox[] = { (int)(cctki2_ibboxlo_), (int)(cctki2_ibboxhi_) }; \
+    const int cctki2_lsh[] = { (int)cctki2_cctkGH->cctk_lsh[0] }; \
     const int cctki2_istr CCTK_ATTRIBUTE_UNUSED = (cctki2_istr_); \
     const int cctki2_imod CCTK_ATTRIBUTE_UNUSED = (cctki2_imod_); \
     for (int cctki2_idir=-1; cctki2_idir<=+1; ++cctki2_idir) { \
@@ -283,10 +283,10 @@
         (cctki2_idir<0 ? cctki2_bbox[0] : 0) || (cctki2_idir>0 ? cctki2_bbox[1] : 0); \
       if (cctki2_any_bbox) { \
         const int cctki2_bmin[] = { \
-          cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0], \
+          (int)(cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0]), \
         }; \
         const int cctki2_bmax[] = { \
-          cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0], \
+          (int)(cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0]), \
         }; \
         CCTK_LOOP1STRMOD_NORMAL(name##_boundaries, \
                                 i, \
@@ -362,10 +362,10 @@
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP1_INTBOUNDARIES can only be used in 1 dimensions"); \
     } \
-    const int cctki2_blo[] = { (cctki2_iblo_) }; \
-    const int cctki2_bhi[] = { (cctki2_ibhi_) }; \
-    const int cctki2_bbox[] = { (cctki2_ibboxlo_), (cctki2_ibboxhi_) }; \
-    const int cctki2_lsh[] = { cctki2_cctkGH->cctk_lsh[0] }; \
+    const int cctki2_blo[] = { (int)(cctki2_iblo_) }; \
+    const int cctki2_bhi[] = { (int)(cctki2_ibhi_) }; \
+    const int cctki2_bbox[] = { (int)(cctki2_ibboxlo_), (int)(cctki2_ibboxhi_) }; \
+    const int cctki2_lsh[] = { (int)cctki2_cctkGH->cctk_lsh[0] }; \
     const int cctki2_istr CCTK_ATTRIBUTE_UNUSED = (cctki2_istr_); \
     const int cctki2_imod CCTK_ATTRIBUTE_UNUSED = (cctki2_imod_); \
     for (int cctki2_idir=-1; cctki2_idir<=+1; ++cctki2_idir) { \
@@ -375,10 +375,10 @@
         (cctki2_idir<0 ? cctki2_bbox[0] : 1) && (cctki2_idir>0 ? cctki2_bbox[1] : 1); \
       if (cctki2_all_bbox && cctki2_any_bbox) { \
         const int cctki2_bmin[] = { \
-          cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0], \
+          (int)(cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0]), \
         }; \
         const int cctki2_bmax[] = { \
-          cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0], \
+          (int)(cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0]), \
         }; \
         CCTK_LOOP1STRMOD_NORMAL(name##_intboundaries, \
                                 i, \
@@ -1398,10 +1398,10 @@
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP2_BOUNDARIES can only be used in 2 dimensions"); \
     } \
-    const int cctki2_blo[] = { (cctki2_iblo_),(cctki2_jblo_) }; \
-    const int cctki2_bhi[] = { (cctki2_ibhi_),(cctki2_jbhi_) }; \
-    const int cctki2_bbox[] = { (cctki2_ibboxlo_), (cctki2_ibboxhi_),(cctki2_jbboxlo_), (cctki2_jbboxhi_) }; \
-    const int cctki2_lsh[] = { cctki2_cctkGH->cctk_lsh[0],cctki2_cctkGH->cctk_lsh[1] }; \
+    const int cctki2_blo[] = { (int)(cctki2_iblo_),(int)(cctki2_jblo_) }; \
+    const int cctki2_bhi[] = { (int)(cctki2_ibhi_),(int)(cctki2_jbhi_) }; \
+    const int cctki2_bbox[] = { (int)(cctki2_ibboxlo_), (int)(cctki2_ibboxhi_),(int)(cctki2_jbboxlo_), (int)(cctki2_jbboxhi_) }; \
+    const int cctki2_lsh[] = { (int)cctki2_cctkGH->cctk_lsh[0],(int)cctki2_cctkGH->cctk_lsh[1] }; \
     const int cctki2_istr CCTK_ATTRIBUTE_UNUSED = (cctki2_istr_); \
     const int cctki2_imod CCTK_ATTRIBUTE_UNUSED = (cctki2_imod_); \
     for (int cctki2_jdir=-1; cctki2_jdir<=+1; ++cctki2_jdir) { \
@@ -1411,12 +1411,12 @@
         (cctki2_jdir<0 ? cctki2_bbox[2] : 0) || (cctki2_jdir>0 ? cctki2_bbox[3] : 0); \
       if (cctki2_any_bbox) { \
         const int cctki2_bmin[] = { \
-          cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0], \
-          cctki2_jdir<0 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1], \
+          (int)(cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0]), \
+          (int)(cctki2_jdir<0 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1]), \
         }; \
         const int cctki2_bmax[] = { \
-          cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0], \
-          cctki2_jdir<0 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1], \
+          (int)(cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0]), \
+          (int)(cctki2_jdir<0 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1]), \
         }; \
         CCTK_LOOP2STRMOD_NORMAL(name##_boundaries, \
                                 i,j, \
@@ -1494,10 +1494,10 @@
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP2_INTBOUNDARIES can only be used in 2 dimensions"); \
     } \
-    const int cctki2_blo[] = { (cctki2_iblo_),(cctki2_jblo_) }; \
-    const int cctki2_bhi[] = { (cctki2_ibhi_),(cctki2_jbhi_) }; \
-    const int cctki2_bbox[] = { (cctki2_ibboxlo_), (cctki2_ibboxhi_),(cctki2_jbboxlo_), (cctki2_jbboxhi_) }; \
-    const int cctki2_lsh[] = { cctki2_cctkGH->cctk_lsh[0],cctki2_cctkGH->cctk_lsh[1] }; \
+    const int cctki2_blo[] = { (int)(cctki2_iblo_),(int)(cctki2_jblo_) }; \
+    const int cctki2_bhi[] = { (int)(cctki2_ibhi_),(int)(cctki2_jbhi_) }; \
+    const int cctki2_bbox[] = { (int)(cctki2_ibboxlo_), (int)(cctki2_ibboxhi_),(int)(cctki2_jbboxlo_), (int)(cctki2_jbboxhi_) }; \
+    const int cctki2_lsh[] = { (int)cctki2_cctkGH->cctk_lsh[0],(int)cctki2_cctkGH->cctk_lsh[1] }; \
     const int cctki2_istr CCTK_ATTRIBUTE_UNUSED = (cctki2_istr_); \
     const int cctki2_imod CCTK_ATTRIBUTE_UNUSED = (cctki2_imod_); \
     for (int cctki2_jdir=-1; cctki2_jdir<=+1; ++cctki2_jdir) { \
@@ -1510,12 +1510,12 @@
         (cctki2_jdir<0 ? cctki2_bbox[2] : 1) && (cctki2_jdir>0 ? cctki2_bbox[3] : 1); \
       if (cctki2_all_bbox && cctki2_any_bbox) { \
         const int cctki2_bmin[] = { \
-          cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0], \
-          cctki2_jdir<0 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1], \
+          (int)(cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0]), \
+          (int)(cctki2_jdir<0 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1]), \
         }; \
         const int cctki2_bmax[] = { \
-          cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0], \
-          cctki2_jdir<0 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1], \
+          (int)(cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0]), \
+          (int)(cctki2_jdir<0 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1]), \
         }; \
         CCTK_LOOP2STRMOD_NORMAL(name##_intboundaries, \
                                 i,j, \
@@ -2585,10 +2585,10 @@
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP3_BOUNDARIES can only be used in 3 dimensions"); \
     } \
-    const int cctki2_blo[] = { (cctki2_iblo_),(cctki2_jblo_),(cctki2_kblo_) }; \
-    const int cctki2_bhi[] = { (cctki2_ibhi_),(cctki2_jbhi_),(cctki2_kbhi_) }; \
-    const int cctki2_bbox[] = { (cctki2_ibboxlo_), (cctki2_ibboxhi_),(cctki2_jbboxlo_), (cctki2_jbboxhi_),(cctki2_kbboxlo_), (cctki2_kbboxhi_) }; \
-    const int cctki2_lsh[] = { cctki2_cctkGH->cctk_lsh[0],cctki2_cctkGH->cctk_lsh[1],cctki2_cctkGH->cctk_lsh[2] }; \
+    const int cctki2_blo[] = { (int)(cctki2_iblo_),(int)(cctki2_jblo_),(int)(cctki2_kblo_) }; \
+    const int cctki2_bhi[] = { (int)(cctki2_ibhi_),(int)(cctki2_jbhi_),(int)(cctki2_kbhi_) }; \
+    const int cctki2_bbox[] = { (int)(cctki2_ibboxlo_), (int)(cctki2_ibboxhi_),(int)(cctki2_jbboxlo_), (int)(cctki2_jbboxhi_),(int)(cctki2_kbboxlo_), (int)(cctki2_kbboxhi_) }; \
+    const int cctki2_lsh[] = { (int)cctki2_cctkGH->cctk_lsh[0],(int)cctki2_cctkGH->cctk_lsh[1],(int)cctki2_cctkGH->cctk_lsh[2] }; \
     const int cctki2_istr CCTK_ATTRIBUTE_UNUSED = (cctki2_istr_); \
     const int cctki2_imod CCTK_ATTRIBUTE_UNUSED = (cctki2_imod_); \
     for (int cctki2_kdir=-1; cctki2_kdir<=+1; ++cctki2_kdir) { \
@@ -2600,14 +2600,14 @@
         (cctki2_kdir<0 ? cctki2_bbox[4] : 0) || (cctki2_kdir>0 ? cctki2_bbox[5] : 0); \
       if (cctki2_any_bbox) { \
         const int cctki2_bmin[] = { \
-          cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0], \
-          cctki2_jdir<0 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1], \
-          cctki2_kdir<0 ? 0 : cctki2_kdir==0 ? cctki2_blo[2] : cctki2_lsh[2] - cctki2_bhi[2], \
+          (int)(cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0]), \
+          (int)(cctki2_jdir<0 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1]), \
+          (int)(cctki2_kdir<0 ? 0 : cctki2_kdir==0 ? cctki2_blo[2] : cctki2_lsh[2] - cctki2_bhi[2]), \
         }; \
         const int cctki2_bmax[] = { \
-          cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0], \
-          cctki2_jdir<0 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1], \
-          cctki2_kdir<0 ? cctki2_blo[2] : cctki2_kdir==0 ? cctki2_lsh[2] - cctki2_bhi[2] : cctki2_lsh[2], \
+          (int)(cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0]), \
+          (int)(cctki2_jdir<0 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1]), \
+          (int)(cctki2_kdir<0 ? cctki2_blo[2] : cctki2_kdir==0 ? cctki2_lsh[2] - cctki2_bhi[2] : cctki2_lsh[2]), \
         }; \
         CCTK_LOOP3STRMOD_NORMAL(name##_boundaries, \
                                 i,j,k, \
@@ -2687,10 +2687,10 @@
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP3_INTBOUNDARIES can only be used in 3 dimensions"); \
     } \
-    const int cctki2_blo[] = { (cctki2_iblo_),(cctki2_jblo_),(cctki2_kblo_) }; \
-    const int cctki2_bhi[] = { (cctki2_ibhi_),(cctki2_jbhi_),(cctki2_kbhi_) }; \
-    const int cctki2_bbox[] = { (cctki2_ibboxlo_), (cctki2_ibboxhi_),(cctki2_jbboxlo_), (cctki2_jbboxhi_),(cctki2_kbboxlo_), (cctki2_kbboxhi_) }; \
-    const int cctki2_lsh[] = { cctki2_cctkGH->cctk_lsh[0],cctki2_cctkGH->cctk_lsh[1],cctki2_cctkGH->cctk_lsh[2] }; \
+    const int cctki2_blo[] = { (int)(cctki2_iblo_),(int)(cctki2_jblo_),(int)(cctki2_kblo_) }; \
+    const int cctki2_bhi[] = { (int)(cctki2_ibhi_),(int)(cctki2_jbhi_),(int)(cctki2_kbhi_) }; \
+    const int cctki2_bbox[] = { (int)(cctki2_ibboxlo_), (int)(cctki2_ibboxhi_),(int)(cctki2_jbboxlo_), (int)(cctki2_jbboxhi_),(int)(cctki2_kbboxlo_), (int)(cctki2_kbboxhi_) }; \
+    const int cctki2_lsh[] = { (int)cctki2_cctkGH->cctk_lsh[0],(int)cctki2_cctkGH->cctk_lsh[1],(int)cctki2_cctkGH->cctk_lsh[2] }; \
     const int cctki2_istr CCTK_ATTRIBUTE_UNUSED = (cctki2_istr_); \
     const int cctki2_imod CCTK_ATTRIBUTE_UNUSED = (cctki2_imod_); \
     for (int cctki2_kdir=-1; cctki2_kdir<=+1; ++cctki2_kdir) { \
@@ -2706,14 +2706,14 @@
         (cctki2_kdir<0 ? cctki2_bbox[4] : 1) && (cctki2_kdir>0 ? cctki2_bbox[5] : 1); \
       if (cctki2_all_bbox && cctki2_any_bbox) { \
         const int cctki2_bmin[] = { \
-          cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0], \
-          cctki2_jdir<0 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1], \
-          cctki2_kdir<0 ? 0 : cctki2_kdir==0 ? cctki2_blo[2] : cctki2_lsh[2] - cctki2_bhi[2], \
+          (int)(cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0]), \
+          (int)(cctki2_jdir<0 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1]), \
+          (int)(cctki2_kdir<0 ? 0 : cctki2_kdir==0 ? cctki2_blo[2] : cctki2_lsh[2] - cctki2_bhi[2]), \
         }; \
         const int cctki2_bmax[] = { \
-          cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0], \
-          cctki2_jdir<0 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1], \
-          cctki2_kdir<0 ? cctki2_blo[2] : cctki2_kdir==0 ? cctki2_lsh[2] - cctki2_bhi[2] : cctki2_lsh[2], \
+          (int)(cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0]), \
+          (int)(cctki2_jdir<0 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1]), \
+          (int)(cctki2_kdir<0 ? cctki2_blo[2] : cctki2_kdir==0 ? cctki2_lsh[2] - cctki2_bhi[2] : cctki2_lsh[2]), \
         }; \
         CCTK_LOOP3STRMOD_NORMAL(name##_intboundaries, \
                                 i,j,k, \
@@ -3833,10 +3833,10 @@
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP4_BOUNDARIES can only be used in 4 dimensions"); \
     } \
-    const int cctki2_blo[] = { (cctki2_iblo_),(cctki2_jblo_),(cctki2_kblo_),(cctki2_lblo_) }; \
-    const int cctki2_bhi[] = { (cctki2_ibhi_),(cctki2_jbhi_),(cctki2_kbhi_),(cctki2_lbhi_) }; \
-    const int cctki2_bbox[] = { (cctki2_ibboxlo_), (cctki2_ibboxhi_),(cctki2_jbboxlo_), (cctki2_jbboxhi_),(cctki2_kbboxlo_), (cctki2_kbboxhi_),(cctki2_lbboxlo_), (cctki2_lbboxhi_) }; \
-    const int cctki2_lsh[] = { cctki2_cctkGH->cctk_lsh[0],cctki2_cctkGH->cctk_lsh[1],cctki2_cctkGH->cctk_lsh[2],cctki2_cctkGH->cctk_lsh[3] }; \
+    const int cctki2_blo[] = { (int)(cctki2_iblo_),(int)(cctki2_jblo_),(int)(cctki2_kblo_),(int)(cctki2_lblo_) }; \
+    const int cctki2_bhi[] = { (int)(cctki2_ibhi_),(int)(cctki2_jbhi_),(int)(cctki2_kbhi_),(int)(cctki2_lbhi_) }; \
+    const int cctki2_bbox[] = { (int)(cctki2_ibboxlo_), (int)(cctki2_ibboxhi_),(int)(cctki2_jbboxlo_), (int)(cctki2_jbboxhi_),(int)(cctki2_kbboxlo_), (int)(cctki2_kbboxhi_),(int)(cctki2_lbboxlo_), (int)(cctki2_lbboxhi_) }; \
+    const int cctki2_lsh[] = { (int)cctki2_cctkGH->cctk_lsh[0],(int)cctki2_cctkGH->cctk_lsh[1],(int)cctki2_cctkGH->cctk_lsh[2],(int)cctki2_cctkGH->cctk_lsh[3] }; \
     const int cctki2_istr CCTK_ATTRIBUTE_UNUSED = (cctki2_istr_); \
     const int cctki2_imod CCTK_ATTRIBUTE_UNUSED = (cctki2_imod_); \
     for (int cctki2_ldir=-1; cctki2_ldir<=+1; ++cctki2_ldir) { \
@@ -3850,16 +3850,16 @@
         (cctki2_ldir<0 ? cctki2_bbox[6] : 0) || (cctki2_ldir>0 ? cctki2_bbox[7] : 0); \
       if (cctki2_any_bbox) { \
         const int cctki2_bmin[] = { \
-          cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0], \
-          cctki2_jdir<0 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1], \
-          cctki2_kdir<0 ? 0 : cctki2_kdir==0 ? cctki2_blo[2] : cctki2_lsh[2] - cctki2_bhi[2], \
-          cctki2_ldir<0 ? 0 : cctki2_ldir==0 ? cctki2_blo[3] : cctki2_lsh[3] - cctki2_bhi[3], \
+          (int)(cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0]), \
+          (int)(cctki2_jdir<0 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1]), \
+          (int)(cctki2_kdir<0 ? 0 : cctki2_kdir==0 ? cctki2_blo[2] : cctki2_lsh[2] - cctki2_bhi[2]), \
+          (int)(cctki2_ldir<0 ? 0 : cctki2_ldir==0 ? cctki2_blo[3] : cctki2_lsh[3] - cctki2_bhi[3]), \
         }; \
         const int cctki2_bmax[] = { \
-          cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0], \
-          cctki2_jdir<0 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1], \
-          cctki2_kdir<0 ? cctki2_blo[2] : cctki2_kdir==0 ? cctki2_lsh[2] - cctki2_bhi[2] : cctki2_lsh[2], \
-          cctki2_ldir<0 ? cctki2_blo[3] : cctki2_ldir==0 ? cctki2_lsh[3] - cctki2_bhi[3] : cctki2_lsh[3], \
+          (int)(cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0]), \
+          (int)(cctki2_jdir<0 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1]), \
+          (int)(cctki2_kdir<0 ? cctki2_blo[2] : cctki2_kdir==0 ? cctki2_lsh[2] - cctki2_bhi[2] : cctki2_lsh[2]), \
+          (int)(cctki2_ldir<0 ? cctki2_blo[3] : cctki2_ldir==0 ? cctki2_lsh[3] - cctki2_bhi[3] : cctki2_lsh[3]), \
         }; \
         CCTK_LOOP4STRMOD_NORMAL(name##_boundaries, \
                                 i,j,k,l, \
@@ -3941,10 +3941,10 @@
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP4_INTBOUNDARIES can only be used in 4 dimensions"); \
     } \
-    const int cctki2_blo[] = { (cctki2_iblo_),(cctki2_jblo_),(cctki2_kblo_),(cctki2_lblo_) }; \
-    const int cctki2_bhi[] = { (cctki2_ibhi_),(cctki2_jbhi_),(cctki2_kbhi_),(cctki2_lbhi_) }; \
-    const int cctki2_bbox[] = { (cctki2_ibboxlo_), (cctki2_ibboxhi_),(cctki2_jbboxlo_), (cctki2_jbboxhi_),(cctki2_kbboxlo_), (cctki2_kbboxhi_),(cctki2_lbboxlo_), (cctki2_lbboxhi_) }; \
-    const int cctki2_lsh[] = { cctki2_cctkGH->cctk_lsh[0],cctki2_cctkGH->cctk_lsh[1],cctki2_cctkGH->cctk_lsh[2],cctki2_cctkGH->cctk_lsh[3] }; \
+    const int cctki2_blo[] = { (int)(cctki2_iblo_),(int)(cctki2_jblo_),(int)(cctki2_kblo_),(int)(cctki2_lblo_) }; \
+    const int cctki2_bhi[] = { (int)(cctki2_ibhi_),(int)(cctki2_jbhi_),(int)(cctki2_kbhi_),(int)(cctki2_lbhi_) }; \
+    const int cctki2_bbox[] = { (int)(cctki2_ibboxlo_), (int)(cctki2_ibboxhi_),(int)(cctki2_jbboxlo_), (int)(cctki2_jbboxhi_),(int)(cctki2_kbboxlo_), (int)(cctki2_kbboxhi_),(int)(cctki2_lbboxlo_), (int)(cctki2_lbboxhi_) }; \
+    const int cctki2_lsh[] = { (int)cctki2_cctkGH->cctk_lsh[0],(int)cctki2_cctkGH->cctk_lsh[1],(int)cctki2_cctkGH->cctk_lsh[2],(int)cctki2_cctkGH->cctk_lsh[3] }; \
     const int cctki2_istr CCTK_ATTRIBUTE_UNUSED = (cctki2_istr_); \
     const int cctki2_imod CCTK_ATTRIBUTE_UNUSED = (cctki2_imod_); \
     for (int cctki2_ldir=-1; cctki2_ldir<=+1; ++cctki2_ldir) { \
@@ -3963,16 +3963,16 @@
         (cctki2_ldir<0 ? cctki2_bbox[6] : 1) && (cctki2_ldir>0 ? cctki2_bbox[7] : 1); \
       if (cctki2_all_bbox && cctki2_any_bbox) { \
         const int cctki2_bmin[] = { \
-          cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0], \
-          cctki2_jdir<0 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1], \
-          cctki2_kdir<0 ? 0 : cctki2_kdir==0 ? cctki2_blo[2] : cctki2_lsh[2] - cctki2_bhi[2], \
-          cctki2_ldir<0 ? 0 : cctki2_ldir==0 ? cctki2_blo[3] : cctki2_lsh[3] - cctki2_bhi[3], \
+          (int)(cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0]), \
+          (int)(cctki2_jdir<0 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1]), \
+          (int)(cctki2_kdir<0 ? 0 : cctki2_kdir==0 ? cctki2_blo[2] : cctki2_lsh[2] - cctki2_bhi[2]), \
+          (int)(cctki2_ldir<0 ? 0 : cctki2_ldir==0 ? cctki2_blo[3] : cctki2_lsh[3] - cctki2_bhi[3]), \
         }; \
         const int cctki2_bmax[] = { \
-          cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0], \
-          cctki2_jdir<0 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1], \
-          cctki2_kdir<0 ? cctki2_blo[2] : cctki2_kdir==0 ? cctki2_lsh[2] - cctki2_bhi[2] : cctki2_lsh[2], \
-          cctki2_ldir<0 ? cctki2_blo[3] : cctki2_ldir==0 ? cctki2_lsh[3] - cctki2_bhi[3] : cctki2_lsh[3], \
+          (int)(cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0]), \
+          (int)(cctki2_jdir<0 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1]), \
+          (int)(cctki2_kdir<0 ? cctki2_blo[2] : cctki2_kdir==0 ? cctki2_lsh[2] - cctki2_bhi[2] : cctki2_lsh[2]), \
+          (int)(cctki2_ldir<0 ? cctki2_blo[3] : cctki2_ldir==0 ? cctki2_lsh[3] - cctki2_bhi[3] : cctki2_lsh[3]), \
         }; \
         CCTK_LOOP4STRMOD_NORMAL(name##_intboundaries, \
                                 i,j,k,l, \
