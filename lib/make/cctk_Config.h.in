@@ -237,21 +237,6 @@
 #  define _Pragma(x)
 #endif
 
-/* Some C compilers (e.g. C99 ones) define bool */
-#undef HAVE_CCTK_C_BOOL
-
-/* deprecated in beta15 */
-#ifdef HAVE_CCTK_C_BOOL
-#  define CCTK_HAVE_C_BOOL
-#endif
-
-/* Since this is non-standard leave commented out for the moment */
-#if 0
-#ifndef HAVE_CCTK_C_BOOL
-typedef enum {false, true} bool;
-#endif /* HAVE_CCTK_C_BOOL */
-#endif
-
 /* Whether copysign exists, and how it should be called */
 #ifdef HAVE_COPYSIGN
 #  define HAVE_CCTK_C_COPYSIGN HAVE_COPYSIGN
@@ -451,16 +436,6 @@ typedef enum {false, true} bool;
 
 #define CCTK_STATIC_INLINE static inline
 #define CCTK_EXTERN_INLINE extern
-
-/* Some C++ compilers don't have bool */
-#undef HAVE_CCTK_CXX_BOOL
-
-#ifndef HAVE_CCTK_CXX_BOOL
-typedef enum {false, true} bool;
-#else
-  /* deprecated in beta15 */
-#  define CCTK_HAVE_CXX_BOOL
-#endif
 
 /* Whether copysign exists, and how it should be called */
 #undef HAVE_CCTK_CXX_COPYSIGN
