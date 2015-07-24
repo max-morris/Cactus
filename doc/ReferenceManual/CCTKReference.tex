@@ -502,6 +502,21 @@ from Fortran.
 \item[\code{CCTK\_LocalArrayReductionHandle}] [\pageref{CCTK-LocalArrayReductionHandle}]
   Returns the handle of a given local array reduction operator
 
+\item[\code{CCTK\_MaxActiveTimeLevels}] [\pageref{CCTK-MaxActiveTimeLevels}]
+  Returns the maximum number of timeleves that were ever active from a group name
+
+\item[\code{CCTK\_MaxActiveTimeLevelsGI}] [\pageref{CCTK-MaxActiveTimeLevels}]
+  Returns the maximum number of timeleves that were ever active from a group index
+
+\item[\code{CCTK\_MaxActiveTimeLevelsGN}] [\pageref{CCTK-MaxActiveTimeLevels}]
+  Returns the maximum number of timeleves that were ever active from a group name
+
+\item[\code{CCTK\_MaxActiveTimeLevelsVI}] [\pageref{CCTK-MaxActiveTimeLevels}]
+  Returns the maximum number of timeleves that were ever active from a variable index
+
+\item[\code{CCTK\_MaxActiveTimeLevelsVN}] [\pageref{CCTK-MaxActiveTimeLevels}]
+  Returns the maximum number of timeleves that were ever active from a variable name
+
 \item[\code{CCTK\_MaxDim}] [\pageref{CCTK-MaxDim}]
   Get the maximum dimension of any grid variable
 
@@ -1142,15 +1157,18 @@ Index of a variable in the group.
 This function returns the number of timelevels for which storage has
 been activated, which is always equal to or less than the maximum
 number of timelevels which may have storage provided by
-\code{CCTK\_MaxTimeLevels}.
+\code{CCTK\_MaxActiveTimeLevels}.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_MaxActiveTimeLevels}{CCTK-MaxActiveTimeLevels}
+  Returns the maximum number of timeleves that were ever active from a group name
+\end{SeeAlso2}
 \begin{SeeAlso2}{CCTK\_MaxTimeLevels}{CCTK-MaxTimeLevels}
 Return the maximum number of active timelevels.
 \end{SeeAlso2}
 \begin{SeeAlso2}{CCTK\_NumTimeLevels}{CCTK-NumTimeLevels}
-Deprecated; same as \code{CCTK\_ActiveTimeLevels}.
+Deprecated; same as \code{CCTK\_MaxTimeLevels}.
 \end{SeeAlso2}
 \begin{SeeAlso2}{CCTK\_GroupStorageDecrease}{CCTK-GroupStorageDecrease}
 Base function, overloaded by the driver, which decreases the number of
@@ -8186,6 +8204,131 @@ The number of local reduction operators registered
 %%%%%
 % MMM
 %%%%%
+
+
+% cctk_GroupsOnGH.h
+%Entering a function description for CCTK\_MaxActiveTimeLevels
+\begin{FunctionDescription}{CCTK\_MaxActiveTimeLevels}
+\label{CCTK-MaxActiveTimeLevels}
+Returns the maximum number of time levels ever active for a group.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int timelevels = CCTK_MaxActiveTimeLevels(const cGH *cctkGH,
+                                       const char *groupname);
+
+int timelevels = CCTK_MaxActiveTimeLevelsGI(const cGH *cctkGH,
+                                         int groupindex);
+
+int timelevels = CCTK_MaxActiveTimeLevelsGN(const cGH *cctkGH,
+                                         const char *groupname);
+
+int timelevels = CCTK_MaxActiveTimeLevelsVI(const cGH *cctkGH,
+                                         int varindex);
+
+int timelevels = CCTK_MaxActiveTimeLevelsVN(const cGH *cctkGH,
+                                         const char *varname);
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+#include "cctk.h"
+
+subroutine CCTK_MaxActiveTimeLevels(timelevels, cctkGH, groupname)
+   integer       timelevels
+   CCTK_POINTER  cctkGH
+   character*(*) groupname
+end subroutine CCTK_MaxActiveTimeLevels
+
+subroutine CCTK_MaxActiveTimeLevelsGI(timelevels, cctkGH, groupindex)
+   integer       timelevels
+   CCTK_POINTER  cctkGH
+   integer       groupindex
+end subroutine CCTK_MaxActiveTimeLevelsGI
+
+subroutine CCTK_MaxActiveTimeLevelsGN(timelevels, cctkGH, groupname)
+   integer       timelevels
+   CCTK_POINTER  cctkGH
+   character*(*) groupname
+end subroutine CCTK_MaxActiveTimeLevelsGN
+
+subroutine CCTK_MaxActiveTimeLevelsVI(timelevels, cctkGH, varindex)
+   integer       timelevels
+   CCTK_POINTER  cctkGH
+   integer       varindex
+end subroutine CCTK_MaxActiveTimeLevelsVI
+
+subroutine CCTK_MaxActiveTimeLevelsVN(timelevels, cctkGH, varname)
+   integer       timelevels
+   CCTK_POINTER  cctkGH
+   character*(*) varname
+end subroutine CCTK_MaxActiveTimeLevelsVN
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{timelevels}
+The largest number of timelevels that were ever active for the group or the
+result of \code{CCTK\_MaxTimeLevels}, whichever is larger.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{GH ($\ne$ NULL)}
+Pointer to a valid Cactus grid hierarchy.
+\end{Parameter}
+\begin{Parameter}{groupname}
+Name of the group.
+\end{Parameter}
+\begin{Parameter}{groupindex}
+Index of the group.
+\end{Parameter}
+\begin{Parameter}{varname}
+Name of a variable in the group.
+\end{Parameter}
+\begin{Parameter}{varindex}
+Index of a variable in the group.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+This function returns the number of timelevels for which storage has
+ever been request either through an actual storage request or via the
+\code{TIMELEVELS} attribute in \texttt{interface.ccl}. This is always
+at least as large as \code{CCTK\_MaxTimeLevels}.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_MaxTimeLevels}{CCTK-MaxTimeLevels}
+Return the maximum number of timelevels in \code{interface.ccl}.
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_NumTimeLevels}{CCTK-NumTimeLevels}
+Deprecated; same as \code{CCTK\_MaxTimeLevels}.
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_GroupStorageDecrease}{CCTK-GroupStorageDecrease}
+Base function, overloaded by the driver, which decreases the number of
+active timelevels, and also returns the number of active timelevels.
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_GroupStorageIncrease}{CCTK-GroupStorageIncrease}
+Base function, overloaded by the driver, which increases the number of
+active timelevels, and also returns the number of active timelevels.
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{timelevels $<$ 0}
+Illegal arguments given.
+\end{Error}
+\end{ErrorSection}
+
+%\begin{ExampleSection}
+%\end{ExampleSection}
+\end{FunctionDescription}
+
 
 
 % Groups.c
