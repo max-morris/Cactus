@@ -500,8 +500,8 @@ sub parse_param_ccl
           if($data[$line_number] =~ m:\s*\}\s*([^\s].*)\s*:)
           {
             &CST_error(0, "param.ccl of thorn '$thorn' attempts to change " .
-                          "default value of shared or extended parameter " .
-                          "'$variable'",
+                          "the default value of the shared or extended " .
+                          "parameter '$variable'",
                        '', __LINE__, __FILE__);
           }
         }

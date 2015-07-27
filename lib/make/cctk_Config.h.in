@@ -204,6 +204,11 @@
 #undef CCTK_C_STATIC_INLINE
 #define CCTK_STATIC_INLINE CCTK_C_STATIC_INLINE
 
+/* Define to 'extern' if the 'extern inline' keyword combination does
+   not work. */
+#undef CCTK_C_EXTERN_INLINE
+#define CCTK_EXTERN_INLINE CCTK_C_EXTERN_INLINE
+
 /* Define to empty if the 'const' keyword does not work. */
 #undef const
 
@@ -230,21 +235,6 @@
 #undef HAVE_CCTK_C__PRAGMA
 #ifndef HAVE_CCTK_C__PRAGMA
 #  define _Pragma(x)
-#endif
-
-/* Some C compilers (e.g. C99 ones) define bool */
-#undef HAVE_CCTK_C_BOOL
-
-/* deprecated in beta15 */
-#ifdef HAVE_CCTK_C_BOOL
-#  define CCTK_HAVE_C_BOOL
-#endif
-
-/* Since this is non-standard leave commented out for the moment */
-#if 0
-#ifndef HAVE_CCTK_C_BOOL
-typedef enum {false, true} bool;
-#endif /* HAVE_CCTK_C_BOOL */
 #endif
 
 /* Whether copysign exists, and how it should be called */
@@ -445,16 +435,7 @@ typedef enum {false, true} bool;
 #ifdef __cplusplus
 
 #define CCTK_STATIC_INLINE static inline
-
-/* Some C++ compilers don't have bool */
-#undef HAVE_CCTK_CXX_BOOL
-
-#ifndef HAVE_CCTK_CXX_BOOL
-typedef enum {false, true} bool;
-#else
-  /* deprecated in beta15 */
-#  define CCTK_HAVE_CXX_BOOL
-#endif
+#define CCTK_EXTERN_INLINE extern
 
 /* Whether copysign exists, and how it should be called */
 #undef HAVE_CCTK_CXX_COPYSIGN
