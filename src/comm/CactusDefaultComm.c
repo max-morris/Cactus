@@ -116,7 +116,7 @@ int CactusDefaultInterpGridArrays (const cGH *GH, int N_dims,
    @enddesc
    @calls      CCTK_MaxGFDim
                CCTK_NumVars
-               CCTK_MaxTimeLevelsVI
+               CCTK_DeclaredTimeLevelsVI
                CCTK_NumGroups
                CCTKi_SetupGHExtensions
 
@@ -199,7 +199,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
     {
       for(variable = 0; variable < n_variables; variable++)
       {
-        ntimelevels = CCTK_MaxTimeLevelsVI(variable);
+        ntimelevels = CCTK_DeclaredTimeLevelsVI(variable);
 
         thisGH->data[variable] = calloc(ntimelevels, sizeof(void *));
         if(thisGH->data[variable] == NULL)
@@ -793,7 +793,7 @@ int CactusDefaultGroupStorageIncrease (const cGH *GH, int n_groups,
          */
         if(CCTK_QueryGroupStorageI(GH, groups[i]))
         {
-          value = CCTK_NumTimeLevelsI(groups[i]);
+          value = CCTK_DeclaredTimeLevelsVI(groups[i]);
         }
         else
         {
@@ -903,7 +903,7 @@ int CactusDefaultGroupStorageDecrease (const cGH *GH, int n_groups,
          */
         if(CCTK_QueryGroupStorageI(GH, groups[i]))
         {
-          value = CCTK_NumTimeLevelsI(groups[i]);
+          value = CCTK_DeclaredTimeLevelsVI(groups[i]);
         }
         else
         {
@@ -983,7 +983,7 @@ int CactusDefaultQueryMaxTimeLevels (const cGH *GH, int n_groups,
    * routine, otherwise this should be fine.
    */
   for(int g = 0; g < n_groups; g++)
-    status[g] = CCTK_MaxTimeLevelsGI(groups[g]);
+    status[g] = CCTK_DeclaredTimeLevelsGI(groups[g]);
 
   (void)(GH);
   return 0;
