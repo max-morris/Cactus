@@ -148,8 +148,7 @@ typedef struct
 typedef struct
 {
   /* The various names of the thing. */
-  char *thorn,
-       *implementation,
+  char *implementation,
        *name;
 
   /* The group number. */
