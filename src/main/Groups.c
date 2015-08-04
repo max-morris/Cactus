@@ -1999,6 +1999,7 @@ int CCTK_TraverseString (const char *traverse_string,
 
   /* parse it token by token */
   string = parse_string;
+  gindex = vindex = -1;
   while (string && *string)
   {
 
