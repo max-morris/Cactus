@@ -3710,6 +3710,17 @@ c
 \begin{Synopsis}{C}
 \begin{verbatim}char * fullname = CCTK_FullName( int index)\end{verbatim}
 \end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+#include "cctk.h"
+
+subroutine CCTK_FullName(nchars, index, fullname)
+   integer       nchars
+   integer       index
+   character*(*) fullname
+end subroutine CCTK_FullName
+\end{verbatim}
+\end{Synopsis}
 \end{SynopsisSection}
 \begin{ParameterSection}
 \begin{Parameter}{implementation}
@@ -3722,8 +3733,9 @@ The variable index
 \begin{Discussion}
 The full variable name must be explicitly freed after it has been used.
 
-No Fortran routine exists at the moment. The full variable name is in
-the form \code{<implementation>::<variable>}
+The full variable name is in the form \code{<implementation>::<variable>} for
+\code{PUBLIC} or \code{PROTECTED} variables and \code{<thorn>::<variable>} for
+\code{PRIVATE} variables.
 \end{Discussion}
 \begin{ExampleSection}
 \begin{Example}{C}
@@ -13086,6 +13098,17 @@ call CCTK_VarIndex(index,"evolve::vect[0]")
 \begin{Synopsis}{C}
 \begin{verbatim}const char * name = CCTK_VarName( int index)\end{verbatim}
 \end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+#include "cctk.h"
+
+subroutine CCTK_VarName(nchars, index, fullname)
+   integer       nchars
+   integer       index
+   character*(*) name
+end subroutine CCTK_VarName
+\end{verbatim}
+\end{Synopsis}
 \end{SynopsisSection}
 \begin{ParameterSection}
 \begin{Parameter}{name}
@@ -13098,8 +13121,6 @@ The variable index
 \begin{Discussion}
 The pointer returned is part of a structure managed by Cactus
 and so must {\em not} be freed after use.
-
-No Fortran routine exists at the moment.
 \end{Discussion}
 \begin{ExampleSection}
 \begin{Example}{C}
