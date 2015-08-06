@@ -704,13 +704,12 @@ void CCTK_FCALL CCTK_FNAME (CCTK_FullName) (int *nchars, int *var, ONE_FORTSTRIN
 {
   ONE_FORTSTRING_PTR (fullnameptr)
   ONE_FORTSTRING_LEN (fullnamelen)
-  char *fullname;
+  const char *fullname;
 
 
-  fullname = CCTK_FullName (*var);
+  fullname = CCTK_FullVarName (*var);
   *nchars = CCTK_FortranString (fullname ? fullname : "", fullnameptr,
                                 fullnamelen);
-  free (fullname);
 }
 
 
