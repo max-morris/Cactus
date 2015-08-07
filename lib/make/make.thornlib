@@ -132,8 +132,11 @@ ifeq ($(shell uname),AIX)
 # handled at once.  AIX has a command line length limit of about
 # 32000.  Each object's path name may be about 100 characters long.
 OBJS-words-max = 200
+else ifneq ($(findstring CYGWIN_NT,$(shell uname)),)
+# Ditto
+OBJS-words-max = 200
 else
-# Assume that the system has no limit to speak of.
+# Assume that the system has no limit to speak of
 OBJS-words-max = 10000
 endif
 
