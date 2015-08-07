@@ -78,7 +78,7 @@ OBJS = $(SRCS:%=%.o)
 
 $(NAME): $(addsuffix /make.checked, $(SUBDIRS) $(THORNBINDINGS))
 	if [ -r $(NAME) ] ; then echo Updating $(NAME) ; else echo Creating $(NAME) ; fi
-	if [ -r $@ ] ; then rm -f $@ ; fi
+	rm -f $@
 ###	create an archive of the object files
 #	
 ##	This naive method will fail on some machines (eg. IBM SP5)
