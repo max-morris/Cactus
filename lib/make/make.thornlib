@@ -154,8 +154,8 @@ else
 
 .PHONY: $(NAME).objectlist
 $(NAME).objectlist:
-        : > $@.tmp
-        $(foreach obj, $(OBJS), $(shell echo $(obj) >> $@.tmp))
-        mv $@.tmp $@
+	: > $@.tmp
+	$(foreach obj, $(OBJS), $(shell echo $(obj) >> $@.tmp))
+	mv $@.tmp $@
 
 endif
