@@ -75,7 +75,7 @@ sub CreateConfigurationBindings
               my $deps = '';
 
               # Add requirements recursively
-              foreach my $requiredcap (split (' ', $cfg->{"\U$thorn\E REQUIRES"}))
+              foreach my $requiredcap (sort split (' ', $cfg->{"\U$thorn\E REQUIRES"}))
               {
                   next if $requiredcap eq $providedcap;
                   $defs .= "include $bindings_dir/Configuration/Capabilities/make.\U$requiredcap\E.defn\n";
@@ -161,7 +161,7 @@ sub CreateConfigurationBindings
 
     if ($cfg->{"\U$thorn\E REQUIRES"})
     {
-      foreach $requiredcap (split (' ', $cfg->{"\U$thorn\E REQUIRES"}))
+      foreach $requiredcap (sort split (' ', $cfg->{"\U$thorn\E REQUIRES"}))
       {
         # put reference to provided capability
         $defs .= "include $bindings_dir/Configuration/Capabilities/make.\U$requiredcap\E.defn\n";
@@ -196,7 +196,7 @@ sub CreateConfigurationBindings
   $linker_list = &TopoSort(\%linker_thorns, \%linker_cfg, $cfg);
   foreach $thorn (split (' ', $linker_list))
   {
-    foreach $providedcap (split (' ', $cfg->{"\U$thorn\E PROVIDES"}))
+    foreach $providedcap (sort split (' ', $cfg->{"\U$thorn\E PROVIDES"}))
     {
       $linkerdirs .= ' ' . $cfg->{"\U$thorn $providedcap\E LIBRARY_DIRECTORY"};
       $linkerlibs .= ' ' . $cfg->{"\U$thorn $providedcap\E LIBRARY"};
