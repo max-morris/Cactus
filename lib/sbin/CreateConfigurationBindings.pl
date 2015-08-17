@@ -21,7 +21,7 @@ require "$sbin_dir/CSTUtils.pl";
 sub CreateConfigurationBindings
 {
   my($bindings_dir, $cfg, $thorns)=@_;
-  my($field, $providedcap, $thorn, $temp,$defs,$incs,$deps,$linkerflagdirs,$linkerflaglibs);
+  my($field, $providedcap, $thorn, $temp,$defs,$incs,$deps);
   my(%linker_thorns, %linker_cfg, $linker_list, $linkerdirs, $linkerlibs);
 
   if(! $build_dir)
@@ -58,10 +58,6 @@ sub CreateConfigurationBindings
   {
     mkdir('Thorns', 0755) || die "Unable to create Thorns directory";
   }
-
-  # These strings go directly into the Cactus executable
-  my $linkerflagdirs = '';
-  my $linkerflaglibs = '';
 
   # Put all the provided capabilities where they belong
   foreach my $thorn (sort keys %thorns)
