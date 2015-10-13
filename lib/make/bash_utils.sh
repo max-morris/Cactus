@@ -4,6 +4,7 @@
 #             given list
 # arg 1: dirs (as one string)
 # arg 2: file names (as one string)
+# return: 0 on success, 1 on failure
 function find_files {
   local DIRS=$1
   local FILES=$2
@@ -20,6 +21,7 @@ function find_files {
     fi
   done
   FOUND=
+  return 1
 }
 
 # find_libs: look through list of directories for presence of all libraries
@@ -27,16 +29,17 @@ function find_files {
 #            extension
 # arg 1: dirs (as one string)
 # arg 2: file names (as one string)
+# return: 0 on success, 1 on failure
 function find_libs {
   local DIRS=$1
   local LIBS=$2
   for libext in a so dylib; do
     local FILES=`echo "$LIBS" | perl -pe 's/(^| )+([^ \n]+)/ lib\2.'"$libext"'/g'`
-    find_files "$DIRS" "$FILES"
-    if [ -n "$FOUND" ]; then
+    if find_files "$DIRS" "$FILES"; then
       return 0
     fi
   done
+  return 1
 }
 
 # set_make_vars: set variables needed by the Cactus make system, in particular
@@ -99,6 +102,7 @@ function pkg_config {
 # arg2: library name
 # arg3: required libs (as one string)
 # arg4: required header file names (as one string)
+# return: 0 on success, 1 on failure
 function find_standardlib {
   local PREFIX=$1
   local LIBNAME=$2
@@ -133,6 +137,7 @@ function find_standardlib {
     done
   done
   FOUND=
+  return 1
 }
 
 # find_lib: find a library using either pkg-config or a hand-grown search
@@ -158,8 +163,7 @@ function find_lib {
     echo "BEGIN MESSAGE"
     echo "$PREFIX not found. Checking standard paths ..."
     echo "END MESSAGE"
-    find_standardlib $PREFIX $LIBNAME "$LIBS" "$INCS" "$GUESS"
-    if [ -n "$FOUND" ]; then
+    if find_standardlib $PREFIX $LIBNAME "$LIBS" "$INCS" "$GUESS"; then
       echo "BEGIN MESSAGE"
       echo "$PREFIX found: TODO"
       echo "END MESSAGE"
