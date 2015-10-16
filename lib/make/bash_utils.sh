@@ -151,21 +151,36 @@ function find_lib {
   local INCS=$6
   local GUESS=$7
 
-  echo "BEGIN MESSAGE"
-  echo "$PREFIX selected, but ${PREFIX}_DIR not set. Checking pkg-config ..."
-  echo "END MESSAGE"
-  pkg_config "$PREFIX" "$LIBNAME" "$MINVERSION"
-  if [ -n "$PKG_CONFIG_SUCCESS" ]; then
+  if [ -z "$GUESS" ]; then
     echo "BEGIN MESSAGE"
-    eval echo "$PREFIX found: "\${${PREFIX}_DIR}
+    echo "$PREFIX selected, but ${PREFIX}_DIR not set. Checking pkg-config ..."
     echo "END MESSAGE"
+    pkg_config "$PREFIX" "$LIBNAME" "$MINVERSION"
+    if [ -n "$PKG_CONFIG_SUCCESS" ]; then
+      echo "BEGIN MESSAGE"
+      eval echo "$PREFIX found: "\${${PREFIX}_DIR}
+      echo "END MESSAGE"
+    else
+      echo "BEGIN MESSAGE"
+      echo "$PREFIX not found. Checking standard paths ..."
+      echo "END MESSAGE"
+      if find_standardlib $PREFIX $LIBNAME "$LIBS" "$INCS" "$GUESS"; then
+        echo "BEGIN MESSAGE"
+        echo "$PREFIX found."
+        echo "END MESSAGE"
+      else
+        echo "BEGIN MESSAGE"
+        echo "$PREFIX not found."
+        echo "END MESSAGE"
+      fi
+    fi
   else
     echo "BEGIN MESSAGE"
-    echo "$PREFIX not found. Checking standard paths ..."
+    echo "$PREFIX selected, and ${GUESS} selected."
     echo "END MESSAGE"
     if find_standardlib $PREFIX $LIBNAME "$LIBS" "$INCS" "$GUESS"; then
       echo "BEGIN MESSAGE"
-      echo "$PREFIX found: TODO"
+      echo "$PREFIX found."
       echo "END MESSAGE"
     else
       echo "BEGIN MESSAGE"
