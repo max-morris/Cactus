@@ -55,6 +55,10 @@ function set_make_vars {
   # like that in pkg-config
   # take the first directory in LIBS and take off anything past lib\d*
   local      DIR=`echo "$LIB_DIRS" | perl -pe 's/ .*//; s/(.*)\/lib\d*.*/\1/g'`
+  # If that is empty, assume '/usr'. We just don't know where
+  # the library is, and we don't need to. But we need to set ${PREFIX}_DIR to
+  # something to indicate a find
+  : ${DIR:=/usr}
 
   local STRIPPED_LIB_DIRS="$(${CCTK_HOME}/lib/sbin/strip-libdirs.sh ${LIB_DIRS})"
   local STRIPPED_INC_DIRS="$(${CCTK_HOME}/lib/sbin/strip-incdirs.sh ${INC_DIRS})"
