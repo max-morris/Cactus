@@ -187,9 +187,12 @@ function find_lib {
       echo "$PREFIX found."
       echo "END MESSAGE"
     else
-      echo "BEGIN MESSAGE"
-      echo "$PREFIX not found."
-      echo "END MESSAGE"
+      echo "BEGIN ERROR"
+      echo "$PREFIX not found at ${GUESS}."
+      echo "Either the library is not there or has a non-standard "
+      echo "layout, so that you need to set ${PREFIX}_LIB_DIRS and/or ${PREFIX}_INC_DIRS."
+      echo "END ERROR"
+      return 1
     fi
   fi
 }
