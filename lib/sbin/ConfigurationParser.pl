@@ -242,24 +242,20 @@ sub CompareVersionStrings
 { 
   my($v1, $v2) = @_;
   my($nan1, $nan2, $num1, $num2, $ret);
-  while(1) {
-    # compare non-numeric prefix if it exists
-    $v1 =~ m/^([^0-9]*)(.*)/;
-    $nan1 = $1; $v1 = $2;
-    $v2 =~ m/^([^0-9]*)(.*)/;
-    $nan2 = $1; $v2 = $2;
-    $ret = $nan1 cmp $nan2;
-    if ($ret != 0) { return $ret; }
-    # compare numeric prefix if it exists
-    $v1 =~ m/^([0-9]*)(.*)/;
-    $num1 = $1; $v1 = $2;
-    $v2 =~ m/^([0-9]*)(.*)/;
-    $num2 = $1; $v2 = $2;
-    # return from this function if string search was exhausted
-    if (length($num1) == 0 and length($num2) == 0) { return 0; }
-    $ret = $num1 <=> $num2;
-    if ($ret != 0) { return $ret; }
+  # the loop body strips recognized parts from the strings
+  while($v1 ne "" or $v2 ne "") {
+    # compare non-numeric prefix followed by numeric value if they exist
+    # remove found sub-string from input
+    $v1 =~ s/^([^0-9]*)([0-9]*)(.*)/$3/;
+    $nan1 = $1;
+    $num1 = $2;
+    $v2 =~ s/^([^0-9]*)([0-9]*)(.*)/$3/;
+    $nan2 = $1;
+    $num2 = $2;
+    $ret = ($nan1 cmp $nan2) or ($num1 <=> $num2);
+    return $ret if ($ret != 0);
   }
+  return 0;
 }
 
 #/*@@
