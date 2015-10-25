@@ -276,11 +276,11 @@ sub CheckVersionStrings
   $op = $1;
   $v2 = $2;
   $cmp = &CompareVersionStrings($v1, $v2);
-  if ($op eq '<<' and $cmp <  0) { return 1; }
-  if ($op eq '<=' and $cmp <  1) { return 1; }
-  if ($op eq '='  and $cmp == 0) { return 1; }
-  if ($op eq '>=' and $cmp > -1) { return 1; }
-  if ($op eq '>>' and $cmp >  0) { return 1; }
+  return 1 if ($op eq '<<' and $cmp <  0);
+  return 1 if ($op eq '<=' and $cmp <  1);
+  return 1 if ($op eq '='  and $cmp == 0);
+  return 1 if ($op eq '>=' and $cmp > -1);
+  return 1 if ($op eq '>>' and $cmp >  0);
   return 0;
 }
 
