@@ -35,17 +35,11 @@ sub CreateConfigurationDatabase
     # Get the configuration data from it
     &ParseConfigurationCCL($config_dir, $thorn, \%cfg, \%thorns, $filename);
 
-#    my $debug = 1;
 #    if($debug)
 #    {
 #      print "   $thorn\n";
 #      print "           Provides:          ", $cfg{"\U$thorn\E PROVIDES"}, "\n"
 #        if ($cfg{"\U$thorn\E PROVIDES"});
-#      foreach my $provides (split (' ', $cfg{"\U$thorn\E PROVIDES"}))
-#      {
-#        print "           as version:        ", $cfg{"\U$thorn\E PROVIDES \U$provides\E VERSION"}, "\n"
-#          if ($cfg{"\U$thorn\E PROVIDES \U$provides\E VERSION"});
-#      }
 #      print "           Requires:          ", $cfg{"\U$thorn\E REQUIRES"}, "\n"
 #        if ($cfg{"\U$thorn\E REQUIRES"});
 #      print "           Optional:          ", $cfg{"\U$thorn\E OPTIONAL"}, "\n"
@@ -163,22 +157,6 @@ sub CreateConfigurationDatabase
                        "     These thorns are: '@found'.\n" .
                        "     Please use only one !\n");
       }
-      elsif ( $cfg{"\U$thorn\E REQUIRES \U$requiredcap\E VERSION"} )
-      {
-        if ( &CheckVersionStrings(
-                $cfg{"\U".$found[0]."\E PROVIDES \U$requiredcap\E VERSION"},
-                $cfg{"\U$thorn\E REQUIRES \U$requiredcap\E VERSION"}) == 0 )
-        {
-          &CST_error (0, "Thorn '$thorn' requires the capability " .
-                       "'$requiredcap' in version ".
-                       $cfg{"\U$thorn\E REQUIRES \U$requiredcap\E VERSION"}.
-                       ". Thorn ".$found[0]." provides $requiredcap, but ".
-                       "in version ".
-                       $cfg{"\U".$found[0]."\E PROVIDES \U$requiredcap\E VERSION"}.
-                       ".\n");
-        }
-        $cfg{"\U$thorn\E USES THORNS"} .= $found[0] . ' ';
-      }
       else
       {
         $cfg{"\U$thorn\E USES THORNS"} .= $found[0] . ' ';
@@ -230,65 +208,6 @@ sub CreateConfigurationDatabase
 
 
 #/*@@
-#  @routine    CompareVersionStrings
-#  @date       Tue Oct 20 23:17:18 2015
-#  @author     Frank Loeffler
-#  @desc
-#  Compares two version strings: first non-numeric prefix lexically, next
-#  numeric prefix of remainder numerically, and so on.
-#  @enddesc
-#@@*/
-sub CompareVersionStrings
-{ 
-  my($v1, $v2) = @_;
-  my($nan1, $nan2, $num1, $num2, $ret);
-  while(1) {
-    # compare non-numeric prefix if it exists
-    $v1 =~ m/^([^0-9]*)(.*)/;
-    $nan1 = $1; $v1 = $2;
-    $v2 =~ m/^([^0-9]*)(.*)/;
-    $nan2 = $1; $v2 = $2;
-    $ret = $nan1 cmp $nan2;
-    if ($ret != 0) { return $ret; }
-    # compare numeric prefix if it exists
-    $v1 =~ m/^([0-9]*)(.*)/;
-    $num1 = $1; $v1 = $2;
-    $v2 =~ m/^([0-9]*)(.*)/;
-    $num2 = $1; $v2 = $2;
-    # return from this function if string search was exhausted
-    if (length($num1) == 0 and length($num2) == 0) { return 0; }
-    $ret = $num1 <=> $num2;
-    if ($ret != 0) { return $ret; }
-  }
-}
-
-#/*@@
-#  @routine    CheckVersionStrings
-#  @date       Tue Oct 20 23:17:18 2015
-#  @author     Frank Loeffler
-#  @desc
-#  Checks that two versions strings are compatible. The first argument is a raw
-#  version string, the second argument has also an operator as prefix, which is
-#  used to determine if these two match. Returns 1 for success and 0 for failure.
-#  @enddesc
-#@@*/
-sub CheckVersionStrings
-{
-  my($v1,$fv2) = @_;
-  my($op, $v2, $cmp);
-  $fv2 =~ m/(<<|<=|-|>=|>>)(.*)/;
-  $op = $1;
-  $v2 = $2;
-  $cmp = &CompareVersionStrings($v1, $v2);
-  if ($op eq '<<' and $cmp <  0) { return 1; }
-  if ($op eq '<=' and $cmp <  1) { return 1; }
-  if ($op eq '='  and $cmp == 0) { return 1; }
-  if ($op eq '>=' and $cmp > -1) { return 1; }
-  if ($op eq '>>' and $cmp >  0) { return 1; }
-  return 0;
-}
-
-#/*@@
 #  @routine    ParseConfigurationCCL
 #  @date       Tue Feb  8 19:23:18 2000
 #  @author     Tom Goodale
@@ -324,7 +243,7 @@ sub ParseConfigurationCCL
     if($line =~ m/^\s*PROVIDES\s*/i)
     {
       $lang = $script = '';
-      ($provides, $script, $lang, $options, $line_number, $version) = &ParseProvidesBlock($line_number, \@data);
+      ($provides, $script, $lang, $options, $line_number) = &ParseProvidesBlock($line_number, \@data);
       if ($provides !~ m{^[A-Za-z0-9_.]+$}) {
         &CST_error (0, "Illegal capability name '$provides' line '$line' in configure.ccl of thorn '$thorn'");
       }
@@ -332,7 +251,6 @@ sub ParseConfigurationCCL
         &CST_error (0, "Illegal script language '$lang' line '$line' in configure.ccl of thorn '$thorn'");
       }
       $cfg->{"\U$thorn\E PROVIDES"} .= "$provides ";
-      $cfg->{"\U$thorn\E PROVIDES \U$provides\E VERSION"} = "$version";
       if($script)
       {
         $cfg->{"\U$thorn\E PROVIDES \U$provides\E SCRIPT"} = "$thorns->{$thorn}/$script";
@@ -369,19 +287,10 @@ sub ParseConfigurationCCL
     elsif($line =~ m/^\s*REQUIRES\s+(.*)/i)
     {
       my $cap = $1;
-      if ($cap !~ m{^([A-Za-z0-9_.]+ *(\((<<|<=|=|>=|>>)[0-9a-zA-Z.+-:]+\))?)+$}) {
+      if ($cap !~ m{^[A-Za-z0-9_. ]+$}) {
         &CST_error (0, "Illegal required capability '$cap' line '$line' in configure.ccl of thorn '$thorn'");
       }
-      while ($cap =~ m/ *([A-Za-z0-9_.]+)( +\((.+)\))?/g)
-      {
-        my $capability = $1;
-        my $version    = $3;
-        $cfg->{"\U$thorn\E REQUIRES"} .= "$capability ";
-        if ($version)
-        {
-          $cfg->{"\U$thorn\E REQUIRES \U$capability\E VERSION"} .= "$version";
-        }
-      }
+      $cfg->{"\U$thorn\E REQUIRES"} .= "$cap ";
     }
     elsif($line =~ m/^\s*OPTIONAL\s+/i)
     {
@@ -425,12 +334,11 @@ sub ParseConfigurationCCL
 sub ParseProvidesBlock
 {
   my ($line_number, $data) = @_;
-  my ($provides, $script, $lang, $options, $version);
+  my ($provides, $script, $lang, $options);
 
   $provides = "";
   $script   = "";
   $lang     = "";
-  $version  = "0.0.1";
   $options  = [];
 
   $data->[$line_number] =~ m/^\s*PROVIDES\s*(.*)/i;
@@ -464,18 +372,6 @@ sub ParseProvidesBlock
         push(@$options, split(' ',$1));
         next;
       }
-      elsif($data->[$line_number] =~ m/^\s*VERSION\s+(.+)$/i)
-      {
-        $version = $1;
-        if ($1 !~ m/[0-9]([0-9a-z.+-:]*)/i)
-        {
-          print STDERR "Error in version specification '"+$version+"'. "+
-                       "Only alphanumeric characters and . + - : are allowed, "+
-                       "and a version has to start with a digit."
-          &CST_error (0, 'Unrecognised version');
-        }
-        next;
-      }
       elsif($data->[$line_number] =~ m:\s*\}\s*:)
       {
         # do nothing.
@@ -488,7 +384,7 @@ sub ParseProvidesBlock
     }
   }
 
-  return ($provides, $script, $lang, $options, $line_number, $version);
+  return ($provides, $script, $lang, $options, $line_number);
 }
 
 
