@@ -1142,7 +1142,7 @@ between builds.
 \item
 
 \begin{alltt}
-REQUIRES  <\var{Capability}> [(\var{Comparison operator}\var{Version string})]
+REQUIRES  <\var{Capability}> [(\var{Comparison operator} \var{Version string})]
 \end{alltt}
 
 Informs the CST that this thorn requires a certain capability to be
@@ -1161,14 +1161,15 @@ has to be attached without spaces. Valid operators and their meaning are:
  \item[$>>$] Requesting capability strictly newer than given version.
 \end{itemize}
 Version strings are compared from left to right. First the initial part of each
-string consisting entirely of digits is determined. The numerical values of
+string consisting entirely of digits is determined. The integer values of
 these two parts are compared. If a difference is found it is returned. Then the
 initial part of the remainder of each string which consists entirely of
 non-digit characters is determined. The two parts are compared lexically, and
 any difference found is returned as the result of the comparison. The lexical
 comparison is a comparison of ASCII values. These two steps (comparing and
 removing initial non-digit strings and initial digit strings) are repeated
-until a difference is found or both strings are exhausted. 
+until a difference is found or both strings are exhausted. Spaces inside the
+parentheses are allowed, except inside the operator or version string.
 
 Example:
 
