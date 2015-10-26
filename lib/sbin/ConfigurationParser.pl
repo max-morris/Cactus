@@ -365,13 +365,14 @@ sub ParseConfigurationCCL
     elsif($line =~ m/^\s*REQUIRES\s+(.*)/i)
     {
       my $cap = $1;
-      if ($cap !~ m{^([A-Za-z0-9_.]+ *(\((<<|<=|=|>=|>>)[0-9a-zA-Z.+-:]+\))?)+$}) {
+      if ($cap !~ m{^([A-Za-z0-9_.]+ *(\( *(<<|<=|=|>=|>>) *[0-9a-zA-Z.+-:]+ *\))?)+$}) {
         &CST_error (0, "Illegal required capability '$cap' line '$line' in configure.ccl of thorn '$thorn'");
       }
-      while ($cap =~ m/ *([A-Za-z0-9_.]+)( +\((.+)\))?/g)
+      while ($cap =~ m/ *([A-Za-z0-9_.]+)( *\((.+)\))?/g)
       {
         my $capability = $1;
         my $version    = $3;
+        $version =~ s/ //g;
         $cfg->{"\U$thorn\E REQUIRES"} .= "$capability ";
         if ($version)
         {
