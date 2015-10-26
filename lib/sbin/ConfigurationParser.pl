@@ -252,7 +252,7 @@ sub CompareVersionStrings
     $v2 =~ s/^([^0-9]*)([0-9]*)(.*)/$3/;
     $nan2 = $1;
     $num2 = $2;
-    $ret = ($nan1 cmp $nan2) or ($num1 <=> $num2);
+    $ret = ($nan1 cmp $nan2) || ($num1 <=> $num2);
     return $ret if ($ret != 0);
   }
   return 0;
