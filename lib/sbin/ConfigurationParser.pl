@@ -165,7 +165,7 @@ sub CreateConfigurationDatabase
       }
       elsif ( $cfg{"\U$thorn\E REQUIRES \U$requiredcap\E VERSION"} )
       {
-        if ( &CheckVersionStrings(
+        if ( &VersionsCompatible(
                 $cfg{"\U".$found[0]."\E PROVIDES \U$requiredcap\E VERSION"},
                 $cfg{"\U$thorn\E REQUIRES \U$requiredcap\E VERSION"}) == 0 )
         {
@@ -259,7 +259,7 @@ sub CompareVersionStrings
 }
 
 #/*@@
-#  @routine    CheckVersionStrings
+#  @routine    VersionsCompatible
 #  @date       Tue Oct 20 23:17:18 2015
 #  @author     Frank Loeffler
 #  @desc
@@ -268,7 +268,7 @@ sub CompareVersionStrings
 #  used to determine if these two match. Returns 1 for success and 0 for failure.
 #  @enddesc
 #@@*/
-sub CheckVersionStrings
+sub VersionsCompatible
 {
   my($v1,$fv2) = @_;
   my($op, $v2, $cmp);
