@@ -1123,11 +1123,11 @@ script may also indicate the failure to detect a capability by
 returning a non-zero exit code;  this will stop the build after the
 CST stage.
 
-All capabilities have a version attached to them, so that other thorns
-can depend on such a specific version. Version strings can only contain
-letters, numbers, or ``.+-:'' (dot, plus, minus, colon), and have to start
-with a number. Specifying a version number is optional. If none is given,
-``0.0.1'' is assumed.
+All capabilities have an optional version attached to them, so that other
+thorns can depend on such a specific version. Version strings can only contain
+letters, numbers, or ``.+-:'' (dot, plus, minus, colon), and have to start with
+a number. Specifying a version number is optional. If none is given, ``0.0.1''
+is assumed.
 
 Scripts can be in any language.  If an interpreter is needed to run
 the script, for example \verb|Perl|, this should be indicated by the
