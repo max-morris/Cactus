@@ -277,9 +277,9 @@ sub VersionsCompatible
   $v2 = $2;
   $cmp = &CompareVersionStrings($v1, $v2);
   return 1 if ($op eq '<<' and $cmp <  0);
-  return 1 if ($op eq '<=' and $cmp <  1);
+  return 1 if ($op eq '<=' and $cmp <= 0);
   return 1 if ($op eq '='  and $cmp == 0);
-  return 1 if ($op eq '>=' and $cmp > -1);
+  return 1 if ($op eq '>=' and $cmp >= 0);
   return 1 if ($op eq '>>' and $cmp >  0);
   return 0;
 }
