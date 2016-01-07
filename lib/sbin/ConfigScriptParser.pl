@@ -50,8 +50,6 @@ sub ParseConfigScript
             }
         } elsif ($line =~ m/^\s*INCLUDE_DIRECTORY\s+(.*)$/i) {
             $cfg->{"\U$thorn $provides\E INCLUDE_DIRECTORY"} .= " $1";
-        } elsif ($line =~ m/^\s*INCLUDE_DIRECTORY_FORTRAN\s+(.*)$/i) {
-            $cfg->{"\U$thorn $provides\E INCLUDE_DIRECTORY_FORTRAN"} .= " $1";
         } elsif ($line =~ m/^\s*LIBRARY_DIRECTORY\s+(.*)$/i) {
             $cfg->{"\U$thorn $provides\E LIBRARY_DIRECTORY"} .= " $1";
         } elsif ($line =~ m/^\s*LIBRARY\s+(.*)$/i) {
