@@ -118,18 +118,20 @@ define F90_DEPENDENCIES
 endef
 
 # No preprocessing, just create empty dependency file
+# Some file systems only update the file modifcation date if something is
+# actually written, so "true >$@" won't work.
 define f77_DEPENDENCIES
-	: > $@
+	echo "" > $@
 	current_wd=`$(GET_WD)` ; cat $< | $(PERL) $(F_DEPEND_MODULES) $< $(basename $(notdir $<)).f77.o $(SRCDIR) $(USESTHORNS:%=$$current_wd/../%) $(F_DEPEND_MODULES_OUT) || { rm $@; exit 1; }
 endef
 
 define f_DEPENDENCIES
-	: > $@
+	echo "" > $@
 	current_wd=`$(GET_WD)` ; cat $< | $(PERL) $(F_DEPEND_MODULES) $< $(basename $(notdir $<)).f.o $(SRCDIR) $(USESTHORNS:%=$$current_wd/../%) $(F_DEPEND_MODULES_OUT) || { rm $@; exit 1; }
 endef
 
 define f90_DEPENDENCIES
-	: >  $@
+	echo "" > $@
 	current_wd=`$(GET_WD)` ; cat $< | $(PERL) $(F_DEPEND_MODULES) $< $(basename $(notdir $<)).f90.o $(SRCDIR) $(USESTHORNS:%=$$current_wd/../%) $(F_DEPEND_MODULES_OUT) || { rm $@; exit 1; }
 endef
 
