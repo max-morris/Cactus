@@ -57,7 +57,7 @@ extern char MPI_Active;
             int errcode;                                                      \
                                                                               \
                                                                               \
-            if((errcode = xf) != MPI_SUCCESS)                                 \
+            if ((errcode = (xf)) != MPI_SUCCESS)                              \
             {                                                                 \
               char mpi_error_string[MPI_MAX_ERROR_STRING+1];                  \
               int resultlen;                                                  \
@@ -145,7 +145,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
 
 
   /* Put this in for the moment until parameter stuff is done. */
-  if(convergence_level > 0)
+  if (convergence_level > 0)
   {
     return (NULL);
   }
@@ -157,13 +157,13 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
 
   /* Create a new Grid Hierarchy */
   thisGH = malloc(sizeof(cGH));
-  if(thisGH)
+  if (thisGH)
   {
     thisGH->cctk_dim = CCTK_MaxGFDim();
 
     /* Need this to be at least one otherwise the memory allocation will fail */
     cctk_dim = thisGH->cctk_dim;
-    if(thisGH->cctk_dim == 0)
+    if (thisGH->cctk_dim == 0)
     {
       cctk_dim = 1;
     }
@@ -195,14 +195,14 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
      * Note we want at least one to prevent memory allocation from failing!
      */
     thisGH->data = malloc((n_variables ? n_variables:1)*sizeof(void **));
-    if(thisGH->data)
+    if (thisGH->data)
     {
       for(variable = 0; variable < n_variables; variable++)
       {
         ntimelevels = CCTK_DeclaredTimeLevelsVI(variable);
 
         thisGH->data[variable] = calloc(ntimelevels, sizeof(void *));
-        if(thisGH->data[variable] == NULL)
+        if (thisGH->data[variable] == NULL)
         {
           break;
         }
@@ -218,7 +218,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
     thisGH->GroupData = malloc((n_groups ? n_groups:1)*sizeof(cGHGroupData));
   }
 
-  if(thisGH &&
+  if (thisGH &&
      thisGH->cctk_gsh &&
      thisGH->cctk_lsh &&
      thisGH->cctk_lbnd &&
@@ -639,7 +639,7 @@ int CactusDefaultEnableGroupStorage(const cGH *GH, const char *groupname)
 
 
   /* Has the increase group storage routine been overloaded ? */
-  if(CCTK_GroupStorageIncrease != CactusDefaultGroupStorageIncrease)
+  if (CCTK_GroupStorageIncrease != CactusDefaultGroupStorageIncrease)
   {
     group = CCTK_GroupIndex(groupname);
     timelevel = -1;
@@ -698,7 +698,7 @@ int CactusDefaultDisableGroupStorage(const cGH *GH, const char *groupname)
 
 
   /* Has the decrease group storage routine been overloaded ? */
-  if(CCTK_GroupStorageDecrease != CactusDefaultGroupStorageDecrease)
+  if (CCTK_GroupStorageDecrease != CactusDefaultGroupStorageDecrease)
   {
     group = CCTK_GroupIndex(groupname);
     timelevel = -1;
@@ -781,17 +781,17 @@ int CactusDefaultGroupStorageIncrease (const cGH *GH, int n_groups,
 
 
   /* Has the normal group storage been overloaded ? */
-  if(CCTK_EnableGroupStorage != CactusDefaultEnableGroupStorage)
+  if (CCTK_EnableGroupStorage != CactusDefaultEnableGroupStorage)
   {
     for(i = retval = 0; i < n_groups; i++)
     {
-      if(groups[i] >= 0)
+      if (groups[i] >= 0)
       {
         /* Since the old enable and disable group storage just returned true or
          * false and did all timelevels, only enable storage if timelevels is
          * not 0
          */
-        if(CCTK_QueryGroupStorageI(GH, groups[i]))
+        if (CCTK_QueryGroupStorageI(GH, groups[i]))
         {
           value = CCTK_DeclaredTimeLevelsVI(groups[i]);
         }
@@ -799,14 +799,14 @@ int CactusDefaultGroupStorageIncrease (const cGH *GH, int n_groups,
         {
           value = 0;
         }
-        if(timelevels[i] != 0)
+        if (timelevels[i] != 0)
         {
           gname = CCTK_GroupName(groups[i]);
           CCTK_EnableGroupStorage(GH, gname);
           free (gname);
         }
         retval += value;
-        if(status)
+        if (status)
         {
           status[i] = value;
         }
@@ -890,18 +890,18 @@ int CactusDefaultGroupStorageDecrease (const cGH *GH, int n_groups,
 
 
   /* Has the normal group storage been overloaded ? */
-  if(CCTK_DisableGroupStorage != CactusDefaultDisableGroupStorage)
+  if (CCTK_DisableGroupStorage != CactusDefaultDisableGroupStorage)
   {
     for(i = retval = 0; i < n_groups; i++)
     {
       /* Bogus entries in group array are marked with -1.*/
-      if(groups[i] >= 0)
+      if (groups[i] >= 0)
       {
         /* Since the old enable and disable group storage just returned true or
          * false and did all timelevels, only disable storage if timelevels is
          * 0
          */
-        if(CCTK_QueryGroupStorageI(GH, groups[i]))
+        if (CCTK_QueryGroupStorageI(GH, groups[i]))
         {
           value = CCTK_DeclaredTimeLevelsVI(groups[i]);
         }
@@ -909,14 +909,14 @@ int CactusDefaultGroupStorageDecrease (const cGH *GH, int n_groups,
         {
           value = 0;
         }
-        if(timelevels[i] == 0)
+        if (timelevels[i] == 0)
         {
           gname = CCTK_GroupName(groups[i]);
           CCTK_DisableGroupStorage(GH, gname);
           free (gname);
         }
         retval += value;
-        if(status)
+        if (status)
         {
           status[i] = value;
         }

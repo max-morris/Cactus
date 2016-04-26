@@ -38,7 +38,7 @@ extern char MPI_Active;
             int errcode;                                                      \
                                                                               \
                                                                               \
-            if((errcode = xf) != MPI_SUCCESS)                                 \
+            if ((errcode = (xf)) != MPI_SUCCESS)                              \
             {                                                                 \
               char mpi_error_string[MPI_MAX_ERROR_STRING+1];                  \
               int resultlen;                                                  \
