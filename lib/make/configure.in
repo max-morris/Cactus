@@ -440,8 +440,8 @@ AC_SUBST(F77_OPENMP_FLAGS)
 
 # Set default Fortran compiler
 AC_SUBST(F90)
-if test -z "$F90" ; then
-  F90='none'
+if test -z "$F90" || test "$F90" = none ; then
+  F90="$CCTK_HOME/lib/sbin/no-fortran-compiler"
 fi
 
 AC_SUBST(F77)

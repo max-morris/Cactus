@@ -1934,8 +1934,8 @@ F77_PROFILE_FLAGS="$F90_PROFILE_FLAGS"
 
 # Set default Fortran compiler
 
-if test -z "$F90" ; then
-  F90='none'
+if test -z "$F90" || test "$F90" = none ; then
+  F90="$CCTK_HOME/lib/sbin/no-fortran-compiler"
 fi
 
 
