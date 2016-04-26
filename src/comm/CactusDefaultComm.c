@@ -30,7 +30,7 @@
 #include <unistd.h>
 #endif
 
-#ifdef CCTK_MPI
+#ifdef HAVE_CAPABILITY_MPI
 #  include <mpi.h>
 #endif
 
@@ -43,15 +43,15 @@ CCTK_FILEVERSION(comm_CactusDefaultComm_c);
  ********************************************************************/
 
 /* FIXME:  This should be in a header somewhere */
-#ifdef CCTK_MPI
-extern char MPI_Active;
+#ifdef HAVE_CAPABILITY_MPI
+extern char cctki_MPI_Active;
 #endif
 
 /********************************************************************
  *********************     Local Definitions   **********************
  ********************************************************************/
 
-#ifdef CCTK_MPI
+#ifdef HAVE_CAPABILITY_MPI
 #define CACTUS_MPI_ERROR(xf)                                                  \
           {                                                                   \
             int errcode;                                                      \
@@ -280,8 +280,8 @@ int CactusDefaultMyProc (const cGH *GH)
   (void) (GH + 0);
 
   myproc = 0;
-#ifdef CCTK_MPI
-  if(! CCTK_ParamChecking() && MPI_Active)
+#ifdef HAVE_CAPABILITY_MPI
+  if (! CCTK_ParamChecking() && cctki_MPI_Active)
   {
     CACTUS_MPI_ERROR (MPI_Comm_rank (MPI_COMM_WORLD, &myproc));
   }
@@ -327,8 +327,8 @@ int CactusDefaultnProcs (const cGH *GH)
   else
   {
     nprocs = 1;
-#ifdef CCTK_MPI
-    if(MPI_Active)
+#ifdef HAVE_CAPABILITY_MPI
+    if (cctki_MPI_Active)
     {
       CACTUS_MPI_ERROR (MPI_Comm_size (MPI_COMM_WORLD, &nprocs));
     }
@@ -371,8 +371,8 @@ int CactusDefaultExit (cGH *GH, int retval)
   /* avoid compiler warning about unused parameter */
   (void) (GH + 0);
 
-#ifdef CCTK_MPI
-  if(MPI_Active)
+#ifdef HAVE_CAPABILITY_MPI
+  if (cctki_MPI_Active)
   {
     CACTUS_MPI_ERROR (MPI_Finalize ());
   }
@@ -413,8 +413,8 @@ int CactusDefaultAbort (cGH *GH, int retval)
   /* avoid compiler warning about unused parameter */
   (void) (GH + 0);
 
-#ifdef CCTK_MPI
-  if (MPI_Active)
+#ifdef HAVE_CAPABILITY_MPI
+  if (cctki_MPI_Active)
   {
     /* flush stdout/stderr and then wait a few seconds before calling
        MPI_Abort()
