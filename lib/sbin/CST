@@ -468,7 +468,7 @@ sub RequiredThorns
   my(@requires, @result);
 
   @result = ();
-  foreach $i (split (' ', $config->{"\U$thorn\E USES THORNS"}) )
+  foreach $i (sort (split (' ', $config->{"\U$thorn\E USES THORNS"})))
   {
     if ($i eq $top)
     {
