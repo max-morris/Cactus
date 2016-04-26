@@ -7385,9 +7385,9 @@ EOF
 fi
 
 
-if [ $cctk_cv_have_cxx_auto_specifier == no ||
-      $cctk_cv_have_cxx_lambda == no ||
-      $cctk_cv_have_cxx_range_based_for == no ]; then
+if test "$cctk_cv_have_cxx_auto_specifier" = no -o \
+        "$cctk_cv_have_cxx_lambda" = no -o \
+        "$cctk_cv_have_cxx_range_based_for" = no; then
   echo "Cactus requires a C++11 compiler -- check your C++ compiler and C++ compiler flags"
   exit 1
 fi
