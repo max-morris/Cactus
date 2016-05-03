@@ -1783,6 +1783,16 @@ sub CompareTestFiles
             print "TESTSUITE ERROR: Didn't catch case in CompareFiles\n";
           }
         } #while
+        while ($nline = <INNEW>)
+        {
+          # ignore trailing comment lines in new file
+          last unless ($nline =~ /^\s*(["#].*)?$/);
+        }
+        if (!eof(INNEW))
+        {
+          $rundata->{"$thorn $test $file NFAILWEAK"}++;
+          $rundata->{"$thorn $test $file NFAILSTRONG"}++;
+        }
 
       }
       elsif (!-e $newfile && -s $oldfile)
