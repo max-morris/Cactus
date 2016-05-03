@@ -51,7 +51,9 @@ in single processor mode. Please refer to the architecture section
 \end{Lentry}
 
 \noindent
-To use Cactus, with the default driver\footnote{For help with unfamiliar terms, please consult the glossary, Appendix \ref{sec:glossary}.} (\texttt{CactusPUGH/PUGH}) on multiple
+To use Cactus, with the default driver\footnote{For help with unfamiliar terms,
+please consult the glossary, Appendix \ref{sec:glossary}.}
+(\texttt{CactusPUGH/PUGH}) on multiple
 processors you also need to include the thorn \texttt{ExternalLibraries/MPI}
 in your thornlist, to include support for
 \begin{Lentry}
@@ -122,6 +124,7 @@ Operating systems:
 \begin{Lentry}
 \item[\textbf{Linux}] (this includes Blue Gene and Cray systems)
 \item[\textbf{OS X}]
+\item[\textbf{Cygwin}]
 \end{Lentry}
 
 CPU architectures:
@@ -582,28 +585,6 @@ Compiling with extra packages is described fully in
 Section \ref{subsec:cowiexpa},
 which should be consulted for the full range of configuration options.
 
-\begin{Lentry}
-\item [\texttt{MPI}] * The MPI package to use, if required. Supported values are
-        \texttt{CUSTOM}, \texttt{NATIVE}, \texttt{MPICH}, or \texttt{LAM}.
-
-\item [\texttt{HDF5\_DIR}]
-Used in connection with thorn \texttt{ExternalLibraries/HDF5}.
-Supported values are \texttt{BUILD}, or a path pointing to an existing installation. The
-option \texttt{HDF5} is depreciated.
-
-\item [\texttt{LAPACK\_DIR}]
-Used in connection with thorn \texttt{ExternalLibraries/LAPACK}.
-Supported values are \texttt{BUILD}, or a path pointing to an existing installation. The
-option \texttt{LAPACK} is depreciated.
-
-\item [\texttt{PETSC}]
-Supported values are \texttt{yes}, and \texttt{no}. A blank value is taken as \texttt{no}.
-
-\item [\texttt{PTHREADS}]
-Supported values are \texttt{yes}, and \texttt{no}. A blank value is taken as \texttt{no}.
-
-\end{Lentry}
-
 \item{Miscellaneous}
 
 \begin{Lentry}
@@ -623,193 +604,43 @@ commands that it is executing.
 \section{Compiling with Extra Packages}
 \label{subsec:cowiexpa}
 
+Extra packages are provided through the \textit{ExternalLibraries} thorns each
+of which usually supports a set of variables \texttt{\var{THORN\_DIR}},
+\texttt{\var{THORN\_LIBS}}, \texttt{\var{THORN\_LIB\_DIRS}}, and
+\texttt{\var{THORN\_INC\_DIRS}} to control where include and library files are
+located, where \texttt{THORN} is the name of the \texttt{ExternalLibrary}. The
+actual list of supported variables can be found in each thorn's
+\texttt{configuration.ccl} file.
 
-\subsection{MPI: Message Passing Interface}
-\label{subsubsec:Compiling-MPI}
+While not all \texttt{ExternalLibraries} interpret all options in the same way,
+typically options have the following meaning and allowed values:
 
-The \textit{Message Passing Interface} (MPI) provides inter-processor
-communication. It can either be implemented natively on a machine
-(this is usual on most supercomputers), or through a standard package
-such as MPICH, LAM, WMPI, or PACX.
-
-To compile with MPI, the configure option is
-
-\texttt{MPI = <\var{MPI\_TYPE}>},
-
-where \texttt{<\var{MPI\_TYPE}>} can take the values (entries followed by *
-may be specified on the configuration command line):
-
+\texttt{\var{THORN\_DIR}} can take the values:
 \begin{Lentry}
-
-\item[\texttt{CUSTOM}] For a custom MPI configuration set the variables
-  \begin{Lentry}
-  \item [\texttt{MPI\_LIBS}] * libraries.
-  \item [\texttt{MPI\_LIB\_DIRS}] * library directories.
-  \item [\texttt{MPI\_INC\_DIRS}] * include file directories.
-  \end{Lentry}
-
-\item[\texttt{NATIVE}] Use the native MPI for this machine, as indicated in
-        the \texttt{known-architectures} directory
-        (\texttt{lib/make/known-architectures}).
-
-\item[\texttt{MPICH}]
-Use MPICH (\url{http://www-unix.mcs.anl.gov/mpi/mpich}). This is controlled
-by the options
-  \begin{Lentry}
-  \item [\texttt{MPICH\_ARCH}] * machine architecture.
-  \item [\texttt{MPICH\_DIR} ] * directory in which MPICH is installed.
-        If this option is not defined, it will be searched for.
-  \item [\texttt{MPICH\_DEVICE}] * the device used by MPICH. If not
-        defined, the configuration process will search for this in a
-        few defined places.
-        Supported devices are currently \texttt{ch\_p4}, \texttt{ch\_shmem},
-        \texttt{globus} and \texttt{myrinet}.
-        For versions of MPICH prior to 1.2.0, the devices are searched for
-         in this order, for 1.2.0 you may need to specify \texttt{MPICH\_DEVICE},
-        depending on the installation.
-  \end{Lentry}
-
-If \texttt{MPICH\_DEVICE} is chosen to be \texttt{globus}
-(\url{http://www.globus.org}), an additional variable must be set
-  \begin{Lentry}
-  \item[\texttt{GLOBUS\_LOCATION}] * directory in which Globus is installed.
-  \end{Lentry}
-The Globus flavor may be chosen optionally
-  \begin{Lentry}
-  \item[\texttt{GLOBUS\_FLAVOR}] * Globus flavor to build Cactus with.
-  \end{Lentry}
-If it is not set, the first Globus flavor found will be used.
-
-If \texttt{MPICH\_DEVICE} is chosen to be \texttt{ch\_gm},
-(\url{http://www.myri.com}), an additional variable must be set
-  \begin{Lentry}
-  \item[\texttt{MYRINET\_DIR}] * directory in which Myrinet libraries are installed.
-  \end{Lentry}
-
-\item[\texttt{LAM}]
-Use \texttt{LAM} (\textit{Local Area Multicomputer}, \url{http://www.lam-mpi.org/}).
-This is controlled by the variables
-  \begin{Lentry}
-  \item[\texttt{LAM\_DIR} ] * directory in which LAM is installed. This
-     will be searched for in a few provided places if not given.
-  \end{Lentry}
-If the \texttt{LAM} installation splits libraries and include files into different
-directories, instead of setting \texttt{LAM\_DIR} set the two variables
-  \begin{Lentry}
-  \item[\texttt{LAM\_LIB\_DIR}] * directory in which LAM libraries are installed.
-  \item[\texttt{LAM\_INC\_DIR}] * directory in which LAM include files are installed.
-  \end{Lentry}
-
-
-\item[\texttt{WMPI}]
-Use WMPI (\textit{Win32 Message Passing Interface}, \url{http://dsg.dei.uc.pt/w32mpi/intro.html}). This is controlled by the variable
-  \begin{Lentry}
-  \item[\texttt{WMPI\_DIR}] * directory in which WMPI is installed.
-  \end{Lentry}
-
-\item[\texttt{HPVM}]
-Use HPVM (\textit{High Performance Virtual Machine},
-(\url{http://www-csag.ucsd.edu/projects/hpvm.html}).
-This is controlled by the variable
-  \begin{Lentry}
-  \item[\texttt{HPVM\_DIR}] * directory in which HPVM is installed.
-  \end{Lentry}
-
-\item[\texttt{MPIPro}]
-Use MPIPro (\url{http://www.mpi-softtech.com/}).
-
-\item[\texttt{PACX}]
-Use the PACX Metacomputing package (\textit{PArallel Computer eXtension},\\
-\url{http://www.hlrs.de/structure/organisation/par/projects/pacx-mpi/}). This is controlled by the variables
-  \begin{Lentry}
-  \item[\texttt{PACX\_DIR}] * directory in which PACX is installed.
-        If this option is not defined, it will be searched for.
-  \item[\texttt{PACX\_MPI}] * the MPI package PACX uses node-local
-        communication. This can be any of the above MPI packages.
-  \end{Lentry}
-
+\item [\texttt{BUILD}] compile included \texttt{THORN} copy.
+\item [\texttt{NO\_BUILD}] search for \texttt{THORN} in
+      \texttt{\var{THORN\_DIR}}.
+\item [\texttt{CUSTOM}] do not search for or build \texttt{THORN}, instead use
+      information provided in \texttt{\var{THORN\_LIBS}},
+      \texttt{\var{THORN\_LIB\_DIRS}}, and \texttt{\var{THORN\_INC\_DIRS}}.
+\item [\texttt{NONE}] use native \texttt{THORN} implementation provided by the
+      compiler or operating system; no further options are used.
+\item [any valid path] search for \texttt{THORN} in the given directory.
+\item [missing] if \texttt{\var{THORN\_DIR}} is missing \texttt{THORN} is searched for in
+      a number of well known locations and built from the included copy if
+      it is not found.
 \end{Lentry}
 
-Note that the searches for libraries, etc. mentioned above use the
-locations given in the files in \texttt{lib/make/extras/MPI}.
 
-\subsection{HDF5: Hierarchical Data Format version 5}
-\label{subsec:hdf5}
-
-To compile with HDF5 (\url{http://hdf.ncsa.uiuc.edu/whatishdf5.html}),
-include thorn \texttt{ExternalLibraries/HDF5} in your thornlist, and use
-the configure option
-
-\texttt{HDF5\_DIR = BUILD/<\var{dir}> [LIBZ\_DIR = <\var{dir}>] [LIBSZ\_DIR = <\var{dir}>]}
-
-If \texttt{HDF5\_DIR} is not given, the configuration process will search for an
-installed HDF5 package in some standard places. If \texttt{HDF5\_DIR} is set to
-\texttt{BUILD} an HDF5 installation will be build.
-If the found HDF5 library was built with the external deflate I/O filter,
-the configuration process also searches for the \texttt{libz} library and adds
-it to the linker flags. You may also point directly to the location of
-\texttt{libz.a} by setting \texttt{LIBZ\_DIR}.
-If the found HDF5 library was built with the external \texttt{szlib} I/O filter,
-the configuration process also searches for the \texttt{szlib} library and adds
-it to the linker flags. You may also point directly to the location of
-\texttt{libsz.a} by setting \texttt{LIBSZ\_DIR}.
-Note that the option \texttt{HDF5 = yes/no} is depreciated and does not work with
-thorn \texttt{ExternalLibraries/HDF5}.
-
-
-\subsection{LAPACK: Linear Algebra PACKage}
-
-To compile with LAPACK (\url{http://www.netlib.org/lapack/}),
-include thorn \texttt{ExternalLibraries/LAPACK} in your thornlist, and use
-the configure option
-
-\begin{alltt}
-[ LAPACK\_DIR = BUILD | <\var{dir}> ]
-[ LAPACK\_EXTRA\_LIBS\_DIRS = <\var{dir}> ]
-[ LAPACK\_LIBS = <\var{libs}> ]
-[ LAPACK\_EXTRA\_LIBS = <\var{libs}> ]
-\end{alltt}
-
-If \texttt{LAPACK\_DIR} is not given, the configuration process will search for a
-LAPACK library \texttt{liblapack.[\{a,so\}]} in some standard places.
-If \texttt{LAPACK\_DIR} is set to \texttt{BUILD}, a Lapack installation will
-be build.
-
-\subsection{PETSc: Portable, Extensible Toolkit for Scientific Computation}
-
-To compile with PETSc
-(\url{http://www-unix.mcs.anl.gov/petsc/petsc-2/index.html}),
-the configure options are
-
-\begin{alltt}
-PETSC = yes | no | <blank>
-[ PETSC\_DIR = <\var{dir}> ]
-[ PETSC\_ARCH = <\var{architecture}> ]
-[ PETSC\_ARCH\_LIBS = <\var{architecture-specific libraries}> ]
-\end{alltt}
-
-If \texttt{PETSC\_DIR} is not given, the configuration process will search for an
-installed PETSc package in some standard places (defined in
-\texttt{lib/make/extras/PETSC}).
-If \texttt{PETSC\_ARCH} is not given, the configuration process will choose the
-first PETSc configuration found in \texttt{\$PETSC\_DIR/lib/libO/}.
-If \texttt{PETSC\_ARCH\_LIBS} is not given, the configuration process will choose
-architecture-specific libraries, as required by a PETSc configuration (usually
-PETSc needs the LAPACK library).
-
-
-\subsection{Pthreads: POSIX threads}
-
-To enable multithreading support within Cactus using POSIX threads,
-the configure option is
-
-\texttt{PTHREADS = yes}
-
-The configuration process will check if a reentrant C library is available,
-and adds it to the linker flags. It will also search for the system's Pthreads
-library (either \texttt{libpthread} or \texttt{libpthreads}), and set
-preprocessor defines necessary for compiling multithreaded code.
-
+The location of include files, modules and Fortran module files is given via:
+\begin{Lentry}
+\item [\texttt{\var{THORN\_DIR}}] where to search for THORN.
+\item [\texttt{\var{THORN\_LIBS}}] libraries.
+\item [\texttt{\var{THORN\_LIB\_DIRS}}] library directories.
+\item [\texttt{\var{THORN\_INC\_DIRS}}] include file directories.
+\item [\texttt{\var{THORN\_INSTALL\_DIR}}] where to install \texttt{THORN} if the
+      built in copy is used.
+\end{Lentry}
 
 \section{File Layout}
 \label{file_layout}
