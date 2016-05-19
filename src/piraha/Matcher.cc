@@ -88,7 +88,6 @@ void Matcher::showError(std::ostream& out) {
       buf[ln] = i;
       if(i >= err_pos)
         break;
-      //out << " buf[" << ln << "]=" << i << std::endl;
     }
   }
   int ln = line % num_previous_lines;

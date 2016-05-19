@@ -19,7 +19,6 @@ bool Lookup::match(Matcher *m) {
     std::string save_name = m->inrule;
     m->inrule += "::";
     m->inrule += name;
-    int epos_save = m->err_pos;
     bool b = p->match(m);
     m->inrule = save_name;
     int e = m->pos;
@@ -33,10 +32,8 @@ bool Lookup::match(Matcher *m) {
         }
         */
         smart_ptr<Group> g = new Group(name,m->input,s,e,m->children);
-        if(capture) {
+        if(capture)
             chSave->push_back(g);
-            m->err_pos = epos_save;
-        }
     }
     m->children = chSave;
     return b;
