@@ -74,9 +74,40 @@ void Matcher::showError() {
 
 const int num_previous_lines = 5;
 
+bool isHumanReadableRange(char c) {
+  return ('a' <= c && c <= 'y') or ('A' <= c && c <= 'Y') or ('0' <= c && c <= '8');
+}
+
 void Matcher::showError(std::ostream& out) {
+  std::vector<char> expectedChars;
+  for(auto r = expected.ranges.begin(); r != expected.ranges.end(); ++r) {
+    for(int i = (*r)->lo; i <= (*r)->hi; ++i) {
+      expectedChars.push_back((char)i);
+    }
+  }
   out << "Parse Error" << std::endl;
-  out << "Expected one of the following characters: " << expected << std::endl;
+  out << "Expected one of the following characters:";
+  bool first = true;
+  for(auto c=expectedChars.begin();c != expectedChars.end();++c) {
+    if(first) first = false;
+    else out << ',';
+    if(isHumanReadableRange(*c)) {
+      int n = 1;
+      while(c+n != expectedChars.end() && n+(*c) == *(c+n)) {
+        n++;
+      }
+      if(n >= 3) {
+        out << " '" << *c << "' to";
+        c += (n-1);
+      }
+    }
+    if(*c == '\'')
+      out << "single quote";
+    else if(*c == '"')
+      out << "double quote";
+    else
+      out << " '" << *c << "'";
+  }
   int buf[num_previous_lines];
   buf[0] = 0;
   int line = 0;
