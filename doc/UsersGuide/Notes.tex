@@ -1171,6 +1171,30 @@ consists of one or more parameter names, followed by
 an `\texttt{=}', followed by the value(s) for this (these) parameter(s).
 Note that all string parameters are case insensitive.
 
+Parameter values can contain variable expansions of the form
+\verb|${VARIABLE}| or \verb|$ENV{VARIABLE}|. In the first form, braces are
+required when \verb|VARIABLE| is followed by a character which is not to
+be interpreted as part of its name and optional otherwise. The second
+form provides access to all environment variables defined in the
+environment of the executable.  Table~\ref{tab:variable-expansions}
+provides a list of recognized variable strings.
+\begin{table}[htbp]
+\begin{tabular}{|ll|}
+    \hline
+    variable string & expands to\\
+    \hline
+    \verb|$ENV{envname}| &
+    the value of the environment variable \verb|$envname|\\
+    \verb|$parfile| &
+    the path to the variable file with \verb|.par| removed at the
+    end \\
+    \verb|$pi| & the numerical value of $\pi$ \\
+    \hline
+\end{tabular}
+\caption{Variable expansions recognized by the variable file parser when
+expanding variables in parameter files}\label{tab:variable-expansions}
+\end{table}
+
 Parameters statements of numeric or boolean type can use arithmetic
 expressions in place of explicit values. The usual arithmetic operations
 as well as C-like transcendental functions and relational operations are
