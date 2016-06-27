@@ -3750,9 +3750,8 @@ The full variable name is in the form \code{<implementation>::<variable>} for
 \begin{Example}{C}
 \begin{verbatim}
 index = CCTK_VarIndex("evolve::phi");
-name = CCTK_FullName(index);
+name = CCTK_FullVarName(index);
 printf ("Variable name: %s", name);
-free (name);
 \end{verbatim}
 \end{Example}
 \end{ExampleSection}
