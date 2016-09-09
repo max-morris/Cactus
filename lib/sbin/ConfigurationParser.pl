@@ -166,7 +166,7 @@ sub CreateConfigurationDatabase
       elsif ( $cfg{"\U$thorn\E REQUIRES \U$requiredcap\E VERSION"} )
       {
         if ( &CheckForCompatibleVersion(
-                $cfg{"\U".$found[0]."\E PROVIDES \U$requiredcap\E VERSION"},
+                $cfg{"\U$found[0]\E PROVIDES \U$requiredcap\E VERSION"},
                 $cfg{"\U$thorn\E REQUIRES \U$requiredcap\E VERSION"}) == 0 )
         {
           &CST_error (0, "Thorn '$thorn' requires the capability " .
@@ -174,7 +174,7 @@ sub CreateConfigurationDatabase
                        $cfg{"\U$thorn\E REQUIRES \U$requiredcap\E VERSION"}.
                        ". Thorn ".$found[0]." provides $requiredcap, but ".
                        "in version ".
-                       $cfg{"\U".$found[0]."\E PROVIDES \U$requiredcap\E VERSION"}.
+                       $cfg{"\U$found[0]\E PROVIDES \U$requiredcap\E VERSION"}.
                        ".\n");
         }
         $cfg{"\U$thorn\E USES THORNS"} .= $found[0] . ' ';
