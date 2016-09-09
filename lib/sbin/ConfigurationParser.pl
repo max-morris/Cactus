@@ -408,6 +408,9 @@ sub ParseConfigurationCCL
       &CST_error (0, "Unrecognised line '$line' in configure.ccl of thorn '$thorn'");
     }
   }
+  # Cactus automatically provides its own version
+  $cfg->{"\UCactus PROVIDES"} = "\UCactus ";
+  $cfg->{"\UCactus PROVIDES Cactus VERSION"} = $ENV{CCTK_VERSION};
 }
 
 
