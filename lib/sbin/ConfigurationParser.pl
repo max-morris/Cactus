@@ -10,6 +10,7 @@
 #  @version  $Header$
 #@@*/
 
+use lib ".";
 
 #/*@@
 #  @routine    CreateConfigurationDatabase
