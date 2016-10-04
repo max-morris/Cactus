@@ -27,7 +27,7 @@ DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
 
 INCLUDE_LINE   = $(patsubst %,-I"%",$(call TRANSFORM_DIRS,$(INC_DIRS)))
 INCLUDE_LINE_F = $(patsubst %,-I"%",$(call TRANSFORM_DIRS,$(INC_DIRS_F)))
-PRINTTIME      = perl -e 'use Time::HiRes qw(gettimeofday); print(gettimeofday()+0, " ");'
+PRINTTIME      = perl -e 'eval { require("Time/HiRes.pm"); print(&Time::HiRes::gettimeofday()+0," "); }; if($$@) { print time(); }'
 
 #####################################################################
 
