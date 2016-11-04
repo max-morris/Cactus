@@ -12,12 +12,11 @@
 #include <limits>
 #include <fstream>
 #include "util_Expression.h"
+#include "cctk_CommandLine.h"
 
 namespace cctki_piraha {
 
 #define VAR(X) " " #X "=" << X
-
-extern "C" int CCTK_ParameterFilename(int len, char *filename);
 
 smart_ptr<Grammar> create_grammar() {
     smart_ptr<Grammar> grammar = new Grammar();
