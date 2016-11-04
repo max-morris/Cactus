@@ -114,6 +114,9 @@ from Fortran.
 \item[\code{CCTK\_CmplxSub}] [\pageref{CCTK-CmplxSub}]
   Returns the subtraction of two complex numbers (only C) [deprecated]
 
+\item[\code{CCTK\_CommandLine}] [\pageref{CCTK-CommandLine}]
+ Gets the command line arguments.
+
 \item[\code{CCTK\_CompileDate}] [\pageref{CCTK-CompileDate}]
   Returns a formatted string containing the date stamp when Cactus was compiled
 
@@ -613,6 +616,10 @@ from Fortran.
 \item[\code{CCTK\_ParameterGet}]
   [\pageref{CCTK-ParameterGet}]
   Get the data pointer to and type of a parameter's value
+
+\item[\code{CCTK\_ParameterFilename}]
+  [\pageref{CCTK-ParameterFilename}]
+  Returns the parameter filename
 
 \item[\code{CCTK\_ParameterLevel}]
   [\pageref{CCTK-ParameterLevel}]
@@ -1796,6 +1803,41 @@ subval = CCTK_CmplxSub(inval1,inval2);
 \end{verbatim}
 \end{Example}
 \end{ExampleSection}
+\end{FunctionDescription}
+
+
+% ProcessCommandline.c
+%Entering a function desctiption for CCTK\_ParamterFile
+\begin{FunctionDescription}{CCTK\_CommandLine}
+\label{CCTK-CommandLine}
+Gets the command line arguments.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+int outargc = CCTK_CommandLine(char ***outargv)
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{outargc}
+  The number of command line arguments.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{outargc}
+   Place to dump the command line arguments
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_ParameterFilename}{CCTK-ParameterFilename}
+   Returns the parameter filename
+\end{SeeAlso2}
+\end{SeeAlsoSection}
 \end{FunctionDescription}
 
 
@@ -9604,6 +9646,56 @@ parameter as used.
 No parameter with that name was found.
 \end{Error}
 \end{ErrorSection}
+\end{FunctionDescription}
+
+
+% ProcessCommandline.c
+%Entering a function desctiption for CCTK\_ParamterFile
+\begin{FunctionDescription}{CCTK\_ParameterFilename}
+\label{CCTK-ParameterFilename}
+Returns the parameter filename.
+
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+int retval = CCTK_ParameterFilename(int len, char *filename)
+\end{verbatim}
+\end{Synopsis}
+\begin{Synopsis}{Fortran}
+\begin{verbatim}
+call CCTK_ParameterFilename(retval, len, filename)
+INTEGER :: retval, len
+CHARACTER(*) :: filename
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{retval}
+The length of the returned string.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{len}
+The length of the incoming string
+\end{Parameter}
+\begin{Parameter}{filename}
+String to contain the filename
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Returns the name of the parameter file given to Cactus, up to len characters
+in length and guaranteed to be NUL terminated.
+\end{Discussion}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_CommandLine}{CCTK-CommandLine}
+Gets the command line arguments.
+\end{SeeAlso2}
+\end{SeeAlsoSection}
 \end{FunctionDescription}
 
 
