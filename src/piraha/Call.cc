@@ -92,8 +92,12 @@ static std::string mklower(std::string& in) {
 enum ValueType { PIR_STRING,PIR_INT,PIR_REAL,PIR_BOOL,PIR_VOID };
 
 std::string get_parfile() {
-    char path[500];
-    CCTK_ParameterFilename(500, path);
+    // paths could be up to PATH_MAX
+    // http://pubs.opengroup.org/onlinepubs/009695399/basedefs/limits.h.html
+    // yet man realpath(3) states that PATH_MAX may be -1 in which case there
+    // is no upper limit.
+    char path[1000];
+    CCTK_ParameterFilename(sizeof(path), path);
     char *value = strrchr (path, '/');
     if (value == NULL) {
         value = path;
