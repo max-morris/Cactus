@@ -516,11 +516,6 @@ sub ParseConfigurationCCL
       &CST_error (0, "Unrecognised line '$line' in configure.ccl of thorn '$thorn'");
     }
   }
-<<<<<<< 317e0b4e28ed4ff8d1318122e72ab29f37cf3f06
-  # Cactus automatically provides its own version
-  $cfg->{"\UCactus PROVIDES"} = "\UCactus ";
-  $cfg->{"\UCactus PROVIDES Cactus VERSION"} = $ENV{CCTK_VERSION};
-=======
 
   for my $k (sort keys %$cfg2) {
     my $v1 = $cfg1->{$k};
@@ -568,9 +563,7 @@ sub ParseConfigurationCCL
   for my $k (sort keys %$cfg1) {
     $cfg->{$k} = $cfg1->{$k};
   }
->>>>>>> Parse all ccl files
 }
-
 
 #/*@@
 #  @routine    ParseProvidesBlock
