@@ -907,6 +907,13 @@ sub CheckParameterDefault
     for ($i=1; $i<=$nranges; $i++)
     {
       $range = $parameter_db{"\U$thorn $variable\E range $i range"};
+      eval { "" =~ m:$range:i; };
+      if ($@)
+      {
+        &CST_error(0, "Invalid regular expression '$range' for string " .
+                      "parameter '$variable': $@",
+                   __LINE__, __FILE__);
+      }
 
       # An empty regular expression should match everything.
       # Instead, perl returns the result of the last match.
