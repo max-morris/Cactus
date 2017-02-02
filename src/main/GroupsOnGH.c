@@ -380,6 +380,13 @@ void CCTK_FCALL CCTK_FNAME(CCTK_VarDataPtrI)
   *res = CCTK_VarDataPtrI (*cctkGH, *timelevel, *vindex);
 }
 
+int CCTKi_hasAccess(int var_index) {
+  return 1;
+}
+
+extern int (*CCTK_hasAccess)(int var_index);
+int (*CCTK_hasAccess)(int var_index) = CCTKi_hasAccess;
+
  /*@@
    @routine    CCTKi_VarDataPtrI
    @date       2012-10-26
@@ -415,6 +422,10 @@ void *CCTKi_VarDataPtrI(const cGH *GH, int timelevel, int vindex)
 {
   int numvars = CCTK_NumVars();
   if (vindex < 0 || vindex >= numvars)
+  {
+    return NULL;
+  }
+  if(!(*CCTK_hasAccess)(vindex))
   {
     return NULL;
   }
