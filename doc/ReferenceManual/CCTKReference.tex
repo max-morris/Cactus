@@ -13413,6 +13413,19 @@ This routine can be used by thorns to print a formatted string
 followed by a variable argument list as error message to
 \code{stderr}. After printing the message, Cactus aborts the run (and
 \code{CCTK\_VERROR} does \emph{not} return to the caller).
+
+This macro can be used by thorns to print an info message to screen.
+
+The macro \code{CCTK\_VERROR(...)} expands to a call to the
+underlying function \code{CCTK\_VError}:
+
+\begin{verbatim}
+CCTK_VError(CCTK_THORNSTRING, ...)
+\end{verbatim}
+
+So the macro automatically includes the name of the originating thorn in the
+info message. It is recommended that the macro \code{CCTK\_VERROR} is used
+to print a message rather than calling \code{CCTK\_VError} directly.
 \end{Discussion}
 
 \begin{SeeAlsoSection}
@@ -13774,6 +13787,12 @@ by a variable argument list as a warning message to \code{stderr}.  If
 the message's ``warning level'' is severe enough, then after printing
 the message Cactus aborts the run (and \code{CCTK\_VWARN} does {\em not\/}
 return to the caller).
+
+\code{CCTK\_VWARN(level, ...)} expands to a call to \verb|CCTK_Warn()|
+function which is equivalent to \verb|CCTK_VWarn()|.
+The macro automatically includes details about the origin of the warning
+(the thorn name, the source code file name and the line number where the macro
+occurs).
 
 Cactus's behavior when \code{CCTK\_VWARN} is called depends on the
 \code{-W} and \code{-E} command-line options:
