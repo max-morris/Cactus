@@ -342,7 +342,7 @@ sub parse_param_ccl
         confess("share not set") if("$share" eq "");
         $parameter_db1{"\U$thorn SHARES $share\E variables"} .= $as_name . " ";
       } elsif($uses_or_extends eq "") {
-        $parameter_db1{"\U$thorn $block\E variables"} .= $as_name."\n";
+        $parameter_db1{"\U$thorn $block\E variables"} .= $as_name." ";
         my @children = @{$gr->{children}};
         my $default = trim_quotes($children[$#children]->substring());
         $default =~ s/\\\n//g;
