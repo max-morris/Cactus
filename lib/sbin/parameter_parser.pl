@@ -16,6 +16,13 @@ use strict;
 use Carp;
 my $ccl_file;
 
+sub trim_quotes
+{
+  my $str = shift;
+  $str =~ s/^(["'])(.*)\1$/$2/s;
+  return $str;
+}
+
 #/*@@
 #  @routine    create_parameter_database
 #  @date       Wed Sep 16 11:45:18 1998
