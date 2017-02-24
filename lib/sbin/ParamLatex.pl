@@ -62,6 +62,7 @@ my $sbin_dir = "${cctk_home}lib/sbin";
 require "$sbin_dir/ThornUtils.pm";
 
 # for use of create_parametere_database
+require "$sbin_dir/Piraha.pm";
 require "$sbin_dir/parameter_parser.pl";
 require "$sbin_dir/CSTUtils.pl";
 
