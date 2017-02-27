@@ -11873,13 +11873,13 @@ int status = CCTK_SchedulePrintTimes("CCTK_ANALYSIS")
 % ScheduleInterface.c
 \begin{FunctionDescription}{CCTK\_SchedulePrintTimesToFile}
   \label{CCTK-SchedulePrintTimesToFile}
-  Output the timing results for a certain schedule item to stdout
+  Output the timing results for a certain schedule item to a file
   
   \begin{SynopsisSection}
     \begin{Synopsis}{C}
 \begin{verbatim}
 #include "cctk.h"
-int status = CCTK_SchedulePrintTimesToFile(const char *where)
+int status = CCTK_SchedulePrintTimesToFile(const char *where, FILE *file)
 \end{verbatim}
     \end{Synopsis}
   \end{SynopsisSection}
