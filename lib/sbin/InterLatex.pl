@@ -47,6 +47,7 @@ $cctk_home  .= '/' if (($cctk_home !~ /\/$/) && (defined $cctk_home));
 
 # set up the sbin dir, tacking cctk_home on the front
 my $sbin_dir = "${cctk_home}lib/sbin";
+use lib $sbin_dir;
 
 ##############
 # REQUIRE(S) #
@@ -56,7 +57,6 @@ my $sbin_dir = "${cctk_home}lib/sbin";
 require "$sbin_dir/ThornUtils.pm";
 
 # for use of create_parametere_database
-require "$sbin_dir/Piraha.pm";
 require "$sbin_dir/interface_parser.pl";
 require "$sbin_dir/CSTUtils.pl";
 

@@ -14,6 +14,7 @@
 #%parameter_database = create_parameter_database(%implementations);
 use strict;
 use Carp;
+use Piraha;
 my $ccl_file;
 
 #/*@@
