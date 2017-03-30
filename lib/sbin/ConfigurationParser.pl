@@ -12,6 +12,7 @@ use strict;
 #@@*/
 
 use lib ".";
+use File::stat;
 my $ccl_file;
 
 #/*@@
@@ -326,23 +327,10 @@ sub ParseConfigurationCCL
   $cfg1->{"\U$thorn\E OPTIONAL_IFACTIVE"} = '';
   $cfg1->{"\U$thorn\E ACTIVATES"} = '';
   $cfg1->{"\U$thorn\E OPTIONS"}  = '';
-  my $p=piraha::parse_src($grammar,$rule,$ccl_file);
-  my $m = $p->matches();
-  unless($m) {
-    print "CST ERROR IN FILE '$ccl_file' ";
-    $p->showError();
-    confess("Parse Error");
-  }
-    if(defined($ENV{CCTK_MAKE_TREE})) {
-      my $fd = new FileHandle;
-      open($fd,">tree.txt");
-      print $fd $ccl_file,"\n";
-      print $fd "=" x 50,"\n";
-      print $fd $p->{gr}->dump(),"\n";
-      close($fd);
-    }
 
-  for my $node (@{$p->{gr}->{children}}) {
+  my $gr = parse_ccl($grammar,$rule,$ccl_file);
+
+  for my $node (@{$gr->{children}}) {
     if($node->is("requires")) {
       for my $ch (@{$node->{children}}) {
         if($ch->is("name_with_ver")) {

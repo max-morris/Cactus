@@ -7,6 +7,7 @@ use Carp;
 use FileHandle;
 use Data::Dumper;
 use Piraha;
+use File::stat;
 
 sub trim_quotes
 {
@@ -83,24 +84,10 @@ sub create_interface_database
     #       Read the data
     $ccl_file = "$thorns{$thorn}/interface.ccl";
     my @indata = &read_file($ccl_file);
-    my $p=piraha::parse_src($grammar,$rule,$ccl_file);
-    my $m = $p->matches();
-    unless($m) {
-      print "CST ERROR IN FILE '$ccl_file' ";
-      $p->showError();
-      confess("Parse Error");
-    }
-    if(defined($ENV{CCTK_MAKE_TREE})) {
-      my $fd = new FileHandle;
-      open($fd,">tree.txt");
-      print $fd $ccl_file,"\n";
-      print $fd "=" x 50,"\n";
-      print $fd $p->{gr}->dump(),"\n";
-      close($fd);
-    }
+    my $gr = parse_ccl($grammar,$rule,$ccl_file);
 
     #       Get the interface data from it
-    &parse_interface_ccl($arrangement, $thorn, \@indata, $p->{gr}, \%interface_data);
+    &parse_interface_ccl($arrangement, $thorn, \@indata, $gr, \%interface_data);
 
     &PrintInterfaceStatistics($thorn, \%interface_data);
   }

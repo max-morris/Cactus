@@ -9,7 +9,10 @@
 #  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.81 2009-09-11 22:15:48 knarf Exp $
 #@@*/
 
+use FileHandle;
+use File::stat;
 use lib ".";
+use Carp;
 
 # Global parameter to track the number of errors from the CST
 # The file make.thornlist is only created if the number of errors is zero.
@@ -197,7 +200,59 @@ $make_thornlist = &CreateMakeThornlist(\%thorns, \%interface_database, $configur
 &WriteFile("$config_dir/make.thornlist", \$make_thornlist);
 
 print "CST finished.\n";
-exit;
+
+sub mkdirs
+{
+  my $dir = shift;
+  return if(-d $dir);
+  if($dir =~ m{(.*)/}) {
+    my $subdir = $1;
+    mkdirs($subdir);
+  }
+  mkdir($dir);
+  croak "Could not create directory '$dir'" unless(-d $dir);
+}
+
+sub parse_ccl
+{
+  my $grammar = shift;
+  my $rule = shift;
+  my $ccl_file = shift;
+  $ccl_file =~ s{//+}{/}g; # remove double slashes
+  croak "bad ccl file '$ccl_file'" unless($ccl_file =~ m{([^/]+)/([^/]+)/(\w+)\.ccl$});
+  my ($arr,$thorn,$ccl)=($1,$2,$3);
+  my $top = $ENV{TOP};
+  croak "TOP not defined" unless(defined($top));
+  my $ccl_dir = "$top/piraha/$arr/$thorn";
+  mkdirs($ccl_dir);
+  my $ccl_cache = "$ccl_dir/$ccl.cache";
+  my $gr = undef;
+  if(-r $ccl_cache and stat($ccl_cache)->mtime > stat($ccl_file)) {
+    $gr = piraha::load_tree($ccl_cache);
+  }
+  if(!defined($gr)) {
+    my $p=piraha::parse_src($grammar,$rule,$ccl_file);
+    my $m = $p->matches();
+    if($m) {
+      piraha::store_tree($ccl_cache,$p->{gr});
+      $gr = $p->{gr};
+    } else {
+      print "CST ERROR IN FILE '$ccl_file' ";
+      $p->showError();
+      confess("Parse Error");
+    }
+  }
+  # Debugging
+  if(defined($ENV{CCTK_MAKE_TREE})) {
+    my $fd = new FileHandle;
+    open($fd,">tree.txt");
+    print $fd $ccl_file,"\n";
+    print $fd "=" x 50,"\n";
+    print $fd $gr->dump(),"\n";
+    close($fd);
+  }
+  return $gr;
+}
 
 
 #############################################################################
