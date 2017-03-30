@@ -15,6 +15,7 @@
 use strict;
 use Carp;
 use Piraha;
+use File::stat;
 my $ccl_file;
 
 #/*@@
@@ -43,24 +44,10 @@ sub create_parameter_database
     #       Read the data
     $ccl_file = "$thorns{$thorn}/param.ccl";
     my @indata = &read_file($ccl_file);
-    my $p=piraha::parse_src($grammar,$rule,$ccl_file);
-    my $m = $p->matches();
-    unless($m) {
-      print "CST ERROR IN FILE '$ccl_file' ";
-      $p->showError();
-      confess("Parse Error");
-    }
-    if(defined($ENV{CCTK_MAKE_TREE})) {
-      my $fd = new FileHandle;
-      open($fd,">tree.txt");
-      print $fd $ccl_file,"\n";
-      print $fd "=" x 50,"\n";
-      print $fd $p->{gr}->dump(),"\n";
-      close($fd);
-    }
+    my $gr = parse_ccl($grammar,$rule,$ccl_file);
 
     # Get the parameters from it
-    @new_parameter_data = &parse_param_ccl($thorn, $p->{gr}, @indata);
+    @new_parameter_data = &parse_param_ccl($thorn, $gr, @indata);
 
     &PrintParameterStatistics($thorn, @new_parameter_data);
 
@@ -348,7 +335,6 @@ sub parse_param_ccl
         my $default = trim_quotes($children[$#children]->substring());
         $default =~ s/\\\n//g;
         $parameter_db1{"\U$thorn $as_name\E default"} = $default;
-        #$parameter_db1{"\U$thorn SHARES $as_name\E variables"} .= "";
       }
       $parameter_db1{"\U$thorn $as_name\E description"} = $desc;
     }
@@ -810,7 +796,7 @@ sub parse_param_ccl
     if(!defined($parameter_db2{$k})) {
       # Make an exception for accumulators
       unless($k =~ / accumulator-expression$/) {
-        confess("Extra key in parameter ($k) ($parameter_db1{$k})")
+        confess("Extra key in parameter file: $ccl_file, key: ($k) ($parameter_db1{$k})")
       }
     }
   }
