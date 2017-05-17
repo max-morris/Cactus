@@ -1014,6 +1014,13 @@ extern "C" uExpressionValue Util_ExpressionParseEvaluate(const char *expr) {
   return uvalue;
 }
 
+inline int first_line(int new_line,int old_line) {
+  if(old_line < 0)
+    return new_line;
+  else 
+    return old_line;
+}
+
 /**
  * Recovery of syntax errors within a par file is
  * accomplished by matching syntactically incorrect text
@@ -1027,18 +1034,18 @@ int report_syntax(smart_ptr<Group> g) {
     g->showError(msg);
     std::string par = get_parfile();
     CCTK_Warn(1,g->line(),par.c_str(),"cactus",msg.str().c_str());
-    return 1;
+    return g->line();
   }
-  int count = 0;
+  int line = -1;
   for(int i=0;i<g->groupCount();i++)
-    count += report_syntax(g->group(i));
-  return count;
+    line = first_line(report_syntax(g->group(i)),line);
+  return line;
 }
 int report_syntax(smart_ptr<Matcher> g) {
-  int count = 0;
+  int line = -1;
   for(int i=0;i<g->groupCount();i++)
-    count += report_syntax(g->group(i));
-  return count;
+    line = first_line(report_syntax(g->group(i)),line);
+  return line;
 }
 
 extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int (*set_function)(const char *, const char *, int)) {
@@ -1061,9 +1068,10 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
             }
         }
         set_function("ActiveThorns",active.c_str(),line);
-        int syntax_errors = report_syntax(m2);
-        if(syntax_errors > 0)
-            CCTK_Error(-1,"","Cactus","Terminating because of parse errors");
+        std::string parf = get_parfile();
+        int syntax_error_line = report_syntax(m2);
+        if(syntax_error_line > 0)
+            CCTK_Error(syntax_error_line,parf.c_str(),"Cactus","Terminating because of parse errors");
         for(int i=0;i<m2->groupCount();i++) {
             smart_ptr<Group> gr = m2->group(i);
             if(gr->getPatternName() == "set") {
@@ -1084,9 +1092,8 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
                         smart_ptr<Value> vv = meval(index,0);
                         if(vv->type != PIR_INT) {
                             std::ostringstream msg;
-                            std::string par = get_parfile();
                             msg << "bad index " << vv << std::endl;
-                            CCTK_Error(index->line(),par.c_str(),thorn.c_str(),msg.str().c_str());
+                            CCTK_Error(index->line(),parf.c_str(),thorn.c_str(),msg.str().c_str());
                         }
                         std::string vvstr = vv->copy();
                         key += vvstr;
@@ -1112,8 +1119,7 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
                         if(status == read) {
                           std::ostringstream msg;
                           msg << "Write after read: " << key << std::endl;
-                          std::string par = get_parfile();
-                          CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
+                          CCTK_Error(gr->line(),parf.c_str(),current_thorn.c_str(),msg.str().c_str());
                         } 
                         set_function(
                                 key.c_str(),
