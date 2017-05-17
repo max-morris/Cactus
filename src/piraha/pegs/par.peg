@@ -38,9 +38,10 @@ int = [0-9]+
 index = \[ {int} \]
 parindex = \[ {expr} \]
 active = (?i:ActiveThorns)
-# Anything matching "syntax" is actually a syntax error.
+# If the fallback pattern named "syntax" is reached and it matches,
+# it is actually a syntax error.
+syntax = [^\n()]*
 set = ({active} = ({quot}|{name})|{par}( {index}|) = ({array}|\+?{expr}|{syntax}))
 set_var = \${name} = (\+?{expr}|{syntax})
 desc = !DESC {quot}
-syntax = [^\n()]*
 file = ^ ({desc} |{set_var} |{set} |{active} |{syntax})*$

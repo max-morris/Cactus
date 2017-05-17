@@ -167,7 +167,9 @@ const int num_previous_lines = 5;
 
 /**
  * This function formats and displays
- * syntax errors.
+ * syntax errors. It prints the last
+ * five lines and uses a ^ to point to
+ * the position of the error.
  */
 void Group::showError(std::ostream& out) {
   out << "Parse Error" << std::endl;
