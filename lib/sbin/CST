@@ -237,7 +237,7 @@ sub parse_ccl
   # If the cache file exists and is newer than the
   # ccl file Use it instead.
   my $gr = undef;
-  if(-r $ccl_cache and stat($ccl_cache)->mtime > stat($ccl_file)) {
+  if(-r $ccl_cache and stat($ccl_cache)->mtime > stat($ccl_file)->mtime) {
     $gr = piraha::load_tree($ccl_cache);
   }
   if(!defined($gr)) {
