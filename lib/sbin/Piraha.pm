@@ -834,6 +834,7 @@ sub parse_src
   return $m;
 }
 
+# Load a parse tree from disk.
 sub load_tree
 {
   my $file = shift;
@@ -853,6 +854,9 @@ sub load_tree
     return undef;
   }
 }
+
+# Internal method used by load_tree.
+# Recursively load parse tree elements.
 sub r_load_tree
 {
   my $txt = shift;
@@ -870,6 +874,7 @@ sub r_load_tree
   die "Nothing";
 }
 
+# Store a parse tree to disk
 sub store_tree
 {
   my $file = shift;
@@ -885,6 +890,8 @@ sub store_tree
   close($fd);
 }
 
+# Internal method used by store_tree.
+# Recursively store parse tree elements.
 sub r_store_tree
 {
   my $fd = shift;

@@ -58,7 +58,6 @@ use Carp;
 use FileHandle;
 use Data::Dumper;
 use Piraha;
-use File::stat;
 
 #/*@@
 #  @routine    create_schedule_database
@@ -93,31 +92,6 @@ sub create_schedule_database
     $ccl_file = "$thorns{$thorn}/schedule.ccl";
     my $gr = parse_ccl($grammar,$rule,$ccl_file);
 
-#    my $ccl_cache = $ccl_file;
-#    $ccl_cache =~ s{[^/]+$}{.${&}.cache};
-#    if(-r $ccl_cache and stat($ccl_cache)->mtime > stat($ccl_file)) {
-#      $gr = piraha::load_tree($ccl_cache);
-#    } else {
-#      my $p=piraha::parse_src($grammar,$rule,$ccl_file);
-#      my $m = $p->matches();
-#      if($m) {
-#        piraha::store_tree($ccl_cache,$p->{gr});
-#        $gr = $p->{gr};
-#      } else {
-#        print "CST ERROR IN FILE '$ccl_file' ";
-#        $p->showError();
-#        confess("Parse Error");
-#      }
-#      # Debugging
-#      if(defined($ENV{CCTK_MAKE_TREE})) {
-#        my $fd = new FileHandle;
-#        open($fd,">tree.txt");
-#        print $fd $ccl_file,"\n";
-#        print $fd "=" x 50,"\n";
-#        print $fd $gr->dump(),"\n";
-#        close($fd);
-#      }
-#    }
 
     #       Get the schedule stuff from it
     @new_schedule_data = &parse_schedule_ccl($thorn, $gr, @indata);
