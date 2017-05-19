@@ -15,7 +15,6 @@
 use strict;
 use Carp;
 use Piraha;
-use File::stat;
 my $ccl_file;
 
 #/*@@

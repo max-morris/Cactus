@@ -200,7 +200,22 @@ $make_thornlist = &CreateMakeThornlist(\%thorns, \%interface_database, $configur
 &WriteFile("$config_dir/make.thornlist", \$make_thornlist);
 
 print "CST finished.\n";
+exit 2;
 
+#############################################################################
+#
+#                      Subroutines
+#
+#############################################################################
+
+#/*@@
+#  @routine mkdirs
+#  @date    Thu May 15, 2017
+#  @author  Steven R. Brandt
+#  @desc
+#           create all directorires in the path
+#  @enddesc
+#@@*/
 sub mkdirs
 {
   my $dir = shift;
@@ -213,6 +228,17 @@ sub mkdirs
   croak "Could not create directory '$dir'" unless(-d $dir);
 }
 
+#/*@@
+#  @routine parse_ccl
+#  @date    Thu May 15, 2017
+#  @author  Steven R. Brandt
+#  @desc
+#           Parses any of the given ccl files.
+#           It checks if the file has been previously
+#           parsed and uses the cached parse tree if
+#           possible.
+#  @enddesc
+#@@*/
 sub parse_ccl
 {
   my $grammar = shift;
@@ -226,6 +252,9 @@ sub parse_ccl
   my $ccl_dir = "$top/piraha/$arr/$thorn";
   mkdirs($ccl_dir);
   my $ccl_cache = "$ccl_dir/$ccl.cache";
+
+  # If the cache file exists and is newer than the
+  # ccl file Use it instead.
   my $gr = undef;
   if(-r $ccl_cache and stat($ccl_cache)->mtime > stat($ccl_file)) {
     $gr = piraha::load_tree($ccl_cache);
@@ -254,12 +283,6 @@ sub parse_ccl
   return $gr;
 }
 
-
-#############################################################################
-#
-#                      Subroutines
-#
-#############################################################################
 
 #/*@@
 #  @routine CreateThornList

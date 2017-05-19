@@ -12,7 +12,6 @@ use strict;
 #@@*/
 
 use lib ".";
-use File::stat;
 my $ccl_file;
 
 #/*@@
