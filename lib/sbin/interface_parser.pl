@@ -84,7 +84,7 @@ sub create_interface_database
     #       Read the data
     $ccl_file = "$thorns{$thorn}/interface.ccl";
     my @indata = &read_file($ccl_file);
-    my $gr = parse_ccl($grammar,$rule,$ccl_file);
+    my $gr = parse_ccl($grammar,$rule,$ccl_file,$peg_file);
 
     #       Get the interface data from it
     &parse_interface_ccl($arrangement, $thorn, \@indata, $gr, \%interface_data);
@@ -938,6 +938,7 @@ sub parse_interface_ccl
 
   # Initialise some stuff to prevent perl -w from complaining.
 
+  if(defined($ENV{CCTK_CHECK_PARSER})) {
   my $interface_data_ref2 = {};
 
   $interface_data_ref2->{"\U$thorn INHERITS\E"} = "";
@@ -1437,36 +1438,7 @@ sub parse_interface_ccl
       }
     }
   }
-  for my $k (sort keys %{$interface_data_ref2}) {
-    my $v1 = "".$interface_data_ref1->{$k};
-    my $v2 = "".$interface_data_ref2->{$k};
-    unless($v1 =~ /VOID/) {
-      $v1 =~ s/\s+/\n/g;
-      $v2 =~ s/\s+/\n/g;
-      $v1 =~ s/\s+$//;
-      $v2 =~ s/\s+$//;
-      $v1 =~ s/^\s+//;
-      $v2 =~ s/^\s+//;
-      $v1 =~ s/\s\(/\(/g;
-      $v2 =~ s/\s\(/\(/g;
-      $v1 =~ s/\s*,\s*/,\n/g;
-      $v2 =~ s/\s*,\s*/,\n/g;
-    }
-    my $fd = new FileHandle;
-    open($fd,">v1") or die;
-    print $fd $v1,"\n";
-    close($fd);
-    open($fd,">v2") or die;
-    print $fd $v2,"\n";
-    close($fd);
-    if($v1 ne $v2) {
-      confess("key error:($k) new=($v1) old=($v2)");
-    }
-  }
-  for my $k (sort keys %{$interface_data_ref1}) {
-    if(!defined($interface_data_ref2->{$k})) {
-      confess("Extra key in interface ($k) ($interface_data_ref1->{$k})")
-    }
+  parser_compare($ccl_file,$interface_data_ref1,$interface_data_ref2);
   }
   for my $k (keys %{$interface_data_ref1}) {
     $interface_data_ref->{$k} .= $interface_data_ref1->{$k};
