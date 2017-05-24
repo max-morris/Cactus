@@ -43,7 +43,7 @@ sub create_parameter_database
     #       Read the data
     $ccl_file = "$thorns{$thorn}/param.ccl";
     my @indata = &read_file($ccl_file);
-    my $gr = parse_ccl($grammar,$rule,$ccl_file);
+    my $gr = parse_ccl($grammar,$rule,$ccl_file,$peg_file);
 
     # Get the parameters from it
     @new_parameter_data = &parse_param_ccl($thorn, $gr, @indata);
@@ -168,9 +168,18 @@ sub parse_param_ccl
       my %keys = ();
       for my $child (@{$gutpars->{children}}) {
         my $cname = $child->{name};
-        if(defined($keys{$cname})) {
-          confess("Multiply defined value for $cname in thorn $thorn, parameter $as_name");
+        if($cname eq "as") {
+          my $val = $child->group(0,"name")->substring();
+          $as_name = $val;
         }
+      }
+      if(defined($parameter_db1{"\U$thorn $as_name\E realname"})) {
+        &CST_error(1, "Duplicate parameter $as_name in thorn $thorn. " .
+                   "Ignoring second definition", '',$name_num->linenum(), $ccl_file);
+        next;
+      }
+      for my $child (@{$gutpars->{children}}) {
+        my $cname = $child->{name};
         $keys{$cname}++;
         if($cname eq "steerable") {
           my $val = $child->substring();
@@ -181,9 +190,6 @@ sub parse_param_ccl
         } elsif($cname eq "accname") {
           my $val = $child->substring();
           $parameter_db1{"\U$thorn $as_name\E accumulator-base"}=$val;
-        } elsif($cname eq "as") {
-          my $val = $child->group(0,"name")->substring();
-          $as_name = $val;
         }
       }
       my $desc = $guts->group(1,"description")->substring();
@@ -341,6 +347,7 @@ sub parse_param_ccl
   $parameter_db1{"\U$thorn SHARES\E implementations"} = 
     join(" ",sort keys %shares_implementations);
 
+  if(defined($ENV{CCTK_CHECK_PARSER})) {
   $block = "PRIVATE";
 
   # Initialise, to prevent perl -w from complaining.
@@ -758,47 +765,10 @@ sub parse_param_ccl
   }
 
   $parameter_db2{"\U$thorn\E SHARES implementations"} = join(" ", sort keys %friends);
+  parser_compare($ccl_file,\%parameter_db1,\%parameter_db2);
+  }
 
-  # Debugging code, check that db1 and db2 are the
-  # same apart from whitespace. If they are not, dump
-  # the two values in file v1 and v2.
-  for my $k (sort keys %parameter_db2) {
-    my $v1 = $parameter_db1{$k};
-    die "File: $ccl_file; Missing key <<$k>>=<<$v1>>" unless(defined($v1));
-    my $v2 = $parameter_db2{$k};
-    $v1 =~ s/\s+/\n/g;
-    $v2 =~ s/\s+/\n/g;
-    $v1 =~ s/\s+$//;
-    $v2 =~ s/\s+$//;
-    $v1 =~ s/^\s+//;
-    $v2 =~ s/^\s+//;
-    $v1 =~ s/\s\(/\(/g;
-    $v2 =~ s/\s\(/\(/g;
-    $v1 =~ s/\s*,\s*/,\n/g;
-    $v2 =~ s/\s*,\s*/,\n/g;
-    $v1 =~ s/\s*:\s*/:/g;
-    $v2 =~ s/\s*:\s*/:/g;
-    my $fd = new FileHandle;
-    open($fd,">v1") or die;
-    print $fd $v1,"\n";
-    close($fd);
-    open($fd,">v2") or die;
-    print $fd $v2,"\n";
-    close($fd);
-    if($k =~ /range$/ and $v2 eq '"'.$v1.'"') {
-      ;
-    } elsif($v1 ne $v2) {
-      confess("File: $ccl_file; par key error:($k) new=($v1) old=($v2)");
-    }
-  }
-  for my $k (keys %parameter_db1) {
-    if(!defined($parameter_db2{$k})) {
-      # Make an exception for accumulators
-      unless($k =~ / accumulator-expression$/) {
-        confess("Extra key in parameter file: $ccl_file, key: ($k) ($parameter_db1{$k})")
-      }
-    }
-  }
+
   for my $k (keys %parameter_db1) {
     $parameter_db{$k} = $parameter_db1{$k};
   }

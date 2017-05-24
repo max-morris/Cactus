@@ -201,7 +201,7 @@ $make_thornlist = &CreateMakeThornlist(\%thorns, \%interface_database, $configur
 &WriteFile("$config_dir/make.thornlist", \$make_thornlist);
 
 print "CST finished.\n";
-exit;
+exit 2;
 
 #############################################################################
 #
@@ -225,6 +225,7 @@ sub parse_ccl
   my $grammar = shift;
   my $rule = shift;
   my $ccl_file = shift;
+  my $peg_file = shift;
   $ccl_file =~ s{//+}{/}g; # remove double slashes
   croak "bad ccl file '$ccl_file'" unless($ccl_file =~ m{([^/]+)/([^/]+)/(\w+)\.ccl$});
   my ($arr,$thorn,$ccl)=($1,$2,$3);
@@ -237,7 +238,10 @@ sub parse_ccl
   # If the cache file exists and is newer than the
   # ccl file Use it instead.
   my $gr = undef;
-  if(-r $ccl_cache and stat($ccl_cache)->mtime > stat($ccl_file)->mtime) {
+  my $ccl_tm = stat($ccl_file)->mtime;
+  my $peg_tm = stat($peg_file)->mtime;
+  my $tm = $ccl_tm < $peg_tm ? $peg_tm : $ccl_tm;
+  if(-r $ccl_cache and stat($ccl_cache)->mtime > $tm) {
     $gr = piraha::load_tree($ccl_cache);
   }
   if(!defined($gr)) {
@@ -833,4 +837,79 @@ sub  CompareValues
   }
 
   return $retval;
+}
+
+#/*@@
+#  @routine    canonicalize_key
+#  @date       Wed May 24 18:48:23 UTC 2017
+#  @author     Steven R. Brandt
+#  @desc
+#  Perform the surprisingly difficult task of
+#  normalizing whitespace content. If there is
+#  whitespace between two letters, replace it
+#  with a single space. Remove spaces elsewhere.
+#
+#  Also, remove comments.
+#
+#  Also, convert array refs to strings.
+#  @enddesc
+#@@*/
+sub canonicalize_key
+{
+  my $v = shift;
+  if(ref($v) eq "ARRAY") {
+    $v = "[".join(",",@$v)."]";
+  }
+  $v =~ s{//.*}{}g;
+  $v =~ s{/\*.*?\*/}{}g;
+  $v =~ s/^\s+//;
+  $v =~ s/\s+$//;
+  $v =~ s/(\w)\s+(?=\w)/$1 $2/g;
+  $v =~ s/([^\w\s])\s+(?=\w)/$1/g;
+  $v =~ s/(\w)\s+(?=[^\w\s])/$1/g;
+  $v =~ s/([^\w\s])\s+(?=[^\w\s])/$1/g;
+  return $v;
+}
+
+#/*@@
+#  @routine    parser_compare
+#  @date       Wed May 24 18:48:23 UTC 2017
+#  @author     Steven R. Brandt
+#  @desc
+#  Each of the four CCL parsers produces a
+#  massive hashtable. This routine compares
+#  the key value pairs, on a file by file basis.
+#  @enddesc
+#@@*/
+sub parser_compare
+{
+  my $ccl_file = shift;
+  my $table1 = shift;
+  my $table2 = shift;
+  $ccl_file =~ s{.*/(.*)/(.*)/(.*)$}{$1/$2/$3};
+  my $first = "Difference between old and new parser while parsing $ccl_file:";
+  my $help = "Try disabling the old parser";
+  my $errs = 0;
+  for my $k (sort keys %$table2) {
+    my $v1 = $table1->{$k};
+    next if($v1 eq "");
+    unless(defined($v1)) {
+      CST_error(0,"$first Missing key ($k)=($v1)",$help,__LINE__,__FILE__);
+      $errs++;
+    }
+    my $v2 = $table2->{$k};
+    $v1 = canonicalize_key($v1);
+    $v2 = canonicalize_key($v2);
+    if($v1 ne $v2) {
+      CST_error(0,"$first Value for key ($k) is different: new=($v1) old=($v2)",$help,__LINE__,__FILE__);
+      $errs++;
+    }
+  }
+  for my $k (keys %$table1) {
+    if(!defined($table2->{$k})) {
+      CST_error(0,"$first Extra key: ($k) value: ($table1->{$k})",$help,__LINE__,__FILE__);
+      $errs++;
+    }
+  }
+  exit 2 if($errs > 0);
 }

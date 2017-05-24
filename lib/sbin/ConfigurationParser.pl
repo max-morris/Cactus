@@ -39,26 +39,7 @@ sub CreateConfigurationDatabase
     next if (! -r $ccl_file);
 
     # Get the configuration data from it
-    &ParseConfigurationCCL($config_dir, $thorn, \%cfg, \%thorns, $ccl_file, $grammar, $rule);
-
-#    my $debug = 1;
-#    if($debug)
-#    {
-#      print "   $thorn\n";
-#      print "           Provides:          ", $cfg{"\U$thorn\E PROVIDES"}, "\n"
-#        if ($cfg{"\U$thorn\E PROVIDES"});
-#      foreach my $provides (split (' ', $cfg{"\U$thorn\E PROVIDES"}))
-#      {
-#        print "           as version:        ", $cfg{"\U$thorn\E PROVIDES \U$provides\E VERSION"}, "\n"
-#          if ($cfg{"\U$thorn\E PROVIDES \U$provides\E VERSION"});
-#      }
-#      print "           Requires:          ", $cfg{"\U$thorn\E REQUIRES"}, "\n"
-#        if ($cfg{"\U$thorn\E REQUIRES"});
-#      print "           Optional:          ", $cfg{"\U$thorn\E OPTIONAL"}, "\n"
-#        if ($cfg{"\U$thorn\E OPTIONAL"});
-#      print "           Optional-ifactive: ", $cfg{"\U$thorn\E OPTIONAL_IFACTIVE"}, "\n"
-#        if ($cfg{"\U$thorn\E OPTIONAL_IFACTIVE"});
-#    }
+    &ParseConfigurationCCL($config_dir, $thorn, \%cfg, \%thorns, $ccl_file, $grammar, $rule, $peg_file);
 
     $cfg{"\U$thorn\E USES THORNS"} = '';
 
@@ -307,7 +288,7 @@ sub CheckForCompatibleVersion
 #@@*/
 sub ParseConfigurationCCL
 {
-  my($config_dir, $thorn, $cfg, $thorns, $filename, $grammar, $rule) = @_;
+  my($config_dir, $thorn, $cfg, $thorns, $filename, $grammar, $rule, $peg_file) = @_;
   my(@data);
   my($line_number, $line);
   my($provides, $script, $lang, $options);
@@ -327,7 +308,7 @@ sub ParseConfigurationCCL
   $cfg1->{"\U$thorn\E ACTIVATES"} = '';
   $cfg1->{"\U$thorn\E OPTIONS"}  = '';
 
-  my $gr = parse_ccl($grammar,$rule,$ccl_file);
+  my $gr = parse_ccl($grammar,$rule,$ccl_file,$peg_file);
 
   for my $node (@{$gr->{children}}) {
     if($node->is("requires")) {
@@ -395,6 +376,7 @@ sub ParseConfigurationCCL
   }
   $cfg1->{"\U$thorn\E REQUIRES THORNS"} = join(" ",sort @req_thorns);
 
+  if(defined($ENV{CCTK_CHECK_PARSER})) {
   my $cfg2 = {};
   $cfg2->{"\U$thorn\E PROVIDES"} = '';
   $cfg2->{"\U$thorn\E REQUIRES"} = '';
@@ -504,48 +486,7 @@ sub ParseConfigurationCCL
     }
   }
 
-  for my $k (sort keys %$cfg2) {
-    my $v1 = $cfg1->{$k};
-    my $v2 = $cfg2->{$k};
-    my $r1 = ref($v1);
-    my $r2 = ref($v2);
-    if($r1 ne $r2) {
-      confess("ref mismatch for key ($k): ($r1) and ($r2)");
-    }
-    if($r1 eq "ARRAY" and $r2 eq "ARRAY") {
-      $v1 = "\@ARRAY=[".join(",",@$v1)."]";
-      $v2 = "\@ARRAY=[".join(",",@$v2)."]";
-    }
-    $v2 =~ s/\bif\b\s*/if /g;
-    $v1 =~ s/ $//;
-    $v2 =~ s/ $//;
-    $v1 =~ s/\(\s+/\(/g;
-    $v2 =~ s/\(\s+/\(/g;
-    $v1 =~ s/\s+/\n/g;
-    $v2 =~ s/\s+/\n/g;
-    $v2 =~ s/\)\{/\)\n\{/g;
-    my $fd = new FileHandle;
-    open($fd,">v1") or die;
-    print $fd $v1,"\n";
-    close($fd);
-    open($fd,">v2") or die;
-    print $fd $v2,"\n";
-    close($fd);
-    if($v1 ne $v2) {
-      my $nk = $k;
-      $nk =~ s/\s+[A-Z]+$/ NAME/;
-      my $name = $cfg1->{$nk};
-      my $name2 = $cfg2->{$nk};
-      confess("key error($nk): new:'$name' != old:'$name2'") if($name ne $name2);
-      confess("key error($k)($name): new:'$v1' != old:'$v2'");
-    }
-  }
-  for my $k (sort keys %$cfg1) {
-    my $v1 = $cfg1->{$k};
-    $v1 = "\@ARRAY=[".join(",",@$v1)."]" if(ref($v1) eq "ARRAY");
-    if(!defined($cfg2->{$k})) {
-      confess("extra key($k)=($v1)");
-    }
+  parser_compare($ccl_file,$cfg1,$cfg2);
   }
   for my $k (sort keys %$cfg1) {
     $cfg->{$k} = $cfg1->{$k};

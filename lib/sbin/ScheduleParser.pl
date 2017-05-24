@@ -90,7 +90,7 @@ sub create_schedule_database
     #       Read the data
     @indata = &read_file("$thorns{$thorn}/schedule.ccl");
     $ccl_file = "$thorns{$thorn}/schedule.ccl";
-    my $gr = parse_ccl($grammar,$rule,$ccl_file);
+    my $gr = parse_ccl($grammar,$rule,$ccl_file,$peg_file);
 
 
     #       Get the schedule stuff from it
@@ -203,18 +203,19 @@ sub parse_schedule_statement
               my $ngas = $prep->group(1,"pararg")->group(0,"vname");
               my $nas = $ngas->substring();
               if(defined($as)) {
-                my $line = $ngas->linenum();
-                print "CST ERROR IN FILE '$ccl_file'\n";
-                print "LINE $line\n";
-                print "Multiple values for 'as' keyword for schedule item $name.\n";
-                print "Value 1: $as\n";
-                print "Value 2: $nas\n";
-                confess("multiple use of 'as' keyword: name($name) as($as) nas($nas)")
+                CST_error(0,
+                  "Multiple values for 'as' keyword for schedule item $name: '$as' and '$nas'",
+                  "Try removing one of the 'as' directives",
+                  $ngas->linenum(),$ccl_file);
+                last;
               }
               $as = $nas;
             } else {
-              # Users shouldn't see this
-              confess("unknown preposition '$prep_name'");
+              # Should be impossible to get here.
+              CST_error(0,
+                "Unknown preposition '$prep_name'",
+                "Should be before, after, while, etc., see docs",
+                $prep->linenum(),$ccl_file);
             }
           }
           $as = $name unless(defined($as));
@@ -379,6 +380,7 @@ sub parse_schedule_ccl
   $n_blocks     = 0;
   $n_statements = 0;
 
+  if(defined($ENV{CCTK_CHECK_PARSER})) {
   my %schedule_db2 = ();
   for($line_number = 0; $line_number < scalar(@data); $line_number++)
   {
@@ -441,48 +443,9 @@ sub parse_schedule_ccl
   $schedule_db2{"\U$thorn\E N_BLOCKS"}     = $n_blocks;
   $schedule_db2{"\U$thorn\E N_STATEMENTS"} = $n_statements;
 
-  for my $k (sort keys %schedule_db2) {
-    my $v1 = "".$schedule_db1{$k};
-    my $v2 = "".$schedule_db2{$k};
-    #$v1 =~ s/\}\s+else/\} else/g;
-    #$v2 =~ s/\}\s+else/\} else/g;
-    #$v2 =~ s/\)\s+\{/)\n{/g;
-    #$v2 =~ s/\n[ \t]+/\n/g;
-    $v2 =~ s/\bif\b\s*/if /g;
-    #$v2 =~ s/\s+\n/\n/g;
-    $v2 =~ s/ $//;
-    #$v2 =~ s/else\s+\{/else {/g;
-    $v1 =~ s/\(\s+/\(/g;
-    $v2 =~ s/\(\s+/\(/g;
-    $v1 =~ s/\s+/\n/g;
-    $v2 =~ s/\s+/\n/g;
-    $v2 =~ s/\)\{/\)\n\{/g;
-    # Remove C-style comments
-    $v2 =~ s{/\*.*?\*/\s*}{}gs;
-    # Remove trailing white space
-    $v1 =~ s/\s+$//;
-    $v2 =~ s/\s+$//;
-    my $fd = new FileHandle;
-    open($fd,">v1") or die;
-    print $fd $v1,"\n";
-    close($fd);
-    open($fd,">v2") or die;
-    print $fd $v2,"\n";
-    close($fd);
-    if($v1 ne $v2) {
-      my $nk = $k;
-      $nk =~ s/\s+[A-Z]+$/ NAME/;
-      my $name = $schedule_db1{$nk};
-      my $name2 = $schedule_db2{$nk};
-      confess("key error($nk): new:'$name' != old:'$name2'") if($name ne $name2);
-      confess("key error($k)($name): new:'$v1' != old:'$v2'");
-    }
+  parser_compare($ccl_file,\%schedule_db1,\%schedule_db2);
   }
-  for my $k (keys %schedule_db1) {
-    if(!defined($schedule_db2{$k})) {
-      confess("Extra key in schedule ($k) ($schedule_db1{$k})")
-    }
-  }
+
   for my $k (keys %schedule_db1) {
     $schedule_db{$k} = $schedule_db1{$k};
   }
