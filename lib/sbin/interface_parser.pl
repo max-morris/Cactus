@@ -755,6 +755,9 @@ sub parse_interface_ccl
   # Initialise some stuff to prevent perl -w from complaining.
   
   my $interface_data_ref1 = {};
+  my $interface_data_ref2 = {};
+
+  if($main::cctk_parser eq "new" or $main::cctk_parser eq "both") {
 
   $interface_data_ref1->{"\U$thorn INHERITS\E"} = "";
   $interface_data_ref1->{"\U$thorn FRIEND\E"} = "";
@@ -936,10 +939,11 @@ sub parse_interface_ccl
     }
   }
 
+  }
+
   # Initialise some stuff to prevent perl -w from complaining.
 
-  if(defined($ENV{CCTK_CHECK_PARSER})) {
-  my $interface_data_ref2 = {};
+  if($main::cctk_parser eq "old" or $main::cctk_parser eq "both") {
 
   $interface_data_ref2->{"\U$thorn INHERITS\E"} = "";
   $interface_data_ref2->{"\U$thorn FRIEND\E"} = "";
@@ -1438,10 +1442,17 @@ sub parse_interface_ccl
       }
     }
   }
-  parser_compare($ccl_file,$interface_data_ref1,$interface_data_ref2);
+  parser_compare($ccl_file,$interface_data_ref1,$interface_data_ref2)
+    if($main::cctk_parser eq "both");
   }
-  for my $k (keys %{$interface_data_ref1}) {
-    $interface_data_ref->{$k} .= $interface_data_ref1->{$k};
+  if($main::cctk_parser eq "new" or $main::cctk_parser eq "both") {
+    for my $k (keys %{$interface_data_ref1}) {
+      $interface_data_ref->{$k} .= $interface_data_ref1->{$k};
+    }
+  } else {
+    for my $k (keys %{$interface_data_ref2}) {
+      $interface_data_ref->{$k} .= $interface_data_ref2->{$k};
+    }
   }
 }
 

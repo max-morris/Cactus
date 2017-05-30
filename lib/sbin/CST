@@ -119,6 +119,23 @@ require "$sbin_dir/Logger.pl";
 #
 ######################################################################
 
+# Find out which parser to use
+#
+$main::cctk_parser = "new";
+$main::cctk_parser = $ENV{CCTK_SELECT_PARSER}
+  if(defined($ENV{CCTK_SELECT_PARSER}));
+if($main::cctk_parser !~ /^(new|old|both)$/) {
+  &CST_error(0,"Bad setting for CCTK_SELECT_PARSER");
+  $main::cctk_parser = "new";
+}
+
+if($main::cctk_parser eq "old") {
+  print STDERR "***************************************\n";
+  print STDERR "* Warning: New CST parser disabled!!! *\n";
+  print STDERR "***************************************\n";
+  sleep 5;
+}
+
 # Find out which thorns we have and the location of the ccl files.
 print "Reading ThornList...\n";
 %thorns = &CreateThornList($cctk_home, $thornlist);

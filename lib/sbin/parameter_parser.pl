@@ -124,11 +124,12 @@ sub parse_param_ccl
   my($message);
   my($share);
   my(%shares_implementations)=();
+  my %parameter_db1 = ();
 
+  if($main::cctk_parser eq "new" or $main::cctk_parser eq "both") {
   #   The default block is private.
   $block = 'PRIVATE';
 
-  my %parameter_db1 = ();
 
   $parameter_db1{"\U$thorn PRIVATE\E variables"} = '';
 
@@ -346,8 +347,9 @@ sub parse_param_ccl
   }
   $parameter_db1{"\U$thorn SHARES\E implementations"} = 
     join(" ",sort keys %shares_implementations);
+  }
 
-  if(defined($ENV{CCTK_CHECK_PARSER})) {
+  if($main::cctk_parser eq "old" or $main::cctk_parser eq "both") {
   $block = "PRIVATE";
 
   # Initialise, to prevent perl -w from complaining.
@@ -765,12 +767,19 @@ sub parse_param_ccl
   }
 
   $parameter_db2{"\U$thorn\E SHARES implementations"} = join(" ", sort keys %friends);
-  parser_compare($ccl_file,\%parameter_db1,\%parameter_db2);
+  parser_compare($ccl_file,\%parameter_db1,\%parameter_db2)
+    if($main::cctk_parser eq "both");
   }
 
 
-  for my $k (keys %parameter_db1) {
-    $parameter_db{$k} = $parameter_db1{$k};
+  if($main::cctk_parser eq "new" or $main::cctk_parser eq "both") {
+    for my $k (keys %parameter_db1) {
+      $parameter_db{$k} = $parameter_db1{$k};
+    }
+  } else {
+    for my $k (keys %parameter_db2) {
+      $parameter_db{$k} = $parameter_db2{$k};
+    }
   }
 
   return %parameter_db;
