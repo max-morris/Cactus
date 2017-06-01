@@ -371,6 +371,9 @@ sub parse_schedule_ccl
   $n_statements = 0;
 
   my %schedule_db1 = ();
+  my %schedule_db2 = ();
+
+  if($main::cctk_parser eq "new" or $main::cctk_parser eq "both") {
   &parse_schedule_statement($group,\%schedule_db1,\$n_blocks,\$n_statements,\$buffer,$thorn);
   $schedule_db1{"\U$thorn\E N_BLOCKS"}     = $n_blocks;
   $schedule_db1{"\U$thorn\E FILE"}         = $buffer;
@@ -380,8 +383,6 @@ sub parse_schedule_ccl
   $n_blocks     = 0;
   $n_statements = 0;
 
-  if(defined($ENV{CCTK_CHECK_PARSER})) {
-  my %schedule_db2 = ();
   for($line_number = 0; $line_number < scalar(@data); $line_number++)
   {
     if($data[$line_number] =~ m:^\s*schedule\s*:i)
@@ -443,11 +444,19 @@ sub parse_schedule_ccl
   $schedule_db2{"\U$thorn\E N_BLOCKS"}     = $n_blocks;
   $schedule_db2{"\U$thorn\E N_STATEMENTS"} = $n_statements;
 
-  parser_compare($ccl_file,\%schedule_db1,\%schedule_db2);
+  if($main::cctk_parser eq "both") {
+    parser_compare($ccl_file,\%schedule_db1,\%schedule_db2);
+  }
   }
 
-  for my $k (keys %schedule_db1) {
-    $schedule_db{$k} = $schedule_db1{$k};
+  if($main::cctk_parser eq "new") {
+    for my $k (keys %schedule_db1) {
+      $schedule_db{$k} = $schedule_db1{$k};
+    }
+  } else {
+    for my $k (keys %schedule_db2) {
+      $schedule_db{$k} = $schedule_db2{$k};
+    }
   }
 
   return %schedule_db;
@@ -899,7 +908,7 @@ sub check_schedule_database
   my($rhschedule_db,%thorns) = @_;
 
   # make a list of all group names
-  my $allgroups = "";
+  my %allgroups = ();
   foreach my $thorn (sort keys %thorns)
   {
     # Process each schedule block
@@ -907,10 +916,27 @@ sub check_schedule_database
     {
       if ($rhschedule_db->{"\U$thorn\E BLOCK_$block TYPE"} =~ /GROUP/)
       {
-	$allgroups .= " $rhschedule_db->{\"\U$thorn\E BLOCK_$block NAME\"}";
+        my $key = $rhschedule_db->{"\U$thorn\E BLOCK_$block NAME"};
+        $allgroups{$key}++;
       }
     }
   }
+  # Some schedule items aren't assigned a group.
+  $allgroups{""}=1;
+  # Include the schedule bins in the declared groups.
+  # When a group is scheduled in a schedule bin,
+  # it will be all caps with CCTK_ at the front.
+  for my $bin (@schedule_bins) {
+    my $cbin = "CCTK_".$bin;
+    # recognize all permutations,
+    # upper and lower case, with
+    # cctk_ and without.
+    $allgroups{uc $bin}++;
+    $allgroups{uc $cbin}++;
+    $allgroups{lc $bin}++;
+    $allgroups{lc $cbin}++;
+  }
+  my @allgroups = keys %allgroups;
 
   # check that scheduling in is only for a known group
   foreach my $thorn (sort keys %thorns)
@@ -918,14 +944,12 @@ sub check_schedule_database
     # Process each schedule block
     for(my $block = 0 ; $block < $rhschedule_db->{"\U$thorn\E N_BLOCKS"}; $block++)
     {
-      if ($allgroups !~ /$rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"}/)
+      if(!defined($allgroups{$rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"}}))
       {
-	if ($rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"} !~ $schedule_bin_regexp)
-	{
-	  my $message = "Scheduling routine $rhschedule_db->{\"\U$thorn\E BLOCK_$block NAME\"} from thorn $thorn in non-existent group or timebin $rhschedule_db->{\"\U$thorn\E BLOCK_$block WHERE\"}";
-	  my $hint = "If this routine should be scheduled check the spelling of the group or timebin name. Note that scheduling IN must be used to schedule a routine to run in a thorn-defined schedule group, whereas scheduling AT is used for a usual timebin. (Schedule IN may also be used with the usual timebins, but in this case the full name of the bin must be used, e.g. CCTK_EVOL and not EVOL)";
-	  &CST_error(1,$message,$hint,__LINE__,__FILE__);
-	}
+        my $message = "Scheduling routine $rhschedule_db->{\"\U$thorn\E BLOCK_$block NAME\"} from thorn $thorn in non-existent group or timebin $rhschedule_db->{\"\U$thorn\E BLOCK_$block WHERE\"}";
+        print "    $message\n";
+        my $hint = "If this routine should be scheduled check the spelling of the group or timebin name. Note that scheduling IN must be used to schedule a routine to run in a thorn-defined schedule group, whereas scheduling AT is used for a usual timebin. (Schedule IN may also be used with the usual timebins, but in this case the full name of the bin must be used, e.g. CCTK_EVOL and not EVOL)";
+        &CST_error(1,$message,$hint,__LINE__,__FILE__);
       }
     }
   }

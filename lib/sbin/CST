@@ -218,7 +218,7 @@ $make_thornlist = &CreateMakeThornlist(\%thorns, \%interface_database, $configur
 &WriteFile("$config_dir/make.thornlist", \$make_thornlist);
 
 print "CST finished.\n";
-exit 2;
+exit;
 
 #############################################################################
 #
