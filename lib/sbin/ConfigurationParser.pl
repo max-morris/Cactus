@@ -300,6 +300,8 @@ sub ParseConfigurationCCL
   # Initialise some stuff to prevent perl -w from complaining.
 
   my $cfg1 = {};
+
+  if($main::cctk_parser eq "both" or $main::cctk_parser eq "new") {
   $cfg1->{"\U$thorn\E PROVIDES"} = '';
   $cfg1->{"\U$thorn\E REQUIRES"} = '';
   $cfg1->{"\U$thorn\E REQUIRES THORNS"} = '';
@@ -375,9 +377,10 @@ sub ParseConfigurationCCL
     }
   }
   $cfg1->{"\U$thorn\E REQUIRES THORNS"} = join(" ",sort @req_thorns);
+  }
 
-  if(defined($ENV{CCTK_CHECK_PARSER})) {
   my $cfg2 = {};
+  if($main::cctk_parser eq "old" or $main::cctk_parser eq "both") {
   $cfg2->{"\U$thorn\E PROVIDES"} = '';
   $cfg2->{"\U$thorn\E REQUIRES"} = '';
   $cfg2->{"\U$thorn\E REQUIRES THORNS"} = '';
@@ -486,10 +489,17 @@ sub ParseConfigurationCCL
     }
   }
 
-  parser_compare($ccl_file,$cfg1,$cfg2);
+  parser_compare($ccl_file,$cfg1,$cfg2)
+    if($main::cctk_parser eq "both");
   }
-  for my $k (sort keys %$cfg1) {
-    $cfg->{$k} = $cfg1->{$k};
+  if($main::cctk_parser eq "both" or $main::cctk_parser eq "new") {
+    for my $k (sort keys %$cfg1) {
+      $cfg->{$k} = $cfg1->{$k};
+    }
+  } else {
+    for my $k (sort keys %$cfg2) {
+      $cfg->{$k} = $cfg2->{$k};
+    }
   }
 }
 
