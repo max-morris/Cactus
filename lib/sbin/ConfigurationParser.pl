@@ -302,119 +302,119 @@ sub ParseConfigurationCCL
   my $cfg1 = {};
 
   if($main::cctk_parser eq "both" or $main::cctk_parser eq "new") {
-  $cfg1->{"\U$thorn\E PROVIDES"} = '';
-  $cfg1->{"\U$thorn\E REQUIRES"} = '';
-  $cfg1->{"\U$thorn\E REQUIRES THORNS"} = '';
-  $cfg1->{"\U$thorn\E OPTIONAL"} = '';
-  $cfg1->{"\U$thorn\E OPTIONAL_IFACTIVE"} = '';
-  $cfg1->{"\U$thorn\E ACTIVATES"} = '';
-  $cfg1->{"\U$thorn\E OPTIONS"}  = '';
+    $cfg1->{"\U$thorn\E PROVIDES"} = '';
+    $cfg1->{"\U$thorn\E REQUIRES"} = '';
+    $cfg1->{"\U$thorn\E REQUIRES THORNS"} = '';
+    $cfg1->{"\U$thorn\E OPTIONAL"} = '';
+    $cfg1->{"\U$thorn\E OPTIONAL_IFACTIVE"} = '';
+    $cfg1->{"\U$thorn\E ACTIVATES"} = '';
+    $cfg1->{"\U$thorn\E OPTIONS"}  = '';
 
-  my $gr = parse_ccl($grammar,$rule,$ccl_file,$peg_file);
+    my $gr = parse_ccl($grammar,$rule,$ccl_file,$peg_file);
 
-  for my $node (@{$gr->{children}}) {
-    if($node->is("requires")) {
-      for my $ch (@{$node->{children}}) {
-        if($ch->is("name_with_ver")) {
-          my $rname = $ch->group(0,"name")->substring();
-          my $key = "\U$thorn\E REQUIRES";
-          $cfg1->{$key} .= $rname." ";
-          if($ch->has(1,"vop") and $ch->has(2,"vname")) {
-            $version = $ch->group(1)->substring() . $ch->group(2)->substring();
-            $cfg1->{"\U$thorn REQUIRES $rname VERSION\E"} = $version;
-          }
-        } elsif($ch->is("name")) {
-          my $rname = $ch->substring();
-          my $key = "\U$thorn\E REQUIRES";
-          $cfg1->{$key} .= $rname." ";
-        } elsif($ch->is("thorns")) {
-          for my $n (@{$ch->{children}}) {
-            my $key = "\U$thorn\E REQUIRES THORNS";
-            $cfg1->{$key} .= $n->substring()." ";
-            push @req_thorns, $n->substring();
-          }
-        }
-      }
-    } elsif($node->is("provopt")) {
-      my $key = uc($node->group(0,"key")->substring());
-      my $name = $node->group(1,"name")->substring();
-      if($key eq "PROVIDES") {
-        $cfg1->{"\U$thorn PROVIDES $name OPTIONS"}=[];
+    for my $node (@{$gr->{children}}) {
+      if($node->is("requires")) {
         for my $ch (@{$node->{children}}) {
-          if($ch->is("name")) {
-            my $pname = $ch->substring();
-            my $key = "\U$thorn\E PROVIDES";
-            $cfg1->{$key} .= $pname." ";
-          } elsif($ch->is("version") and $ch->has(0)) {
-            $version = $ch->group(0,"vname")->substring();
-          } elsif($ch->is("lang") and $ch->has(0)) {
-            my $key = "\U$thorn PROVIDES $name LANG";
-            $cfg1->{$key} = $ch->group(0,"name")->substring();
-          } elsif($ch->is("script") and $ch->has(0)) {
-            my $key = "\U$thorn PROVIDES $name SCRIPT";
-            $cfg1->{$key} = $thorns->{$thorn}."/".$ch->group(0,"pname")->substring();
-          } elsif($ch->is("options")) {
-            my $key= "\U$thorn PROVIDES $name OPTIONS";
-            my $ropts = [];
-            $ropts = $cfg1->{$key} if(defined($cfg1->{$key}));
-            my @opts = @{$cfg1->{$key}};
-            for my $n (@{$ch->{children}}) {
-              push @opts, $n->substring();
+          if($ch->is("name_with_ver")) {
+            my $rname = $ch->group(0,"name")->substring();
+            my $key = "\U$thorn\E REQUIRES";
+            $cfg1->{$key} .= $rname." ";
+            if($ch->has(1,"vop") and $ch->has(2,"vname")) {
+              $version = $ch->group(1)->substring() . $ch->group(2)->substring();
+              $cfg1->{"\U$thorn REQUIRES $rname VERSION\E"} = $version;
             }
-            $cfg1->{$key} = \@opts;
+          } elsif($ch->is("name")) {
+            my $rname = $ch->substring();
+            my $key = "\U$thorn\E REQUIRES";
+            $cfg1->{$key} .= $rname." ";
+          } elsif($ch->is("thorns")) {
+            for my $n (@{$ch->{children}}) {
+              my $key = "\U$thorn\E REQUIRES THORNS";
+              $cfg1->{$key} .= $n->substring()." ";
+              push @req_thorns, $n->substring();
+            }
           }
         }
-        $cfg1->{"\U$thorn PROVIDES $name VERSION\E"} = $version;
-      } elsif($key eq "OPTIONAL" or $key eq "OPTIONAL_IFACTIVE") {
-        for my $ch (@{$node->{children}}) {
-          if($ch->is("name")) {
-            my $pname = $ch->substring();
-            my $key = "\U$thorn\E $key";
-            $cfg1->{$key} .= $pname." ";
+      } elsif($node->is("provopt")) {
+        my $key = uc($node->group(0,"key")->substring());
+        my $name = $node->group(1,"name")->substring();
+        if($key eq "PROVIDES") {
+          $cfg1->{"\U$thorn PROVIDES $name OPTIONS"}=[];
+          for my $ch (@{$node->{children}}) {
+            if($ch->is("name")) {
+              my $pname = $ch->substring();
+              my $key = "\U$thorn\E PROVIDES";
+              $cfg1->{$key} .= $pname." ";
+            } elsif($ch->is("version") and $ch->has(0)) {
+              $version = $ch->group(0,"vname")->substring();
+            } elsif($ch->is("lang") and $ch->has(0)) {
+              my $key = "\U$thorn PROVIDES $name LANG";
+              $cfg1->{$key} = $ch->group(0,"name")->substring();
+            } elsif($ch->is("script") and $ch->has(0)) {
+              my $key = "\U$thorn PROVIDES $name SCRIPT";
+              $cfg1->{$key} = $thorns->{$thorn}."/".$ch->group(0,"pname")->substring();
+            } elsif($ch->is("options")) {
+              my $key= "\U$thorn PROVIDES $name OPTIONS";
+              my $ropts = [];
+              $ropts = $cfg1->{$key} if(defined($cfg1->{$key}));
+              my @opts = @{$cfg1->{$key}};
+              for my $n (@{$ch->{children}}) {
+                push @opts, $n->substring();
+              }
+              $cfg1->{$key} = \@opts;
+            }
+          }
+          $cfg1->{"\U$thorn PROVIDES $name VERSION\E"} = $version;
+        } elsif($key eq "OPTIONAL" or $key eq "OPTIONAL_IFACTIVE") {
+          for my $ch (@{$node->{children}}) {
+            if($ch->is("name")) {
+              my $pname = $ch->substring();
+              my $key = "\U$thorn\E $key";
+              $cfg1->{$key} .= $pname." ";
+            }
           }
         }
       }
     }
-  }
-  $cfg1->{"\U$thorn\E REQUIRES THORNS"} = join(" ",sort @req_thorns);
+    $cfg1->{"\U$thorn\E REQUIRES THORNS"} = join(" ",sort @req_thorns);
   }
 
   my $cfg2 = {};
   if($main::cctk_parser eq "old" or $main::cctk_parser eq "both") {
-  $cfg2->{"\U$thorn\E PROVIDES"} = '';
-  $cfg2->{"\U$thorn\E REQUIRES"} = '';
-  $cfg2->{"\U$thorn\E REQUIRES THORNS"} = '';
-  $cfg2->{"\U$thorn\E OPTIONAL"} = '';
-  $cfg2->{"\U$thorn\E OPTIONAL_IFACTIVE"} = '';
-  $cfg2->{"\U$thorn\E ACTIVATES"} = '';
-  $cfg2->{"\U$thorn\E OPTIONS"}  = '';
+    $cfg2->{"\U$thorn\E PROVIDES"} = '';
+    $cfg2->{"\U$thorn\E REQUIRES"} = '';
+    $cfg2->{"\U$thorn\E REQUIRES THORNS"} = '';
+    $cfg2->{"\U$thorn\E OPTIONAL"} = '';
+    $cfg2->{"\U$thorn\E OPTIONAL_IFACTIVE"} = '';
+    $cfg2->{"\U$thorn\E ACTIVATES"} = '';
+    $cfg2->{"\U$thorn\E OPTIONS"}  = '';
 
-  # Read the data
-  @data = &read_file($filename);
+    # Read the data
+    @data = &read_file($filename);
 
-  for($line_number = 0; $line_number < @data; $line_number++)
-  {
-    $line = $data[$line_number];
-    # Parse the line
-    if($line =~ m/^\s*PROVIDES\s*/i)
+    for($line_number = 0; $line_number < @data; $line_number++)
     {
-      $lang = $script = '';
-      my ($version);
-      ($provides, $script, $lang, $options, $line_number, $version) = &ParseProvidesBlock($line_number, \@data);
-      if ($provides !~ m{^[A-Za-z0-9_.]+$}) {
-        &CST_error (0, "Illegal capability name '$provides' line '$line' in configure.ccl of thorn '$thorn'");
-      }
-      if ($lang !~ m{^[A-Za-z0-9_.]*$}) {
-        &CST_error (0, "Illegal script language '$lang' line '$line' in configure.ccl of thorn '$thorn'");
-      }
-      $cfg2->{"\U$thorn\E PROVIDES"} .= "$provides ";
-      $cfg2->{"\U$thorn\E PROVIDES \U$provides\E VERSION"} = "$version";
-      if($script)
+      $line = $data[$line_number];
+      # Parse the line
+      if($line =~ m/^\s*PROVIDES\s*/i)
       {
-        $cfg2->{"\U$thorn\E PROVIDES \U$provides\E SCRIPT"} = "$thorns->{$thorn}/$script";
-      }
-      $cfg2->{"\U$thorn\E PROVIDES \U$provides\E LANG"} = $lang;
-      $cfg2->{"\U$thorn\E PROVIDES \U$provides\E OPTIONS"} = $options;
+        $lang = $script = '';
+        my ($version);
+        ($provides, $script, $lang, $options, $line_number, $version) = &ParseProvidesBlock($line_number, \@data);
+        if ($provides !~ m{^[A-Za-z0-9_.]+$}) {
+          &CST_error (0, "Illegal capability name '$provides' line '$line' in configure.ccl of thorn '$thorn'");
+        }
+        if ($lang !~ m{^[A-Za-z0-9_.]*$}) {
+          &CST_error (0, "Illegal script language '$lang' line '$line' in configure.ccl of thorn '$thorn'");
+        }
+        $cfg2->{"\U$thorn\E PROVIDES"} .= "$provides ";
+        $cfg2->{"\U$thorn\E PROVIDES \U$provides\E VERSION"} = "$version";
+        if($script)
+        {
+          $cfg2->{"\U$thorn\E PROVIDES \U$provides\E SCRIPT"} = "$thorns->{$thorn}/$script";
+        }
+        $cfg2->{"\U$thorn\E PROVIDES \U$provides\E LANG"} = $lang;
+        $cfg2->{"\U$thorn\E PROVIDES \U$provides\E OPTIONS"} = $options;
 
 #      if ($script)
 #      {
@@ -425,72 +425,72 @@ sub ParseConfigurationCCL
 #        print "\n";
 #      }
 
-      next;
-    }
-    elsif($line =~ m/^\s*REQUIRES\s+THORNS\s*:\s*(.*)/i)
-    {
-      my $newlist = $1;
-      $newlist =~ s/\b$thorn\b//i;
-      $newlist =~ s/,/ /g;
-      my $oldlist = $cfg2->{"\U$thorn\E REQUIRES THORNS"};
-      my $list = $oldlist . ' ' . $newlist;
-      $list = join (' ', sort split (' ', $list));
-      $cfg2->{"\U$thorn\E REQUIRES THORNS"} = $list;
+        next;
+      }
+      elsif($line =~ m/^\s*REQUIRES\s+THORNS\s*:\s*(.*)/i)
+      {
+        my $newlist = $1;
+        $newlist =~ s/\b$thorn\b//i;
+        $newlist =~ s/,/ /g;
+        my $oldlist = $cfg2->{"\U$thorn\E REQUIRES THORNS"};
+        my $list = $oldlist . ' ' . $newlist;
+        $list = join (' ', sort split (' ', $list));
+        $cfg2->{"\U$thorn\E REQUIRES THORNS"} = $list;
 #      if ($cfg2->{"\U$thorn\E REQUIRES THORNS"})
 #      {
 #        &CST_error (3, '\'Requires Thorns\' will not be supported in release beta-14' .
 #        "\n Please adjust thorn \U$thorn\E to use \'Requires\' instead.");
 #      }
-    }
-    elsif($line =~ m/^\s*REQUIRES\s+(.*)/i)
-    {
-      my $cap = $1;
-      if ($cap !~ m{^([A-Za-z0-9_.]+ *(\( *(<<|<=|=|>=|>>) *[0-9a-zA-Z.+-:]+ *\))?)+$}) {
-        &CST_error (0, "Illegal required capability '$cap' line '$line' in configure.ccl of thorn '$thorn'");
       }
-      while ($cap =~ m/ *([A-Za-z0-9_.]+)( *\((.+)\))?/g)
+      elsif($line =~ m/^\s*REQUIRES\s+(.*)/i)
       {
-        my $capability = $1;
-        my $version    = $3;
-        $version =~ s/ //g;
-        $cfg2->{"\U$thorn\E REQUIRES"} .= "$capability ";
-        if ($version)
+        my $cap = $1;
+        if ($cap !~ m{^([A-Za-z0-9_.]+ *(\( *(<<|<=|=|>=|>>) *[0-9a-zA-Z.+-:]+ *\))?)+$}) {
+          &CST_error (0, "Illegal required capability '$cap' line '$line' in configure.ccl of thorn '$thorn'");
+        }
+        while ($cap =~ m/ *([A-Za-z0-9_.]+)( *\((.+)\))?/g)
         {
-          $cfg2->{"\U$thorn\E REQUIRES \U$capability\E VERSION"} .= "$version";
+          my $capability = $1;
+          my $version    = $3;
+          $version =~ s/ //g;
+          $cfg2->{"\U$thorn\E REQUIRES"} .= "$capability ";
+          if ($version)
+          {
+            $cfg2->{"\U$thorn\E REQUIRES \U$capability\E VERSION"} .= "$version";
+          }
         }
       }
-    }
-    elsif($line =~ m/^\s*OPTIONAL\s+/i)
-    {
-      ($optional, $define, $line_number) = &ParseOptionalBlock($filename, $line_number, \@data);
-      if ($optional !~ m{^[A-Za-z0-9_. ]+$}) {
-        &CST_error (0, "Illegal optional capability '$optional' line '$line' in configure.ccl of thorn '$thorn'");
+      elsif($line =~ m/^\s*OPTIONAL\s+/i)
+      {
+        ($optional, $define, $line_number) = &ParseOptionalBlock($filename, $line_number, \@data);
+        if ($optional !~ m{^[A-Za-z0-9_. ]+$}) {
+          &CST_error (0, "Illegal optional capability '$optional' line '$line' in configure.ccl of thorn '$thorn'");
+        }
+        $cfg2->{"\U$thorn\E OPTIONAL"} .= "$optional ";
+        $cfg2->{"\U$thorn\E OPTIONAL \U$optional\E DEFINE"} = $define;
       }
-      $cfg2->{"\U$thorn\E OPTIONAL"} .= "$optional ";
-      $cfg2->{"\U$thorn\E OPTIONAL \U$optional\E DEFINE"} = $define;
-    }
-    elsif($line =~ m/^\s*OPTIONAL_IFACTIVE\+*/i)
-    {
-      ($optional, $define, $line_number) = &ParseOptionalBlock($filename, $line_number, \@data);
-      if ($optional !~ m{^[A-Za-z0-9_. ]+$}) {
-        &CST_error (0, "Illegal optional capability '$optional' line '$line' in configure.ccl of thorn '$thorn'");
+      elsif($line =~ m/^\s*OPTIONAL_IFACTIVE\+*/i)
+      {
+        ($optional, $define, $line_number) = &ParseOptionalBlock($filename, $line_number, \@data);
+        if ($optional !~ m{^[A-Za-z0-9_. ]+$}) {
+          &CST_error (0, "Illegal optional capability '$optional' line '$line' in configure.ccl of thorn '$thorn'");
+        }
+        $cfg2->{"\U$thorn\E OPTIONAL_IFACTIVE"} .= "$optional ";
+        $cfg2->{"\U$thorn\E OPTIONAL_IFACTIVE \U$optional\E DEFINE"} = $define;
       }
-      $cfg2->{"\U$thorn\E OPTIONAL_IFACTIVE"} .= "$optional ";
-      $cfg2->{"\U$thorn\E OPTIONAL_IFACTIVE \U$optional\E DEFINE"} = $define;
+      elsif($line =~ m/^\s*NO_SOURCE\s*$/i)
+      {
+        $cfg2->{"\U$thorn\E OPTIONS"} .= "NO_SOURCE";
+      }
+      else
+      {
+        chomp($line);
+        &CST_error (0, "Unrecognised line '$line' in configure.ccl of thorn '$thorn'");
+      }
     }
-    elsif($line =~ m/^\s*NO_SOURCE\s*$/i)
-    {
-      $cfg2->{"\U$thorn\E OPTIONS"} .= "NO_SOURCE";
-    }
-    else
-    {
-      chomp($line);
-      &CST_error (0, "Unrecognised line '$line' in configure.ccl of thorn '$thorn'");
-    }
-  }
 
-  parser_compare($ccl_file,$cfg1,$cfg2)
-    if($main::cctk_parser eq "both");
+    parser_compare($ccl_file,$cfg1,$cfg2)
+      if($main::cctk_parser eq "both");
   }
   if($main::cctk_parser eq "both" or $main::cctk_parser eq "new") {
     for my $k (sort keys %$cfg1) {

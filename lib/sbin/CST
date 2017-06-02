@@ -877,11 +877,17 @@ sub canonicalize_key
   if(ref($v) eq "ARRAY") {
     $v = "[".join(",",@$v)."]";
   }
+  # Remove a C-stile // comment
   $v =~ s{//.*}{}g;
-  $v =~ s{/\*.*?\*/}{}g;
+  # Remove a C-style /* ... */ comment
+  $v =~ s{/\*.*?\*/}{}gs;
+  # Remove leading spaces
   $v =~ s/^\s+//;
+  # Remove trailing spaces
   $v =~ s/\s+$//;
+  # Replace spaces between word-characters with a single space
   $v =~ s/(\w)\s+(?=\w)/$1 $2/g;
+  # Remove spaces otherwise...
   $v =~ s/([^\w\s])\s+(?=\w)/$1/g;
   $v =~ s/(\w)\s+(?=[^\w\s])/$1/g;
   $v =~ s/([^\w\s])\s+(?=[^\w\s])/$1/g;

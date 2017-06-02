@@ -374,79 +374,81 @@ sub parse_schedule_ccl
   my %schedule_db2 = ();
 
   if($main::cctk_parser eq "new" or $main::cctk_parser eq "both") {
-  &parse_schedule_statement($group,\%schedule_db1,\$n_blocks,\$n_statements,\$buffer,$thorn);
-  $schedule_db1{"\U$thorn\E N_BLOCKS"}     = $n_blocks;
-  $schedule_db1{"\U$thorn\E FILE"}         = $buffer;
-  $schedule_db1{"\U$thorn\E N_STATEMENTS"} = $n_statements;
-
-  $buffer       = "";
-  $n_blocks     = 0;
-  $n_statements = 0;
-
-  for($line_number = 0; $line_number < scalar(@data); $line_number++)
-  {
-    if($data[$line_number] =~ m:^\s*schedule\s*:i)
-    {
-      ($line_number,
-       $name, $as, $type, $description, $where, $language,
-       $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
-       $options, $tags, $before_list, $after_list,
-       $writes_list, $reads_list, $while_list, $if_list) =
-           &ParseScheduleBlock($thorn,$line_number, @data);
-
-      $after_list =~ s/[\s,]+/,/g;
-      $before_list =~ s/[\s,]+/,/g;
-
-      $schedule_db2{"\U$thorn\E BLOCK_$n_blocks NAME"}        = $name;
-      $schedule_db2{"\U$thorn\E BLOCK_$n_blocks AS"}          = $as;
-      $schedule_db2{"\U$thorn\E BLOCK_$n_blocks TYPE"}        = $type;
-      $schedule_db2{"\U$thorn\E BLOCK_$n_blocks DESCRIPTION"} = $description;
-      $schedule_db2{"\U$thorn\E BLOCK_$n_blocks WHERE"}       = $where;
-      $schedule_db2{"\U$thorn\E BLOCK_$n_blocks LANG"}        = $language;
-      $schedule_db2{"\U$thorn\E BLOCK_$n_blocks STOR"}        = $mem_groups;
-      $schedule_db2{"\U$thorn\E BLOCK_$n_blocks COMM"}        = $comm_groups;
-      $schedule_db2{"\U$thorn\E BLOCK_$n_blocks TRIG"}        = $trigger_groups;
-      $schedule_db2{"\U$thorn\E BLOCK_$n_blocks SYNC"}        = $sync_groups;
-      $schedule_db2{"\U$thorn\E BLOCK_$n_blocks OPTIONS"}     = $options;
-      $schedule_db2{"\U$thorn\E BLOCK_$n_blocks TAGS"}        = $tags;
-      $schedule_db2{"\U$thorn\E BLOCK_$n_blocks BEFORE"}      = $before_list;
-      $schedule_db2{"\U$thorn\E BLOCK_$n_blocks AFTER"}       = $after_list;
-      $schedule_db2{"\U$thorn\E BLOCK_$n_blocks WRITES"}      = $writes_list;
-      $schedule_db2{"\U$thorn\E BLOCK_$n_blocks READS"}       = $reads_list;
-      $schedule_db2{"\U$thorn\E BLOCK_$n_blocks WHILE"}       = $while_list;
-      $schedule_db2{"\U$thorn\E BLOCK_$n_blocks IF"}          = $if_list;
-
-      $buffer .= "\@BLOCK\@$n_blocks\n";
-      $n_blocks++;
-    }
-    elsif($data[$line_number] =~ m/^\s*(STOR|COMM)[^:]*:\s*/i)
-    {
-      ($line_number, $type, $groups) = &ParseScheduleStatement($line_number, @data);
-      $schedule_db2{"\U$thorn\E STATEMENT_$n_statements TYPE"}        = $type;
-      $schedule_db2{"\U$thorn\E STATEMENT_$n_statements GROUPS"}      = $groups;
-      $buffer .= "\@STATEMENT\@$n_statements\n";
-      $n_statements++;
-    }
-    elsif($data[$line_number] =~ m/^\s*(STOR|COMM).*/i)
-    {
-      my $hint = "Line should be of format STORAGE: <group>, <group>";
-      my $message = "Format error in STORAGE statement of $thorn\nLine is: $data[$line_number]";
-      &CST_error(0,$message,$hint,__LINE__,__FILE__);
-	
-    }
-    else
-    {
-      $buffer .= "$data[$line_number]\n";
-    }
+    &parse_schedule_statement($group,\%schedule_db1,\$n_blocks,\$n_statements,\$buffer,$thorn);
+    $schedule_db1{"\U$thorn\E N_BLOCKS"}     = $n_blocks;
+    $schedule_db1{"\U$thorn\E FILE"}         = $buffer;
+    $schedule_db1{"\U$thorn\E N_STATEMENTS"} = $n_statements;
   }
 
-  $schedule_db2{"\U$thorn\E FILE"}         = $buffer;
-  $schedule_db2{"\U$thorn\E N_BLOCKS"}     = $n_blocks;
-  $schedule_db2{"\U$thorn\E N_STATEMENTS"} = $n_statements;
+  if($main::cctk_parser eq "old" or $main::cctk_parser eq "both") {
+    $buffer       = "";
+    $n_blocks     = 0;
+    $n_statements = 0;
 
-  if($main::cctk_parser eq "both") {
-    parser_compare($ccl_file,\%schedule_db1,\%schedule_db2);
-  }
+    for($line_number = 0; $line_number < scalar(@data); $line_number++)
+    {
+      if($data[$line_number] =~ m:^\s*schedule\s*:i)
+      {
+        ($line_number,
+         $name, $as, $type, $description, $where, $language,
+         $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
+         $options, $tags, $before_list, $after_list,
+         $writes_list, $reads_list, $while_list, $if_list) =
+             &ParseScheduleBlock($thorn,$line_number, @data);
+
+        $after_list =~ s/[\s,]+/,/g;
+        $before_list =~ s/[\s,]+/,/g;
+
+        $schedule_db2{"\U$thorn\E BLOCK_$n_blocks NAME"}        = $name;
+        $schedule_db2{"\U$thorn\E BLOCK_$n_blocks AS"}          = $as;
+        $schedule_db2{"\U$thorn\E BLOCK_$n_blocks TYPE"}        = $type;
+        $schedule_db2{"\U$thorn\E BLOCK_$n_blocks DESCRIPTION"} = $description;
+        $schedule_db2{"\U$thorn\E BLOCK_$n_blocks WHERE"}       = $where;
+        $schedule_db2{"\U$thorn\E BLOCK_$n_blocks LANG"}        = $language;
+        $schedule_db2{"\U$thorn\E BLOCK_$n_blocks STOR"}        = $mem_groups;
+        $schedule_db2{"\U$thorn\E BLOCK_$n_blocks COMM"}        = $comm_groups;
+        $schedule_db2{"\U$thorn\E BLOCK_$n_blocks TRIG"}        = $trigger_groups;
+        $schedule_db2{"\U$thorn\E BLOCK_$n_blocks SYNC"}        = $sync_groups;
+        $schedule_db2{"\U$thorn\E BLOCK_$n_blocks OPTIONS"}     = $options;
+        $schedule_db2{"\U$thorn\E BLOCK_$n_blocks TAGS"}        = $tags;
+        $schedule_db2{"\U$thorn\E BLOCK_$n_blocks BEFORE"}      = $before_list;
+        $schedule_db2{"\U$thorn\E BLOCK_$n_blocks AFTER"}       = $after_list;
+        $schedule_db2{"\U$thorn\E BLOCK_$n_blocks WRITES"}      = $writes_list;
+        $schedule_db2{"\U$thorn\E BLOCK_$n_blocks READS"}       = $reads_list;
+        $schedule_db2{"\U$thorn\E BLOCK_$n_blocks WHILE"}       = $while_list;
+        $schedule_db2{"\U$thorn\E BLOCK_$n_blocks IF"}          = $if_list;
+
+        $buffer .= "\@BLOCK\@$n_blocks\n";
+        $n_blocks++;
+      }
+      elsif($data[$line_number] =~ m/^\s*(STOR|COMM)[^:]*:\s*/i)
+      {
+        ($line_number, $type, $groups) = &ParseScheduleStatement($line_number, @data);
+        $schedule_db2{"\U$thorn\E STATEMENT_$n_statements TYPE"}        = $type;
+        $schedule_db2{"\U$thorn\E STATEMENT_$n_statements GROUPS"}      = $groups;
+        $buffer .= "\@STATEMENT\@$n_statements\n";
+        $n_statements++;
+      }
+      elsif($data[$line_number] =~ m/^\s*(STOR|COMM).*/i)
+      {
+        my $hint = "Line should be of format STORAGE: <group>, <group>";
+        my $message = "Format error in STORAGE statement of $thorn\nLine is: $data[$line_number]";
+        &CST_error(0,$message,$hint,__LINE__,__FILE__);
+  	
+      }
+      else
+      {
+        $buffer .= "$data[$line_number]\n";
+      }
+    }
+
+    $schedule_db2{"\U$thorn\E FILE"}         = $buffer;
+    $schedule_db2{"\U$thorn\E N_BLOCKS"}     = $n_blocks;
+    $schedule_db2{"\U$thorn\E N_STATEMENTS"} = $n_statements;
+
+    if($main::cctk_parser eq "both") {
+      parser_compare($ccl_file,\%schedule_db1,\%schedule_db2);
+    }
   }
 
   if($main::cctk_parser eq "new") {
