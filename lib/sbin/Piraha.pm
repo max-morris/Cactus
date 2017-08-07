@@ -1876,6 +1876,7 @@ sub is
 {
   my $self = shift;
   my $nm = shift;
+  return 0 unless(defined($self->{name}));
   return $self->{name} eq $nm;
 }
 
