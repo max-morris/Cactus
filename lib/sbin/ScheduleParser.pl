@@ -137,10 +137,18 @@ sub qname
 {
   my $qname = shift;
   confess("not a qname ".$qname->dump()) unless($qname->is("qname"));
-  my $out = vname($qname->group(0,"vname"));
-  if($qname->groupCount() > 1) {
-    $out .= "(" . $qname->group(1,"region")->substring() . ")";
+  my $vname = $qname->group(0,"vname");
+  my $out = "";
+  if($vname->has(1,"name")) {
+    $main::thorn = $vname->group(0,"name")->substring();
+    $out = $main::thorn . "::" . $vname->group(1,"name")->substring();
+  } else {
+    $out = $main::thorn . "::" . $vname->group(0,"name")->substring();
   }
+  if($qname->has(-1,"region")) {
+    $main::region = $qname->group(-1,"region")->substring();
+  }
+  $out .= "(" . $main::region . ")";
   return $out;
 }
 
@@ -241,14 +249,19 @@ sub parse_schedule_statement
               }
             } elsif($child->is("writes")) {
               my $qthorn = "";
+              $main::thorn = undef;
+              $main::region = "Interior";
               for my $qname (@{$child->{children}}) {
                 if($qname->is("qname")) {
+                  # yyy
                   $writes_list .= "," if(defined($writes_list));
                   $writes_list .= qname($qname);
                 }
               }
             } elsif($child->is("reads")) {
               my $qthorn = "";
+              $main::thorn = undef;
+              $main::region = "Everywhere";
               for my $qname (@{$child->{children}}) {
                 if($qname->is("qname")) {
                   $reads_list .= "," if(defined($reads_list));
