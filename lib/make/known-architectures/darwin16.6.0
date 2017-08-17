@@ -1,0 +1,12 @@
+#! /bin/sh
+# /*@@
+#   @file    darwin16.6.0
+#   @date    2016-11-27
+#   @author  Roland Haas
+#   @desc
+#            Known architecture stuff for OS X (Darwin) release 16.6.0
+#   @enddesc
+#   @version $Header$
+# @@*/
+
+. $srcdir/known-architectures/darwin
