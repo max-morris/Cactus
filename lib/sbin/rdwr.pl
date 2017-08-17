@@ -53,11 +53,21 @@ sub do_interfaces
       if($ch->is("VARS")) {
         my $i = 0;
 	$noDetect = 1;
+	my $vecval = 0;
+        for my $ch2 (@{$gr->{children}}) {
+          if($ch2->is("gname")) {
+	    if($ch2->has(1,"expr")) {
+	      $vecval = 1;
+            }
+	    last;
+          }
+	}
 	while($ch->has($i,"name")!=0) {
           my $var = $ch->has($i,"name");
 	  my $var_str = $var->substring();
-	  $hash->{$var_str}->{"level"} = [ 1 => ($level-1) ] -> [ 1 <= ($level-1) ];
+	  $hash->{$var_str}->{"level"} = [ 0 => ($level-1) ] -> [ 0 <= ($level-1) ];
 	  $hash->{$var_str}->{"vtype"} = uc $vtype->substring();
+	  $hash->{$var_str}->{"vector"} = $vecval;
 	  $i++;
 	}
         last;
@@ -68,8 +78,14 @@ sub do_interfaces
         if($ch->is("gname")) {
           my $var = $ch->has(0,"name");
           my $var_str = $var->substring();
-          $hash->{$var_str}->{"level"} = [ 1 => ($level-1) ] -> [ 1 <= ($level-1) ];
+          $hash->{$var_str}->{"level"} = [ 0 => ($level-1) ] -> [ 0 <= ($level-1) ];
 	  $hash->{$var_str}->{"vtype"} = uc $vtype->substring();
+	  $hash->{$var_str}->{"vector"} = 0;
+	  if($ch->has(1,"expr")) {
+#	    my $vec = $ch->has(1,"expr")->has(0,"addexpr")->has(0,"mulexpr")->has(0,"powexpr")->has(0,"num");
+#	    $hash->{$var_str}->{"vector"} = $vec->substring() if($vec);
+	    $hash->{$var_str}->{"vector"} = 1;
+	  }
 	  last;
 	}
       }
@@ -105,48 +121,48 @@ sub do_schedules
          my $val = $reads_writes->{$thorn_str}->{$var_str};
        }
      }
+     $data .= "#ifndef DECLARE_CCTK_ARGUMENTS_${nm} \n";
      $data .= "#define DECLARE_CCTK_ARGUMENTS_${nm} \\\n";
      $data .= " _DECLARE_CCTK_ARGUMENTS; \\\n";
      for my $th (keys %{$reads_writes}) {
        for my $var (keys %{$reads_writes->{$th}}) {
          if(defined($hash->{$th}->{$var})) {
            my $vtype = "CCTK_".$hash->{$th}->{$var}->{"vtype"};
-	   my $vname = "\"$th::$var\"";
-#	   if($var eq "excised_cells") {
-#	     print "$th::$var $vtype $hash->{$th}->{$var}->{\"level\"}\n";
-#	   }
+	   my $vname = "$th::$var";
+	     if ($hash->{$th}->{$var}->{"vector"}) {
+               $vname .= "[0]";
+	     }
 	   my $const = "";
 	   $const = "const" if($reads_writes->{$th}->{$var}==0);
 	   for(my $i=0; $i<=$hash->{$th}->{$var}->{"level"}; $i++) {
 	     my $past = "";
-	       for(my $lvls=1; $lvls<=$i; $lvls++) {
-	         $past .= "_p";
-	       }
-	       my $tvar = $var.$past;
-	       $data .= "  $const $vtype *$tvar = ($const $vtype *)CCTK_VarDataPtr(cctkGH, $i, $vname); \\\n";
+	     for(my $lvls=1; $lvls<=$i; $lvls++) {
+	       $past .= "_p";
 	     }
+	     my $tvar = $var.$past;
+	     $data .= qq(  $const $vtype *$tvar = ($const $vtype *)CCTK_VarDataPtr(cctkGH, $i, "$vname"); \\\n);
+	   }
 	 } elsif(($tnm eq $th) && defined($hash->{$tnm}->{$tnm}->{$var})) {
            my $vtype = "CCTK_".$hash->{$tnm}->{$tnm}->{$var}->{"vtype"};
-	   my $vname = "\"$tnm::$var\"";
-#	   if($var eq "excised_cells") {
-#	     print "$th::$var $vtype $hash->{$th}->{$var}->{\"level\"}\n";
-#	   }
+	   my $vname = "$tnm::$var";
+	     if ($hash->{$tnm}->{$tnm}->{$var}->{"vector"}) {
+	       $vname .= "[0]";
+	     }
 	   my $const = "";
 	   $const = "const" if($reads_writes->{$th}->{$var}==0);
+	   my $past = "";
 	   for(my $i=0; $i<=$hash->{$tnm}->{$tnm}->{$var}->{"level"}; $i++) {
-	     my $past = "";
-	       for(my $lvls=1; $lvls<=$i; $lvls++) {
-	         $past .= "_p";
-	       }
-	       my $tvar = $var.$past;
-	       $data .= "  $const $vtype *$tvar = ($const $vtype *)CCTK_VarDataPtr(cctkGH, $i, $vname); \\\n";
+	     my $tvar = $var.$past;
+	     $data .= qq(  $const $vtype *$tvar = ($const $vtype *)CCTK_VarDataPtr(cctkGH, $i, "$vname"); \\\n);
+	     $past .= "_p";
 	   }
 	 } else {
-	   confess("Variable $th::$var not found.");
+	   confess("Variable $th::$var not found. Error in $nm schedule.");
 	 }
        }
      }
      $data .= " /* end $nm */\n";
+     $data .= "#endif\n";
    } else {
      for my $ch (@{$gr->{children}}) {
        $data .= do_schedules($tnm,$hash,$ch);
