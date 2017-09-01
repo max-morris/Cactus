@@ -145,6 +145,9 @@ sub qname
   } else {
     $out = $main::thorn . "::" . $vname->group(0,"name")->substring();
   }
+  if($qname->has(1,"array")) {
+    $main::array = $qname->group(1,"array")->substring();
+  }
   if($qname->has(-1,"region")) {
     $main::region = $qname->group(-1,"region")->substring();
   }

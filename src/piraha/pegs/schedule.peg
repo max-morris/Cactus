@@ -48,7 +48,7 @@ reads = (?i:reads) : {qname}( , {qname}|[ \t]{qname})*
 writes = (?i:writes) : {qname}( , {qname}|[ \t]{qname})*
 array = \[\]
 qname = {vname} ({array} |)(\( {region} \))?
-region = (?i:everywhere|interior|all|in|boundary)
+region = (?i:everywhere|interior|all|in|boundary|scalar)
 tags = (?i:tags) : {assign}( , {assign}|[ \t]{assign})*
 schedule = (?i:
   schedule ({group}|{nogroup}) {name} {prepositions} \{
