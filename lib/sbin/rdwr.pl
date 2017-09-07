@@ -20,13 +20,13 @@ sub interface_starter
     if($ch->is("FUNC_GROUP")) {
       for my $gch (@{$ch->{children}}) {
         if($gch->is("IMPLEMENTS")) {
-	  my $name = $gch->has(0,"name");
-	  my $name_str = uc $name->substring();
-	  $hash->{$name_str} = {};
-	  do_interfaces($hash->{$name_str},$gr);
-	  $hash->{$thornname}->{$thornname} = $hash->{$name_str};
-	  return;
-	}
+          my $name = $gch->has(0,"name");
+          my $name_str = uc $name->substring();
+          $hash->{$name_str} = {};
+          do_interfaces($hash->{$name_str},$gr);
+          $hash->{$thornname}->{$thornname} = $hash->{$name_str};
+          return;
+        }
       }
     }
   }
@@ -45,49 +45,44 @@ sub do_interfaces
     for my $ch (@{$gr->{children}}) {
       if($ch->is("gname")) {
         $gname = $ch->has(0,"name")->substring();
-	if($ch->has(1,"expr")) {
-	  my $expr = $ch->has(1,"expr")->has(0,"addexpr")->has(0,"mulexpr")->has(0,"powexpr");
-	  if($expr->has(0,"num")) {
-	    $vecval = $expr->has(0,"num")->substring();
+        if($ch->has(1,"expr")) {
+          my $expr = $ch->has(1,"expr")->has(0,"addexpr")->has(0,"mulexpr")->has(0,"powexpr");
+          if($expr->has(0,"num")) {
+            $vecval = $expr->has(0,"num")->substring();
           } elsif($expr->has(0,"accname")) {
-	    $vecval = $expr->has(0,"accname")->substring();
-	  } else {
-	    confess("This parser has met an unexpected structure in interface parsing.");
-	  }
-	}
+            $vecval = $expr->has(0,"accname")->substring();
+          } else {
+            confess("This parser has met an unexpected structure in interface parsing.");
+          }
+        }
       } elsif($ch->is("gtype")) {
-	$gtype = $ch->substring();
+        $gtype = $ch->substring();
       } elsif($ch->is("timelevels")) {
-	$level = $ch->substring();
-	last;
+        $level = $ch->substring();
+        last;
       }
     }
-#    $hash->{$gname}->{"level"} = [ 0 => ($level-1) ] -> [ 0 <= ($level-1) ];
-#    $hash->{$gname}->{"vtype"} = uc $vtype;
-#    $hash->{$gname}->{"vector"} = $vecval;
-#    $hash->{$gname}->{"gtype"} = $gtype;
+    $hash->{$gname}->{"level"} = [ 0 => ($level-1) ] -> [ 0 <= ($level-1) ];
+    $hash->{$gname}->{"vtype"} = uc $vtype;
+    $hash->{$gname}->{"vector"} = $vecval;
+    $hash->{$gname}->{"gtype"} = $gtype;
     my $noDetect = 0;
     for my $ch (@{$gr->{children}}) {
       if($ch->is("VARS")) {
         my $i = 0;
-	$noDetect = 1;
-	while($ch->has($i,"name")!=0) {
+        $noDetect = 1;
+        while($ch->has($i,"name")!=0) {
           my $var = $ch->has($i,"name")->substring();
-	  $hash->{$gname}->{$var}->{"level"} = [ 0 => ($level-1) ] -> [ 0 <= ($level-1) ];
-	  $hash->{$gname}->{$var}->{"vtype"} = uc $vtype;
-	  $hash->{$gname}->{$var}->{"vector"} = $vecval;
-	  $hash->{"variable_list"}->{$var} = $hash->{$gname}->{$var};
-	  $hash->{"variable_list"}->{$var}->{"group"} = $gname;
-	  $i++;
-	}
+          $hash->{$gname}->{"grp_vars"}->{$var} = $var;
+          $hash->{"variable_list"}->{$var} = $gname;
+          $i++;
+        }
         last;
       }
     }
     if($noDetect == 0) {
-      $hash->{$gname}->{$gname}->{"level"} = [ 0 => ($level-1) ] -> [ 0 <= ($level-1) ];
-      $hash->{$gname}->{$gname}->{"vtype"} = uc $vtype;
-      $hash->{$gname}->{$gname}->{"vector"} = $vecval;
-      $hash->{"variable_list"}->{$gname} = $hash->{$gname}->{$gname};
+      $hash->{$gname}->{"grp_vars"}->{$gname} = $gname;
+      $hash->{"variable_list"}->{$gname} = $gname;
     }
   } else {
     for my $ch (@{$gr->{children}}) {
@@ -120,72 +115,123 @@ sub do_schedules
          $reads_writes->{$thorn}->{$var} += $is_writes;
        }
      }
+     my $temp_data = "";
      $data .= "#ifndef DECLARE_CCTK_ARGUMENTS_${nm} \n";
      $data .= "#define DECLARE_CCTK_ARGUMENTS_${nm} \\\n";
-     $data .= " _DECLARE_CCTK_ARGUMENTS; \\\n";
      if($language eq "C") {
+       $data .= " _DECLARE_CCTK_ARGUMENTS; \\\n";
        for my $th (keys %{$reads_writes}) {
          for my $var (keys %{$reads_writes->{$th}}) {
-	   my $variable;
-	   my $group;
-           if(defined($hash->{$th}->{$var})) {
-	     $variable = $hash->{$th}->{$var};
-           } elsif(($tnm eq $th) && defined($hash->{$tnm}->{$tnm}->{$var})) {
-	     $variable = $hash->{$tnm}->{$tnm}->{$var};
-	   } elsif(defined->) {
-	   }
-	   } else {
-	     confess("Variable $th::$var not found. Error in $nm schedule.");
-	   }
-           my $vtype = "CCTK_".$variable->{"vtype"};
-	   my $vname = "$th::$var";
-	   if ($variable->{"vector"}) {
-             $vname .= "[0]";
-	   }
-	   my $const = "";
-	   $const = "const" if($reads_writes->{$th}->{$var}==0);
-	   my $past = "";
-	   for(my $i=0; $i<=$variable->{"level"}; $i++) {
-	     my $tvar = $var.$past;
-	     $data .= qq(  $const $vtype *$tvar = ($const $vtype *)CCTK_VarDataPtr(cctkGH, $i, "$vname"); \\\n);
-	     $past .= "_p";
-	   }
+           my $var_group;
+           my $group_register;
+           if(defined($hash->{$th}->{"variable_list"}->{$var})) {
+             my $group = $hash->{$th}->{"variable_list"}->{$var};
+             $var_group = $hash->{$th}->{$group};
+           } elsif(($tnm eq $th) && defined($hash->{$th}->{$th}->{"variable_list"}->{$var})) {
+             my $group = $hash->{$th}->{$th}->{"variable_list"}->{$var};
+             $var_group = $hash->{$th}->{$th}->{$group};
+           } elsif(defined($hash->{$th}->{$var})) {
+             $var_group = $hash->{$th}->{$var};
+             $group_register = "yes";
+           } else {
+             confess("Variable or group $th::$var not found. Error in $nm schedule.");
+           }
+           my $vtype = "CCTK_".$var_group->{"vtype"};
+           my $const = "";
+           $const = "const" if($reads_writes->{$th}->{$var}==0);
+           if($group_register eq "yes") {
+             for my $variables (keys %{$var_group->{"grp_vars"}}) {
+               my $vname = "$th::$variables";
+               if ($var_group->{"vector"} ne "0") {
+                 $vname .= "[0]";
+               }
+               my $past = "";
+               for(my $i=0; $i<=$var_group->{"level"}; $i++) {
+                 my $tvar = $variables.$past;
+                 $data .= qq(  $const $vtype *$tvar = ($const $vtype *)CCTK_VarDataPtr(cctkGH, $i, "$vname"); \\\n);
+                 $past .= "_p";
+               }
+             }
+           } else {
+             my $vname = "$th::$var";
+             if ($var_group->{"vector"} ne "0") {
+               $vname .= "[0]";
+             }
+             my $past = "";
+             for(my $i=0; $i<=$var_group->{"level"}; $i++) {
+               my $tvar = $var.$past;
+               $data .= qq(  $const $vtype *$tvar = ($const $vtype *)CCTK_VarDataPtr(cctkGH, $i, "$vname"); \\\n);
+               $past .= "_p";
+             }
+           }
          }
        }
      } elsif($language eq "FORTRAN") {
+       $data .= " _DECLARE_CCTK_ARGUMENTS \\\n";
        for my $th (keys %{$reads_writes}) {
          for my $var (keys %{$reads_writes->{$th}}) {
-	   my $variable;
-	   if(defined($hash->{$th}->{$var})) {
-	     $variable = $hash->{$th}->{$var};
-	   } elsif(($tnm eq $th) && defined($hash->{$tnm}->{$tnm}->{$var})) {
-	     $variable = $hash->{$tnm}->{$tnm}->{$var};
-	   } else {
-	     confess("Variable $th::$var not found. Error in $nm schedule.");
-	   }
-           my $vtype = "CCTK_".$variable->{"vtype"};
-	   my $vname = "$th::$var";
-	   my $arrays = "";
-	   $arrays .= "(cctk_ash1,cctk_ash2,cctk_ash3" if ($variable->{"type"} eq "GF");
-#	   if() {
-#	     $arrays .= "$variable->{"vector"}"
-#	   } else {
-#	     $arrays .= ")";
-#	   }
-	   $vtype .= ", intent(in)" if($reads_writes->{$th}->{$var}==0);
-	   my $past = "";
-	   for(my $i=0; $i<=$variable->{"level"}; $i++) {
-	     my $tvar = $var.$past;
-#	     $data .= "  $vtype :: $tvar $arrays"
-#	     $data .= "  integer, parameter :: cctki_use_$tvar = kind($tvar)"
-	     $past .= "_p";
-	   }
-	 }
+           my $var_group;
+           my $group;
+           my $group_register;
+           if(defined($hash->{$th}->{"variable_list"}->{$var})) {
+             $group = $hash->{$th}->{"variable_list"}->{$var};
+             $var_group = $hash->{$th}->{$group};
+           } elsif(($tnm eq $th) && defined($hash->{$th}->{$th}->{"variable_list"}->{$var})) {
+             $group = $hash->{$th}->{$th}->{"variable_list"}->{$var};
+             $var_group = $hash->{$th}->{$th}->{$group};
+           } elsif(defined($hash->{$th}->{$var})) {
+             $group = $var;
+             $var_group = $hash->{$th}->{$var};
+             $group_register = "yes";
+           } else {
+             confess("Variable $th::$var not found. Error in $nm schedule.");
+           }
+           my $vtype = "CCTK_".$var_group->{"vtype"};
+           $vtype .= ", intent(in)" if($reads_writes->{$th}->{$var}==0);
+           my $arrays = "";
+           if($var_group->{"gtype"} eq "GF") {
+             if($var_group->{"vector"} ne "0") {
+               my $glen = $group."_length";
+               $arrays = qq((cctk_ash1,cctk_ash2,cctk_ash3,$glen));
+             } else {
+               $arrays = qq((cctk_ash1,cctk_ash2,cctk_ash3));
+             }
+           } elsif($var_group->{"vector"} ne "0") {
+             my $glen = $group."_length";
+             $arrays = qq(($glen));
+           }
+           if($group_register eq "yes") {
+             for my $variables (keys %{$var_group->{"grp_vars"}}) {
+               my $vname = "$th::$variables";
+               my $past = "";
+               for(my $i=0; $i<=$var_group->{"level"}; $i++) {
+                 my $tvar = $variables.$past;
+                 $temp_data .= ", $tvar";
+                 $data .= "  $vtype :: $tvar $arrays &&\\\n";
+                 $data .= "  integer, parameter :: cctki_use_$tvar = kind($tvar) &&\\\n";
+                 $past .= "_p";
+               }
+             }
+           } else {
+             my $vname = "$th::$var";
+             my $past = "";
+             for(my $i=0; $i<=$var_group->{"level"}; $i++) {
+               my $tvar = $var.$past;
+               $temp_data .= ", $tvar";
+               $data .= "  $vtype :: $tvar $arrays &&\\\n";
+               $data .= "  integer, parameter :: cctki_use_$tvar = kind($tvar) &&\\\n";
+               $past .= "_p";
+             }
+           }
+         }
        }
      } else {
        confess("rdwr.pl failed to match the language for the function $nm.");
      }
      $data .= " /* end $nm */\n";
+     $data .= "#endif\n";
+     $data .= "#ifndef CCTK_ARGUMENTS_${nm} \n";
+     $data .= "#define CCTK_ARGUMENTS_$nm _CCTK_FARGUMENTS$temp_data \n";
      $data .= "#endif\n";
    } else {
      for my $ch (@{$gr->{children}}) {
@@ -194,13 +240,6 @@ sub do_schedules
    }
    return $data;
 }
-
-#GF:  $vtype $tvar (cctk_ash1,cctk_ash2,cctk_ash3)
-#     integer, parameter :: cctki_use_$tvar = kind($tvar)
-
-#SCALAR:  $vtype $tvar
-#         integer, parameter :: cctki_use_$tvar = kind($tvar)
-
 sub GenerateArguments
 {
   my %thorns = @_;
@@ -231,5 +270,4 @@ sub GenerateArguments
     }
     close($fh);
   }
-  die;
 }
