@@ -113,6 +113,13 @@ sub do_schedules
          my $thorn = uc $vname->has(0,"name")->substring();
          my $var = $vname->has(1,"name")->substring();
          $reads_writes->{$thorn}->{$var} += $is_writes;
+         my $i = 1;
+         while($ch->has($i,"qname")) {
+           $vname = $ch->has($i,"qname")->has(0,"vname");
+           $var = $vname->has(0,"name")->substring();
+           $reads_writes->{$thorn}->{$var} += $is_writes;
+            $i++;
+         }
        }
      }
      my $temp_data = "";
@@ -121,9 +128,16 @@ sub do_schedules
      if($language eq "C") {
        $data .= " _DECLARE_CCTK_ARGUMENTS; \\\n";
        for my $th (keys %{$reads_writes}) {
-         for my $var (keys %{$reads_writes->{$th}}) {
+         for my $full_var (keys %{$reads_writes->{$th}}) {
            my $var_group;
            my $group_register;
+           my $timelevel = 0;
+           my $var = $full_var;
+           my $timelevel = 0;
+           while((substr $var,-2,2) eq "_p") {
+             $var = substr $var,0,-2;
+             $timelevel++;
+           }
            if(defined($hash->{$th}->{"variable_list"}->{$var})) {
              my $group = $hash->{$th}->{"variable_list"}->{$var};
              $var_group = $hash->{$th}->{$group};
@@ -134,45 +148,41 @@ sub do_schedules
              $var_group = $hash->{$th}->{$var};
              $group_register = "yes";
            } else {
-             confess("Variable or group $th::$var not found. Error in $nm schedule.");
+             confess("Variable or group $th::$full_var not found. Error in $nm schedule.");
            }
            my $vtype = "CCTK_".$var_group->{"vtype"};
            my $const = "";
-           $const = "const" if($reads_writes->{$th}->{$var}==0);
+           $const = "const" if($reads_writes->{$th}->{$full_var}==0);
            if($group_register eq "yes") {
              for my $variables (keys %{$var_group->{"grp_vars"}}) {
                my $vname = "$th::$variables";
                if ($var_group->{"vector"} ne "0") {
                  $vname .= "[0]";
                }
-               my $past = "";
-               for(my $i=0; $i<=$var_group->{"level"}; $i++) {
-                 my $tvar = $variables.$past;
-                 $data .= qq(  $const $vtype *$tvar = ($const $vtype *)CCTK_VarDataPtr(cctkGH, $i, "$vname"); \\\n);
-                 $past .= "_p";
-               }
+               $data .= qq(  $const $vtype *$variables = ($const $vtype *)CCTK_VarDataPtr(cctkGH, 0, "$vname"); \\\n);
              }
            } else {
              my $vname = "$th::$var";
              if ($var_group->{"vector"} ne "0") {
                $vname .= "[0]";
              }
-             my $past = "";
-             for(my $i=0; $i<=$var_group->{"level"}; $i++) {
-               my $tvar = $var.$past;
-               $data .= qq(  $const $vtype *$tvar = ($const $vtype *)CCTK_VarDataPtr(cctkGH, $i, "$vname"); \\\n);
-               $past .= "_p";
-             }
+             $data .= qq(  $const $vtype *$full_var = ($const $vtype *)CCTK_VarDataPtr(cctkGH, $timelevel, "$vname"); \\\n);
            }
          }
        }
      } elsif($language eq "FORTRAN") {
        $data .= " _DECLARE_CCTK_ARGUMENTS \\\n";
        for my $th (keys %{$reads_writes}) {
-         for my $var (keys %{$reads_writes->{$th}}) {
+         for my $full_var (keys %{$reads_writes->{$th}}) {
            my $var_group;
            my $group;
            my $group_register;
+           my $var = $full_var;
+           my $timelevel = 0;
+           while((substr $var,-2,2) eq "_p") {
+             $var = substr $var,0,-2;
+             $timelevel++;
+           }
            if(defined($hash->{$th}->{"variable_list"}->{$var})) {
              $group = $hash->{$th}->{"variable_list"}->{$var};
              $var_group = $hash->{$th}->{$group};
@@ -187,7 +197,7 @@ sub do_schedules
              confess("Variable $th::$var not found. Error in $nm schedule.");
            }
            my $vtype = "CCTK_".$var_group->{"vtype"};
-           $vtype .= ", intent(in)" if($reads_writes->{$th}->{$var}==0);
+           $vtype .= ", intent(in)" if($reads_writes->{$th}->{$full_var}==0);
            my $arrays = "";
            if($var_group->{"gtype"} eq "GF") {
              if($var_group->{"vector"} ne "0") {
@@ -202,26 +212,14 @@ sub do_schedules
            }
            if($group_register eq "yes") {
              for my $variables (keys %{$var_group->{"grp_vars"}}) {
-               my $vname = "$th::$variables";
-               my $past = "";
-               for(my $i=0; $i<=$var_group->{"level"}; $i++) {
-                 my $tvar = $variables.$past;
-                 $temp_data .= ", $tvar";
-                 $data .= "  $vtype :: $tvar $arrays &&\\\n";
-                 $data .= "  integer, parameter :: cctki_use_$tvar = kind($tvar) &&\\\n";
-                 $past .= "_p";
-               }
+               $temp_data .= ", $variables";
+               $data .= "  $vtype :: $variables $arrays &&\\\n";
+               $data .= "  integer, parameter :: cctki_use_$variables = kind($variables) &&\\\n";
              }
            } else {
-             my $vname = "$th::$var";
-             my $past = "";
-             for(my $i=0; $i<=$var_group->{"level"}; $i++) {
-               my $tvar = $var.$past;
-               $temp_data .= ", $tvar";
-               $data .= "  $vtype :: $tvar $arrays &&\\\n";
-               $data .= "  integer, parameter :: cctki_use_$tvar = kind($tvar) &&\\\n";
-               $past .= "_p";
-             }
+             $temp_data .= ", $full_var";
+             $data .= "  $vtype :: $full_var $arrays &&\\\n";
+             $data .= "  integer, parameter :: cctki_use_$full_var = kind($full_var) &&\\\n";
            }
          }
        }
