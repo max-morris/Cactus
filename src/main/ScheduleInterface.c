@@ -34,6 +34,9 @@
 
 #include "util_Table.h"
 
+void CCTKi_CreateRDWRData(cFunctionData *f);
+void CCTKi_FreeRDWRData(cFunctionData *f);
+
 static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_ScheduleInterface_c);
@@ -1570,6 +1573,7 @@ static t_attribute *CreateAttribute(const char *where,
       this->FunctionData.n_SyncGroups = n_sync_groups;
       this->FunctionData.n_WritesClauses = n_writes;
       this->FunctionData.n_ReadsClauses = n_reads;
+      CCTKi_CreateRDWRData(&this->FunctionData);
 
       this->timers = NULL;
     }
@@ -1583,6 +1587,7 @@ static t_attribute *CreateAttribute(const char *where,
       free(this->FunctionData.SyncGroups);
       free(this->FunctionData.WritesClauses);
       free(this->FunctionData.ReadsClauses);
+      CCTKi_FreeRDWRData(&this->FunctionData);
       free(this);
       this = NULL;
     }

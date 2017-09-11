@@ -17,6 +17,18 @@ typedef enum {LangNone, LangC, LangFortran} cLanguage;
 
 typedef enum {FunctionNoArgs, FunctionOneArg, FunctionStandard} cFunctionType;
 
+#define WH_EVERYWHERE          0x3
+#define WH_INTERIOR            0x2
+#define WH_BOUNDARY            0x1 
+#define WH_NOWHERE             0x0
+
+typedef struct
+{
+  int var_id;
+  int time_level;
+  int where_wr, where_rd;
+} RDWR_entry;
+
 typedef struct
 {
   cLanguage language;
@@ -58,6 +70,9 @@ typedef struct
   const char **WritesClauses;
   int n_ReadsClauses;
   const char **ReadsClauses;
+
+  int n_RDWR;
+  RDWR_entry *RDWR;
 
   char *where;
   char *routine;
