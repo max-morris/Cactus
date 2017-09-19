@@ -148,7 +148,8 @@ sub do_schedules
              $var_group = $hash->{$th}->{$var};
              $group_register = "yes";
            } else {
-             confess("Variable or group $th::$full_var not found. Error in $nm schedule.");
+             warn("Variable or group $th::$full_var not found. Error in $nm schedule.");
+             next;
            }
            my $vtype = "CCTK_".$var_group->{"vtype"};
            my $const = "";
