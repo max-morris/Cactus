@@ -109,11 +109,11 @@ void parse(const char *str,bool is_write,std::set<RDWR_entry,EntryComp>& s) {
     int vi = CCTK_VarIndex(full_name.c_str());
     if(vi < 0) {
         int gi = CCTK_GroupIndex(full_name.c_str());
-        if(gi < 0) {
+/*        if(gi < 0 and !strcmp(var,test_parameter)) {
             std::ostringstream msg;
             msg << "Invalid variable or group name " << full_name << std::endl;
             CCTK_Error(-1,0,imp.c_str(),msg.str().c_str());
-        }
+        }*/
         int i0 = CCTK_FirstVarIndexI(gi);
         int iN = i0+CCTK_NumVarsInGroupI(gi);
         for(vi=i0;vi<iN;vi++) {
