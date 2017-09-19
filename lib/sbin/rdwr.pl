@@ -159,19 +159,19 @@ sub do_schedules
                if ($var_group->{"vector"} ne "0") {
                  $vname .= "[0]";
                }
-               $data .= qq(  $const $vtype *$variables = ($const $vtype *)CCTK_VarDataPtr(cctkGH, 0, "$vname"); \\\n);
+               $data .= qq(  $const $vtype *$variables = ($const $vtype *)CCTK_PSVarDataPtr(cctkGH, 0, "$vname"); \\\n);
              }
            } else {
              my $vname = "$th::$var";
              if ($var_group->{"vector"} ne "0") {
                $vname .= "[0]";
              }
-             $data .= qq(  $const $vtype *$full_var = ($const $vtype *)CCTK_VarDataPtr(cctkGH, $timelevel, "$vname"); \\\n);
+             $data .= qq(  $const $vtype *$full_var = ($const $vtype *)CCTK_PSVarDataPtr(cctkGH, $timelevel, "$vname"); \\\n);
            }
          }
        }
      } elsif($language eq "FORTRAN") {
-       $data .= " _DECLARE_CCTK_ARGUMENTS \\\n";
+       $data .= " _DECLARE_CCTK_FARGUMENTS \\\n";
        for my $th (keys %{$reads_writes}) {
          for my $full_var (keys %{$reads_writes->{$th}}) {
            my $var_group;
@@ -212,7 +212,7 @@ sub do_schedules
            }
            if($group_register eq "yes") {
              for my $variables (keys %{$var_group->{"grp_vars"}}) {
-               $temp_data .= ", $variables";
+               $temp_data .= ",$variables";
                $data .= "  $vtype :: $variables $arrays &&\\\n";
                $data .= "  integer, parameter :: cctki_use_$variables = kind($variables) &&\\\n";
              }

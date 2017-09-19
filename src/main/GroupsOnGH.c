@@ -33,6 +33,11 @@ void CCTK_FCALL CCTK_FNAME(CCTK_VarDataPtr)
       const cGH **cctkGH,
       const int *timelevel,
       ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME(CCTK_PSVarDataPtr)
+     (CCTK_POINTER *res,
+      const cGH **cctkGH,
+      const int *timelevel,
+      ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME(CCTK_VarDataPtrI)
      (CCTK_POINTER *res,
       const cGH **cctkGH,
@@ -305,6 +310,78 @@ void CCTK_FCALL CCTK_FNAME(CCTK_VarDataPtr)
 {
   ONE_FORTSTRING_CREATE (varname);
   *res = CCTK_VarDataPtr (*cctkGH, *timelevel, varname);
+  free (varname);
+}
+
+ /*@@
+   @routine    CCTK_PSVarDataPtr
+   @desc
+   Passes back a variable data pointer, given a full name and timelevel.
+   Copy of CCTK_PSVarDataPtr for use by rdwr.pl.
+   @enddesc
+
+   @var        GH
+   @vdesc      Pointer to Grid Hierachy
+   @vtype      const cGH *
+   @vio        in
+   @endvar
+
+   @var        varname
+   @vdesc      Full name of the grid variable
+   @vtype      const char *
+   @vio        in
+   @vcomment   Format <implementation>::<variable>
+   @endvar
+
+   @var        timelevel
+   @vdesc      Index of timelevel on which data is required
+   @vtype      int
+   @vio        in
+   @endvar
+
+   @returntype void *
+   @returndesc Pointer to the required data, should be cast to required type
+   @endreturndesc
+@@*/
+
+void *CCTK_PSVarDataPtr(const cGH *GH, int timelevel, const char *varname)
+{
+  int vindex;
+  void *retval;
+
+
+  retval = NULL;
+  vindex = CCTK_VarIndex(varname);
+  if (vindex >= 0)
+  {
+    if (timelevel >= 0 && timelevel < CCTK_MaxActiveTimeLevelsVI (GH, vindex))
+    {
+      retval = GH->data[vindex][timelevel];
+    }
+    else
+    {
+      CCTK_VWarn(1,__LINE__,__FILE__,"Cactus",
+                 "Invalid timelevel %d for variable '%s' in CCTK_PSVarDataPtr",
+                 timelevel, varname);
+    }
+  }
+
+#ifdef DEBUG_GROUPS
+  printf("In CCTK_PSVarDataPtr\n----------------------------\n");
+  printf("  Data pointer for %s (%d) is %x\n",varname,vindex,retval);
+#endif
+
+  return retval;
+}
+
+void CCTK_FCALL CCTK_FNAME(CCTK_PSVarDataPtr)
+     (CCTK_POINTER *res,
+      const cGH **cctkGH,
+      const int *timelevel,
+      ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_CREATE (varname);
+  *res = CCTK_PSVarDataPtr (*cctkGH, *timelevel, varname);
   free (varname);
 }
 
