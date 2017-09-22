@@ -139,19 +139,19 @@ sub qname
   confess("not a qname ".$qname->dump()) unless($qname->is("qname"));
   my $vname = $qname->group(0,"vname");
   my $out = "";
-  if($vname->has(1,"name")) {
-    $main::thorn = $vname->group(0,"name")->substring();
-    $out = $main::thorn . "::" . $vname->group(1,"name")->substring();
-  } else {
-    $out = $main::thorn . "::" . $vname->group(0,"name")->substring();
-  }
-  if($qname->has(1,"array")) {
-    $main::array = $qname->group(1,"array")->substring();
-  }
-  if($qname->has(-1,"region")) {
-    $main::region = $qname->group(-1,"region")->substring();
+  $main::thorn = $vname->group(0,"name")->substring();
+  $out = $main::thorn . "::" . $vname->group(1,"name")->substring();
+  my $iter = 1;
+  if($qname->has(1,"region")) {
+    $main::region = $qname->group(1,"region")->substring();
+    $iter++;
   }
   $out .= "(" . $main::region . ")";
+  while($qname->has($iter,"name")) {
+    $out .="," . $main::thorn . "::" . $qname->group($iter,"name")->substring();
+    $out .= "(" . $main::region . ")";
+    $iter++;
+  }
   return $out;
 }
 ###

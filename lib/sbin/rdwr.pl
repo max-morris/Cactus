@@ -22,7 +22,7 @@ sub interface_starter
         if($gch->is("IMPLEMENTS")) {
           my $name = $gch->has(0,"name");
           my $name_str = uc $name->substring();
-          $hash->{$name_str} = {};
+          $hash->{$name_str} = {} if(!defined($hash->{$name_str}));
           do_interfaces($hash->{$name_str},$gr);
           $hash->{$thornname}->{$thornname} = $hash->{$name_str};
           return;
@@ -52,7 +52,8 @@ sub do_interfaces
           } elsif($expr->has(0,"accname")) {
             $vecval = $expr->has(0,"accname")->substring();
           } else {
-            confess("This parser has met an unexpected structure in interface parsing.");
+            &CST_error(0, "Unexpected structure encountered in interface parsing."
+                  , __LINE__, __FILE__);
           }
         }
       } elsif($ch->is("gtype")) {
@@ -71,7 +72,7 @@ sub do_interfaces
       if($ch->is("VARS")) {
         my $i = 0;
         $noDetect = 1;
-        while($ch->has($i,"name")!=0) {
+        while($ch->has($i,"name")) {
           my $var = $ch->has($i,"name")->substring();
           $hash->{$gname}->{"grp_vars"}->{$var} = $var;
           $hash->{"variable_list"}->{$var} = $gname;
@@ -98,8 +99,8 @@ sub do_schedules
    my $hash = shift;
    my $gr = shift;
    if($gr->is("schedule")) {
-     my $nm;
      next if($gr->has(0,"group")); #group scheduling has no rd/wr clauses
+     my $nm;
      my $language;
      my $reads_writes = {};
      for my $ch (@{$gr->{children}}) {
@@ -109,16 +110,16 @@ sub do_schedules
          $language = uc $ch->has(0,"name")->substring();
        } elsif($ch->is("reads") or $ch->is("writes")) {
          my $is_writes = $ch->is("writes");
-         my $vname = $ch->has(0,"qname")->has(0,"vname");
-         my $thorn = uc $vname->has(0,"name")->substring();
-         my $var = $vname->has(1,"name")->substring();
+         my $qname = $ch->has(0,"qname");
+         my $thorn = uc $qname->has(0,"vname")->has(0,"name")->substring();
+         my $var = $qname->has(0,"vname")->has(1,"name")->substring();
          $reads_writes->{$thorn}->{$var} += $is_writes;
          my $i = 1;
-         while($ch->has($i,"qname")) {
-           $vname = $ch->has($i,"qname")->has(0,"vname");
-           $var = $vname->has(0,"name")->substring();
+         $i++ if($qname->has($i,"region"));
+         while($qname->has($i,"name")) {
+           $var = $qname->has($i,"name")->substring();
            $reads_writes->{$thorn}->{$var} += $is_writes;
-            $i++;
+           $i++;
          }
        }
      }
@@ -148,7 +149,9 @@ sub do_schedules
              $var_group = $hash->{$th}->{$var};
              $group_register = "yes";
            } else {
-             warn("Variable or group $th::$full_var not found. Error in $nm schedule.");
+             &CST_error(0, "Error in $nm schedule. Check variable or group $th::$full_var" .
+                   ' and verify correct implementation/thorn name and variable name.'
+                   , __LINE__, __FILE__);
              next;
            }
            my $vtype = "CCTK_".$var_group->{"vtype"};
@@ -195,7 +198,9 @@ sub do_schedules
              $var_group = $hash->{$th}->{$var};
              $group_register = "yes";
            } else {
-             confess("Variable $th::$var not found. Error in $nm schedule.");
+             &CST_error(0, "Error in $nm schedule. Check variable or group $th::$full_var" .
+                   ' and verify correct implementation/thorn name and variable name.'
+                   , __LINE__, __FILE__);
            }
            my $vtype = "CCTK_".$var_group->{"vtype"};
            $vtype .= ", intent(in)" if($reads_writes->{$th}->{$full_var}==0);
@@ -225,7 +230,8 @@ sub do_schedules
          }
        }
      } else {
-       confess("rdwr.pl failed to match the language for the function $nm.");
+       &CST_error(0, "Failed to match the language for the function $nm."
+             , __LINE__, __FILE__);
      }
      $data .= " /* end $nm */\n";
      $data .= "#endif\n";
