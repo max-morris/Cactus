@@ -236,7 +236,7 @@ sub do_schedules
      $data .= " /* end $nm */\n";
      $data .= "#endif\n";
      $data .= "#ifndef CCTK_ARGUMENTS_${nm} \n";
-     $data .= "#define CCTK_ARGUMENTS_$nm _CCTK_FARGUMENTS$temp_data \n";
+     $data .= "#define CCTK_ARGUMENTS_$nm _CCTK_ARGUMENTS$temp_data \n";
      $data .= "#endif\n";
    } else {
      for my $ch (@{$gr->{children}}) {

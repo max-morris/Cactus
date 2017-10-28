@@ -12,15 +12,11 @@
 #define _CCTK_SCHEDULE_H_
 
 #include <stdio.h>
+#include "PreSync.h"
 
 typedef enum {LangNone, LangC, LangFortran} cLanguage;
 
 typedef enum {FunctionNoArgs, FunctionOneArg, FunctionStandard} cFunctionType;
-
-#define WH_EVERYWHERE          0x3
-#define WH_INTERIOR            0x2
-#define WH_BOUNDARY            0x1 
-#define WH_NOWHERE             0x0
 
 typedef struct
 {
