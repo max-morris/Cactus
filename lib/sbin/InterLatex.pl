@@ -190,7 +190,7 @@ sub ReadInterfaceDatabase
 
       my ($arrangement, $thorn) = ($1, $2);
 
-      next if /^implementation/;
+      next if /^implementations$/;
       next if /^thorns$/;
       next if ($interfaceDatabase{$old_key} !~ /\w/);
    
