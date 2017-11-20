@@ -216,7 +216,7 @@ sub ReadInterfaceDatabase
       } elsif (/^([^\s]+) ([^\s]+)$/) { 
           $newDatabase{$arrangement}->{$thorn}->{$2} = $interfaceDatabase{$old_key};
       } else {
-         print "\n--> Confused: [$_] = [$interfaceDatabase{$_}]";
+         print "\n--> Confused: [$_] = [$interfaceDatabase{$old_key}]";
       }
  
    }
