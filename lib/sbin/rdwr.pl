@@ -175,6 +175,7 @@ sub do_schedules
          }
        }
      } elsif($language eq "FORTRAN") {
+       my $vector_len = {};
        $data .= " _DECLARE_CCTK_FARGUMENTS \\\n";
        for my $th (keys %{$reads_writes}) {
          for my $full_var (keys %{$reads_writes->{$th}}) {
@@ -208,17 +209,24 @@ sub do_schedules
            if($var_group->{"gtype"} eq "GF") {
              if($var_group->{"vector"} ne "0") {
                my $glen = $group."_length";
+               if(!defined($vector_len->{$glen})) {
+                 $temp_data .= ", $glen";
+                 $data .= "integer :: $glen &&\\\n";
+                 $vector_len->{$glen} = 1;
+               }
                $arrays = qq((cctk_ash1,cctk_ash2,cctk_ash3,$glen));
              } else {
                $arrays = qq((cctk_ash1,cctk_ash2,cctk_ash3));
              }
            } elsif($var_group->{"vector"} ne "0") {
              my $glen = $group."_length";
+             $temp_data .= ", $glen";
+             $data .= "integer :: $glen &&\\\n";
              $arrays = qq(($glen));
            }
            if($group_register eq "yes") {
              for my $variables (keys %{$var_group->{"grp_vars"}}) {
-               $temp_data .= ",$variables";
+               $temp_data .= ", $variables";
                $data .= "  $vtype :: $variables $arrays &&\\\n";
                $data .= "  integer, parameter :: cctki_use_$variables = kind($variables) &&\\\n";
              }
