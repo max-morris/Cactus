@@ -218,6 +218,14 @@ sub do_schedules
              } else {
                $arrays = qq((cctk_ash1,cctk_ash2,cctk_ash3));
              }
+           } elsif($var_group->{"gtype"} eq "ARRAY") {
+             my $glen = "X0".$group;
+             if(!defined($vector_len->{$glen})) {
+               $temp_data .= ", $glen";
+               $data .= "integer :: $glen &&\\\n";
+               $vector_len->{$glen} = 1;
+             }
+             $arrays = qq(($glen));
            } elsif($var_group->{"vector"} ne "0") {
              my $glen = $group."_length";
              $temp_data .= ", $glen";
