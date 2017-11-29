@@ -268,31 +268,17 @@ sub GenerateArguments
   my $ccl_file;
   for my $key (keys %thorns) {
     $ccl_file = $thorns{$key}."/interface.ccl";
-    my $p=piraha::parse_src($I_grammar,$I_rule,$ccl_file);
-    my $m = $p->matches();
-    if($m) {
-      my $gr = $p->{gr};
+    my $gr=parse_ccl($I_grammar,$I_rule,$ccl_file,$int_file);
+    if($gr) {
       interface_starter($key,$hash,$gr);
-    } else {
-      &CST_error(0,
-         $p->showError(),
-         undef, 
-         $p->{maxTextPos},$ccl_file);
     }
   }
   for my $key (keys %thorns) {
     open(my $fh, '>', $ENV{CCTK_HOME}."/configs/sim/bindings/include/$key/cctk_Arguments_$key.h");
     $ccl_file = $thorns{$key}."/schedule.ccl";
-    my $p=piraha::parse_src($S_grammar,$S_rule,$ccl_file);
-    my $m = $p->matches();
-    if($m) {
-      my $gr = $p->{gr};
+    my $gr=parse_ccl($S_grammar,$S_rule,$ccl_file,$sch_file);
+    if($gr) {
       print $fh do_schedules($key,$hash,$gr);
-    } else {
-      &CST_error(0,
-         $p->showError(),
-         undef, 
-         $p->{maxTextPos},$ccl_file);
     }
     close($fh);
   }
