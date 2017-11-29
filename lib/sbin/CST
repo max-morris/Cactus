@@ -271,9 +271,10 @@ sub parse_ccl
       piraha::store_tree($ccl_cache,$p->{gr});
       $gr = $p->{gr};
     } else {
-      print "CST ERROR IN FILE '$ccl_file' ";
-      $p->showError();
-      confess("Parse Error");
+      &CST_error(0,
+         $p->showError(),
+         undef, 
+         $p->{maxTextPos},$ccl_file);
     }
   }
   # Debugging

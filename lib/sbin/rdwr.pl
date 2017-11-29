@@ -265,29 +265,34 @@ sub GenerateArguments
 {
   my %thorns = @_;
   my $hash = {};
+  my $ccl_file;
   for my $key (keys %thorns) {
-    my $p=piraha::parse_src($I_grammar,$I_rule,"$thorns{$key}/interface.ccl");
+    $ccl_file = $thorns{$key}."/interface.ccl";
+    my $p=piraha::parse_src($I_grammar,$I_rule,$ccl_file);
     my $m = $p->matches();
     if($m) {
       my $gr = $p->{gr};
       interface_starter($key,$hash,$gr);
     } else {
-      print "CST ERROR IN FILE  ";
-      $p->showError();
-      confess("Parse Error");
+      &CST_error(0,
+         $p->showError(),
+         undef, 
+         $p->{maxTextPos},$ccl_file);
     }
   }
   for my $key (keys %thorns) {
     open(my $fh, '>', $ENV{CCTK_HOME}."/configs/sim/bindings/include/$key/cctk_Arguments_$key.h");
-    my $p=piraha::parse_src($S_grammar,$S_rule,"$thorns{$key}/schedule.ccl");
+    $ccl_file = $thorns{$key}."/schedule.ccl";
+    my $p=piraha::parse_src($S_grammar,$S_rule,$ccl_file);
     my $m = $p->matches();
     if($m) {
       my $gr = $p->{gr};
       print $fh do_schedules($key,$hash,$gr);
     } else {
-      print "CST ERROR IN FILE  ";
-      $p->showError();
-      confess("Parse Error");
+      &CST_error(0,
+         $p->showError(),
+         undef, 
+         $p->{maxTextPos},$ccl_file);
     }
     close($fh);
   }
