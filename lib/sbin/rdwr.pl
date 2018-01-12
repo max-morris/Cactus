@@ -120,7 +120,9 @@ sub do_schedules
       if($ch->is("name")) {
         $nm = $ch->substring();
       } elsif($ch->is("lang")) {
-        $lang->{$nm} = uc $ch->has(0,"name")->substring();
+        my $language = uc $ch->has(0,"name")->substring();
+        $nm .= "_".substr($language,0,1);
+        $lang->{$nm} = $language;
       } elsif($ch->is("reads") or $ch->is("writes")) {
         my $is_writes = $ch->is("writes");
         my $qname = $ch->has(0,"qname");
@@ -134,10 +136,11 @@ sub do_schedules
           $reads_writes->{$nm}->{$thorn}->{$var} += $is_writes;
           $i++;
         }
+        delete $reads_writes->{$nm}->{$nm}->{$nm};
       }
     }
     if(!defined($reads_writes->{$nm})) {
-      $reads_writes->{$nm} = "empty";
+      $reads_writes->{$nm}->{$nm}->{$nm} = "empty";
     }
   } else {
     for my $ch (@{$gr->{children}}) {
@@ -154,29 +157,42 @@ sub create_macros
   my $reads_writes = shift;
   my $lang = shift;
   my $data = shift;
-  for my $nm (keys %{$reads_writes}) {
+  $$data .= "#ifndef CCTK_ARGUMENTS_H_$tnm \n";
+  $$data .= "#define CCTK_ARGUMENTS_H_$tnm 1\n";
+  for my $namekey (keys %{$reads_writes}) {
     my $temp_data = "";
-    $$data .= "#ifndef DECLARE_CCTK_ARGUMENTS_${nm} \n";
-    $$data .= "#define DECLARE_CCTK_ARGUMENTS_${nm} \\\n";
-    if($reads_writes->{$nm} eq "empty") {
-      if ($lang->{$nm} eq "C") {
-        $$data .= " _DECLARE_CCTK_ARGUMENTS; \\\n";
-      } elsif ($lang->{$nm} eq "FORTRAN") {
-        $$data .= " _DECLARE_CCTK_FARGUMENTS; \\\n";
+    my $nm = substr($namekey,0,-2);
+    if($reads_writes->{$namekey}->{$namekey}->{$namekey} eq "empty") {
+      if ($lang->{$namekey} eq "C") {
+        $$data .= "#ifdef CCODE \n";
+        $$data .= "#ifndef DECLARE_CCTK_ARGUMENTS_${nm} \n";
+        $$data .= "#define DECLARE_CCTK_ARGUMENTS_${nm} \\\n";
+        $$data .= "  _DECLARE_CCTK_ARGUMENTS; \\\n";
+      } elsif ($lang->{$namekey} eq "FORTRAN") {
+        $$data .= "#ifdef FCODE \n";
+        $$data .= "#ifndef DECLARE_CCTK_ARGUMENTS_${nm} \n";
+        $$data .= "#define DECLARE_CCTK_ARGUMENTS_${nm} \\\n";
+        $$data .= "  _DECLARE_CCTK_FARGUMENTS; \\\n";
       } else {
         &CST_error(0, "Failed to match the language for the function $nm."
               , __LINE__, __FILE__);
       }
-      $$data .= " /* end $nm */\n";
+      $$data .= "  /* end $nm */\n";
       $$data .= "#endif\n";
-      $$data .= "#ifndef CCTK_ARGUMENTS_${nm} \n";
-      $$data .= "#define CCTK_ARGUMENTS_$nm _CCTK_ARGUMENTS \n";
       $$data .= "#endif\n";
+      if ($lang->{$namekey} eq "FORTRAN") {
+        $$data .= "#ifndef CCTK_ARGUMENTS_${nm} \n";
+        $$data .= "#define CCTK_ARGUMENTS_$nm _CCTK_ARGUMENTS \n";
+        $$data .= "#endif\n";
+      }
     } else {
-      if($lang->{$nm} eq "C") {
-        $$data .= " _DECLARE_CCTK_ARGUMENTS; \\\n";
-        for my $th (keys %{$reads_writes->{$nm}}) {
-          for my $full_var (keys %{$reads_writes->{$nm}->{$th}}) {
+      if($lang->{$namekey} eq "C") {
+        $$data .= "#ifdef CCODE \n";
+        $$data .= "#ifndef DECLARE_CCTK_ARGUMENTS_${nm} \n";
+        $$data .= "#define DECLARE_CCTK_ARGUMENTS_${nm} \\\n";
+        $$data .= "  _DECLARE_CCTK_ARGUMENTS; \\\n";
+        for my $th (keys %{$reads_writes->{$namekey}}) {
+          for my $full_var (keys %{$reads_writes->{$namekey}->{$th}}) {
             my $var_group;
             my $group_register;
             my $timelevel = 0;
@@ -202,7 +218,7 @@ sub create_macros
             }
             my $vtype = "CCTK_".$var_group->{"vtype"};
             my $const = "";
-            $const = "const" if($reads_writes->{$nm}->{$th}->{$full_var}==0);
+            $const = "const" if($reads_writes->{$namekey}->{$th}->{$full_var}==0);
             if($group_register eq "yes") {
               for my $variables (keys %{$var_group->{"grp_vars"}}) {
                 my $vname = "$th::$variables";
@@ -220,11 +236,14 @@ sub create_macros
             }
           }
         }
-      } elsif($lang->{$nm} eq "FORTRAN") {
+      } elsif($lang->{$namekey} eq "FORTRAN") {
         my $vector_len = {};
-        $$data .= " _DECLARE_CCTK_FARGUMENTS \\\n";
-        for my $th (keys %{$reads_writes->{$nm}}) {
-          for my $full_var (keys %{$reads_writes->{$nm}->{$th}}) {
+        $$data .= "#ifdef FCODE \n";
+        $$data .= "#ifndef DECLARE_CCTK_ARGUMENTS_${nm} \n";
+        $$data .= "#define DECLARE_CCTK_ARGUMENTS_${nm} \\\n";
+        $$data .= "  _DECLARE_CCTK_FARGUMENTS \\\n";
+        for my $th (keys %{$reads_writes->{$namekey}}) {
+          for my $full_var (keys %{$reads_writes->{$namekey}->{$th}}) {
             my $var_group;
             my $group;
             my $group_register;
@@ -250,14 +269,14 @@ sub create_macros
                     , __LINE__, __FILE__);
             }
             my $vtype = "CCTK_".$var_group->{"vtype"};
-            $vtype .= ", intent(in)" if($reads_writes->{$nm}->{$th}->{$full_var}==0);
+            $vtype .= ", intent(in)" if($reads_writes->{$namekey}->{$th}->{$full_var}==0);
             my $arrays = "";
             if($var_group->{"gtype"} eq "GF") {
               if($var_group->{"vector"} ne "0") {
                 my $glen = $group."_length";
                 if(!defined($vector_len->{$glen})) {
                   $temp_data .= ", $glen";
-                  $$data .= "integer :: $glen &&\\\n";
+                  $$data .= "  integer :: $glen &&\\\n";
                   $vector_len->{$glen} = 1;
                 }
                 $arrays = qq((cctk_ash1,cctk_ash2,cctk_ash3,$glen));
@@ -268,14 +287,14 @@ sub create_macros
               my $glen = "X0".$group;
               if(!defined($vector_len->{$glen})) {
                 $temp_data .= ", $glen";
-                $$data .= "integer :: $glen &&\\\n";
+                $$data .= "  integer :: $glen &&\\\n";
                 $vector_len->{$glen} = 1;
               }
               $arrays = qq(($glen));
             } elsif($var_group->{"vector"} ne "0") {
               my $glen = $group."_length";
               $temp_data .= ", $glen";
-              $$data .= "integer :: $glen &&\\\n";
+              $$data .= "  integer :: $glen &&\\\n";
               $arrays = qq(($glen));
             }
             if($group_register eq "yes") {
@@ -295,13 +314,17 @@ sub create_macros
         &CST_error(0, "Failed to match the language for the function $nm."
               , __LINE__, __FILE__);
       }
-      $$data .= " /* end $nm */\n";
+      $$data .= "  /* end $nm */\n";
       $$data .= "#endif\n";
-      $$data .= "#ifndef CCTK_ARGUMENTS_${nm} \n";
-      $$data .= "#define CCTK_ARGUMENTS_$nm _CCTK_ARGUMENTS$temp_data \n";
+      if($lang->{$namekey} eq "FORTRAN") {
+        $$data .= "#ifndef CCTK_ARGUMENTS_${nm} \n";
+        $$data .= "#define CCTK_ARGUMENTS_$nm _CCTK_ARGUMENTS$temp_data \n";
+        $$data .= "#endif\n";
+      }
       $$data .= "#endif\n";
     }
   } #loop over $nm
+  $$data .= "#endif";
 }
 
 sub GenerateArguments
