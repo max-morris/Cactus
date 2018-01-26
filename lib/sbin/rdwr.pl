@@ -69,7 +69,7 @@ sub do_interfaces
     }
     $hash->{$gname}->{vtype} = uc $vtype;
     $hash->{$gname}->{vector} = $vecval;
-    $hash->{$gname}->{gtype} = $gtype;
+    $hash->{$gname}->{gtype} = uc $gtype;
     my $Detect = 0;
     for my $ch (@{$gr->{children}}) {
       if($ch->is("VARS")) {
@@ -202,11 +202,11 @@ sub create_macros
               $var = substr $var,0,-2;
               $timelevel++;
             }
-            if(defined($hash->{$th}->{"variable_list"}->{$var})) {
-              my $group = $hash->{$th}->{"variable_list"}->{$var};
+            if(defined($hash->{$th}->{variable_list}->{$var})) {
+              my $group = $hash->{$th}->{variable_list}->{$var};
               $var_group = $hash->{$th}->{$group};
-            } elsif(($tnm eq $th) && defined($hash->{$th}->{$th}->{"variable_list"}->{$var})) {
-              my $group = $hash->{$th}->{$th}->{"variable_list"}->{$var};
+            } elsif(($tnm eq $th) && defined($hash->{$th}->{$th}->{variable_list}->{$var})) {
+              my $group = $hash->{$th}->{$th}->{variable_list}->{$var};
               $var_group = $hash->{$th}->{$th}->{$group};
             } elsif(defined($hash->{$th}->{$var})) {
               $var_group = $hash->{$th}->{$var};
@@ -216,20 +216,20 @@ sub create_macros
                     ' and verify correct implementation/thorn name and variable name.'
                     , __LINE__, __FILE__);
             }
-            my $vtype = "CCTK_".$var_group->{"vtype"};
+            my $vtype = "CCTK_".$var_group->{vtype};
             my $const = "";
             $const = "const" if($reads_writes->{$namekey}->{$th}->{$full_var}==0);
             if($group_register eq "yes") {
-              for my $variables (keys %{$var_group->{"grp_vars"}}) {
+              for my $variables (keys %{$var_group->{grp_vars}}) {
                 my $vname = "$th::$variables";
-                if ($var_group->{"vector"} ne "0") {
+                if ($var_group->{vector} ne "0") {
                   $vname .= "[0]";
                 }
                 $$data .= qq(  $const $vtype *$variables = ($const $vtype *)CCTK_PSVarDataPtr(cctkGH, 0, "$vname"); \\\n);
               }
             } else {
               my $vname = "$th::$var";
-              if ($var_group->{"vector"} ne "0") {
+              if ($var_group->{vector} ne "0") {
                 $vname .= "[0]";
               }
               $$data .= qq(  $const $vtype *$full_var = ($const $vtype *)CCTK_PSVarDataPtr(cctkGH, $timelevel, "$vname"); \\\n);
@@ -253,11 +253,11 @@ sub create_macros
               $var = substr $var,0,-2;
               $timelevel++;
             }
-            if(defined($hash->{$th}->{"variable_list"}->{$var})) {
-              $group = $hash->{$th}->{"variable_list"}->{$var};
+            if(defined($hash->{$th}->{variable_list}->{$var})) {
+              $group = $hash->{$th}->{variable_list}->{$var};
               $var_group = $hash->{$th}->{$group};
-            } elsif(($tnm eq $th) && defined($hash->{$th}->{$th}->{"variable_list"}->{$var})) {
-              $group = $hash->{$th}->{$th}->{"variable_list"}->{$var};
+            } elsif(($tnm eq $th) && defined($hash->{$th}->{$th}->{variable_list}->{$var})) {
+              $group = $hash->{$th}->{$th}->{variable_list}->{$var};
               $var_group = $hash->{$th}->{$th}->{$group};
             } elsif(defined($hash->{$th}->{$var})) {
               $group = $var;
@@ -268,11 +268,11 @@ sub create_macros
                     ' and verify correct implementation/thorn name and variable name.'
                     , __LINE__, __FILE__);
             }
-            my $vtype = "CCTK_".$var_group->{"vtype"};
+            my $vtype = "CCTK_".$var_group->{vtype};
             $vtype .= ", intent(in)" if($reads_writes->{$namekey}->{$th}->{$full_var}==0);
             my $arrays = "";
-            if($var_group->{"gtype"} eq "GF") {
-              if($var_group->{"vector"} ne "0") {
+            if($var_group->{gtype} eq "GF") {
+              if($var_group->{vector} ne "0") {
                 my $glen = $group."_length";
                 if(!defined($vector_len->{$glen})) {
                   $temp_data .= ", $glen";
@@ -283,7 +283,7 @@ sub create_macros
               } else {
                 $arrays = qq((cctk_ash1,cctk_ash2,cctk_ash3));
               }
-            } elsif($var_group->{"gtype"} eq "ARRAY") {
+            } elsif($var_group->{gtype} eq "ARRAY") {
               my $glen = "X0".$group;
               if(!defined($vector_len->{$glen})) {
                 $temp_data .= ", $glen";
@@ -291,14 +291,14 @@ sub create_macros
                 $vector_len->{$glen} = 1;
               }
               $arrays = qq(($glen));
-            } elsif($var_group->{"vector"} ne "0") {
+            } elsif($var_group->{vector} ne "0") {
               my $glen = $group."_length";
               $temp_data .= ", $glen";
               $$data .= "  integer :: $glen &&\\\n";
               $arrays = qq(($glen));
             }
             if($group_register eq "yes") {
-              for my $variables (keys %{$var_group->{"grp_vars"}}) {
+              for my $variables (keys %{$var_group->{grp_vars}}) {
                 $temp_data .= ", $variables";
                 $$data .= "  $vtype :: $variables $arrays &&\\\n";
                 $$data .= "  integer, parameter :: cctki_use_$variables = kind($variables) &&\\\n";
