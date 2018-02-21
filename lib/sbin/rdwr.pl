@@ -39,6 +39,7 @@ sub do_interfaces
     my $vtype = $gr->has(0,"vtype")->substring();
     my $level = 0;
     my $vecval = "0";
+    my $dim = 0;
     my $gname;
     my $gtype;
     for my $ch (@{$gr->{children}}) {
@@ -57,6 +58,8 @@ sub do_interfaces
         }
       } elsif($ch->is("gtype")) {
         $gtype = $ch->substring();
+      } elsif($ch->is("dim") and (uc $gtype) eq "ARRAY") {
+        $dim = $ch->substring();
       } elsif($ch->is("timelevels")) {
         $level = $ch->substring();
         last;
@@ -70,6 +73,7 @@ sub do_interfaces
     $hash->{$gname}->{vtype} = uc $vtype;
     $hash->{$gname}->{vector} = $vecval;
     $hash->{$gname}->{gtype} = uc $gtype;
+    $hash->{$gname}->{array_dim} = $dim;
     my $Detect = 0;
     for my $ch (@{$gr->{children}}) {
       if($ch->is("VARS")) {
@@ -284,11 +288,24 @@ sub create_macros
                 $arrays = qq((cctk_ash1,cctk_ash2,cctk_ash3));
               }
             } elsif($var_group->{gtype} eq "ARRAY") {
+              #if($var_group->{vector} ne "0") {
+                #I haven't seen a vector-array in fortran yet, so I don't know
+                #the proper order for the arguments.
+              #}
               my $glen = "X0".$group;
               if(!defined($vector_len->{$glen})) {
                 $temp_data .= ", $glen";
                 $$data .= "  integer :: $glen &&\\\n";
                 $vector_len->{$glen} = 1;
+              }
+              for(my $i = 1; $i < $var_group->{array_dim}; $i++) {
+                my $temp_glen .= "X".$i.$group;
+                $glen .= ",".$temp_glen;
+                if(!defined($vector_len->{$temp_glen})) {
+                  $temp_data .= ", $temp_glen";
+                  $$data .= "  integer :: $temp_glen &&\\\n";
+                  $vector_len->{$temp_glen} = 1;
+                }
               }
               $arrays = qq(($glen));
             } elsif($var_group->{vector} ne "0") {
