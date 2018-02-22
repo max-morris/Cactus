@@ -24,7 +24,7 @@ our @schedule_bins = (
     'POSTRESTRICTINITIAL',
     'POSTINITIAL',
     'POSTPOSTINITIAL',
-    # Recovery                  
+    # Recovery
     'RECOVER_VARIABLES',
     'POST_RECOVER_VARIABLES',
     'RECOVER_PARAMETERS',
@@ -234,12 +234,12 @@ sub parse_schedule_statement
             } elsif($child->is("options")) {
               for my $opt (@{$child->{children}}) {
                 $options .= "," unless($options eq "");
-                $options .= $opt->substring(); 
+                $options .= $opt->substring();
               }
             } elsif($child->is("tags")) {
               for my $tag (@{$child->{children}}) {
                 $tags .= "," unless($tags eq "");
-                $tags .= $tag->substring(); 
+                $tags .= $tag->substring();
               }
             } elsif($child->is("storage")) {
               for my $vname (@{$child->{children}}) {
@@ -443,7 +443,7 @@ sub parse_schedule_ccl
         my $hint = "Line should be of format STORAGE: <group>, <group>";
         my $message = "Format error in STORAGE statement of $thorn\nLine is: $data[$line_number]";
         &CST_error(0,$message,$hint,__LINE__,__FILE__);
-  	
+
       }
       else
       {
@@ -743,7 +743,7 @@ sub ParseScheduleBlock
     {
       $line_number++;
       if($data[$line_number] =~ m/^\s*STOR[^:]*:\s*(.*)$/i)
-      { 
+      {
         if ($where eq "CCTK_STARTUP" )
         {
           &CST_error(1, "Scheduling storage \"$name\" at startup in thorn \"$thorn\"","Storage cannot be allocated at startup",__LINE__,__FILE__);
