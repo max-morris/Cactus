@@ -44,7 +44,6 @@ our @schedule_bins = (
 # A regular expression matching all possible schedule bins, including
 # a CCTK prefix and in upper case
 our $schedule_bin_regexp = '\bCCTK_(' . join ('|', @schedule_bins) . ')\b';
-our $time_bin_info = {};
 
 # Check that the schedule bin exists
 my %schedule_bins = ();
