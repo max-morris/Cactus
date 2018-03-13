@@ -127,7 +127,11 @@ sub do_schedules
         my $language = uc $ch->has(0,"name")->substring();
         $nm .= "_".substr($language,0,1);
         $lang->{$nm} = $language;
-      } elsif($ch->is("reads") or $ch->is("writes")) {
+        last;
+      }
+    }
+    for my $ch (@{$gr->{children}}) {
+      if($ch->is("reads") or $ch->is("writes")) {
         my $is_writes = $ch->is("writes");
         my $qname = $ch->has(0,"qname");
         my $thorn = uc $qname->has(0,"vname")->has(0,"name")->substring();
@@ -207,32 +211,52 @@ sub create_macros
               $timelevel++;
             }
             if(defined($hash->{$th}->{variable_list}->{$var})) {
+              # public variables
               my $group = $hash->{$th}->{variable_list}->{$var};
               $var_group = $hash->{$th}->{$group};
             } elsif(($tnm eq $th) && defined($hash->{$th}->{$th}->{variable_list}->{$var})) {
+              # private variables
               my $group = $hash->{$th}->{$th}->{variable_list}->{$var};
               $var_group = $hash->{$th}->{$th}->{$group};
             } elsif(defined($hash->{$th}->{$var})) {
+              # variable name is actually a group
               $var_group = $hash->{$th}->{$var};
               $group_register = "yes";
             } else {
-              &CST_error(0, "Error in $nm schedule. Check variable or group $th::$full_var" .
+              # We need the write directive in the schedule.ccl to
+              # match the case of the corresponding declaration in
+              # the interface.ccl. If it doesn't line up, an error
+              # will occur. This helps the user figure it out.
+              my $hint = "";
+              for my $v (%{$hash->{$th}->{variable_list}}) {
+                if(lc $v eq lc $var) {
+                    $hint = "Did you mean ${th}::$v?";
+                }
+              }
+              if($hint eq "") {
+                for my $v (%{$hash->{$th}->{$th}->{variable_list}}) {
+                  if(lc $v eq lc $var) {
+                      $hint = "Did you mean ${th}::$v?";
+                  }
+                }
+              }
+              &CST_error(0, "Error in $nm schedule. Check variable or group ${th}::$full_var" .
                     ' and verify correct implementation/thorn name and variable name.'
-                    ,"", , __LINE__, __FILE__);
+                    ,$hint, , __LINE__, __FILE__);
             }
             my $vtype = "CCTK_".$var_group->{vtype};
             my $const = "";
             $const = "const" if($reads_writes->{$namekey}->{$th}->{$full_var}==0);
             if($group_register eq "yes") {
               for my $variables (keys %{$var_group->{grp_vars}}) {
-                my $vname = "$th::$variables";
+                my $vname = "${th}::$variables";
                 if ($var_group->{vector} ne "0") {
                   $vname .= "[0]";
                 }
                 $$data .= qq(  $const $vtype *$variables = ($const $vtype *)CCTK_PSVarDataPtr(cctkGH, 0, "$vname"); \\\n);
               }
             } else {
-              my $vname = "$th::$var";
+              my $vname = "${th}::$var";
               if ($var_group->{vector} ne "0") {
                 $vname .= "[0]";
               }
@@ -268,7 +292,7 @@ sub create_macros
               $var_group = $hash->{$th}->{$var};
               $group_register = "yes";
             } else {
-              &CST_error(0, "Error in $nm schedule. Check variable or group $th::$full_var" .
+              &CST_error(0, "Error in $nm schedule. Check variable or group ${th}::$full_var" .
                     ' and verify correct implementation/thorn name and variable name.'
                     ,"", , __LINE__, __FILE__);
             }
