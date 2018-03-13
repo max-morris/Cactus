@@ -53,7 +53,7 @@ sub do_interfaces
             $vecval = $expr->has(0,"accname")->substring();
           } else {
             &CST_error(0, "Unexpected structure encountered in interface parsing."
-                  , __LINE__, __FILE__);
+                , "", __LINE__, __FILE__);
           }
         }
       } elsif($ch->is("gtype")) {
@@ -179,7 +179,7 @@ sub create_macros
         $$data .= "  _DECLARE_CCTK_FARGUMENTS; \\\n";
       } else {
         &CST_error(0, "Failed to match the language for the function $nm."
-              , __LINE__, __FILE__);
+            ,"", __LINE__, __FILE__);
       }
       $$data .= "  /* end $nm */\n";
       $$data .= "#endif\n";
@@ -218,7 +218,7 @@ sub create_macros
             } else {
               &CST_error(0, "Error in $nm schedule. Check variable or group $th::$full_var" .
                     ' and verify correct implementation/thorn name and variable name.'
-                    , __LINE__, __FILE__);
+                    ,"", , __LINE__, __FILE__);
             }
             my $vtype = "CCTK_".$var_group->{vtype};
             my $const = "";
@@ -270,7 +270,7 @@ sub create_macros
             } else {
               &CST_error(0, "Error in $nm schedule. Check variable or group $th::$full_var" .
                     ' and verify correct implementation/thorn name and variable name.'
-                    , __LINE__, __FILE__);
+                    ,"", , __LINE__, __FILE__);
             }
             my $vtype = "CCTK_".$var_group->{vtype};
             $vtype .= ", intent(in)" if($reads_writes->{$namekey}->{$th}->{$full_var}==0);
@@ -329,7 +329,7 @@ sub create_macros
         }
       } else {
         &CST_error(0, "Failed to match the language for the function $nm."
-              , __LINE__, __FILE__);
+            ,"", __LINE__, __FILE__);
       }
       $$data .= "  /* end $nm */\n";
       $$data .= "#endif\n";

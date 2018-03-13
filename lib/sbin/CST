@@ -213,12 +213,13 @@ for my $header (@$definethisthornheader) {
 # Finally (must be last), create the make.thornlist file.
 $make_thornlist = &CreateMakeThornlist(\%thorns, \%interface_database, $configuration_database);
 
-# Stop the make process if there were any errors
-&CheckCSTErrors();
-
 &WriteFile("$config_dir/make.thornlist", \$make_thornlist);
 
+print "Generating arguments...\n";
 &GenerateArguments(%thorns);
+
+# Stop the make process if there were any errors
+&CheckCSTErrors();
 
 print "CST finished.\n";
 exit;
