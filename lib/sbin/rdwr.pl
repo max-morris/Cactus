@@ -20,10 +20,14 @@ sub interface_starter
     if($ch->is("FUNC_GROUP")) {
       for my $gch (@{$ch->{children}}) {
         if($gch->is("IMPLEMENTS")) {
+          # This finds the implementation name for the thorn.
           my $name = uc $gch->has(0,"name")->substring();
           $hash->{$name} = {} if(!defined($hash->{$name}));
           do_interfaces($hash->{$name},$gr);
-          $hash->{$thornname}->{$thornname} = $hash->{$name};
+          # Private variables are referenced by thorn name instead
+          # of implementation name. The 'private' key stores the
+          # variables under the thorn name to handle this.
+          $hash->{private_variable}->{$thornname} = $hash->{$name};
           return;
         }
       }
@@ -46,6 +50,7 @@ sub do_interfaces
       if($ch->is("gname")) {
         $gname = $ch->has(0,"name")->substring();
         if($ch->has(1,"expr")) {
+          # This section finds the length for vectors.
           my $expr = $ch->has(1,"expr")->has(0,"addexpr")->has(0,"mulexpr")->has(0,"powexpr");
           if($expr->has(0,"num")) {
             $vecval = $expr->has(0,"num")->substring();
@@ -76,6 +81,7 @@ sub do_interfaces
     $hash->{$gname}->{array_dim} = $dim;
     my $Detect = 0;
     for my $ch (@{$gr->{children}}) {
+      # Looping over variables in the group
       if($ch->is("VARS")) {
         my $i = 0;
         $Detect = 1;
@@ -89,6 +95,8 @@ sub do_interfaces
       }
     }
     if($Detect == 0) {
+      # If no VARS were detected, then the group name
+      # is also the variable name.
       $hash->{$gname}->{grp_vars}->{$gname} = $gname;
       $hash->{variable_list}->{$gname} = $gname;
     }
@@ -124,6 +132,11 @@ sub do_schedules
       if($ch->is("name")) {
         $nm = $ch->substring();
       } elsif($ch->is("lang")) {
+        # Cactus allows for functions to have the same name if
+        # they are different languages. Because of this, the
+        # different functions must be distinguished for macro
+        # generation. '_C' or '_F' are appended to the end of
+        # the function name for clarity.
         my $language = uc $ch->has(0,"name")->substring();
         $nm .= "_".substr($language,0,1);
         $lang->{$nm} = $language;
@@ -148,6 +161,12 @@ sub do_schedules
       }
     }
     if(!defined($reads_writes->{$nm})) {
+      # In the event that a function has no declarations,
+      # an empty macro still needs to be generated. This
+      # handles that case. Since a function can be scheduled
+      # multiple times, this hash key is deleted if later
+      # scheduling adds variables to the list of read/write
+      # declarations.
       $reads_writes->{$nm}->{$nm}->{$nm} = "empty";
     }
   } else {
@@ -169,29 +188,31 @@ sub create_macros
   $$data .= "#define CCTK_ARGUMENTS_H_$tnm 1\n";
   for my $namekey (keys %{$reads_writes}) {
     my $temp_data = "";
-    my $nm = substr($namekey,0,-2);
+    my $nm = substr($namekey,0,-2); # removing language suffix from function name
     if($reads_writes->{$namekey}->{$namekey}->{$namekey} eq "empty") {
+      # This generates macros for functions with no read/write declarations.
       if ($lang->{$namekey} eq "C") {
         $$data .= "#ifdef CCODE \n";
         $$data .= "#ifndef DECLARE_CCTK_ARGUMENTS_${nm} \n";
         $$data .= "#define DECLARE_CCTK_ARGUMENTS_${nm} \\\n";
         $$data .= "  _DECLARE_CCTK_ARGUMENTS; \\\n";
+        $$data .= "  /* end $nm */\n";
+        $$data .= "#endif\n";
+        $$data .= "#endif\n";
       } elsif ($lang->{$namekey} eq "FORTRAN") {
         $$data .= "#ifdef FCODE \n";
         $$data .= "#ifndef DECLARE_CCTK_ARGUMENTS_${nm} \n";
         $$data .= "#define DECLARE_CCTK_ARGUMENTS_${nm} \\\n";
         $$data .= "  _DECLARE_CCTK_FARGUMENTS; \\\n";
-      } else {
-        &CST_error(0, "Failed to match the language for the function $nm."
-            ,"", __LINE__, __FILE__);
-      }
-      $$data .= "  /* end $nm */\n";
-      $$data .= "#endif\n";
-      $$data .= "#endif\n";
-      if ($lang->{$namekey} eq "FORTRAN") {
+        $$data .= "  /* end $nm */\n";
+        $$data .= "#endif\n";
         $$data .= "#ifndef CCTK_ARGUMENTS_${nm} \n";
         $$data .= "#define CCTK_ARGUMENTS_$nm _CCTK_ARGUMENTS \n";
         $$data .= "#endif\n";
+        $$data .= "#endif\n";
+      } else {
+        &CST_error(0, "Failed to match the language for the function $nm."
+            ,"", __LINE__, __FILE__);
       }
     } else {
       if($lang->{$namekey} eq "C") {
@@ -207,6 +228,9 @@ sub create_macros
             my $var = $full_var;
             my $timelevel = 0;
             while((substr $var,-2,2) eq "_p") {
+              # This loop determines the timelevel by tallying the
+              # timelevel suffixes '_p' and removing them from the
+              # variable name.
               $var = substr $var,0,-2;
               $timelevel++;
             }
@@ -214,10 +238,10 @@ sub create_macros
               # public variables
               my $group = $hash->{$th}->{variable_list}->{$var};
               $var_group = $hash->{$th}->{$group};
-            } elsif(($tnm eq $th) && defined($hash->{$th}->{$th}->{variable_list}->{$var})) {
+            } elsif(($tnm eq $th) && defined($hash->{private_variable}->{$th}->{variable_list}->{$var})) {
               # private variables
-              my $group = $hash->{$th}->{$th}->{variable_list}->{$var};
-              $var_group = $hash->{$th}->{$th}->{$group};
+              my $group = $hash->{private_variable}->{$th}->{variable_list}->{$var};
+              $var_group = $hash->{private_variable}->{$th}->{$group};
             } elsif(defined($hash->{$th}->{$var})) {
               # variable name is actually a group
               $var_group = $hash->{$th}->{$var};
@@ -233,8 +257,8 @@ sub create_macros
                     $hint = "Did you mean ${th}::$v?";
                 }
               }
-              if($hint eq "") {
-                for my $v (%{$hash->{$th}->{$th}->{variable_list}}) {
+              if($hint eq "" and $tnm eq $th) {
+                for my $v (%{$hash->{private_variable}->{$th}->{variable_list}}) {
                   if(lc $v eq lc $var) {
                       $hint = "Did you mean ${th}::$v?";
                   }
@@ -262,8 +286,8 @@ sub create_macros
               }
               $$data .= qq(  $const $vtype *$full_var = ($const $vtype *)CCTK_PSVarDataPtr(cctkGH, $timelevel, "$vname"); \\\n);
             }
-          }
-        }
+          } # loop over read/write variables
+        } # loop over read/write thorns
       } elsif($lang->{$namekey} eq "FORTRAN") {
         my $vector_len = {};
         $$data .= "#ifdef FCODE \n";
@@ -278,27 +302,53 @@ sub create_macros
             my $var = $full_var;
             my $timelevel = 0;
             while((substr $var,-2,2) eq "_p") {
+              # This loop determines the timelevel by tallying the
+              # timelevel suffixes '_p' and removing them from the
+              # variable name.
               $var = substr $var,0,-2;
               $timelevel++;
             }
             if(defined($hash->{$th}->{variable_list}->{$var})) {
+              # public variables
               $group = $hash->{$th}->{variable_list}->{$var};
               $var_group = $hash->{$th}->{$group};
-            } elsif(($tnm eq $th) && defined($hash->{$th}->{$th}->{variable_list}->{$var})) {
-              $group = $hash->{$th}->{$th}->{variable_list}->{$var};
-              $var_group = $hash->{$th}->{$th}->{$group};
+            } elsif(($tnm eq $th) && defined($hash->{private_variable}->{$th}->{variable_list}->{$var})) {
+              # private variables
+              $group = $hash->{private_variable}->{$th}->{variable_list}->{$var};
+              $var_group = $hash->{private_variable}->{$th}->{$group};
             } elsif(defined($hash->{$th}->{$var})) {
+              # variable name is actually a group
               $group = $var;
               $var_group = $hash->{$th}->{$var};
               $group_register = "yes";
             } else {
+              # We need the write directive in the schedule.ccl to
+              # match the case of the corresponding declaration in
+              # the interface.ccl. If it doesn't line up, an error
+              # will occur. This helps the user figure it out.
+              my $hint = "";
+              for my $v (%{$hash->{$th}->{variable_list}}) {
+                if(lc $v eq lc $var) {
+                    $hint = "Did you mean ${th}::$v?";
+                }
+              }
+              if($hint eq "" and $tnm eq $th) {
+                for my $v (%{$hash->{private_variable}->{$th}->{variable_list}}) {
+                  if(lc $v eq lc $var) {
+                      $hint = "Did you mean ${th}::$v?";
+                  }
+                }
+              }
               &CST_error(0, "Error in $nm schedule. Check variable or group ${th}::$full_var" .
                     ' and verify correct implementation/thorn name and variable name.'
-                    ,"", , __LINE__, __FILE__);
+                    ,$hint, , __LINE__, __FILE__);
             }
             my $vtype = "CCTK_".$var_group->{vtype};
             $vtype .= ", intent(in)" if($reads_writes->{$namekey}->{$th}->{$full_var}==0);
             my $arrays = "";
+            # The following logic determines the correct
+            # indexing for the Fortran arrays and adds the
+            # index variables to the macro.
             if($var_group->{gtype} eq "GF") {
               if($var_group->{vector} ne "0") {
                 my $glen = $group."_length";
@@ -349,8 +399,8 @@ sub create_macros
               $$data .= "  $vtype :: $full_var $arrays &&\\\n";
               $$data .= "  integer, parameter :: cctki_use_$full_var = kind($full_var) &&\\\n";
             }
-          }
-        }
+          } # loop over read/write variables
+        } # loop over read/write thorns
       } else {
         &CST_error(0, "Failed to match the language for the function $nm."
             ,"", __LINE__, __FILE__);
@@ -363,8 +413,8 @@ sub create_macros
         $$data .= "#endif\n";
       }
       $$data .= "#endif\n";
-    }
-  } #loop over $nm
+    } # if logic for empty/non-empty macros
+  } #loop over functions
   $$data .= "#endif";
 }
 
