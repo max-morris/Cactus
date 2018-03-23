@@ -277,14 +277,14 @@ sub create_macros
                 if ($var_group->{vector} ne "0") {
                   $vname .= "[0]";
                 }
-                $$data .= qq(  $const $vtype *$variables = ($const $vtype *)CCTK_PSVarDataPtr(cctkGH, 0, "$vname"); \\\n);
+                $$data .= qq(  $const $vtype *$variables = ($const $vtype *)CCTK_VarDataPtr(cctkGH, 0, "$vname"); \\\n);
               }
             } else {
               my $vname = "${th}::$var";
               if ($var_group->{vector} ne "0") {
                 $vname .= "[0]";
               }
-              $$data .= qq(  $const $vtype *$full_var = ($const $vtype *)CCTK_PSVarDataPtr(cctkGH, $timelevel, "$vname"); \\\n);
+              $$data .= qq(  $const $vtype *$full_var = ($const $vtype *)CCTK_VarDataPtr(cctkGH, $timelevel, "$vname"); \\\n);
             }
           } # loop over read/write variables
         } # loop over read/write thorns

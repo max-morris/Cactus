@@ -32,7 +32,6 @@ extern "C" {
 #endif
 
 void *CCTK_VarDataPtr(const cGH *GH, int timelevel, const char *fullvarname);
-void *CCTK_PSVarDataPtr(const cGH *GH, int timelevel, const char *fullvarname);
 void *CCTK_VarDataPtrI(const cGH *GH, int timelevel, int varindex);
 void *CCTK_VarDataPtrB(const cGH *GH, int timelevel, int varindex, char *fullvarname);
 
