@@ -184,8 +184,8 @@ sub create_macros
   my $reads_writes = shift;
   my $lang = shift;
   my $data = shift;
-  $$data .= "#ifndef CCTK_ARGUMENTS_H_$tnm \n";
-  $$data .= "#define CCTK_ARGUMENTS_H_$tnm 1\n";
+  $$data .= "#ifndef CCTK_ARGUMENTS_CHECKED_H\n";
+  $$data .= "#define CCTK_ARGUMENTS_CHECKED_H 1\n";
   for my $namekey (keys %{$reads_writes}) {
     my $temp_data = "";
     my $nm = substr($namekey,0,-2); # removing language suffix from function name
@@ -431,7 +431,7 @@ sub GenerateArguments
     }
   }
   for my $key (keys %thorns) {
-    open(my $fh, '>', $ENV{CCTK_HOME}."/configs/sim/bindings/include/$key/cctk_Arguments_$key.h");
+    open(my $fh, '>', $ENV{CCTK_HOME}."/configs/sim/bindings/include/$key/cctk_Arguments_Checked.h");
     $ccl_file = $thorns{$key}."/schedule.ccl";
     my $gr=parse_ccl($S_grammar,$S_rule,$ccl_file,$sch_file);
     if($gr) {
