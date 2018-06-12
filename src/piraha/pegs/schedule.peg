@@ -3,14 +3,14 @@ skipper = \b([\ \t\n\r\b]|{-ccomment}|\#[^\n]*|\\[\r\n])*
 
 any = [^]
 name = (?i:[a-zA-Z_][a-zA-Z0-9_\-]*\b)
-expr = {name}|{num}
+expr = {name}|{quote}|{num}
 # TODO: Should this be a * or a ?
 vname = {name}( :: {name})*( \[ {expr} \]|)
 quote = "(\\{any}|[^"])*"
 ccomment = /\*((?!\*/){-any})*\*/
 num = [+\-]?[0-9]+(\.[0-9]+)?
 string = {name}|{quote}
-term = {num}|{name}
+term = {num}|{name}( \( ({expr} (, {quote} )*)?\) )?
 par = \b(?i:as|at|in|while|if|before|after|while)\b
 pararg = ({vname}|\( {vname}( ,? {vname} )* \))
 assign = {name} = {num}
