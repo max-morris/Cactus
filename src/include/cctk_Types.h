@@ -33,7 +33,12 @@ typedef const char * CCTK_STRING;
 #define HAVE_CCTK_CHAR 1
 #define HAVE_CCTK_STRING 1
 
-#if defined __GNUC__ && __GNUC__ >= 8
+/* __x86_64 is defined for amd64 archs on Linux and OSX
+ * _M_X64 is defined for amd64 archs on Windows
+ * the Intel compiler defines __GNUC__ as well
+ */
+#if (defined __INTEL_COMPILER && (defined __x86_64 || defined _M_X64)) || \
+    (!defined __INTEL_COMPILER && defined __GNUC__ && __GNUC__ >= 8)
 typedef ptrdiff_t CCTK_FORTRAN_STRLEN_T;
 #else
 typedef int CCTK_FORTRAN_STRLEN_T;
