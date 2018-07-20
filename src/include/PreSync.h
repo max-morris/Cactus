@@ -1,33 +1,13 @@
 #ifndef PRESYNC_H
 #define PRESYNC_H
 
-typedef void (*boundary_function)(
-  const cGH *cctkGH,
-  int num_vars,
-  int *var_indices,
-  int *faces,
-  int *widths,
-  int *table_handles);
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-void RegisterPhysicalBC(
-    const cGH *cctkGH,
-    boundary_function func,
-    const char *bc_name,
-    int before);
-
-void RegisterSymmetryBC(
-    const cGH *cctkGH,
-    boundary_function func,
-    const char *bc_name,
-    int before);
-
-#ifdef __cplusplus
-}
-#endif
+typedef CCTK_INT (*boundary_function)(
+  const void *cctkGH,
+  const int num_vars,
+  const int *var_indices,
+  const int *faces,
+  const int *widths,
+  const int *table_handles);
 
 // The upper left-hand corner of a 2-D simulation.
 // +-----+-----+-----+
