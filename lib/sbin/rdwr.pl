@@ -16,6 +16,7 @@ sub interface_starter
   my $thornname = uc shift;
   my $hash = shift;
   my $gr = shift;
+  my $ccl_file = shift;
   for my $ch (@{$gr->{children}}) {
     if($ch->is("FUNC_GROUP")) {
       for my $gch (@{$ch->{children}}) {
@@ -23,7 +24,7 @@ sub interface_starter
           # This finds the implementation name for the thorn.
           my $name = uc $gch->has(0,"name")->substring();
           $hash->{$name} = {} if(!defined($hash->{$name}));
-          do_interfaces($hash->{$name},$gr);
+          do_interfaces($hash->{$name},$gr,$ccl_file);
           # Private variables are referenced by thorn name instead
           # of implementation name. The 'private' key stores the
           # variables under the thorn name to handle this.
@@ -39,6 +40,7 @@ sub do_interfaces
 {
   my $hash = shift;
   my $gr = shift;
+  my $ccl_file = shift;
   if($gr->is("GROUP_VARS")) {
     my $vtype = $gr->has(0,"vtype")->substring();
     my $level = 0;
@@ -56,8 +58,11 @@ sub do_interfaces
             $vecval = $expr->has(0,"num")->substring();
           } elsif($expr->has(0,"accname")) {
             $vecval = $expr->has(0,"accname")->substring();
+          } elsif($expr->has(0,"parexpr")) {
+            $vecval = $expr->has(0,"parexpr")->substring();
           } else {
-            &CST_error(0, "Unexpected structure encountered in interface parsing."
+            my $loc = "(".$ccl_file."::".$expr->linenum().")";
+            &CST_error(0, "Unexpected structure encountered in interface parsing at $loc"
                 , "", __LINE__, __FILE__);
           }
         }
@@ -102,7 +107,7 @@ sub do_interfaces
     }
   } else {
     for my $ch (@{$gr->{children}}) {
-      do_interfaces($hash,$ch);
+      do_interfaces($hash,$ch,$ccl_file);
     }
   }
 }
@@ -112,11 +117,12 @@ sub schedule_starter
   my $tnm = uc shift;
   my $hash = shift;
   my $gr = shift;
+  my $ccl_file = shift;
   my $lang = {};
   my $reads_writes = {};
   my $data = "";
-  do_schedules($gr,$reads_writes,$lang);
-  create_macros($tnm,$hash,$gr,$reads_writes,$lang,\$data);
+  do_schedules($gr,$reads_writes,$lang,$ccl_file);
+  create_macros($tnm,$hash,$gr,$reads_writes,$lang,\$data,$ccl_file);
   return $data;
 }
 
@@ -125,6 +131,7 @@ sub do_schedules
   my $gr = shift;
   my $reads_writes = shift;
   my $lang = shift;
+  my $ccl_file = shift;
   if($gr->is("schedule")) {
     next if($gr->has(0,"group")); #group scheduling has no rd/wr clauses
     my $nm;
@@ -184,6 +191,7 @@ sub create_macros
   my $reads_writes = shift;
   my $lang = shift;
   my $data = shift;
+  my $ccl_file = shift;
   $$data .= "#ifndef CCTK_ARGUMENTS_CHECKED_H\n";
   $$data .= "#define CCTK_ARGUMENTS_CHECKED_H 1\n";
   for my $namekey (keys %{$reads_writes}) {
@@ -211,7 +219,8 @@ sub create_macros
         $$data .= "#endif\n";
         $$data .= "#endif\n";
       } else {
-        &CST_error(0, "Failed to match the language for the function $nm."
+        my $loc = "(".$ccl_file."::".$lang->linenum().")";
+        &CST_error(0, "Failed to match the language for the function $nm at $loc"
             ,"", __LINE__, __FILE__);
       }
     } else {
@@ -427,7 +436,7 @@ sub GenerateArguments
     $ccl_file = $thorns{$key}."/interface.ccl";
     my $gr=parse_ccl($I_grammar,$I_rule,$ccl_file,$int_file);
     if($gr) {
-      interface_starter($key,$hash,$gr);
+      interface_starter($key,$hash,$gr,$ccl_file);
     }
   }
   for my $key (keys %thorns) {
@@ -435,7 +444,7 @@ sub GenerateArguments
     $ccl_file = $thorns{$key}."/schedule.ccl";
     my $gr=parse_ccl($S_grammar,$S_rule,$ccl_file,$sch_file);
     if($gr) {
-      print $fh schedule_starter($key,$hash,$gr);
+      print $fh schedule_starter($key,$hash,$gr,$ccl_file);
     }
     close($fh);
   }
