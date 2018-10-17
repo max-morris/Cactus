@@ -14,6 +14,8 @@
 #include "cctk_Flesh.h"
 #include "cctk_Parameter.h"
 
+#include "cctk_Parameters.h"
+
 #include "cctki_GHExtensions.h"
 #include "cctki_ScheduleBindings.h"
 #include "cctki_WarnLevel.h"
@@ -111,15 +113,11 @@ int CactusDefaultInitialise (tFleshConfig *config)
 @@*/
 static void CactusInitialiseGH (const tFleshConfig *config, cGH *GH)
 {
-  const char *recovery_mode;
+  DECLARE_CCTK_PARAMETERS
 
-
-  recovery_mode = *(const char *const *)
-                  CCTK_ParameterGet ("recovery_mode", "Cactus", NULL);
 
   /* Initialise time */
-  GH->cctk_time = *(const CCTK_REAL *)
-                  CCTK_ParameterGet ("cctk_initial_time", "Cactus", NULL);
+  GH->cctk_time = cctk_initial_time;
 
   /* Initialise iteration number */
   GH->cctk_iteration = 0;

@@ -17,6 +17,8 @@
 #include "cctk_WarnLevel.h"
 #include "cctk_Misc.h"
 
+#include "cctk_Parameters.h"
+
 #include "cctki_Banner.h"
 #include "cctki_Bindings.h"
 #include "cctki_Schedule.h"
@@ -168,18 +170,16 @@ int CCTK_RunTime (void)
 @@*/
 static int CCTKi_InitialiseScheduler (tFleshConfig *config)
 {
+  DECLARE_CCTK_PARAMETERS
+
   int retval;
-  const CCTK_INT *cctk_show_schedule;
 
 
   CCTKi_BindingsScheduleInitialise ();
 
   retval = CCTKi_DoScheduleSortAllGroups ();
 
-  cctk_show_schedule = (const CCTK_INT *)
-                       CCTK_ParameterGet ("cctk_show_schedule", "Cactus", NULL);
-
-  if (*cctk_show_schedule)
+  if (cctk_show_schedule)
   {
     puts ("-------------------------------------------------------------------"
           "-------------");

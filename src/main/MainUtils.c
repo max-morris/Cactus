@@ -13,6 +13,8 @@
 #include "cctk_Flesh.h"
 #include "cctk_Parameter.h"
 
+#include "cctk_Parameters.h"
+
 static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(main_MainUtils_c);
@@ -50,18 +52,14 @@ int CCTK_RunTitle(int len, char *title);
 @@*/
 int CCTK_RunTitle(int len, char *title)
 {
+  DECLARE_CCTK_PARAMETERS
+
   int retval;
-  const char *cctk_title;
 
   retval = -1;
 
-  cctk_title = *(const char *const *)
-               CCTK_ParameterGet("cctk_run_title", "Cactus", NULL);
-  if (cctk_title)
-  {
-    strncpy (title, *cctk_title ? cctk_title : "Cactus Simulation", len-1);
-    title[len-1] = 0;
-    retval = strlen(title);
-  }
+  strncpy (title, *cctk_run_title ? cctk_run_title : "Cactus Simulation", len-1);
+  title[len-1] = 0;
+  retval = strlen(title);
   return retval;
 }

@@ -24,6 +24,8 @@
 #include "util_Network.h"
 #include "util_String.h"
 
+#include "cctk_Parameters.h"
+
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -201,7 +203,7 @@ void  CCTK_FCALL CCTK_FNAME (CCTK_RegisterBanner)
    @desc
                Print all registered banners
    @enddesc
-   @calls      CCTK_ParameterGet
+   @calls
 
    @returntype int
    @returndesc
@@ -210,13 +212,12 @@ void  CCTK_FCALL CCTK_FNAME (CCTK_RegisterBanner)
 @@*/
 int CCTKi_PrintBanners (void)
 {
+  DECLARE_CCTK_PARAMETERS
+
   int i;
-  const CCTK_INT *cctk_show_banners;
 
 
-  cctk_show_banners = (const CCTK_INT *)
-                      CCTK_ParameterGet ("cctk_show_banners", "Cactus", &i);
-  if (*cctk_show_banners)
+  if (cctk_show_banners)
   {
     for (i = 0; i < number_banners; i++)
     {

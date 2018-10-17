@@ -10,6 +10,8 @@
 
 #include "cctk_Config.h"
 
+#include "cctk_Parameters.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -256,6 +258,8 @@ void CCTK_FCALL CCTK_FNAME (CCTK_Info)
 @@*/
 int CCTK_VInfo (const char *thorn, const char *format, ...)
 {
+  DECLARE_CCTK_PARAMETERS
+
   va_list ap;
   /* Boolean flags decoded from  cactus::info_format */
   int info_format_numeric = 0;         /* print a numeric timestamp? */
@@ -294,10 +298,7 @@ int CCTK_VInfo (const char *thorn, const char *format, ...)
     free (message);
   }
 
-  /* get cactus::info_format  and decode it into Boolean flags */
-  const char* const info_format =
-    * (const char *const *) CCTK_ParameterGet("info_format", "Cactus", NULL);
-
+  /* decode cactus::info_format into Boolean flags */
   if      (CCTK_Equals(info_format, "basic"))
   {
     /* "basic" :: "INFO (ThornName): message" */
@@ -473,7 +474,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_Error)
                it will print the given warning message to stderr.
                On processors other than 0 it will also print it to stdout.
    @enddesc
-   @calls      CCTK_ParameterGet
+   @calls
 
    @var        level
    @vdesc      The warning level
@@ -518,9 +519,8 @@ int CCTK_VWarn (int level,
                 const char *format,
                 ...)
 {
-  const CCTK_INT *cctk_full_warnings_ptr, *highlight_warning_messages_ptr;
-  CCTK_INT cctk_full_warnings, highlight_warning_messages;
-  int param_type;
+  DECLARE_CCTK_PARAMETERS
+
   int myproc;
   va_list ap;
 
@@ -582,18 +582,6 @@ int CCTK_VWarn (int level,
 
     myproc = CCTK_MyProc(NULL);
     Util_GetHostName (hostname, MAXNAMELEN);
-
-    cctk_full_warnings_ptr =
-      CCTK_ParameterGet ("cctk_full_warnings", "Cactus", &param_type);
-    /* Default to yes */
-    cctk_full_warnings =
-      cctk_full_warnings_ptr && *cctk_full_warnings_ptr;
-
-    highlight_warning_messages_ptr =
-      CCTK_ParameterGet ("highlight_warning_messages", "Cactus", &param_type);
-    /* Default to no */
-    highlight_warning_messages =
-      ! highlight_warning_messages_ptr || *highlight_warning_messages_ptr;
 
     /* print to stderr if necessary */
     if (level <= warning_level)
@@ -714,9 +702,8 @@ void CCTK_VError (int line,
                   const char *format,
                   ...)
 {
-  const CCTK_INT *highlight_warning_messages_ptr;
-  CCTK_INT highlight_warning_messages;
-  int param_type;
+  DECLARE_CCTK_PARAMETERS
+
   int myproc;
   va_list ap;
 
@@ -768,12 +755,6 @@ void CCTK_VError (int line,
 
   myproc = CCTK_MyProc(NULL);
   Util_GetHostName (hostname, MAXNAMELEN);
-
-  highlight_warning_messages_ptr =
-    CCTK_ParameterGet ("highlight_warning_messages", "Cactus", &param_type);
-  /* Default to no */
-  highlight_warning_messages =
-    ! highlight_warning_messages_ptr || *highlight_warning_messages_ptr;
 
   /* print to stderr */
   if (highlight_warning_messages)
@@ -881,7 +862,7 @@ int CCTK_ParameterLevel (void)
    @desc
                Warn the user if a parameter error is found
    @enddesc
-   @calls      CCTK_ParameterGet
+   @calls
 
    @var        thorn
    @vdesc      Name of originating thorn
@@ -922,7 +903,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_ParamWarn)
                Warn the user if a parameter error is found using a variable
                argument list (extends CCTK_ParamWarn)
    @enddesc
-   @calls      CCTK_ParameterGet
+   @calls
 
    @var        thorn
    @vdesc      Name of originating thorn
@@ -949,22 +930,9 @@ int CCTK_VParamWarn (const char *thorn,
                      const char *format,
                      ...)
 {
+  DECLARE_CCTK_PARAMETERS
+
   va_list ap;
-  const CCTK_INT *cctk_strong_param_check_ptr, *highlight_warning_messages_ptr;
-  CCTK_INT cctk_strong_param_check, highlight_warning_messages;
-  int param_type;
-
-  cctk_strong_param_check_ptr =
-    CCTK_ParameterGet ("cctk_strong_param_check", "Cactus", &param_type);
-  /* Default to yes */
-  cctk_strong_param_check =
-    cctk_strong_param_check_ptr && *cctk_strong_param_check_ptr;
-
-  highlight_warning_messages_ptr =
-    CCTK_ParameterGet ("highlight_warning_messages", "Cactus", &param_type);
-  /* Default to no */
-  highlight_warning_messages =
-    ! highlight_warning_messages_ptr || *highlight_warning_messages_ptr;
 
   fflush (stdout);
 
@@ -1348,14 +1316,11 @@ static void CCTKi_ExitIfParamCheckOnly(void)
    @desc
                Die if errors were encountered during param check
    @enddesc
-   @calls      CCTK_ParameterGet
+   @calls
 @@*/
 void CCTKi_FinaliseParamWarn (void)
 {
-  int param_type;
-  const CCTK_INT *cctk_strong_param_check_ptr;
-  CCTK_INT cctk_strong_param_check;
-
+  DECLARE_CCTK_PARAMETERS
 
   /*
    * Let all processors catch up before continuing.
@@ -1372,12 +1337,6 @@ void CCTKi_FinaliseParamWarn (void)
 
   if (param_errors)
   {
-    cctk_strong_param_check_ptr =
-      CCTK_ParameterGet ("cctk_strong_param_check", "Cactus", &param_type);
-    /* Default to yes */
-    cctk_strong_param_check =
-      cctk_strong_param_check_ptr && *cctk_strong_param_check_ptr;
-
     if (cctk_strong_param_check)
     {
       fprintf (stderr, "\nFailed parameter check (%d errors)\n\n", param_errors);
