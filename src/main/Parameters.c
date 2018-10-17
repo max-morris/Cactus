@@ -913,7 +913,7 @@ int CCTK_ParameterValInt (const char *param_name, const char *thorn)
   retval = NULL;
 
   param_data = CCTK_ParameterGet (param_name, thorn, &param_type);
-  if (param_data)
+  if (param_data != NULL)
   {
     switch (param_type)
     {
@@ -935,12 +935,15 @@ int CCTK_ParameterValInt (const char *param_name, const char *thorn)
         break;
 
       default:
-        CCTK_VWarn (3, __LINE__, __FILE__, "Cactus",
-                    "CCTK_ParameterValInt: Unknown type %d for parameter "
-                    "'%s::%s'", param_type, thorn, param_name);
+        CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+              "CCTK_ParameterValInt: Unknown type %d for parameter "
+              "'%s::%s'", param_type, thorn, param_name);
         break;
     }
   }
+  CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+       "CCTK_ParameterValInt: Unknown parameter "
+       "'%s::%s'", thorn, param_name);
 
   return (retval);
 }
