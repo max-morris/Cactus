@@ -225,6 +225,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_Info)
    @desc
                Info output routine with variable argument list
    @enddesc
+   @calls      CCTK_VWarn
 
    @history
    @date       Mon Aug  4 17:56:06 CEST 2003
@@ -320,6 +321,14 @@ int CCTK_VInfo (const char *thorn, const char *format, ...)
     /* "full time stamp" :: "numeric_timestamp\thuman readable timestamp: INFO (ThornName): message" */
     info_format_numeric = 1;
     info_format_human_readable = 1;
+  }
+  else
+  {
+    /* we should never get here */
+    CCTK_VWarn(CCTK_WARN_ALERT, __LINE__, __FILE__, "Cactus",
+               "Unknonw info_format '%s", info_format);
+    info_format_numeric = 0;
+    info_format_human_readable = 0;
   }
 
   /*
