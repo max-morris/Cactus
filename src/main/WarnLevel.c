@@ -256,10 +256,9 @@ void CCTK_FCALL CCTK_FNAME (CCTK_Info)
 int CCTK_VInfo (const char *thorn, const char *format, ...)
 {
   va_list ap;
-  static int info_format_decoded = 0;   /* are the following two flags valid? */
   /* Boolean flags decoded from  cactus::info_format */
-  static int info_format_numeric = 0;         /* print a numeric timestamp? */
-  static int info_format_human_readable = 0;  /* print a human-readable timestamp? */
+  int info_format_numeric = 0;         /* print a numeric timestamp? */
+  int info_format_human_readable = 0;  /* print a human-readable timestamp? */
 
   /* necessary for wrapping up the final message */
   int msg_size;
@@ -294,49 +293,33 @@ int CCTK_VInfo (const char *thorn, const char *format, ...)
     free (message);
   }
 
-  /*
-   * if we haven't already decoded  cactus::info_format  into the
-   * Boolean flags, do so
-   */
-  if (! info_format_decoded)
+  /* get cactus::info_format  and decode it into Boolean flags */
+  const char* const info_format =
+    * (const char *const *) CCTK_ParameterGet("info_format", "Cactus", NULL);
+
+  if      (CCTK_Equals(info_format, "basic"))
   {
-    /* get cactus::info_format  and decode it into Boolean flags */
-    const char* const info_format =
-      * (const char *const *) CCTK_ParameterGet("info_format", "Cactus", NULL);
-
-    if      (CCTK_Equals(info_format, "basic"))
-    {
-      /* "basic" :: "INFO (ThornName): message" */
-      info_format_numeric = 0;
-      info_format_human_readable = 0;
-    }
-    else if (CCTK_Equals(info_format, "numeric time stamp"))
-    {
-      /* "numeric time stamp" :: "numeric_timestamp\tINFO (ThornName): message" */
-      info_format_numeric = 1;
-      info_format_human_readable = 0;
-    }
-    else if (CCTK_Equals(info_format, "human-readable time stamp"))
-    {
-      /* "human-readable time stamp" :: "human readable timestamp: INFO (ThornName): message" */
-      info_format_numeric = 0;
-      info_format_human_readable = 1;
-    }
-    else if (CCTK_Equals(info_format, "full time stamp"))
-    {
-      /* "full time stamp" :: "numeric_timestamp\thuman readable timestamp: INFO (ThornName): message" */
-      info_format_numeric = 1;
-      info_format_human_readable = 1;
-    }
-
-    /* This routine is called before the parameter file has been read,
-       and thus before Cactus::info_format has received its final
-       value. As a work-around, we re-decode this value until we have
-       been called from a thorn. */
-    if (! CCTK_Equals(thorn, "Cactus"))
-    {
-      info_format_decoded = 1;
-    }
+    /* "basic" :: "INFO (ThornName): message" */
+    info_format_numeric = 0;
+    info_format_human_readable = 0;
+  }
+  else if (CCTK_Equals(info_format, "numeric time stamp"))
+  {
+    /* "numeric time stamp" :: "numeric_timestamp\tINFO (ThornName): message" */
+    info_format_numeric = 1;
+    info_format_human_readable = 0;
+  }
+  else if (CCTK_Equals(info_format, "human-readable time stamp"))
+  {
+    /* "human-readable time stamp" :: "human readable timestamp: INFO (ThornName): message" */
+    info_format_numeric = 0;
+    info_format_human_readable = 1;
+  }
+  else if (CCTK_Equals(info_format, "full time stamp"))
+  {
+    /* "full time stamp" :: "numeric_timestamp\thuman readable timestamp: INFO (ThornName): message" */
+    info_format_numeric = 1;
+    info_format_human_readable = 1;
   }
 
   /*

@@ -25,7 +25,7 @@ BOOLEAN highlight_warning_messages "Highlight CCTK warning messages ?" STEERABLE
 {
 } "yes"
 
-KEYWORD info_format "What information do CCTK_INFO() and CCTK_VInfo() print?"
+KEYWORD info_format "What information do CCTK_INFO() and CCTK_VInfo() print?" STEERABLE=ALWAYS
 {
 # This is the traditional Cactus INFO output.
 "basic" :: "INFO (ThornName): message"
