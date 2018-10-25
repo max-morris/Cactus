@@ -132,7 +132,7 @@ inline std::ostream& operator<<(std::ostream& o,JMap& jmap) {
 class Grammar {
 public:
     Grammar() {}
-    virtual ~Grammar() {}
+    virtual ~Grammar() { std::cout << "~Grammar\n"; }
     JMap patterns;
     std::string default_rule;
 };
@@ -236,7 +236,7 @@ public:
 };
 
 class Lookup : public Pattern {
-    smart_ptr<Grammar> gram;
+    Grammar *gram;
     std::string name;
     bool capture;
 public:
