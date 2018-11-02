@@ -302,8 +302,7 @@ int CCTK_VInfo (const char *thorn, const char *format, ...)
   {
     /* get cactus::info_format  and decode it into Boolean flags */
     const char* const info_format =
-      * ( (const char*const *)
-          CCTK_ParameterGet("info_format", "Cactus", NULL) );
+      * (const char *const *) CCTK_ParameterGet("info_format", "Cactus", NULL);
 
     if      (CCTK_Equals(info_format, "basic"))
     {
@@ -329,7 +328,15 @@ int CCTK_VInfo (const char *thorn, const char *format, ...)
       info_format_numeric = 1;
       info_format_human_readable = 1;
     }
-    info_format_decoded = 1;
+
+    /* This routine is called before the parameter file has been read,
+       and thus before Cactus::info_format has received its final
+       value. As a work-around, we re-decode this value until we have
+       been called from a thorn. */
+    if (! CCTK_Equals(thorn, "Cactus"))
+    {
+      info_format_decoded = 1;
+    }
   }
 
   /*
@@ -531,9 +538,9 @@ int CCTK_VWarn (int level,
   char *message = NULL;
   char hostname[MAXNAMELEN+1];
   const cFunctionData *current_function;
-  const char *cf_where = "(none)";
-  const char *cf_routine = "(no routine)";
-  const char *cf_thorn = "(no thorn)";
+  const char *cf_where = NULL;
+  const char *cf_routine = NULL;
+  const char *cf_thorn = NULL;
 
   /* Determine current scheduled function */
   /* (We should pass cctkGH instead of NULL, but NULL works fine. */
@@ -607,14 +614,26 @@ int CCTK_VWarn (int level,
 
       if (level <= error_level || cctk_full_warnings)
       {
-        fprintf (stderr,
-                 "WARNING level %d from host %s process %d\n"
-                 "  while executing schedule bin %s, routine %s::%s\n"
-                 "  in thorn %s, file %s:%d:\n"
-                 "  ->",
-                 level, hostname, myproc,
-                 cf_where, cf_thorn, cf_routine,
-                 thorn, file, line);
+        if (current_function)
+        {
+          fprintf (stderr,
+                   "WARNING level %d from host %s process %d\n"
+                   "  while executing schedule bin %s, routine %s::%s\n"
+                   "  in thorn %s, file %s:%d:\n"
+                   "  ->",
+                   level, hostname, myproc,
+                   cf_where, cf_thorn, cf_routine,
+                   thorn, file, line);
+        }
+        else
+        {
+          fprintf (stderr,
+                   "WARNING level %d from host %s process %d\n"
+                   "  in thorn %s, file %s:%d:\n"
+                   "  ->",
+                   level, hostname, myproc,
+                   thorn, file, line);
+        }
       }
       else
       {
@@ -646,14 +665,26 @@ int CCTK_VWarn (int level,
 
       if (level <= error_level || cctk_full_warnings)
       {
-        fprintf (stdout,
-                 "WARNING level %d from host %s process %d\n"
-                 "  while executing schedule bin %s, routine %s::%s\n"
-                 "  in thorn %s, file %s:%d:\n"
-                 "  ->",
-                 level, hostname, myproc,
-                 cf_where, cf_thorn, cf_routine,
-                 thorn, file, line);
+        if (current_function)
+        {
+          fprintf (stdout,
+                   "WARNING level %d from host %s process %d\n"
+                   "  while executing schedule bin %s, routine %s::%s\n"
+                   "  in thorn %s, file %s:%d:\n"
+                   "  ->",
+                   level, hostname, myproc,
+                   cf_where, cf_thorn, cf_routine,
+                   thorn, file, line);
+        }
+        else
+        {
+          fprintf (stdout,
+                   "WARNING level %d from host %s process %d\n"
+                   "  in thorn %s, file %s:%d:\n"
+                   "  ->",
+                   level, hostname, myproc,
+                   thorn, file, line);
+        }
       }
       else
       {
@@ -703,9 +734,9 @@ void CCTK_VError (int line,
   char *message = NULL;
   char hostname[MAXNAMELEN+1];
   const cFunctionData *current_function;
-  const char *cf_where = "(none)";
-  const char *cf_routine = "(no routine)";
-  const char *cf_thorn = "(no thorn)";
+  const char *cf_where = NULL;
+  const char *cf_routine = NULL;
+  const char *cf_thorn = NULL;
 
   current_function = CCTK_ScheduleQueryCurrentFunction(NULL);
   if (current_function)
@@ -758,14 +789,26 @@ void CCTK_VError (int line,
     bold_stderr (ON);
   }
 
-  fprintf (stderr,
-           "ERROR from host %s process %d\n"
-           "  while executing schedule bin %s, routine %s::%s\n"
-           "  in thorn %s, file %s:%d:\n"
-           "  ->",
-            hostname, myproc,
-           cf_where, cf_thorn, cf_routine,
-           thorn, file, line);
+  if (current_function)
+  {
+    fprintf (stderr,
+             "ERROR from host %s process %d\n"
+             "  while executing schedule bin %s, routine %s::%s\n"
+             "  in thorn %s, file %s:%d:\n"
+             "  ->",
+              hostname, myproc,
+             cf_where, cf_thorn, cf_routine,
+             thorn, file, line);
+  }
+  else
+  {
+    fprintf (stderr,
+             "ERROR from host %s process %d\n"
+             "  in thorn %s, file %s:%d:\n"
+             "  ->",
+              hostname, myproc,
+             thorn, file, line);
+  }
 
   if (highlight_warning_messages)
   {
@@ -784,14 +827,26 @@ void CCTK_VError (int line,
     bold_stdout (ON);
   }
 
-  fprintf (stdout,
-           "ERROR from host %s process %d\n"
-           "  while executing schedule bin %s, routine %s::%s\n"
-           "  in thorn %s, file %s:%d:\n"
-           "  ->",
-           hostname, myproc,
-           cf_where, cf_thorn, cf_routine,
-           thorn, file, line);
+  if (current_function)
+  {
+    fprintf (stdout,
+             "ERROR from host %s process %d\n"
+             "  while executing schedule bin %s, routine %s::%s\n"
+             "  in thorn %s, file %s:%d:\n"
+             "  ->",
+             hostname, myproc,
+             cf_where, cf_thorn, cf_routine,
+             thorn, file, line);
+  }
+  else
+  {
+    fprintf (stdout,
+             "ERROR from host %s process %d\n"
+             "  in thorn %s, file %s:%d:\n"
+             "  ->",
+             hostname, myproc,
+             thorn, file, line);
+  }
 
   if (highlight_warning_messages)
   {
