@@ -132,7 +132,7 @@ inline std::ostream& operator<<(std::ostream& o,JMap& jmap) {
 class Grammar {
 public:
     Grammar() {}
-    virtual ~Grammar() { std::cout << "~Grammar\n"; }
+    virtual ~Grammar() {}
     JMap patterns;
     std::string default_rule;
 };
