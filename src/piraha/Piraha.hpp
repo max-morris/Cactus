@@ -240,7 +240,7 @@ class Lookup : public Pattern {
     std::string name;
     bool capture;
 public:
-    Lookup(std::string s,smart_ptr<Grammar> g);
+    Lookup(std::string s,Grammar *g);
     virtual ~Lookup() {}
     bool match(Matcher *m);
     std::string fmt() {

@@ -178,11 +178,11 @@ smart_ptr<Pattern> compile(smart_ptr<Group> g,bool ignCase,smart_ptr<Grammar> gr
         std::string lookup = g->group(0)->substring();
         if("brk" == lookup)
             return new Break();
-        return new Lookup(lookup, gram);
+        return new Lookup(lookup, gram.ptr());
     } else if("nothing" == pn) {
         return new Nothing();
     } else if("s" == pn||"s0" == pn) {
-        return new Lookup("-skipper", gram);
+        return new Lookup("-skipper", gram.ptr());
     } else if("dot" == pn) {
         return new Dot();
     } else if("backref" == pn) {
