@@ -38,7 +38,7 @@ CCTK_FILEVERSION(util_ParseFile_c);
 
 static void CheckBuf(int, int);
 static void removeSpaces(char *stripMe);
-static char *ReadFile(FILE *file, unsigned long *filesize);
+static char *ReadFile(FILE *file, long *filesize);
 static char *ParseDefines(char *buffer, unsigned long *buffersize);
 static void convert_crlf_to_lf(char *buffer);
 int ParseBuffer(char *buffer,
@@ -126,7 +126,7 @@ int ParseFile(FILE *ifp,
               tFleshConfig *ConfigData)
 {
   int retval=1;
-  unsigned long buffersize;
+  long buffersize;
   char *buffer = ReadFile(ifp, &buffersize);
   if (!buffer)
     return 1;
@@ -315,7 +315,7 @@ int main(int argc, char *argv[])
    @endvar
    @var     filesize
    @vdesc   The size of the file
-   @vtype   *unsigned long
+   @vtype   *long
    @vio     out
    @vcomment
 
@@ -327,7 +327,7 @@ int main(int argc, char *argv[])
    !NULL allocated buffer
    @endreturndesc
 @@*/
-static char *ReadFile(FILE *file, unsigned long *filesize)
+static char *ReadFile(FILE *file, long *filesize)
 {
   char *buffer;
 
