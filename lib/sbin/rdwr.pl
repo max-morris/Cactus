@@ -278,6 +278,11 @@ sub create_macros
                     ,$hint, , __LINE__, __FILE__);
             }
             my $vtype = "CCTK_".$var_group->{vtype};
+            if($vtype eq "CCTK_") {
+              print "vtype='$vtype'\n";
+              print Dumper($var_group),"\n";
+              die "Bad variable group";
+            }
             my $const = "";
             $const = "const" if($reads_writes->{$namekey}->{$th}->{$full_var}==0);
             if($group_register eq "yes") {
