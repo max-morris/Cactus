@@ -405,6 +405,9 @@ static inline int CCTK_VECTGFINDEX4D (const cGH *restrict cctkGH,
 #define CCTK_MALLOC(s) CCTKi_Malloc(s,__LINE__,__FILE__)
 #define CCTK_FREE(p) CCTKi_Free(p)
 
+//extern void CCTK_Checked_called(), CCTK_Checked_reset();
+//extern int CCTK_Checked_get();
+
 #endif /*CCODE*/
 
 #endif

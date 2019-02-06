@@ -229,6 +229,7 @@ sub create_macros
         $$data .= "#ifndef DECLARE_CCTK_ARGUMENTS_${nm} \n";
         $$data .= "#define DECLARE_CCTK_ARGUMENTS_${nm} \\\n";
         $$data .= "  _DECLARE_CCTK_ARGUMENTS; \\\n";
+        $$data .= "  CCTK_Checked_called(); \\\n";
         for my $th (keys %{$reads_writes->{$namekey}}) {
           for my $full_var (keys %{$reads_writes->{$namekey}->{$th}}) {
             my $var_group;
@@ -449,6 +450,13 @@ sub GenerateArguments
     $ccl_file = $thorns{$key}."/schedule.ccl";
     my $gr=parse_ccl($S_grammar,$S_rule,$ccl_file,$sch_file);
     if($gr) {
+      print $fh "#ifdef CCODE\n";
+      print $fh "extern\n";
+      print $fh "#ifdef __cplusplus\n";
+      print $fh "\"C\"\n";
+      print $fh "#endif\n";
+      print $fh "void CCTK_Checked_called();\n";
+      print $fh "#endif\n";
       print $fh schedule_starter($key,$hash,$gr,$ccl_file);
     }
     close($fh);
