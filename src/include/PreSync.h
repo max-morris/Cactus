@@ -38,7 +38,8 @@ typedef CCTK_INT (*boundary_function)(
 
 #define WH_EVERYWHERE          0x7
 #define WH_INTERIOR            0x4
-#define WH_BOUNDARY            0x2 /* Describes B+G cells */
+#define WH_BOUNDARY            0x2 
+#define WH_EXTERIOR            0x6
 #define WH_GHOSTS              0x1
 #define WH_NOWHERE             0x0
 #endif
