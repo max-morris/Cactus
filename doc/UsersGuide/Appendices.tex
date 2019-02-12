@@ -66,7 +66,7 @@ http://en.wikipedia.org/wiki/Cactus
   of a configuration (they don't change what binary will be produced).
   See Section~\ref{sec:configurations}.
 \item[checkout]
-  Get a copy of source code from SVN.  See Section~\ref{sec:checkout}.
+  Get a copy of source code from git.  See Section~\ref{sec:checkout}.
 \item[checkpoint]
   Save the entire state of a Cactus run to a file, so that the run can be
   restarted at a later time.
@@ -88,10 +88,9 @@ http://en.wikipedia.org/wiki/Cactus
   The \textit{Cactus Specification Tool}, which is the set of Perl
   scripts which parse the thorns' \texttt{.ccl} files, and generates the
   code that binds the thorn source files with the flesh.
-\item[SVN]
-  \textit{Subversion} is the favoured code
-  distribution system for Cactus.
-  See Sections~\ref{sec:checkout},\ref{sec:Appendix.svn}.
+\item[git]
+  \textit{git} is the favoured code distribution system for Cactus.
+  See Section~\ref{sec:checkout}.
 \item[domain decomposition]
   The technique of breaking up a large computational problem into parts
   that are easier to solve.  In Cactus, it refers especially to a decomposition
@@ -109,7 +108,7 @@ http://en.wikipedia.org/wiki/Cactus
 \item[flesh]
   The Cactus routines which hold the thorns together, allowing them to 
   communicate and scheduling things to happen with them. This is what you
-  get if you check out Cactus from our SVN repository.
+  get if you check out Cactus from our git repository.
 \item[friend] Interfaces that are \textit{friends}, share their collective
   set of protected grid variables.
   See Section~\ref{sec:Appendix.interface}~\ref{subsec:interface_ccl}.
@@ -341,7 +340,7 @@ http://en.wikipedia.org/wiki/Cactus
   into a Cactus executable
   (see Section~\ref{sec:gmtafobuanadco}, \ref{sec:cointh}). 
   Can also be used to determine which thorns
-  to check out from SVN. (see Section~\ref{sec:checkout}).
+  to check out from git. (see Section~\ref{sec:checkout}).
   A ThornList for each Cactus configuration lies in the configuration
   subdirectory of the Cactus {\tt configs} directory.
 \item[time bin]
@@ -2042,92 +2041,6 @@ something wrong and {\em enhancement} for a feature request.
   {\em documentation} if the problem is related to the documentation.
 
 \end{Lentry}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\chapter{Using SVN}
-\label{sec:Appendix.svn}
-SVN is a version control system, which allows you to  keep
-old versions of files (usually source code), log of
-when, and why changes occurred, and who made them,  etc.
-SVN does not just operate on one file at a
-time or one directory at a time,  but
-operates  on  hierarchical collections of directories consisting of
-version controlled files.  SVN helps to  manage
-releases  and  to control the concurrent editing of source
-files among multiple  authors. SVN can be obtained from
-\url{http://subversion.apache.org}, but is usually available on workstations, or
-can be easily installed using a package manager.
-
-An SVN \textit{repository} located on a \textit{server} contains a
-hierarchy of directory and files, and any subdirectory can be checked
-out independently.  The Cactus flesh and the Cactus arrangements are
-organized as repositories on the server {\tt svn.cactuscode.org}.  You
-can browse the contents of this repository using a web browser at the
-URL \url{http://svn.cactuscode.org}.
-
-You do not need to know about SVN in order to download or update
-Cactus using the GetComponents script, though you must have SVN
-installed.  In order to contribute changes to Cactus files or your own
-thorns, which may also be stored in SVN, you will need a basic
-understanding of SVN.  For more information about 
-
-\section{Essential SVN Commands}
-
-Assuming that you have checked out Cactus using the GetComponents
-script, the following commands are the minimum you will need in order
-to work with SVN in Cactus.
-
-\begin{Lentry}
-
-\item[{\bf svn update}]
-Execute  this  command  from  \emph{within}  your  working
-directory  when  you  wish  to  update your
-copies of source  files  from  changes  that  other
-developers have made to the source in the repository.
-Merges are performed automatically when possible, a warning is issued
-if manual  resolution  is  required  for conflicting  changes. 
-
-\item[{\bf svn add} {\tt file}]
-Use this command to enroll new files in SVN records
-of your working directory.  The files will be added
-to the  repository  the  next  time  you  run  `{\tt svn
-commit}'.
-
-\item[{\bf svn commit} {\tt file}]
-Use this command to add your local changes to the source to
-the repository and, thereby, making it publically available to
-checkouts and updates by other users. You cannot commit a
-newly created file unless you have \emph{added} it.
-
-\item[{\bf svn diff} {\tt file}]
-Show differences between a file in your working directory
-and  a file in the source repository, or between two revisions in
-source repository.  (Does not change either repository or working
-directory.) For example, to see the difference between versions
-{\tt 1.8} and {\tt 1.9} of a file {\tt foobar.c}:
-
-{\tt
-\begin{verbatim}
-svn diff -r 1.8 1.9 foobar.c
-\end{verbatim}
-}
-
-\item[{\bf svn remove} {\tt file}]
-Remove files from the source repository, pending  an {\tt svn commit} on
-the same files.
-
-\item[{\bf svn status} {[}file{]}]
-This command returns the current status of your local copy relative to
-the repository: e.g.\ it indicates local modifications and possible
-updates.
-
-\end{Lentry}
-
-For more information about using SVN, you can read the documentation
-provided at \url{http://svnbook.red-bean.com}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
