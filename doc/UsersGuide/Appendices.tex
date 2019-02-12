@@ -1987,69 +1987,61 @@ Terminate on next iteration ? [{\tt no}]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Using TRAC}
-\label{sec:Appendix.trac}
+\chapter{Using the Einstein Toolkit issue tracker}
+\label{sec:Appendix.tickets}
 
-TRAC is a web-based tool for tracking bug reports and feature
-requests.  Cactus bugs and feature requests are handled using the TRAC
-system hosted by the Einstein Toolkit consortium at
-\url{http://trac.einsteintoolkit.org}.  Click on {\em New Ticket} to
-create a new ticket in the system.
+Bitbucket offers a web-based tool for tracking bug reports and feature
+requests.  Cactus bugs and feature requests are handled using the
+Bitbucket issue tracker at
+\url{https://bitbucket.org/einsteintoolkit/tickets/}.  Click on
+\emph{Create} to create a new ticket in the system.
 
 Here, we briefly describe the main categories when creating a Cactus
 problem report.
 \begin{Lentry}
-\item[{\bf Summary}] A brief and informative subject line.
+\item[{\bf Title}] A brief and informative subject line.
 
 \item[{\bf Description}] Describe your problem precisely, if you get a
   core dump, include the stack trace, and if possible give the minimal
   number of thorns, this problems occurs with.  Describe how to
   reproduce the problem if it is not clear.  Note that the description
-  field (and the comments) allow a wiki-style syntax.  This means that
-  blocks of code or error messages should be surrounded by \{\{\{
-  ... \}\}\} in order to avoid the text being interpreted as wiki
-  markup.  Click on the WikiFormatting link to learn more about the
-  available markup.
+  field (and the comments) allow markdown syntax.  This means that
+  blocks of code or error messages should be surrounded by 3 backticks
+  \code{\`{}\`{}\`{}} \ldots \code{\`{}\`{}\`{}} in order to avoid the text
+  being interpreted as markdown commands.  Click on the question mark link to
+  learn more about the available markdown commands.
 
-\item[{\bf Type}] Choose {\em defect} for cases where there is clearly
+\item[{\bf Kind}] Choose {\em bug} for cases where there is clearly
 something wrong and {\em enhancement} for a feature request.
 
 \item[{\bf Priority}] Pick whichever level is appropriate.  {\em
-  Blocker} for issues that stop you using the code, {\em critical} for
+  blocker} for issues that stop you using the code, {\em critical} for
   very serious problems, {\em major} for things which should
   definitely be addressed, {\em minor} for things which would be good
-  to fix but not essential, and {\em optional} for very low priority
+  to fix but not essential, and {\em trivial} for very low priority
   items.  If in doubt, choose either {\em major} or {\em minor}.
-
-\item[{\bf Milestone}] This is used by the maintainers to indicate an
-  intention to fix the problem before a particular release of Cactus.
 
 \item[{\bf Component}] Use {\em Cactus} for problems related to the
   Cactus flesh or one of the thorns in one of the Cactus arrangements
   (those in arrangements with names starting ``Cactus'').
 
+\item[{\bf Milestone}] This is used by the maintainers to indicate an
+  intention to fix the problem before a particular release of Cactus.
+
 \item[{\bf Version}] The Cactus release you are using. You can find
   this out, for example, from an executable by typing {\tt
     cactus\_<config> -v}. % FIXME: We don't list Cactus versions in
-                          % TRAC, only ET versions.
+                          % bitbucket, only ET versions.
 
-\item[{\bf Keywords}] Here you can enter a space-separated list of
-  keywords which might be useful for people searching for specific
-  types of tickets.  For example, you could enter the thorn name if
-  the problem is with a specific thorn, the keyword {\em testsuite} if
-  the ticket is related to a test failure, or the keyword {\em
-    documentation} if the problem is related to the documentation.
+\item[{\bf Keyword}] There is no explicit field to add keywords. It is
+  however a good idea to add a line "Keyword: keyword1 keyword2" at the
+  end to the Description to indicate that a \emph{backport} to the
+  release version is required.  For example, you could also enter the
+  thorn name if the problem is with a specific thorn, the keyword {\em
+  testsuite} if the ticket is related to a test failure, or the keyword
+  {\em documentation} if the problem is related to the documentation.
 
-\item[{\bf CC}] Email addresses of people who should be emailed on any
-  change to the ticket, such as a comment being added.
-
-\item[{\bf Email or username}] Your email address, so we can get in
-  contact with you.
 \end{Lentry}
-
-If you have an account on the computer systems at CCT, you can log in
-to the TRAC system in order to be recognised.  Otherwise, your
-comments will appear as ``anonymous''.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
