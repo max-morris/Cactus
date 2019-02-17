@@ -292,14 +292,14 @@ sub create_macros
                 if ($var_group->{vector} ne "0") {
                   $vname .= "[0]";
                 }
-                $$data .= qq(  $const $vtype *$variables = ($const $vtype *)CCTK_VarDataPtr(cctkGH, 0, "$vname"); \\\n);
+                $$data .= qq(static int cctki_vi_$variables = -100; if (cctki_vi_$variables == -100) cctki_vi_$variables = CCTK_VarIndex("$vname"); $vtype * restrict const $variables __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, 0, cctki_vi_$variables));; \\\n);
               }
             } else {
               my $vname = "${th}::$var";
               if ($var_group->{vector} ne "0") {
                 $vname .= "[0]";
               }
-              $$data .= qq(  $const $vtype *$full_var = ($const $vtype *)CCTK_VarDataPtr(cctkGH, $timelevel, "$vname"); \\\n);
+              $$data .= qq(static int cctki_vi_$full_var = -100; if (cctki_vi_$full_var == -100) cctki_vi_$full_var = CCTK_VarIndex("$vname"); $vtype * restrict const $full_var __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, cctki_vi_$full_var));; \\\n);
             }
           } # loop over read/write variables
         } # loop over read/write thorns
