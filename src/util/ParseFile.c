@@ -40,7 +40,7 @@ CCTK_FILEVERSION(util_ParseFile_c);
 static void CheckBuf(int, int);
 static void removeSpaces(char *stripMe);
 static char *ReadFile(FILE *file, long *filesize);
-static char *ParseDefines(char *buffer, unsigned long *buffersize);
+static char *ParseDefines(char *buffer, long *buffersize);
 static void convert_crlf_to_lf(char *buffer);
 int ParseBuffer(char *buffer,
                 int (*set_function)(const char *, const char *, int),
@@ -397,7 +397,7 @@ static char *ReadFile(FILE *file, long *filesize)
    @endvar
    @var     buffersize
    @vdesc   The size of the buffer
-   @vtype   *unsigned long
+   @vtype   *long
    @vio     out
    @vcomment
 
@@ -408,18 +408,18 @@ static char *ReadFile(FILE *file, long *filesize)
    !NULL - new buffer, might be == buffer
    @endreturndesc
 @@*/
-static char *ParseDefines(char *buffer, unsigned long *buffersize)
+static char *ParseDefines(char *buffer, long *buffersize)
 {
   /* define name */
   char define[1024];
   /* Position in define name */
-  size_t defpos = 0;
+  long defpos = 0;
   /* Current position in buffer */
-  size_t pos = 0;
+  long pos = 0;
   /* Character at current position */
   char c;
   /* Position of start of found define */
-  size_t def_start = 0;
+  long def_start = 0;
   /* Flag to indicate if we are inside a definition name */
   int indef = 0;
   if (!buffer)
