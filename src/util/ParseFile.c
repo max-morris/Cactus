@@ -38,7 +38,7 @@ CCTK_FILEVERSION(util_ParseFile_c);
 
 static void CheckBuf(int, int);
 static void removeSpaces(char *stripMe);
-static char *ReadFile(FILE *file, unsigned long *filesize);
+static char *ReadFile(FILE *file, long *filesize);
 static char *ParseDefines(char *buffer, unsigned long *buffersize);
 static void convert_crlf_to_lf(char *buffer);
 int ParseBuffer(char *buffer,
@@ -127,7 +127,7 @@ int ParseFile(FILE *ifp,
               tFleshConfig *ConfigData)
 {
   int retval=1;
-  unsigned long buffersize;
+  long buffersize;
   char *buffer = ReadFile(ifp, &buffersize);
   if (!buffer)
     return 1;
@@ -316,7 +316,7 @@ int main(int argc, char *argv[])
    @endvar
    @var     filesize
    @vdesc   The size of the file
-   @vtype   *unsigned long
+   @vtype   *long
    @vio     out
    @vcomment
 
@@ -328,7 +328,7 @@ int main(int argc, char *argv[])
    !NULL allocated buffer
    @endreturndesc
 @@*/
-static char *ReadFile(FILE *file, unsigned long *filesize)
+static char *ReadFile(FILE *file, long *filesize)
 {
   char *buffer;
 
@@ -338,9 +338,24 @@ static char *ReadFile(FILE *file, unsigned long *filesize)
     return NULL;
   }
   /* Get the file size */
-  fseek(file, 0, SEEK_END);
+  int ierr = fseek(file, 0, SEEK_END);
+  if (ierr < 0)
+  {
+    fprintf(stderr, "Could not determine file size.\n");
+    return NULL;
+  }
   *filesize = ftell(file);
-  fseek(file, 0, SEEK_SET);
+  if (*filesize < 0)
+  {
+    fprintf(stderr, "Could not determine file size.\n");
+    return NULL;
+  }
+  ierr = fseek(file, 0, SEEK_SET);
+  if (ierr < 0)
+  {
+    fprintf(stderr, "Could not determine file size.\n");
+    return NULL;
+  }
   /* Allocate buffer */
   buffer = (char *)malloc(*filesize+1);
   if (!buffer)
@@ -349,7 +364,12 @@ static char *ReadFile(FILE *file, unsigned long *filesize)
     return NULL;
   }
   /* Read file into buffer and return */
-  fread(buffer, *filesize, 1, file);
+  size_t iret = fread(buffer, *filesize, 1, file);
+  if (iret < 1)
+  {
+    fprintf(stderr, "Could not read data from file.\n");
+    return NULL;
+  }
   /* Protect buffer for string operations */
   buffer[*filesize] = '\0';
   return buffer;
