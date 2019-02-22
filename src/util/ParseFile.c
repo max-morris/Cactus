@@ -13,6 +13,7 @@
 
 #include <assert.h>
 #include <ctype.h>
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -341,33 +342,33 @@ static char *ReadFile(FILE *file, long *filesize)
   int ierr = fseek(file, 0, SEEK_END);
   if (ierr < 0)
   {
-    fprintf(stderr, "Could not determine file size.\n");
+    fprintf(stderr, "Could not seek to end of file: %s\n", strerror(errno));
     return NULL;
   }
   *filesize = ftell(file);
   if (*filesize < 0)
   {
-    fprintf(stderr, "Could not determine file size.\n");
+    fprintf(stderr, "Could not determine file size: %s\n", strerror(errno));
     return NULL;
   }
   ierr = fseek(file, 0, SEEK_SET);
   if (ierr < 0)
   {
-    fprintf(stderr, "Could not determine file size.\n");
+    fprintf(stderr, "Could not rewind file: %s\n", strerror(errno));
     return NULL;
   }
   /* Allocate buffer */
   buffer = (char *)malloc(*filesize+1);
   if (!buffer)
   {
-    fprintf(stderr, "Could not allocate memory.\n");
+    fprintf(stderr, "Could not allocate %ld bytes of memory.\n", *filesize+1);
     return NULL;
   }
   /* Read file into buffer and return */
   size_t iret = fread(buffer, *filesize, 1, file);
   if (iret < 1)
   {
-    fprintf(stderr, "Could not read data from file.\n");
+    fprintf(stderr, "Could not read data from file: %s\n", strerror(errno));
     return NULL;
   }
   /* Protect buffer for string operations */
