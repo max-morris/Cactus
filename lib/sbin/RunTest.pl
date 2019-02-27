@@ -1,7 +1,6 @@
 #!/bin/perl -s
 #
 # Test Suite tool
-use strict;
 
 # For debugging:
 my $debug = 0;
@@ -28,30 +27,25 @@ sub debug_dedent
 use lib ".";
 require "lib/sbin/RunTestUtils.pl";
 
-use Data::Dumper;
-use IO::Select;
-use POSIX ":sys_wait_h";
-
 # Read options from command line
-my $rundata;
-our $prompt = shift;   
+$prompt = shift;   
 $prompt =~ tr/A-Z/a-z/;
-my $home_dir = shift;
-my $config = shift;
+$home_dir = shift;
+$config = shift;
 
 &PrintHeader;
 
 # Set up RunTest configuration
-my $config_data = &Configure($config,$home_dir,$prompt);
+$config_data = &Configure($config,$home_dir,$prompt);
 
-my %runconfig = &InitialiseRunData();
+%runconfig = &InitialiseRunData();
 
 # ----------------------------------------------------
 
 # Sort out the static test data
 
 # Initialise testdata database
-my $testdata = &InitialiseTestData();
+$testdata = &InitialiseTestData();
 
 # Find test parameter files
 $testdata = &FindTestParameterFiles($testdata,$config_data);
@@ -67,13 +61,13 @@ $testdata = &ParseAllParameterFiles($testdata,$config_data,\%runconfig);
 
 # ----------------------------------------------------
 
-my $haverunall = 0;
+$haverunall = 0;
 
-while (our $choice !~ /^Q/i)
+while ($choice !~ /^Q/i)
 {
-  my $thorn = undef;
-  my $test = undef;
-  $choice = undef;
+  undef($thorn);
+  undef($test);
+  undef($choice);
   
   while (!($choice =~ /^Q/i) )
   {
@@ -109,68 +103,42 @@ while (our $choice !~ /^Q/i)
       # Reset/Initialise Test Statistics
       $rundata = &ResetTestStatistics($rundata,$testdata);
 
+      my $testno = 0;
+      my $parallel_size = defined($ENV{CCTK_TEST_SIZE}) ? 0+$ENV{CCTK_TEST_SIZE} : 1;
+      my $parallel_rank = defined($ENV{CCTK_TEST_RANK}) ? 0+$ENV{CCTK_TEST_RANK} : 1;
+
       # Run all parameter files
-      # run up to nparallel tests in parallel
-      my $nparallel = (defined ($ENV{'CCTK_TESTSUITE_PARALLEL_TESTS'}) ?
-                       $ENV{'CCTK_TESTSUITE_PARALLEL_TESTS'} : 1);
-      my %running_tests;
-      foreach $thorn (split(" ",$testdata->{"RUNNABLETHORNS"}))
+      foreach $thorn (sort split(" ",$testdata->{"RUNNABLETHORNS"}))
       {
-        foreach $test (split(" ",$testdata->{"$thorn RUNNABLE"}))
+        foreach $test (sort split(" ",$testdata->{"$thorn RUNNABLE"}))
         {
-          while(scalar keys %running_tests >= $nparallel) { # wait for a task to finish
-            &wait_for_test(\%running_tests,$choice);
+          $testno++;
+          my $rank_to_run = ($testno % $parallel_size) + 1;
+          
+          print "------------------------------------------------------------------------\n\n";
+          #print "test=$test testno=$testno rank_to_run=$rank_to_run parallel_size=$parallel_size parallel_rank=$parallel_rank\n";
+
+          if ($rank_to_run != $parallel_rank) {
+            print "SKIPPING $test SEE RANK $rank_to_run\n";
+            next;
           }
 
-          print "  Starting test $thorn: $test \n" unless $nparallel == 1;
+          print "  Test $thorn: $test \n";
+          print "    \"$testdata->{\"$thorn $test DESC\"}\"\n";
+
           if ($choice !~ /^O/i)
           {
-            pipe(my $STDOUT_RD, my $STDOUT_WR) or die "Could not open pipe: $!";
-            pipe(my $STDERR_RD, my $STDERR_WR) or die "Could not open pipe: $!";
-            pipe(my $RESULTS_RD, my $RESULTS_WR) or die "Could not open pipe: $!";
-            my $pid = fork(); # start a sub-process
-            if(not $pid) {
-              # the child process
-              open(STDOUT, '>&', $STDOUT_WR) or die "Could not dup STDOUT: $!";
-              open(STDERR, '>&', $STDERR_WR) or die "Could not dup STDERR $!";;
-              foreach my $FH ($STDOUT_RD, $STDOUT_WR, $STDERR_RD, $STDERR_WR, $RESULTS_RD) {
-                close $FH or die "Failed to close file: $!";
-              }
-
-              # these are globals updated by RunTest so I initialize them to a
-              # known value that I can accumulate over
-              $testdata->{"NFAILED"} = 0;
-              $testdata->{"$thorn failed"} = "";
-
-              $testdata = &RunTest("log",$test,$thorn,$config_data,$testdata);
-
-              # get all values that need to be returned to our caller
-              my %retvalues;
-              foreach my $key (keys %$testdata) {
-                if ($key =~ /^$thorn $test /) {
-                  $retvalues{$key} = $testdata->{$key};
-                }
-              }
-              $retvalues{"$thorn FAILED"} = $testdata->{"$thorn FAILED"};
-              $retvalues{"NFAILED"} = $testdata->{"NFAILED"};
-              $Data::Dumper::Terse = 1;
-              print $RESULTS_WR Dumper(\%retvalues) or die "Could not write results: $!";
-              close($RESULTS_WR) or die "Could not write results: $!";
-
-              exit 0;
-            } else {
-              # the parent process
-              foreach my $FH ($STDOUT_WR, $STDERR_WR, $RESULTS_WR) {
-                close $FH or die "Failed to close file: $!";
-              }
-              $running_tests{$pid} = [$thorn,$test,[$STDOUT_RD,""],[$STDERR_RD,""],[$RESULTS_RD,""]];
-            }
+            $testdata = &RunTest("log",$test,$thorn,$config_data,$testdata);
           }
 
+          $rundata = &CompareTestFiles($test,$thorn,\%runconfig,$rundata,$config_data,$testdata);
+
+          $rundata = &ReportOnTest($test,$thorn,$rundata,$testdata);
+          if ($choice =~ /^I/i)
+          {
+            &ViewResults($test,$thorn,\%runconfig,$rundata,$testdata);
+          }
         }
-      }
-      while(scalar keys %running_tests > 0) { # wait for all tasks to finish
-        &wait_for_test(\%running_tests,$choice);
       }
 
       # Write results of all tests
@@ -181,8 +149,8 @@ while (our $choice !~ /^Q/i)
     } 
     elsif ($choice =~ /^[AT]/i)
     {
-      my ($ntests,@tests) = &ChooseTests($choice,$testdata);
-      for (my $i=0;$i<$ntests;$i++)
+      ($ntests,@tests) = &ChooseTests($choice,$testdata);
+      for ($i=0;$i<$ntests;$i++)
       {
         $test  = $tests[2*$i];
         $thorn = $tests[2*$i+1];
@@ -278,78 +246,4 @@ while (our $choice !~ /^Q/i)
     }
   }
   print "\n";
-}
-
-sub wait_for_test {
-  my $running_tests = shift;
-  my $choice = shift;
-  # get data from pipes if there is any available
-  my $reads = IO::Select->new();
-  my %captures;
-  foreach my $pid (keys %$running_tests) {
-    my ($thorn,$test,$STDOUT_CAPTURE,$STDERR,$RESULTS_CAPTURE) = @{$running_tests->{$pid}};
-    foreach my $cap ($STDOUT_CAPTURE,$STDERR,$RESULTS_CAPTURE) {
-      $captures{$cap->[0]} = \$cap->[1];
-      $reads->add($cap->[0]);
-    }
-  }
-  while (my @can_read = $reads->can_read()) {
-    my $total_read = 0;
-    foreach my $fh (@can_read) {
-      my $read = sysread($fh, my $s, 4096*4);
-      die "Could not read from pipe: $!" if not defined $read;
-      $total_read += $read;
-      ${$captures{$fh}} .= $s;
-    }
-    last if $total_read == 0; # all handles are at EOF
-  }
-  # peel one finished test of the list of running tests
-  my $finished_test = waitpid(-1, WNOHANG);
-  my $retcode = $?;
-  return if $finished_test <= 0; # no child finished
-  my ($thorn,$test,$STDOUT_CAPTURE,$STDERR_CAPTURE,$RESULTS_CAPTURE) = @{$running_tests->{$finished_test}};
-  delete $running_tests->{$finished_test};
-
-  # read in all remaining data test's stdout, stderr and results
-  my $TESTOUT = $STDOUT_CAPTURE->[1] .= &slurp($STDOUT_CAPTURE->[0]);
-  my $TESTERR = $STDERR_CAPTURE->[1] .= &slurp($STDERR_CAPTURE->[0]);
-  my $TESTRESULTS = $RESULTS_CAPTURE->[1] .= &slurp($RESULTS_CAPTURE->[0]);
-  # inject testdata values into global data structure
-  my %testvalues = %{eval $TESTRESULTS};
-  $testdata->{"NFAILED"} += $testvalues{"NFAILED"};
-  $testdata->{"$thorn failed"} .= " ".$testvalues{"$thorn FAILED"};
-  if($retcode != 0) { # subprocess exited with an error
-    $testdata->{"NFAILED"} += 1;
-    $testdata->{"$thorn failed"} .= " ".$test;
-  }
-  foreach my $key (keys %testvalues) {
-    if ($key =~ /^$thorn $test /) {
-      $testdata->{$key} = $testvalues{$key};
-    }
-  }
-
-  # handle and print output
-  print "------------------------------------------------------------------------\n\n";
-  print "  Test $thorn: $test \n";
-  print "    \"$testdata->{\"$thorn $test DESC\"}\"\n";
-  print STDOUT $TESTOUT;
-  print STDERR $TESTERR;
-
-  $rundata = &CompareTestFiles($test,$thorn,\%runconfig,$rundata,$config_data,$testdata);
-
-  $rundata = &ReportOnTest($test,$thorn,$rundata,$testdata);
-  if ($choice =~ /^I/i)
-  {
-    &ViewResults($test,$thorn,\%runconfig,$rundata,$testdata);
-  }
-}
-sub slurp {
-  my ($FH) = @_;
-  my $data = "";
-  while((my $read = sysread($FH, my $newdata, 4096*4)) != 0) {
-    die "Could not read from pipe: $!" if not defined $read;
-    $data .= $newdata;
-  }
-  close $FH;
-  return $data;
 }
