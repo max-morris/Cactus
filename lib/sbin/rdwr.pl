@@ -446,7 +446,7 @@ sub GenerateArguments
     }
   }
   for my $key (keys %thorns) {
-    open(my $fh, '>', $ENV{CCTK_HOME}."/configs/sim/bindings/include/$key/cctk_Arguments_Checked.h");
+    open(my $fh, '>', $ENV{TOP}."/bindings/include/$key/cctk_Arguments_Checked.h");
     $ccl_file = $thorns{$key}."/schedule.ccl";
     my $gr=parse_ccl($S_grammar,$S_rule,$ccl_file,$sch_file);
     if($gr) {
