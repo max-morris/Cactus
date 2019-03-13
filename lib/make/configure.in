@@ -559,58 +559,25 @@ fi
 
 # Check for sizes of integer types
 
-if test "x$cross_compiling" = 'xyes' -a -z "$SIZEOF_LONG_LONG" ; then
-  AC_MSG_ERROR(Cross-compiling - no value set for sizeof(long long) please set SIZEOF_LONG_LONG)
-fi
+CCTK_CHECK_SIZEOF(long long)
 
-AC_CHECK_SIZEOF(long long, $SIZEOF_LONG_LONG)
+CCTK_CHECK_SIZEOF(long int)
 
-if test "x$cross_compiling" = 'xyes' -a -z "$SIZEOF_LONG_INT" ; then
-  AC_MSG_ERROR(Cross-compiling - no value set for sizeof(long int) please set SIZEOF_LONG_INT)
-fi
+CCTK_CHECK_SIZEOF(int)
 
-AC_CHECK_SIZEOF(long int, $SIZEOF_LONG_INT)
-
-if test "x$cross_compiling" = 'xyes' -a -z "$SIZEOF_INT" ; then
-  AC_MSG_ERROR(Cross-compiling - no value set for sizeof(int) please set SIZEOF_INT)
-fi
-
-AC_CHECK_SIZEOF(int, $SIZEOF_INT)
-
-if test "x$cross_compiling" = 'xyes' -a -z "$SIZEOF_SHORT_INT" ; then
-  AC_MSG_ERROR(Cross-compiling - no value set for sizeof(short int) please set SIZEOF_SHORT_INT)
-fi
-
-AC_CHECK_SIZEOF(short int, $SIZEOF_SHORT_INT)
+CCTK_CHECK_SIZEOF(short int)
 
 # Check for sizes of floating point types
 
-if test "x$cross_compiling" = 'xyes' -a -z "$SIZEOF_LONG_DOUBLE" ; then
-  AC_MSG_ERROR(Cross-compiling - no value set for sizeof(long double) please set SIZEOF_LONG_DOUBLE)
-fi
+CCTK_CHECK_SIZEOF(long double)
 
-AC_CHECK_SIZEOF(long double, $SIZEOF_LONG_DOUBLE)
+CCTK_CHECK_SIZEOF(double)
 
-if test "x$cross_compiling" = 'xyes' -a -z "$SIZEOF_DOUBLE" ; then
-  AC_MSG_ERROR(Cross-compiling - no value set for sizeof(double) please set SIZEOF_DOUBLE)
-fi
-
-AC_CHECK_SIZEOF(double, $SIZEOF_DOUBLE)
-
-
-if test "x$cross_compiling" = 'xyes' -a -z "$SIZEOF_FLOAT" ; then
-  AC_MSG_ERROR(Cross-compiling - no value set for sizeof(float) please set SIZEOF_FLOAT)
-fi
-
-AC_CHECK_SIZEOF(float, $SIZEOF_FLOAT)
+CCTK_CHECK_SIZEOF(float)
 
 # Check for sizes of pointers.
 
-if test "x$cross_compiling" = 'xyes' -a -z "$SIZEOF_POINTER" ; then
-   AC_MSG_ERROR(Cross-compiling - no value set for sizeof(char *) please set SIZEOF_POINTER)
-fi
-
-AC_CHECK_SIZEOF(char *, $SIZEOF_POINTER)
+CCTK_CHECK_SIZEOF(char *)
 
 # See if there's a null device, and what it's called
 
