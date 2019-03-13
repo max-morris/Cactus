@@ -545,16 +545,13 @@ AC_MSG_ERROR(strdup has no C++ prototype. Try adding -D_XOPEN_SOURCE -D_XOPEN_SO
 
 # Checks for typedefs, structures, and compiler characteristics.
 
-if test "x$cross_compiling" = 'xno' ; then
-  AC_C_BIGENDIAN
-else
-  if test -n "$ENDIAN" ; then
-    if test "$ENDIAN" = 'big' ; then
-      AC_DEFINE(WORDS_BIGENDIAN)
-    fi
-  else
-    AC_MSG_ERROR(Cross-compiling - no value set for endian-ness please set ENDIAN)
+if test -n "$ENDIAN" ; then
+  if test "$ENDIAN" = 'big' ; then
+    AC_DEFINE(WORDS_BIGENDIAN)
   fi
+else
+  # AC_C_BIGENDIAN will fail when cross compiling
+  AC_C_BIGENDIAN
 fi
 
 # Check for sizes of integer types
