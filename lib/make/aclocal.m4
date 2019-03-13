@@ -107,13 +107,14 @@ AC_CACHE_VAL(AC_CV_NAME,[dnl
 if test "$cross_compiling" = yes; then
 # first find out an upper bound for the type size
 cctk_lower_bound=1
-cctk_upper_bound=1
+cctk_upper_bound=2
 cctk_upper_bound_found=no
 while test $cctk_upper_bound_found = no; do
   AC_TRY_COMPILE([#include <stddef.h>],dnl
   [int array[sizeof($1) < $cctk_upper_bound ? 1 : -1]],dnl
   [cctk_upper_bound_found=yes],dnl
-  [cctk_upper_bound=$(expr $cctk_upper_bound \* 2)])
+  [cctk_lower_bound=$cctk_upper_bound
+   cctk_upper_bound=$(expr $cctk_upper_bound \* 2)])
 done
 # then bisect to actual value
 while test $cctk_lower_bound -ne $(expr $cctk_upper_bound - 1); do
