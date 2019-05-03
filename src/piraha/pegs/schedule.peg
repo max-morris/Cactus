@@ -47,7 +47,7 @@ triggers = (?i:triggers?) : {vname}( , {vname}|[ \t]{vname})*
 reads = (?i:reads) : {qname}
 writes = (?i:writes) : {qname}
 qname = {vname} (\( {region} \))? ( , {name}|[ \t]{name})*
-region = (?i:everywhere|interior|all|in|boundary|scalar|interiorwithboundary)
+region = (?i:everywhere|interiorwithboundary|all|in|boundary|scalar|interior)
 tags = (?i:tags) : {assign}( , {assign}|[ \t]{assign})*
 schedule = (?i:
   schedule ({group}|{nogroup}) {name} {prepositions} \{
