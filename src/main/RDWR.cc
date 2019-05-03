@@ -93,10 +93,12 @@ void parse(const char *str,bool is_write,std::set<RDWR_entry,EntryComp>& s) {
     }
     tolower(where);
     int wh = 0;
-    if(where == "everywhere")
+    if(where == "everywhere" || where == "all")
         wh = WH_EVERYWHERE;
-    else if(where == "interior")
+    else if(where == "interior" || where == "in")
         wh = WH_INTERIOR;
+    else if(where == "interiorwithboundary")
+        wh = WH_INTERIOR | WH_BOUNDARY;
     else if(where == "boundary")
         wh = WH_BOUNDARY;
     else {
