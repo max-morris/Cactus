@@ -210,16 +210,16 @@ for my $header (@$definethisthornheader) {
 # Wrie configuration scripts messages/errors to log file
 &CreateLogFile($config_dir, $configuration_database,\%thorns);
 
-# Finally (must be last), create the make.thornlist file.
-$make_thornlist = &CreateMakeThornlist(\%thorns, \%interface_database, $configuration_database);
-
-&WriteFile("$config_dir/make.thornlist", \$make_thornlist);
-
 print "Generating arguments...\n";
 &GenerateArguments(%thorns);
 
 # Stop the make process if there were any errors
 &CheckCSTErrors();
+
+# Finally (must be last), create the make.thornlist file.
+$make_thornlist = &CreateMakeThornlist(\%thorns, \%interface_database, $configuration_database);
+
+&WriteFile("$config_dir/make.thornlist", \$make_thornlist);
 
 print "CST finished.\n";
 exit;
