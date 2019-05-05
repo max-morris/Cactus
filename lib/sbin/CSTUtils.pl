@@ -176,7 +176,7 @@ sub WriteFile
 
 # Set this to an illegal value,
 # so that the comparison later is guaranteed to fail if this is not changed
-  $data_in = undefined;
+  $data_in = undef;
 
 # Read in file
   if (-e $filename) 
