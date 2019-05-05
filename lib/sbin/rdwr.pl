@@ -194,7 +194,7 @@ sub create_macros
   my $ccl_file = shift;
   $$data .= "#ifndef CCTK_ARGUMENTS_CHECKED_H\n";
   $$data .= "#define CCTK_ARGUMENTS_CHECKED_H 1\n";
-  for my $namekey (keys %{$reads_writes}) {
+  for my $namekey (sort keys %{$reads_writes}) {
     my $temp_data = "";
     my $nm = substr($namekey,0,-2); # removing language suffix from function name
     if($reads_writes->{$namekey}->{$namekey}->{$namekey} eq "empty") {
@@ -230,8 +230,8 @@ sub create_macros
         $$data .= "#define DECLARE_CCTK_ARGUMENTS_${nm} \\\n";
         $$data .= "  _DECLARE_CCTK_ARGUMENTS; \\\n";
         $$data .= "  CCTK_Checked_called(); \\\n";
-        for my $th (keys %{$reads_writes->{$namekey}}) {
-          for my $full_var (keys %{$reads_writes->{$namekey}->{$th}}) {
+        for my $th (sort keys %{$reads_writes->{$namekey}}) {
+          for my $full_var (sort keys %{$reads_writes->{$namekey}->{$th}}) {
             my $var_group;
             my $group_register;
             my $timelevel = 0;
@@ -287,7 +287,7 @@ sub create_macros
             my $const = "";
             $const = "const" if($reads_writes->{$namekey}->{$th}->{$full_var}==0);
             if($group_register eq "yes") {
-              for my $variables (keys %{$var_group->{grp_vars}}) {
+              for my $variables (sort keys %{$var_group->{grp_vars}}) {
                 my $vname = "${th}::$variables";
                 if ($var_group->{vector} ne "0") {
                   $vname .= "[0]";
@@ -309,8 +309,8 @@ sub create_macros
         $$data .= "#ifndef DECLARE_CCTK_ARGUMENTS_${nm} \n";
         $$data .= "#define DECLARE_CCTK_ARGUMENTS_${nm} \\\n";
         $$data .= "  _DECLARE_CCTK_FARGUMENTS \\\n";
-        for my $th (keys %{$reads_writes->{$namekey}}) {
-          for my $full_var (keys %{$reads_writes->{$namekey}->{$th}}) {
+        for my $th (sort keys %{$reads_writes->{$namekey}}) {
+          for my $full_var (sort keys %{$reads_writes->{$namekey}->{$th}}) {
             my $var_group;
             my $group;
             my $group_register;
@@ -404,7 +404,7 @@ sub create_macros
               $arrays = qq(($glen));
             }
             if($group_register eq "yes") {
-              for my $variables (keys %{$var_group->{grp_vars}}) {
+              for my $variables (sort keys %{$var_group->{grp_vars}}) {
                 $temp_data .= ", $variables";
                 $$data .= "  $vtype :: $variables $arrays &&\\\n";
                 $$data .= "  integer, parameter :: cctki_use_$variables = kind($variables) &&\\\n";
