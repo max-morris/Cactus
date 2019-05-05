@@ -446,19 +446,19 @@ sub GenerateArguments
     }
   }
   for my $key (keys %thorns) {
-    open(my $fh, '>', $ENV{TOP}."/bindings/include/$key/cctk_Arguments_Checked.h");
     $ccl_file = $thorns{$key}."/schedule.ccl";
     my $gr=parse_ccl($S_grammar,$S_rule,$ccl_file,$sch_file);
     if($gr) {
-      print $fh "#ifdef CCODE\n";
-      print $fh "extern\n";
-      print $fh "#ifdef __cplusplus\n";
-      print $fh "\"C\"\n";
-      print $fh "#endif\n";
-      print $fh "void CCTK_Checked_called();\n";
-      print $fh "#endif\n";
-      print $fh schedule_starter($key,$hash,$gr,$ccl_file);
+      my $data = "";
+      $data .= "#ifdef CCODE\n";
+      $data .= "extern\n";
+      $data .= "#ifdef __cplusplus\n";
+      $data .= "\"C\"\n";
+      $data .= "#endif\n";
+      $data .= "void CCTK_Checked_called();\n";
+      $data .= "#endif\n";
+      $data .= schedule_starter($key,$hash,$gr,$ccl_file);
+      WriteFile($ENV{TOP}."/bindings/include/$key/cctk_Arguments_Checked.h", \$data);
     }
-    close($fh);
   }
 }
