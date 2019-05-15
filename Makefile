@@ -370,6 +370,7 @@ else
 	@echo These are activated by '$(MAKE) \<conf-name\>-\<option\>'
 	@echo Valid options are
 	@echo "  -build         : build individual thorns of a configuration."
+	@echo "                   set BUILDLIST to list of thorns to build."
 	@echo "  -clean         : clean a configuration"
 	@echo "                  (deletes all object and dependency files"
 	@echo "                   in the configuration)."

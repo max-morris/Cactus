@@ -13,6 +13,7 @@
 
 #include <assert.h>
 #include <ctype.h>
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -38,8 +39,8 @@ CCTK_FILEVERSION(util_ParseFile_c);
 
 static void CheckBuf(int, int);
 static void removeSpaces(char *stripMe);
-static char *ReadFile(FILE *file, unsigned long *filesize);
-static char *ParseDefines(char *buffer, unsigned long *buffersize);
+static char *ReadFile(FILE *file, long *filesize);
+static char *ParseDefines(char *buffer, long *buffersize);
 static void convert_crlf_to_lf(char *buffer);
 int ParseBuffer(char *buffer,
                 int (*set_function)(const char *, const char *, int),
@@ -127,7 +128,7 @@ int ParseFile(FILE *ifp,
               tFleshConfig *ConfigData)
 {
   int retval=1;
-  unsigned long buffersize;
+  long buffersize;
   char *buffer = ReadFile(ifp, &buffersize);
   if (!buffer)
     return 1;
@@ -316,7 +317,7 @@ int main(int argc, char *argv[])
    @endvar
    @var     filesize
    @vdesc   The size of the file
-   @vtype   *unsigned long
+   @vtype   *long
    @vio     out
    @vcomment
 
@@ -328,7 +329,7 @@ int main(int argc, char *argv[])
    !NULL allocated buffer
    @endreturndesc
 @@*/
-static char *ReadFile(FILE *file, unsigned long *filesize)
+static char *ReadFile(FILE *file, long *filesize)
 {
   char *buffer;
 
@@ -338,18 +339,38 @@ static char *ReadFile(FILE *file, unsigned long *filesize)
     return NULL;
   }
   /* Get the file size */
-  fseek(file, 0, SEEK_END);
+  int ierr = fseek(file, 0, SEEK_END);
+  if (ierr < 0)
+  {
+    fprintf(stderr, "Could not seek to end of file: %s\n", strerror(errno));
+    return NULL;
+  }
   *filesize = ftell(file);
-  fseek(file, 0, SEEK_SET);
+  if (*filesize < 0)
+  {
+    fprintf(stderr, "Could not determine file size: %s\n", strerror(errno));
+    return NULL;
+  }
+  ierr = fseek(file, 0, SEEK_SET);
+  if (ierr < 0)
+  {
+    fprintf(stderr, "Could not rewind file: %s\n", strerror(errno));
+    return NULL;
+  }
   /* Allocate buffer */
   buffer = (char *)malloc(*filesize+1);
   if (!buffer)
   {
-    fprintf(stderr, "Could not allocate memory.\n");
+    fprintf(stderr, "Could not allocate %ld bytes of memory.\n", *filesize+1);
     return NULL;
   }
   /* Read file into buffer and return */
-  fread(buffer, *filesize, 1, file);
+  size_t iret = fread(buffer, *filesize, 1, file);
+  if (iret < 1)
+  {
+    fprintf(stderr, "Could not read data from file: %s\n", strerror(errno));
+    return NULL;
+  }
   /* Protect buffer for string operations */
   buffer[*filesize] = '\0';
   return buffer;
@@ -376,7 +397,7 @@ static char *ReadFile(FILE *file, unsigned long *filesize)
    @endvar
    @var     buffersize
    @vdesc   The size of the buffer
-   @vtype   *unsigned long
+   @vtype   *long
    @vio     out
    @vcomment
 
@@ -387,18 +408,18 @@ static char *ReadFile(FILE *file, unsigned long *filesize)
    !NULL - new buffer, might be == buffer
    @endreturndesc
 @@*/
-static char *ParseDefines(char *buffer, unsigned long *buffersize)
+static char *ParseDefines(char *buffer, long *buffersize)
 {
   /* define name */
   char define[1024];
   /* Position in define name */
-  size_t defpos = 0;
+  long defpos = 0;
   /* Current position in buffer */
-  size_t pos = 0;
+  long pos = 0;
   /* Character at current position */
   char c;
   /* Position of start of found define */
-  size_t def_start = 0;
+  long def_start = 0;
   /* Flag to indicate if we are inside a definition name */
   int indef = 0;
   if (!buffer)

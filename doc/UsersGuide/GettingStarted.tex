@@ -23,16 +23,16 @@
 \section{Obtaining Cactus}
 \label{sec:checkout}
 
-Cactus is distributed, extended, and maintained using the free Subversion
-software (\url{http://subversion.apache.org/docs/})
-SVN allows many people to work on a large software project
+Cactus is distributed, extended, and maintained using the free git
+software (\url{https://git-scm.com/})
+git allows many people to work on a large software project
 together without getting into a tangle.
 Since Cactus thorns are distributed from several repositories on the
-main SVN site, and from a growing number of user sites, we provide a
+main git site, and from a growing number of user sites, we provide a
 \texttt{GetComponents} script on our website for checking out the flesh 
 and thorns. The script is available at
 
-\url{https://github.com/gridaphobe/CRL/raw/ET_2011_10/GetComponents}.
+\url{https://github.com/gridaphobe/CRL/raw/master/GetComponents}.
 
 The
 script takes as an argument the name of a file containing a \textit{ThornList},
@@ -50,7 +50,7 @@ The same script can be used to checkout additional thorns, or to update
 existing ones.
 
 The components that make up Cactus can also be checked out directly
-using SVN from \url{http://svn.cactuscode.org}.
+using git from \url{https://bitbucket.org/cactuscode/}.
 
 Another script, \texttt{MakeThornList}, can be used to produce a minimal
 ThornList from a given Cactus par file.  It needs a \emph{master} ThornList
@@ -69,7 +69,8 @@ following subdirectories:
 
 \begin{Lentry}
 
-\item[\texttt{.svn}] the SVN bookkeeping directory, present in every subdirectory
+\item[\texttt{repos}] created by GetComponents to hold the checked out
+repositories
 
 \item[\texttt{doc}] Cactus documentation
 
@@ -80,7 +81,7 @@ following subdirectories:
 \item [\texttt{arrangements}] contains the Cactus arrangements. The arrangements
   (the actual ``physics'') are not supplied by just checking out just Cactus.
   If the arrangements you want to use are standard Cactus arrangements, or
-  reside on our SVN repository (\texttt{svn.cactuscode.org}),
+  reside on our git repository (\texttt{https://bitbucket.org/cactuscode/}),
   they can be checked out in similar way to the flesh.
 \end{Lentry}
 
@@ -343,12 +344,12 @@ your own checkpointing and recovery methods.
 \chapter{Reporting bugs}
 \label{sec:gehe}
 
-For tracking problem reports and bugs, we use the TRAC bug tracking
-system located at \url{http://trac.einsteintoolkit.org} which allows
-easy submission and browsing of problem tickets.
+For tracking problem reports and bugs, we use the Bitbucket issue tracker at
+\url{https://bitbucket.org/einsteintoolkit/tickets/} which allows easy
+submission and browsing of problem tickets.
 
-A description of the TRAC categories we use is provided in the Appendix
-\ref{sec:Appendix.trac}.
+A description of the issue categories we use is provided in Appendix
+\ref{sec:Appendix.tickets}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
