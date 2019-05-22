@@ -135,6 +135,9 @@ fi
 dnl Check the system type
 AC_CANONICAL_HOST
 
+dnl check for AWK early since it is used to find architecture
+AC_PROG_AWK
+
 # See if there are any preferred compilers for this system
 
 CCTK_CONFIG_STAGE='preferred-compilers'
@@ -148,7 +151,7 @@ else
   # parser for the marker is done like for PBS ie parsing ends with the first
   # excution line which is a line whose first non-space character is not a #
   for arch in $srcdir/known-architectures/* ; do
-    archglob=$(awk '{sub("^[[:space:]]*","")} /^[^#]/{exit} /^#CCTK[[:space:]]+ARCHITECTURE/{arch=$3} END{print arch}' $arch)
+    archglob=$($AWK '{sub("^[[:space:]]*","")} /^[^#]/{exit} /^#CCTK[[:space:]]+ARCHITECTURE/{arch=$3} END{print arch}' $arch)
     if test -n "$archglob" ; then
       case "$host_os" in $archglob) . $arch ; found_arch=yes ; break ;; esac
     fi
