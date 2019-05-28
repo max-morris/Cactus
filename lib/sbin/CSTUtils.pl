@@ -191,7 +191,7 @@ sub WriteFile
     }
   }
 
-  if ($$rdata ne $data_in)   
+  if (not defined $data_in or $$rdata ne $data_in)
   {
 #    print "Creating new file $filename\n";
     open(OUT, ">$filename") || die("Can't open $filename\n");
