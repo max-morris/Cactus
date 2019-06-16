@@ -405,7 +405,7 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
                 std::string par = get_parfile();
                 CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
             }
-            for (int i=1; i<=gr->groupCount(); i++) {
+            for (int i=1; i<gr->groupCount(); i++) {
                 smart_ptr<Value> val_next = meval(gr->group(i),eedata);
                 // Make sure all arguments are either integer or real
                 if (val_next->type != PIR_REAL && val_next->type != PIR_INT) {
@@ -437,8 +437,8 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
                     std::string par = get_parfile();
                     CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),"internal error");
                 }
-                return val;
             }
+            return val;
         }
         // From here on only functions that take exactly one argument: the majority.
         else if (gr->groupCount() != 2) {
