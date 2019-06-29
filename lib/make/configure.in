@@ -139,19 +139,33 @@ AC_CANONICAL_HOST
 
 CCTK_CONFIG_STAGE='preferred-compilers'
 
+changequote(<, >)
 if test -r $srcdir/known-architectures/$host_os ; then
   . $srcdir/known-architectures/$host_os
 else
-  echo 'Warning: '
-  echo '  Cactus has not been previously compiled for this architecture:'
-  echo "    ($host_os)"
-  echo '  The currently known architectures can be found in'
-  echo "    $srcdir/known-architectures"
-  echo '  The configuration will try to do its best to work things out.'
-  echo '  If you create a known-architectures file for this architecture,'
-  echo "  please send it to cactusmaint@cactuscode.org and we'll include"
-  echo '  it in the next release.'
+  # parse the architecture files for the marker #CCTK ARCHITECURE and use the
+  # third word on that line as a glob to match the host os against
+  # parser for the marker is done like for PBS ie parsing ends with the first
+  # excution line which is a line whose first non-space character is not a #
+  for arch in $srcdir/known-architectures/* ; do
+    archglob=$(awk '{sub("^[[:space:]]*","")} /^[^#]/{exit} /^#CCTK[[:space:]]+ARCHITECTURE/{arch=$3} END{print arch}' $arch)
+    if test -n "$archglob" ; then
+      case "$host_os" in $archglob) . $arch ; found_arch=yes ; break ;; esac
+    fi
+  done
+  if test -z "$found_arch" ; then
+    echo 'Warning: '
+    echo '  Cactus has not been previously compiled for this architecture:'
+    echo "    ($host_os)"
+    echo '  The currently known architectures can be found in'
+    echo "    $srcdir/known-architectures"
+    echo '  The configuration will try to do its best to work things out.'
+    echo '  If you create a known-architectures file for this architecture,'
+    echo "  please send it to cactusmaint@cactuscode.org and we'll include"
+    echo '  it in the next release.'
+  fi
 fi
+changequote([, ])
 
 # Save these for future use.
 if test -n "$LIBS" ; then
