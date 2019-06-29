@@ -9,6 +9,8 @@
 #    @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/solaris,v 1.14 2007-06-23 23:14:11 schnetter Exp $
 #  @@*/
 
+#CCTK ARCHITECTURE solaris[1-9]*
+
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
   : ${CC='cc'}
