@@ -1072,11 +1072,6 @@ sub RunCactus
   {
     print LOG if ($output =~ /log/);
     print STDOUT if ($output =~ /stdout/);
-
-    if( /Cactus exiting with return code (.*)/)
-    {
-      $retcode = $1 + 0;
-    }
   }
   close LOG;
   close CMD;
@@ -1655,13 +1650,7 @@ sub CompareTestFiles
   my $abstol = $runconfig->{"ABSTOL"};
   my $reltol = $runconfig->{"RELTOL"};
 
-  if ($rundata->{"$thorn $test EXITCODE"} != 0)
-  {
-    # Cactus exited with an error code, we cannot trust any of the files
-    $rundata->{"$thorn $test NFAILWEAK"} = $testdata->{"$thorn $test NDATAFILES"};
-    $rundata->{"$thorn $test NFAILSTRONG"} = $testdata->{"$thorn $test NDATAFILES"};
-  }
-  elsif ($rundata->{"$thorn $test NTESTFILES"})
+  if ($rundata->{"$thorn $test NTESTFILES"})
   {
 
     # Compare each file in the archived test directory
