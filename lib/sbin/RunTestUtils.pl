@@ -1625,7 +1625,7 @@ sub RunTest
 
 =over 
 
-=item CompareTestFiles($test, $thorn, $runconfig, $rundata, $config_data, $testdata)
+=item CompareTestFiles($test, $thorn, $runconfig, $rundata, $config_data, $testdata, $retcode)
  Compares output from a particular testsuite.
 
 =back
@@ -1641,6 +1641,9 @@ sub CompareTestFiles
 
   my $test_dir = $testdata->{"$thorn $test TESTOUTPUTDIR"};
 
+  # record return code in database
+  $rundata->{"$thorn $test EXITCODE"} = $retcode;
+
   # Add new output files to database
   ($rundata->{"$thorn $test UNKNOWNFILES"},$rundata->{"$thorn $test TESTFILES"}) = &FindFiles("$test_dir",$testdata);
   $rundata->{"$thorn $test NUNKNOWNFILES"} = scalar(split(" ",$rundata->{"$thorn $test UNKNOWNFILES"}));
@@ -1652,7 +1655,7 @@ sub CompareTestFiles
   my $abstol = $runconfig->{"ABSTOL"};
   my $reltol = $runconfig->{"RELTOL"};
 
-  if ($retcode != 0)
+  if ($rundata->{"$thorn $test EXITCODE"} != 0)
   {
     # Cactus exited with an error code, we cannot trust any of the files
     $rundata->{"$thorn $test NFAILWEAK"} = $testdata->{"$thorn $test NDATAFILES"};
@@ -2001,7 +2004,15 @@ sub ReportOnTest
     close (LOG);
   }
 
-  if (! $rundata->{"$thorn $test NFAILWEAK"})
+  if ($rundata->{"$thorn $test EXITCODE"} != 0)
+  {
+      $summary = 'Failure: ';
+      $summary .= "Cactus exited with error code $rundata->{\"$thorn $test EXITCODE\"}.";
+      printf "\n  $summary\n";
+      $rundata->{"$thorn FAILED"} .= "$test ";
+      $rundata->{"NFAILED"}++;
+  }
+  elsif (! $rundata->{"$thorn $test NFAILWEAK"})
   {
     $summary = "Success: $testdata->{\"$thorn $test NDATAFILES\"} files identical";
     printf("\n  $summary\n");
