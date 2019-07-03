@@ -187,12 +187,10 @@ sub ThornInfo
     while(<CONFIG>)
     {
       chomp;
-      #print "$_ \n";
-      #if (m/^\s*REQUIRES\s*:((\s*[a-zA-Z]+[a-zA-Z_0-9,]*)*\s*)$/i)
-      if (m/^\s*REQUIRES\s*((\s*[a-zA-Z]+[a-zA-Z_0-9,]*)*\s*)$/i)
+      if (m/^\s*REQUIRES THORNS\s*:\s*(([a-zA-Z]+[a-zA-Z_0-9]*(\s+|$))*)/i or
+          m/^\s*REQUIRES\s+((([a-zA-Z]+[a-zA-Z_0-9]*(\([^()]*\))?)(\s+|$))*)/i)
       {
-        $requires = $1;
-        #print "requires value here is $requires\n";
+        $requires .= " $1";
       }
     }
 
@@ -242,8 +240,9 @@ sub ThornInfo
   {
     $requires =~ s:^\s*::;
     $requires =~ s:\s*$::;
-    $requires =~ s:,: :g;
     $requires =~ s:[\s\t\n]+:,:g;
+    # remove duplicates for thorns listed both in REQUIRES and REQUIRES THORNS:
+    $requires = join(",", keys %{ {map {$_, 1} split ",", $requires} });
   }
 
   return "$implementation ($inherits) [$friends] {$shares} <$requires>";
