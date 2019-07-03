@@ -110,7 +110,7 @@ sub buildthorns
         # (only the keys are needed by the calling routine)
         $info{$thorn} = 1;
       }
-      elsif ( -r "$thorn/interface.ccl" && -r "$thorn/param.ccl" && -r "$thorn/configuration.ccl" )
+      elsif ( -r "$thorn/interface.ccl" && -r "$thorn/param.ccl" )
       {
         $info{$thorn} = &ThornInfo($thorn);
       }
