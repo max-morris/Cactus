@@ -176,7 +176,6 @@ sub ThornInfo
     if(m/SHARES\s*:(.*)/i)
     {
       $shares .= " $1";
-      print "shares value here is $shares\n";
     }
   }
 
@@ -185,7 +184,6 @@ sub ThornInfo
   if (-e "$thorn/configuration.ccl") {
     open(CONFIG, "<$thorn/configuration.ccl") || die "Unable to open $thorn/configuration.ccl";
 
-    print "opened configuration.ccl for the thorn $thorn\n";
     while(<CONFIG>)
     {
       chomp;
@@ -196,11 +194,6 @@ sub ThornInfo
         $requires = $1;
         #print "requires value here is $requires\n";
       }
-
-      #if(m/REQUIRES\s*:(.*)/i)
-      #{
-      #  $requires .= " $1";
-      #}
     }
 
     close(CONFIG);
