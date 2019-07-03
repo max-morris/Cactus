@@ -110,7 +110,7 @@ sub buildthorns
         # (only the keys are needed by the calling routine)
         $info{$thorn} = 1;
       }
-      elsif ( -r "$thorn/interface.ccl" && -r "$thorn/param.ccl")
+      elsif ( -r "$thorn/interface.ccl" && -r "$thorn/param.ccl" && -r "$thorn/configuration.ccl" )
       {
         $info{$thorn} = &ThornInfo($thorn);
       }
@@ -145,6 +145,7 @@ sub ThornInfo
   my($friends) = "";
   my($inherits) = "";
   my($shares) = "";
+  my($requires) = "";
 
   open(INTERFACE, "<$thorn/interface.ccl") || die "Unable to open $thorn/interface.ccl";
 
@@ -175,10 +176,35 @@ sub ThornInfo
     if(m/SHARES\s*:(.*)/i)
     {
       $shares .= " $1";
+      print "shares value here is $shares\n";
     }
   }
 
   close(PARAM);
+
+  if (-e "$thorn/configuration.ccl") {
+    open(CONFIG, "<$thorn/configuration.ccl") || die "Unable to open $thorn/configuration.ccl";
+
+    print "opened configuration.ccl for the thorn $thorn\n";
+    while(<CONFIG>)
+    {
+      chomp;
+      #print "$_ \n";
+      #if (m/^\s*REQUIRES\s*:((\s*[a-zA-Z]+[a-zA-Z_0-9,]*)*\s*)$/i)
+      if (m/^\s*REQUIRES\s*((\s*[a-zA-Z]+[a-zA-Z_0-9,]*)*\s*)$/i)
+      {
+        $requires = $1;
+        #print "requires value here is $requires\n";
+      }
+
+      #if(m/REQUIRES\s*:(.*)/i)
+      #{
+      #  $requires .= " $1";
+      #}
+    }
+
+    close(CONFIG);
+  }
 
   if($inherits =~ /^[\s\t\n]*$/)
   {
@@ -215,8 +241,19 @@ sub ThornInfo
     $shares =~ s:,: :g;
     $shares =~ s:[\s\t\n]+:,:g;
   }
+  if($requires =~ /^[\s\t\n]*$/)
+  {
+    $requires = " ";
+  }
+  else
+  {
+    $requires =~ s:^\s*::;
+    $requires =~ s:\s*$::;
+    $requires =~ s:,: :g;
+    $requires =~ s:[\s\t\n]+:,:g;
+  }
 
-  return "$implementation ($inherits) [$friends] {$shares}";
+  return "$implementation ($inherits) [$friends] {$shares} <$requires>";
 }
 
 
