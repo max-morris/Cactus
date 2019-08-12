@@ -156,6 +156,7 @@ sub CreateVariableBindings
   foreach my $thorn (split(" ",$rhinterface_db->{"THORNS"}))
   {
     push(@data, "int CactusBindingsVariables_${thorn}_Initialise(void);");
+    push(@data, "int CactusBindingsVarIndex_${thorn}_Initialise(void);");
   }
 
   push(@data, '');
@@ -169,6 +170,13 @@ sub CreateVariableBindings
     push(@data, "  if (CCTK_IsThornActive(\"$thorn\"))");
     push(@data, '  {');
     push(@data, "    CactusBindingsVariables_${thorn}_Initialise();");
+    push(@data, '  }');
+  }
+  foreach my $thorn (split(" ",$rhinterface_db->{"THORNS"}))
+  {
+    push(@data, "  if (CCTK_IsThornActive(\"$thorn\"))");
+    push(@data, '  {');
+    push(@data, "    CactusBindingsVarIndex_${thorn}_Initialise();");
     push(@data, '  }');
   }
 
@@ -205,7 +213,11 @@ sub CreateVariableBindings
     push(@data, "#include \"$thorn/cctk_ScheduleFunctions.h\"");
     push(@data, '');
 
+    push(@data, 'struct CCTK_JOIN_TOKENS(CCTK_JOIN_TOKENS(cctki_vi_, CCTK_THORN), _struct) CCTK_JOIN_TOKENS(cctki_vi_, CCTK_THORN);');
+    push(@data, '');
+
     push(@data, "int CactusBindingsVariables_${thorn}_Initialise(void);");
+    push(@data, "int CactusBindingsVarIndex_${thorn}_Initialise(void);");
     push(@data, "static int CCTKi_BindingsFortranWrapper$thorn(void *_GH, void *fpointer);");
     push(@data, '');
     push(@data, "static int CCTKi_BindingsFortranWrapper$thorn(void *_GH, void *fpointer)");
@@ -262,6 +274,39 @@ sub CreateVariableBindings
     push(@data, '');
     push(@data, "  CCTKi_RegisterFortranWrapper(\"$thorn\", CCTKi_BindingsFortranWrapper$thorn);");
 
+    push(@data, '');
+    push(@data, '  return 0;');
+    push(@data, '}');
+    push(@data, '');
+    push(@data, "int CactusBindingsVarIndex_${thorn}_Initialise(void)");
+    push(@data, '{');
+    foreach my $block ("PUBLIC", "PROTECTED", "PRIVATE")
+    {
+      # initialize variable indices
+      my %arguments = GetThornArguments($thorn, $block, $rhinterface_db);
+
+      foreach my $varname (sort keys %arguments)
+      {
+        next if ($arguments{$varname} =~ m:STORAGESIZE|GROUPLENGTH:);
+
+        $arguments{$varname} =~ m\^([^! ]+) ?([^!]*)?!([^!]*)::([^!]*)!([^!]*)!([^!]*)\;
+
+        my $type           = $1;
+        my $implementation = "\U\"$3\"";
+        my $ntimelevels    = $5;
+        my $var            = "\"$varname$6\"";
+        my $fullvar        = "\"$3::$varname$6\"";
+
+        if(! $type =~ /^(BYTE|INT|INT1|INT2|INT4|INT8|INT16|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
+        {
+          CST_error(0,"Unknown argument type $type","",__LINE__,__FILE__);
+        }
+
+        my $varname0 = $varname;
+
+        push(@data, "  CCTK_JOIN_TOKENS(cctki_vi_, CCTK_THORN).$varname0 = CCTK_VarIndex($fullvar);");
+      }
+    }
     push(@data, '');
     push(@data, '  return 0;');
     push(@data, '}');
@@ -499,6 +544,50 @@ sub CreateFortranArgumentDeclarations
 
 
 #/*@@
+#  @routine    CreateCVarIndexStruct
+#  @date       Aug 12 2019
+#  @author     Roland Haas
+#  @desc
+#  Declare struct holding variable indices for all variables in the thorn.
+#  @enddesc
+#@@*/
+sub CreateCVarIndexStruct
+{
+  my(%arguments) = @_;
+  my(@declaration) = ();
+
+
+  push (@declaration, "extern struct CCTK_JOIN_TOKENS(CCTK_JOIN_TOKENS(cctki_vi_, CCTK_THORN), _struct) {");
+  # Now deal with the rest of the arguments
+  foreach my $varname (sort keys %arguments)
+  {
+    next if ($arguments{$varname} =~ m:STORAGESIZE|GROUPLENGTH:);
+
+    $arguments{$varname} =~ m\^([^! ]+) ?([^!]*)?!([^!]*)::([^!]*)!([^!]*)!([^!]*)\;
+
+    my $type           = $1;
+    my $implementation = "\U\"$3\"";
+    my $ntimelevels    = $5;
+    my $var            = "\"$varname$6\"";
+    my $fullvar        = "\"$3::$varname$6\"";
+
+    if(! $type =~ /^(BYTE|INT|INT1|INT2|INT4|INT8|INT16|REAL|REAL4|REAL8|REAL16|COMPLEX|COMPLEX8|COMPLEX16|COMPLEX32)$/)
+    {
+      CST_error(0,"Unknown argument type $type","",__LINE__,__FILE__);
+    }
+
+    my $varname0 = $varname;
+
+    push (@declaration, "  int $varname;");
+  }
+  push (@declaration, "} CCTK_JOIN_TOKENS(cctki_vi_, CCTK_THORN);");
+
+  return @declaration;
+
+}
+
+
+#/*@@
 #  @routine    CreateCArgumentDeclarations
 #  @date       Jun 29 1999
 #  @author     Tom Goodale, Gabrielle Allen
@@ -533,8 +622,6 @@ sub CreateCArgumentDeclarations
     }
 
     my $varname0 = $varname;
-    push(@declarations, "static int cctki_vi_$varname0 = -100;");
-    push(@declarations, "if (cctki_vi_$varname0 == -100) cctki_vi_$varname0 = CCTK_VarIndex($fullvar);");
 
     $main::arg_decls->{uc $thorn}->{lc $varname} = {
         "type" => $type,
@@ -544,7 +631,7 @@ sub CreateCArgumentDeclarations
 
     for(my $level = 0; $level < $ntimelevels; $level++)
     {
-       push(@declarations, "CCTK_DECLARE_INIT (CCTK_$type * restrict const, $varname, (CCTK_$type *) CCTKi_VarDataPtrI(cctkGH, $level, cctki_vi_$varname0));");
+       push(@declarations, "CCTK_DECLARE_INIT (CCTK_$type * restrict const, $varname, (CCTK_$type *) CCTKi_VarDataPtrI(cctkGH, $level, CCTK_JOIN_TOKENS(cctki_vi_, CCTK_THORN).$varname0));");
 
       # Modify the name for the time level
       $varname .= '_p';
@@ -811,6 +898,24 @@ sub CreateThornArgumentHeaderFile
 
   my $thorn = "\U$this_thorn";
 
+  push(@returndata, '#ifdef CCODE');
+  # helpers
+  push(@returndata, "#define CCTK_XJOIN_TOKENS(X,Y) X ## Y \n");
+  push(@returndata, "#define CCTK_JOIN_TOKENS(X,Y) CCTK_XJOIN_TOKENS(X,Y) \n");
+  # Create the C variable index struct
+  {
+    my %data;
+    foreach my $block ("PRIVATE", "PROTECTED", "PUBLIC")
+    {
+      my %blockdata = GetThornArguments($this_thorn, $block, $rhinterface_db);
+      @data{keys %blockdata} = values %blockdata;
+    }
+    my @data = CreateCVarIndexStruct(%data);
+    push(@returndata, join (" \\\n", @data));
+    push(@returndata, '');
+  }
+  push(@returndata, '#endif');
+
   # Create the basic thorn block definitions
   foreach my $block ("PRIVATE", "PROTECTED", "PUBLIC")
   {
@@ -1068,6 +1173,7 @@ sub CreateThornGroupInitialisers
                 . $rhinterface_db->{"\U$thorn GROUP $group\E DIM"} . ';');
     push(@data, '  }');
   }
+  push(@data, '');
 
   return @data;
 }
