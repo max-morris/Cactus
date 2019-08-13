@@ -1072,11 +1072,6 @@ sub RunCactus
   {
     print LOG if ($output =~ /log/);
     print STDOUT if ($output =~ /stdout/);
-
-    if( /Cactus exiting with return code (.*)/)
-    {
-      $retcode = $1 + 0;
-    }
   }
   close LOG;
   close CMD;
@@ -1615,11 +1610,9 @@ sub RunTest
   {
     print "Cactus exited with error code $retcode\n";
     print "Please check the logfile $testdata->{\"$thorn $test TESTRUNDIR\"}$sep$test.log\n\n";
-    $testdata->{"$thorn FAILED"} .= "$parfile ";
-    $testdata->{"NFAILED"}++;
   }
 
-  return $testdata;
+  return $retcode;
 }
 
 ############################################################
@@ -1627,7 +1620,7 @@ sub RunTest
 
 =over 
 
-=item CompareTestFiles($test, $thorn, $runconfig, $rundata, $config_data, $testdata)
+=item CompareTestFiles($test, $thorn, $runconfig, $rundata, $config_data, $testdata, $retcode)
  Compares output from a particular testsuite.
 
 =back
@@ -1637,9 +1630,14 @@ sub RunTest
 ############################################################
 sub CompareTestFiles
 {
-  my ($test,$thorn,$runconfig,$rundata,$config_data,$testdata) = @_;
+  my ($test,$thorn,$runconfig,$rundata,$config_data,$testdata,$retcode) = @_;
+  my ($test_dir,$file,$newfile,$oldfile);
+  my ($vmaxdiff,$tmaxdiff,$numlines);
 
   my $test_dir = $testdata->{"$thorn $test TESTOUTPUTDIR"};
+
+  # record return code in database
+  $rundata->{"$thorn $test EXITCODE"} = $retcode;
 
   # Add new output files to database
   ($rundata->{"$thorn $test UNKNOWNFILES"},$rundata->{"$thorn $test TESTFILES"}) = &FindFiles("$test_dir",$testdata);
@@ -1995,7 +1993,15 @@ sub ReportOnTest
     close (LOG);
   }
 
-  if (! $rundata->{"$thorn $test NFAILWEAK"})
+  if ($rundata->{"$thorn $test EXITCODE"} != 0)
+  {
+      $summary = 'Failure: ';
+      $summary .= "Cactus exited with error code $rundata->{\"$thorn $test EXITCODE\"}.";
+      printf "\n  $summary\n";
+      $rundata->{"$thorn FAILED"} .= "$test ";
+      $rundata->{"NFAILED"}++;
+  }
+  elsif (! $rundata->{"$thorn $test NFAILWEAK"})
   {
     $summary = "Success: $testdata->{\"$thorn $test NDATAFILES\"} files identical";
     printf("\n  $summary\n");

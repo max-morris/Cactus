@@ -135,23 +135,40 @@ fi
 dnl Check the system type
 AC_CANONICAL_HOST
 
+dnl check for AWK early since it is used to find architecture
+AC_PROG_AWK
+
 # See if there are any preferred compilers for this system
 
 CCTK_CONFIG_STAGE='preferred-compilers'
 
+changequote(<, >)
 if test -r $srcdir/known-architectures/$host_os ; then
   . $srcdir/known-architectures/$host_os
 else
-  echo 'Warning: '
-  echo '  Cactus has not been previously compiled for this architecture:'
-  echo "    ($host_os)"
-  echo '  The currently known architectures can be found in'
-  echo "    $srcdir/known-architectures"
-  echo '  The configuration will try to do its best to work things out.'
-  echo '  If you create a known-architectures file for this architecture,'
-  echo "  please send it to cactusmaint@cactuscode.org and we'll include"
-  echo '  it in the next release.'
+  # parse the architecture files for the marker #CCTK ARCHITECURE and use the
+  # third word on that line as a glob to match the host os against
+  # parser for the marker is done like for PBS ie parsing ends with the first
+  # excution line which is a line whose first non-space character is not a #
+  for arch in $srcdir/known-architectures/* ; do
+    archglob=$($AWK '{sub("^[[:space:]]*","")} /^[^#]/{exit} /^#CCTK[[:space:]]+ARCHITECTURE/{arch=$3} END{print arch}' $arch)
+    if test -n "$archglob" ; then
+      case "$host_os" in $archglob) . $arch ; found_arch=yes ; break ;; esac
+    fi
+  done
+  if test -z "$found_arch" ; then
+    echo 'Warning: '
+    echo '  Cactus has not been previously compiled for this architecture:'
+    echo "    ($host_os)"
+    echo '  The currently known architectures can be found in'
+    echo "    $srcdir/known-architectures"
+    echo '  The configuration will try to do its best to work things out.'
+    echo '  If you create a known-architectures file for this architecture,'
+    echo "  please send it to cactusmaint@cactuscode.org and we'll include"
+    echo '  it in the next release.'
+  fi
 fi
+changequote([, ])
 
 # Save these for future use.
 if test -n "$LIBS" ; then
@@ -169,13 +186,15 @@ fi
 CCTK_PROG_CC_WORKS
 AC_PROG_CC_GNU
 
-if test "x$CXX" != 'xnone' ; then
-  if test -z "$CXX" ; then
-    AC_CHECK_PROGS(CXX, g++-mp-4.4 g++-mp-4.2 g++-mp-4.2 c++ g++ gcc CC cxx cc++ cl xlC)
-  fi
+if test -z "$CXX" ; then
+  AC_CHECK_PROGS(CXX, g++-mp-4.4 g++-mp-4.2 g++-mp-4.2 c++ g++ gcc CC cxx cc++ cl xlC)
+fi
 
-  CCTK_PROG_CXX_WORKS
-  AC_PROG_CXX_GNU
+CCTK_PROG_CXX_WORKS
+AC_PROG_CXX_GNU
+
+if test -z "$F90" ; then
+  AC_CHECK_PROGS(F90, f90 pgf90 xlf90 ifort gfortran-mp-4.4 gfortran-mp-4.3 gfortran-mp-4.2 gfortran)
 fi
 
 if test -z "$CUCC" ; then
@@ -222,10 +241,6 @@ if test -z "$GIT" ; then
   AC_CHECK_PROGS(GIT, git)
 fi
 
-if test -z "$F90" ; then
-  AC_CHECK_PROGS(F90, f90 pgf90 xlf90 ifort gfortran-mp-4.4 gfortran-mp-4.3 gfortran-mp-4.2 gfortran)
-fi
-
 if test -z "$AR" ; then
   AC_CHECK_PROGS(AR, ar)
 fi
@@ -243,11 +258,7 @@ fi
 AC_SUBST(LD)
 
 if test -z "$LD" ; then
-  if test "x$CXX" != 'xnone' ; then
-    LD=$CXX
-  else
-    LD=$CC
-  fi
+  LD=$CXX
 fi
 
 
@@ -319,7 +330,7 @@ AC_SUBST(CUCC_WARN_FLAGS)
 : ${CUCC_WARN_FLAGS=''}
 
 AC_SUBST(F90_WARN_FLAGS)
-if test "$F90" = 'gfortran' ; then
+if test "`$F90 --version 2>&1 | grep 'GNU Fortran'`" ; then
   : ${F90_WARN_FLAGS='-Wall -Wshadow -Wsurprising'}
 else
   : ${F90_WARN_FLAGS=''}
@@ -438,17 +449,6 @@ AC_SUBST(F77_OPENMP_FLAGS)
 
 ##########################################################################
 
-# Set default Fortran compiler
-AC_SUBST(F90)
-F90_NONE="$CCTK_HOME/lib/sbin/no-fortran-compiler"
-if test -z "$F90" || test "x$F90" = xnone ; then
-  F90="$F90_NONE"
-fi
-
-AC_SUBST(F77)
-F77="$F90"
-
-
 # The known architecture stuff has probably set the LIBS variable
 # So remember what it is and set it to blank to prevent any problems with the
 # rest of the configure stuff.
@@ -472,6 +472,22 @@ AC_SUBST(RUNDIR_PREFIX)
 AC_SUBST(LIBLINK_PREFIX)
 : ${LIBLINK_PREFIX='-l'}
 : ${LIBLINK_SUFFIX=''}
+
+# either give up on a Fortran compiler or require that one found actually works
+# this needs to be after known_architectures b/c those files only check for
+# F90=none and not the full path of the tool
+AC_SUBST(F90)
+AC_SUBST(F77)
+
+F90_NONE="$CCTK_HOME/lib/sbin/no-fortran-compiler"
+if test -z "$F90" || test "x$F90" = xnone ; then
+  F90="$F90_NONE"
+  F77="$F90_NONE"
+else
+  F77="$F90"
+  # autoconf2.13 only knows about F77 so we cannot check F90
+  CCTK_PROG_F77_WORKS
+fi
 
 # Checks for libraries.
 
@@ -1343,13 +1359,50 @@ AC_SUBST(LIBNAME_SUFFIX)
 
 # How to link in all object files from an archive
 AC_SUBST(BEGIN_WHOLE_ARCHIVE_FLAGS)
-: ${BEGIN_WHOLE_ARCHIVE_FLAGS=''}
 AC_SUBST(END_WHOLE_ARCHIVE_FLAGS)
-: ${END_WHOLE_ARCHIVE_FLAGS=''}
+if test  -z "$BEGIN_WHOLE_ARCHIVE_FLAGS" &&
+   test -z "$END_WHOLE_ARCHIVE_FLAGS" ; then
+  AC_MSG_CHECKING([whether linker supports --whole-archive])
+  AC_CACHE_VAL(cctk_cv_have_whole_archive,
+  [ac_save_LDFLAGS="$LDFLAGS"
+  LDFLAGS="-Wl,--whole-archive -Wl,--no-whole-archive"
+  AC_TRY_LINK([],
+  [return 0], eval "cctk_cv_have_whole_archive=yes",
+  eval "cctk_cv_have_whole_archive=no")
+  LDFLAGS=$ac_save_LDFLAGS
+  ])
+  if test "$cctk_cv_have_whole_archive" = 'yes'; then
+    BEGIN_WHOLE_ARCHIVE_FLAGS='-Wl,--whole-archive'
+    END_WHOLE_ARCHIVE_FLAGS='-Wl,--no-whole-archive'
+    AC_MSG_RESULT(yes)
+  else
+    AC_MSG_RESULT(no)
+  fi
+fi
+
+
 
 # How to link the cactus libraries
 AC_SUBST(CACTUSLIBLINKLINE)
-: ${CACTUSLIBLINKLINE='-L$(CCTK_LIBDIR) $(addprefix -l, $(ALLCACTUSLIBS))'}
+if test -z "$CACTUSLIBLINKLINE" ; then
+  AC_MSG_CHECKING([whether linker supports -filelist])
+  AC_CACHE_VAL(cctk_cv_have_filelist,
+  [ac_save_LDFLAGS="$LDFLAGS"
+  LDFLAGS="-filelist /dev/null,/"
+  AC_TRY_LINK([],
+  [return 0], eval "cctk_cv_have_filelist=yes",
+  eval "cctk_cv_have_filelist=no")
+  LDFLAGS=$ac_save_LDFLAGS
+  ])
+  if test "$cctk_cv_have_filelist" = 'yes'; then
+    CACTUSLIBLINKLINE='-L$(CCTK_LIBDIR) -filelist $(CCTK_LIBDIR)/LINKLIST,$(TOP)/build'
+    AC_MSG_RESULT(yes)
+  else
+    CACTUSLIBLINKLINE='-L$(CCTK_LIBDIR) $(addprefix -l, $(ALLCACTUSLIBS))'
+    AC_MSG_RESULT(no)
+  fi
+fi
+
 
 # How to generate dependency info
 AC_SUBST(C_DEPEND)

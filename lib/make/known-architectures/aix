@@ -9,6 +9,8 @@
 #    @version   $Header$
 #  @@*/
 
+#CCTK ARCHITECTURE aix[1-9]*
+
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
 
   # default to building 64-bit executables using the native AIX compilers

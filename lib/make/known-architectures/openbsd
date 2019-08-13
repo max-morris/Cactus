@@ -9,6 +9,8 @@
 #   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/openbsd,v 1.5 2006-01-31 17:09:37 jthorn Exp $
 # @@*/
 
+#CCTK ARCHITECTURE openbsd[1-9]*
+
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
 :

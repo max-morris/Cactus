@@ -9,6 +9,8 @@
 #   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/darwin,v 1.21 2010-03-30 16:16:50 schnetter Exp $
 # @@*/
 
+#CCTK ARCHITECTURE darwin[1-9]*
+
 if test "$CCTK_CONFIG_STAGE" = 'preferred-compilers' ; then
 
   # Try to work out which FPP we need to use 

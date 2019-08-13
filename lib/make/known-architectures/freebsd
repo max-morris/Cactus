@@ -9,6 +9,8 @@
 #   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/freebsd,v 1.1 2004-01-20 13:08:10 tradke Exp $
 # @@*/
 
+#CCTK ARCHITECTURE freebsd[1-9]*
+
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
 :

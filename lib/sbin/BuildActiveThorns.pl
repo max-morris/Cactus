@@ -24,7 +24,7 @@ $package_dir = shift(@ARGV);
 
 %info = &buildthorns($package_dir,"thorns");
 
-printf("# arrangement/thorn %-14s # implements (inherits) [friend] {shares}\n#\n");
+printf("# arrangement/thorn %-14s # implements (inherits) [friend] {shares} <requires>\n#\n");
 
 foreach $thorn (sort keys %info)
 {

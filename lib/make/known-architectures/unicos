@@ -9,6 +9,8 @@
 #   @version $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/unicos,v 1.15 2003-05-25 09:31:04 allen Exp $
 # @@*/
 
+#CCTK ARCHITECTURE unicosmk[1-9]*
+
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
 :

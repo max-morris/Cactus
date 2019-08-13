@@ -9,6 +9,8 @@
 #    @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/make/known-architectures/osf,v 1.14 2004-09-22 15:15:47 tradke Exp $
 #  @@*/
 
+#CCTK ARCHITECTURE osf[1-9]*
+
 if test "$CCTK_CONFIG_STAGE" = "preferred-compilers" ; then
 
   if test -z "$CC"; then

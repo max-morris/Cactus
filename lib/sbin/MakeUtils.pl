@@ -110,7 +110,7 @@ sub buildthorns
         # (only the keys are needed by the calling routine)
         $info{$thorn} = 1;
       }
-      elsif ( -r "$thorn/interface.ccl" && -r "$thorn/param.ccl")
+      elsif ( -r "$thorn/interface.ccl" && -r "$thorn/param.ccl" )
       {
         $info{$thorn} = &ThornInfo($thorn);
       }
@@ -145,6 +145,7 @@ sub ThornInfo
   my($friends) = "";
   my($inherits) = "";
   my($shares) = "";
+  my($requires) = "";
 
   open(INTERFACE, "<$thorn/interface.ccl") || die "Unable to open $thorn/interface.ccl";
 
@@ -179,6 +180,22 @@ sub ThornInfo
   }
 
   close(PARAM);
+
+  if (-e "$thorn/configuration.ccl") {
+    open(CONFIG, "<$thorn/configuration.ccl") || die "Unable to open $thorn/configuration.ccl";
+
+    while(<CONFIG>)
+    {
+      chomp;
+      if (m/^\s*REQUIRES THORNS\s*:\s*(([a-zA-Z]+[a-zA-Z_0-9]*(\s+|$))*)/i or
+          m/^\s*REQUIRES\s+((([a-zA-Z]+[a-zA-Z_0-9]*(\([^()]*\))?)(\s+|$))*)/i)
+      {
+        $requires .= " $1";
+      }
+    }
+
+    close(CONFIG);
+  }
 
   if($inherits =~ /^[\s\t\n]*$/)
   {
@@ -215,8 +232,20 @@ sub ThornInfo
     $shares =~ s:,: :g;
     $shares =~ s:[\s\t\n]+:,:g;
   }
+  if($requires =~ /^[\s\t\n]*$/)
+  {
+    $requires = " ";
+  }
+  else
+  {
+    $requires =~ s:^\s*::;
+    $requires =~ s:\s*$::;
+    $requires =~ s:[\s\t\n]+:,:g;
+    # remove duplicates for thorns listed both in REQUIRES and REQUIRES THORNS:
+    $requires = join(",", keys %{ {map {$_, 1} split ",", $requires} });
+  }
 
-  return "$implementation ($inherits) [$friends] {$shares}";
+  return "$implementation ($inherits) [$friends] {$shares} <$requires>";
 }
 
 
