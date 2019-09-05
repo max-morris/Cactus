@@ -1685,8 +1685,17 @@ sub CompareTestFiles
 
       if ( -s $newfile && -s $oldfile)
       {
-        open (INORIG, "<$oldfile") || print "Warning: Archive file $oldfile not found";
-        open (INNEW,  "<$newfile") || print "Warning: Test file $newfile not found";
+        my $olddir = $oldfile;
+        $olddir =~ s{(.*)(/.*)}{$1};
+        my $postproc_file = "$olddir/postproc";
+        # if a postproc file is present in the test directory, use it to read the file
+        if(-x $postproc_file and -r $oldfile and -r $newfile) {
+            open (INORIG, "$postproc_file $oldfile |");
+            open (INNEW, "$postproc_file $newfile |");
+        } else {
+            open (INORIG, "<$oldfile") || print "Warning: Archive file $oldfile not found";
+            open (INNEW,  "<$newfile") || print "Warning: Test file $newfile not found";
+        }
 
         while (my $oline = <INORIG>)
         {
@@ -1795,6 +1804,10 @@ sub CompareTestFiles
           $rundata->{"$thorn $test $file NFAILSTRONG"}++;
         }
 
+      }
+      elsif ($oldfile =~ m{/postproc$})
+      {
+        # Allow postproc in archive dir without reporting an error
       }
       elsif (!-e $newfile && -s $oldfile)
       {
@@ -1962,6 +1975,8 @@ sub ReportOnTest
     foreach $file (split (" ",$testdata->{"$thorn $test DATAFILES"}))
     {
       $myfile = quotemeta($file);
+      # allow postproc in archive dir
+      next if($myfile eq "postproc");
       if ($rundata->{"$thorn $test TESTFILES"} !~ m:\b$myfile\b:)
       {
         push (@log, "   $file: not created in test");
