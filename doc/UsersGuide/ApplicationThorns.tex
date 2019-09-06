@@ -3503,11 +3503,13 @@ line in a config file is a backslash `\texttt{$\backslash$}', the
 following line is treated as a continuation of the current line.
 Options include test specific absolute and relative tolerances, thorn
 specific absolute and relative tolerances, the number of processors required
-to run, and file extensions. The configuration file has the form:
+to run, possible postprocessing required to correctly compare numbers,
+and file extensions. The configuration file has the form:
 
 \begin{alltt}
 ABSTOL  <\var{thorn_absolute_tolerance}> [\var{filename_pattern}]
 RELTOL  <\var{thorn_relative_tolerance}> [\var{filename_pattern}]
+POSTPROC <\var{util_program_name}> [\var{filename_pattern}]
 NPROCS  <\var{thorn_nprocs}>
 EXTENSIONS  <\var{extension_1} \var{extension_2} \var{extension_3}>
 
@@ -3515,6 +3517,7 @@ TEST <\var{test_example}>
 \{
   ABSTOL <\var{absolute_tol}> [\var{filename_pattern}]
   RELTOL <\var{relative_tol}> [\var{filename_pattern}]
+  POSTPROC <\var{util_program_name}> [\var{filename_pattern}]
   NPROCS <\var{nprocs}>
 \}
 \end{alltt}
@@ -3542,6 +3545,7 @@ RELTOL 1e-12 gxx
 More specific tolerances can be specified for all the tests of a thorn
 or just within a test's block. It is an error if a regular expression
 matches more than one filename.
+
 %%%
 The \texttt{NPROCS} option specifies the number of processors required to
 run a given testsuite \var{test\_example} or all testsuites of a thorn
@@ -3571,6 +3575,22 @@ RELTOL  \var{1e-12}
 would use an absolute tolerance of $10^{-5}$ and a relative tolerance of
 $10^{-12}$ when running \verb|test_rad| and an absolute tolerance of $10^{-8}$
 and a relative tolerance of $10^{-12}$ when running all other tests.
+
+In addition, postprocessing can be specified. By means of this mechanism,
+hdf5 files can be converted into text, or ascii files whose contents are re-ordered
+by running on multiple processes can be compared in a consistent manner.
+
+For example:
+
+\begin{alltt}
+TEST \var{sol-wave-test}
+\{
+  POSTPROC \var{readhdf5} \var{h5\$}
+\}
+\end{alltt}
+
+In the above example, files ending in ``h5'' are read using the readhdf5
+program and the output is streamed as text through the testing mechanism.
 
 For details on running the test suites, see Section~\ref{sec:testing}.
 

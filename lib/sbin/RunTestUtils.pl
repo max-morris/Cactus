@@ -199,7 +199,7 @@ sub ParseParFile
 
 =item ParseTestConfigs($testdata, $config_data, $rundata)
  Parses the test.ccl files for absolute
- and relative tolerance and nprocs used. 
+ and relative tolerance, for postprocessers, and nprocs used. 
 
 =back
 
@@ -210,7 +210,7 @@ sub ParseTestConfigs
 {
   my($testdata,$config_data,$rundata) = @_;
   my($line_number, $line);
-  my($test, $ABSTOL, $RELTOL);
+  my($test, $ABSTOL, $RELTOL, $POSTPROC);
 
   my $arrangement_dir = "$config_data->{'CCTK_DIR'}${sep}arrangements${sep}";
   foreach $thorn (split(" ",$testdata->{"THORNS"}))
@@ -247,6 +247,17 @@ sub ParseTestConfigs
           $rundata->{"$thorn ABSTOL"}{$varRegex}=$newtol;
           $ABSTOL=$$rundata{"$thorn ABSTOL"};
         }
+        elsif ($line =~ m/^\s*POSTPROC\s*([\w\.:-]+)\s*(\S*)\s*$/i)
+        {
+          my $procfile=$1;
+          my $varRegex=$2;
+          if ( $varRegex =~ m/^$/i ) {
+             # No regular expression given, setting regex to ".*"
+             $varRegex=".*";
+          }
+          $rundata->{"$thorn POSTPROC"}{$varRegex} = $procfile;
+          $POSTPROC=$$rundata{"$thorn POSTPROC"};
+        }
         elsif ($line =~ m/^\s*RELTOL\s*(\S*)\s*(\S*)\s*$/i)
         {
           my $newtol=$1;
@@ -268,11 +279,12 @@ sub ParseTestConfigs
         }
         elsif ($line =~ m/^\s*TEST\s*(.*)/i)
         {
-          ($test, $ABSTOL, $RELTOL, $NPROCS, $line_number) =
+          ($test, $ABSTOL, $RELTOL, $POSTPROC, $NPROCS, $line_number) =
             &ParseTestBlock($line_number, \@config);
           $rundata->{"$thorn $test ABSTOL"} = $ABSTOL;
           $rundata->{"$thorn $test RELTOL"} = $RELTOL;
           $rundata->{"$thorn $test NPROCS"} = $NPROCS;
+          $rundata->{"$thorn $test POSTPROC"} = $POSTPROC;
         }
         else
         {
@@ -291,7 +303,7 @@ sub ParseTestConfigs
 =over 
 
 =item ParseTestBlock($line_number, $data)
- This subroutine parses for ABSTOL, RELTOL, and NPROCS.
+ This subroutine parses for ABSTOL, RELTOL, POSTPROC, and NPROCS.
 
 =back
 
@@ -302,7 +314,7 @@ sub ParseTestBlock
 {
   my ($line_number, $data) = @_;
   my ($Test, $NPROCS) = ();
-  my (%ABSTOL, %RELTOL) = (); 
+  my (%ABSTOL, %RELTOL, %POSTPROC) = (); 
 
   $data->[$line_number] =~ m/^\s*PROVIDES\s*(.*)/i;
 
@@ -341,6 +353,17 @@ sub ParseTestBlock
         $RELTOL{$varRegex} = $newtol;
         next;
       }
+      elsif ($data->[$line_number] =~ m/^\s*POSTPROC\s*([\w\.:-]+)\s*(\S*)\s*$/i)
+      {
+        my $postproc=$1;
+        my $varRegex=$2;
+        if ( $varRegex =~ m/^$/i ) {
+           # No regular expression given, setting regex to ".*"
+           $varRegex=".*";
+        }
+        $POSTPROC{$varRegex} = $postproc;
+        next;
+      }
       elsif ($data->[$line_number] =~ m/^\s*NPROCS\s+(\d+)\s*$/i)
       {
         $NPROCS = $1;
@@ -356,7 +379,7 @@ sub ParseTestBlock
       }
     }
   }
-  return ($Test, \%ABSTOL, \%RELTOL, $NPROCS, $line_number);
+  return ($Test, \%ABSTOL, \%RELTOL, \%POSTPROC, $NPROCS, $line_number);
 }
 
 ############################################################
@@ -1685,11 +1708,47 @@ sub CompareTestFiles
 
       if ( -s $newfile && -s $oldfile)
       {
-        my $olddir = $oldfile;
-        $olddir =~ s{(.*)(/.*)}{$1};
-        my $postproc_file = "$olddir/postproc";
-        # if a postproc file is present in the test directory, use it to read the file
-        if(-x $postproc_file and -r $oldfile and -r $newfile) {
+        # Compute the thorn directory relative
+        # to the parameter file.
+        my $thorndir = $oldfile;
+        for(my $i=0;$i<3;$i++) {
+            $thorndir =~ s{(.*)(/.*)}{$1};
+        }
+
+        my $postproc_cfg = $runconfig->{"$thorn $test POSTPROC"};
+        my $prog = undef;
+        if(defined($postproc_cfg)) {
+            for my $pat (keys %$postproc_cfg) {
+                if($newfile =~ /$pat/) {
+                    $prog = $postproc_cfg->{$pat}; 
+                    break;
+                }
+            }
+        }
+        my $postproc_file = "$thorndir/util/$prog";
+        # if the postprocessing file exsists, use it to read the file
+        if(defined($prog)) {
+            my $fail = 0;
+            unless(-x $postproc_file) {
+                print "ERROR: The postproc file '$postproc_file' does not exist or is not executable.\n";
+                $fail++;
+            }
+            unless(-r $oldfile) {
+                print "ERROR: The file: '$oldfile' does not exist or is not readable.\n";
+                $fail++;
+            }
+            unless(-r $oldfile) {
+                print "ERROR: The file: '$newfile' does not exist or is not readable.\n";
+                $fail++;
+            }
+            if($fail) {
+                # All strong failures require weak failures to be set,
+                # or they have no effect on the success of
+                # the test.
+                $rundata->{"$thorn $test NFAILSTRONG"} += $fail;
+                $rundata->{"$thorn $test NFAILWEAK"} += $fail;
+                next;
+            }
             open (INORIG, "$postproc_file $oldfile |");
             open (INNEW, "$postproc_file $newfile |");
         } else {
@@ -1804,10 +1863,6 @@ sub CompareTestFiles
           $rundata->{"$thorn $test $file NFAILSTRONG"}++;
         }
 
-      }
-      elsif ($oldfile =~ m{/postproc$})
-      {
-        # Allow postproc in archive dir without reporting an error
       }
       elsif (!-e $newfile && -s $oldfile)
       {
@@ -1975,8 +2030,6 @@ sub ReportOnTest
     foreach $file (split (" ",$testdata->{"$thorn $test DATAFILES"}))
     {
       $myfile = quotemeta($file);
-      # allow postproc in archive dir
-      next if($myfile eq "postproc");
       if ($rundata->{"$thorn $test TESTFILES"} !~ m:\b$myfile\b:)
       {
         push (@log, "   $file: not created in test");
