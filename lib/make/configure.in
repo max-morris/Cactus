@@ -499,7 +499,16 @@ if test -z "$F90" || test "x$F90" = xnone ; then
 else
   F77="$F90"
   # autoconf2.13 only knows about F77 so we cannot check F90
+  if ! test "x${FFLAGS+y}" = x ; then
+    ac_save_FFLAGS="$FFLAGS"
+  fi
+  FFLAGS="$F90FLAGS"
   CCTK_PROG_F77_WORKS
+  if ! test "x${ac_save_FFLAGS+y}" = x ; then
+    FFLAGS="$ac_save_FFLAGS"
+  else
+    unset FFLAGS
+  fi
 fi
 
 # Checks for libraries.
