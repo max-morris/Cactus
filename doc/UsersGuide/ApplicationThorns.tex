@@ -3580,6 +3580,15 @@ In addition, postprocessing can be specified. By means of this mechanism,
 hdf5 files can be converted into text, or ascii files whose contents are re-ordered
 by running on multiple processes can be compared in a consistent manner.
 
+The postproc directive is followed by one or two parameters. The first is the
+name of the postproc command, which should be an executable linux program stored
+in the thorn's util directory. The second is a regular expression which matches
+the files to be processed.
+
+The program should read a file and produce columns of ascii formatted floating
+point numbers. The test system will run the postprocesser on both the files
+in the repo and the newly generated files and compare the output.
+
 For example:
 
 \begin{alltt}
