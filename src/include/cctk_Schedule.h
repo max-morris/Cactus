@@ -22,7 +22,7 @@ typedef struct
 {
   int var_id;
   int time_level;
-  int where_wr, where_rd;
+  int where_wr, where_rd, where_inv;
 } RDWR_entry;
 
 typedef struct
@@ -66,6 +66,8 @@ typedef struct
   const char **WritesClauses;
   int n_ReadsClauses;
   const char **ReadsClauses;
+  int n_InvalidatesClauses;
+  const char **InvalidatesClauses;
 
   int n_RDWR;
   RDWR_entry *RDWR;

@@ -497,6 +497,7 @@ sub ScheduleBlock
   my(@after_list);
   my(@writes_list);
   my(@reads_list);
+  my(@invalidates_list);
   my(@while_list);
   my(@if_list);
 
@@ -545,6 +546,10 @@ sub ScheduleBlock
 
   @reads_list = &ScheduleSelectRoutines($thorn, $implementation,
                                         $rhschedule_db->{"\U$thorn\E BLOCK_$block READS"},
+                                        $rhschedule_db);
+
+  @invalidates_list = &ScheduleSelectRoutines($thorn, $implementation,
+                                        $rhschedule_db->{"\U$thorn\E BLOCK_$block INVALIDATES"},
                                         $rhschedule_db);
 
   @while_list = &ScheduleSelectVars($thorn, $implementation,
@@ -657,6 +662,7 @@ sub ScheduleBlock
   $buffer .= $indent . scalar(@$sync_groups)  . ", /* Number of SYNC     groups    */\n";
   $buffer .= $indent . scalar(@writes_list)   . ", /* Number of WRITES clauses     */\n";
   $buffer .= $indent . scalar(@reads_list)    . ", /* Number of READS clauses      */\n";
+  $buffer .= $indent . scalar(@invalidates_list) . ", /* Number of INVALIDATES clauses */\n";
   $buffer .= $indent . scalar(@options)       . ", /* Number of Options            */\n";
   $buffer .= $indent . scalar(@before_list)   . ", /* Number of BEFORE   routines  */\n";
   $buffer .= $indent . scalar(@after_list)    . ", /* Number of AFTER    routines  */\n";
@@ -664,10 +670,16 @@ sub ScheduleBlock
   $buffer .= $indent . scalar(@if_list)       . ", /* Number of IF       variables */\n";
   $buffer .= $indent . "cctkschedulei_tlevelarray  /* Array of timelevel data for storage groups */";
 
-  foreach $item (@$mem_groups, @$comm_groups, @$trigger_groups, @$sync_groups,
-                 @writes_list, @reads_list, @options)
+  foreach $item ("/*==mem==*/", @$mem_groups, "/*==comm==*/", @$comm_groups,
+                 "/*==trigger==*/", @$trigger_groups, "/*==sync==*/", @$sync_groups,
+                 "/*==writes==*/", @writes_list, "/*==reads==*/", @reads_list,
+                 "/*==inval==*/",@invalidates_list, "/*==opts==*/", @options)
   {
-    $buffer .= ",\n$indent\"$item\"";
+    if($item =~ m{^\s*/\*.*\*/\s*$}) {
+        $buffer .= "\n$indent$item";
+    } else {
+        $buffer .= ",\n$indent\"$item\"";
+    }
   }
 
   $buffer .= ",\n$indent\"$tags\"";
