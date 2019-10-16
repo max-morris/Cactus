@@ -2,6 +2,7 @@
 #include <cctk_Schedule.h>
 #include <set>
 #include <sstream>
+#include <iostream>
 
 namespace cctki {
 
@@ -70,7 +71,6 @@ void parse(const char *str,bool is_write,std::set<RDWR_entry,EntryComp>& s) {
     int tl=0;
     unsigned int i=0;
     for(;i<fstr.size();++i) {
-        if(fstr[i] == ':')
           break;
         imp += fstr[i];
     }
@@ -103,7 +103,7 @@ void parse(const char *str,bool is_write,std::set<RDWR_entry,EntryComp>& s) {
         wh = WH_BOUNDARY;
     else {
         std::ostringstream msg;
-        msg << "Invalid where specification '" << where << "'" << std::endl;
+        msg << "Invalid where specification '" << where << "' while parsing schedule for '" << func->thorn << "::" << func->routine << "'" << std::endl;
         CCTK_Error(-1,0,imp.c_str(),msg.str().c_str());
     }
     var.resize(n+2);
