@@ -141,15 +141,21 @@ sub qname
   my $vname = $qname->group(0,"vname");
   my $out = "";
   $main::thorn = $vname->group(0,"name")->substring();
-  $out = $main::thorn . "::" . $vname->group(1,"name")->substring();
+  if($vname->groupCount() > 1) {
+    $out = $main::thorn . "::" . $vname->group(1,"name")->substring();
+  }
   my $iter = 1;
   if($qname->has(1,"region")) {
     $main::region = $qname->group(1,"region")->substring();
     $iter++;
   }
   $out .= "(" . $main::region . ")";
-  while($qname->has($iter,"name")) {
-    $out .="," . $main::thorn . "::" . $qname->group($iter,"name")->substring();
+  while($qname->has($iter,"qrname")) {
+    my $qrname = $qname->has($iter,"qrname");
+    $out .="," . $main::thorn . "::" . $qrname->group(0,"name")->substring();
+    if($qrname->has(1,"region")) {
+        $main::region = $qrname->group(1,"region")->substring();
+    }
     $out .= "(" . $main::region . ")";
     $iter++;
   }

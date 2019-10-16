@@ -84,6 +84,7 @@ sub do_interfaces
     $hash->{$gname}->{vector} = $vecval;
     $hash->{$gname}->{gtype} = uc $gtype;
     $hash->{$gname}->{array_dim} = $dim;
+    $hash->{group_list}->{$gname}=1;
     my $Detect = 0;
     for my $ch (@{$gr->{children}}) {
       # Looping over variables in the group
@@ -132,6 +133,8 @@ sub do_schedules
   my $reads_writes = shift;
   my $lang = shift;
   my $ccl_file = shift;
+  $ccl_file =~ m{([^/]+)/schedule.ccl$};
+  my $parsing_thorn = $1;
   if($gr->is("schedule")) {
     next if($gr->has(0,"group")); #group scheduling has no rd/wr clauses
     my $nm;
@@ -154,17 +157,31 @@ sub do_schedules
       if($ch->is("reads") or $ch->is("writes")) {
         my $is_writes = $ch->is("writes");
         my $qname = $ch->has(0,"qname");
-        my $thorn = uc $qname->has(0,"vname")->has(0,"name")->substring();
-        my $var = $qname->has(0,"vname")->has(1,"name")->substring();
-        $reads_writes->{$nm}->{$thorn}->{$var} += $is_writes;
+        my $vname = $qname->has(0,"vname");
+        my $thorn_or_var = $vname->has(0,"name")->substring();
+        my $thorn = undef;
+        my $var = undef;
+        if($vname->has(1,"name")) {
+            $thorn = uc $thorn_or_var;
+            $var = $vname->has(1,"name")->substring();
+        } else {
+            $thorn = uc $parsing_thorn;
+            $var = $thorn_or_var;
+        }
+        $reads_writes->{$nm}->{$thorn}->{$var}->{rdwr} += $is_writes;
+        $reads_writes->{$nm}->{$thorn}->{$var}->{line} = $vname->linenum();
         my $i = 1;
         $i++ if($qname->has($i,"region"));
-        while($qname->has($i,"name")) {
-          $var = $qname->has($i,"name")->substring();
-          $reads_writes->{$nm}->{$thorn}->{$var} += $is_writes;
+        while($qname->has($i,"qrname")) {
+          my $qrname = $qname->group($i);
+          $var = $qrname->has(0,"name")->substring();
+          $reads_writes->{$nm}->{$thorn}->{$var}->{rdwr} += $is_writes;
+          $reads_writes->{$nm}->{$thorn}->{$var}->{line} = $vname->linenum();
           $i++;
         }
-        delete $reads_writes->{$nm}->{$nm}->{$nm};
+        if(defined($reads_writes->{$nm}->{$nm})) {
+            delete $reads_writes->{$nm}->{$nm}->{$nm};
+        }
       }
     }
     if(!defined($reads_writes->{$nm})) {
@@ -174,7 +191,8 @@ sub do_schedules
       # multiple times, this hash key is deleted if later
       # scheduling adds variables to the list of read/write
       # declarations.
-      $reads_writes->{$nm}->{$nm}->{$nm} = "empty";
+      $reads_writes->{$nm}->{$nm}->{$nm}->{rdwr} = "empty";
+      $reads_writes->{$nm}->{$nm}->{$nm}->{line} = $gr->linenum();
     }
   } else {
     for my $ch (@{$gr->{children}}) {
@@ -197,7 +215,7 @@ sub create_macros
   for my $namekey (sort keys %{$reads_writes}) {
     my $temp_data = "";
     my $nm = substr($namekey,0,-2); # removing language suffix from function name
-    if($reads_writes->{$namekey}->{$namekey}->{$namekey} eq "empty") {
+    if(defined($reads_writes->{$namekey}->{$namekey}->{$namekey})) {
       # This generates macros for functions with no read/write declarations.
       if ($lang->{$namekey} eq "C") {
         $$data .= "#ifdef CCODE \n";
@@ -232,9 +250,9 @@ sub create_macros
         $$data .= "  CCTK_Checked_called(); \\\n";
         for my $th (sort keys %{$reads_writes->{$namekey}}) {
           for my $full_var (sort keys %{$reads_writes->{$namekey}->{$th}}) {
+            my $errline = $reads_writes->{$namekey}->{$th}->{$full_var}->{line};
             my $var_group;
-            my $group_register;
-            my $timelevel = 0;
+            my $group_register = "no";
             my $var = $full_var;
             my $timelevel = 0;
             while((substr $var,-2,2) eq "_p") {
@@ -252,7 +270,7 @@ sub create_macros
               # private variables
               my $group = $hash->{private_variable}->{$th}->{variable_list}->{$var};
               $var_group = $hash->{private_variable}->{$th}->{$group};
-            } elsif(defined($hash->{$th}->{$var})) {
+            } elsif(defined($hash->{$th}->{group_list}->{$var})) {
               # variable name is actually a group
               $var_group = $hash->{$th}->{$var};
               $group_register = "yes";
@@ -261,7 +279,7 @@ sub create_macros
               # match the case of the corresponding declaration in
               # the interface.ccl. If it doesn't line up, an error
               # will occur. This helps the user figure it out.
-              my $hint = "";
+              my $hint = "???";
               for my $v (%{$hash->{$th}->{variable_list}}) {
                 if(lc $v eq lc $var) {
                     $hint = "Did you mean ${th}::$v?";
@@ -274,32 +292,43 @@ sub create_macros
                   }
                 }
               }
-              &CST_error(0, "Error in $nm schedule. Check variable or group ${th}::$full_var" .
+              for my $g (keys %{$hash->{$th}->{group_list}}) {
+                if(lc($g) eq lc($full_var)) {
+                    $hint = "Did you mean ${th}::$g instead of ${th}::$full_var?";
+                }
+              }
+              &CST_error(0, "Error in $nm schedule. Check variable or group '$full_var'" .
                     ' and verify correct implementation/thorn name and variable name.'
-                    ,$hint, , __LINE__, __FILE__);
+                    ,$hint, , $errline, $ccl_file);
+              next;
             }
             my $vtype = "CCTK_".$var_group->{vtype};
             if($vtype eq "CCTK_") {
-              print "vtype='$vtype'\n";
-              print Dumper($var_group),"\n";
-              die "Bad variable group";
+              my $hint = "Bad variable group name '$full_var' at $errline";
+              &CST_error(0, "Error in $nm schedule. Check variable or group '$full_var'" .
+                    ' and verify correct implementation/thorn name and variable name.'
+                    ,$hint, , $errline, $ccl_file);
             }
             my $const = "";
-            $const = "const" if($reads_writes->{$namekey}->{$th}->{$full_var}==0);
+            $const = "const" if($reads_writes->{$namekey}->{$th}->{$full_var}->{rdwr}==0);
             if($group_register eq "yes") {
               for my $variables (sort keys %{$var_group->{grp_vars}}) {
+                my $var = $variables;
+                for(my $tl=0;$tl<$timelevel;$tl++) {
+                    $var .= "_p";
+                }
                 my $vname = "${th}::$variables";
                 if ($var_group->{vector} ne "0") {
                   $vname .= "[0]";
                 }
-                $$data .= qq(static int cctki_vi_$variables = -100; if (cctki_vi_$variables == -100) cctki_vi_$variables = CCTK_VarIndex("$vname"); $vtype * restrict const $variables __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, 0, cctki_vi_$variables));; \\\n);
+                $$data .= qq(static int cctki_vi_$var = -100; if (cctki_vi_$var == -100) cctki_vi_$var = CCTK_VarIndex("$vname"); $vtype * restrict const $var __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, cctki_vi_$var));; /* group $group_register */\\\n);
               }
             } else {
               my $vname = "${th}::$var";
               if ($var_group->{vector} ne "0") {
                 $vname .= "[0]";
               }
-              $$data .= qq(static int cctki_vi_$full_var = -100; if (cctki_vi_$full_var == -100) cctki_vi_$full_var = CCTK_VarIndex("$vname"); $vtype * restrict const $full_var __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, cctki_vi_$full_var));; \\\n);
+              $$data .= qq(static int cctki_vi_$full_var = -100; if (cctki_vi_$full_var == -100) cctki_vi_$full_var = CCTK_VarIndex("$vname"); $vtype * restrict const $full_var __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, cctki_vi_$full_var));; /* TL: $namekey --> $timelevel $group_register*/\\\n);
             }
           } # loop over read/write variables
         } # loop over read/write thorns
