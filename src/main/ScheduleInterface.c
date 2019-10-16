@@ -514,7 +514,7 @@ int CCTKi_ScheduleFunction(void *function,
 {
   int retcode;
   t_attribute *attribute;
-  t_sched_modifier *modifier;
+  t_sched_modifier *modifier=0;
   va_list ap;
 
   va_start(ap, timelevels);
@@ -1536,7 +1536,7 @@ static t_attribute *CreateAttribute(const char *where,
     }
     if (n_invalidates > 0)
     {
-      this->FunctionData.ReadsClauses = malloc(n_invalidates*sizeof(char*));
+      this->FunctionData.InvalidatesClauses = malloc(n_invalidates*sizeof(char*));
     }
     if (n_comm_groups > 0)
     {
