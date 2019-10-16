@@ -71,6 +71,7 @@ void parse(const char *str,bool is_write,std::set<RDWR_entry,EntryComp>& s) {
     int tl=0;
     unsigned int i=0;
     for(;i<fstr.size();++i) {
+        if(fstr[i] == ':')
           break;
         imp += fstr[i];
     }
