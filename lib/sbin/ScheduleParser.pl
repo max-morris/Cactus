@@ -143,6 +143,8 @@ sub qname
   $main::thorn = $vname->group(0,"name")->substring();
   if($vname->groupCount() > 1) {
     $out = $main::thorn . "::" . $vname->group(1,"name")->substring();
+  } else {
+    $out = $main::thorn;
   }
   my $iter = 1;
   if($qname->has(1,"region")) {
@@ -159,6 +161,7 @@ sub qname
     $out .= "(" . $main::region . ")";
     $iter++;
   }
+  print("qname=",$out," ",$qname->dump(),"\n");
   return $out;
 }
 ###
