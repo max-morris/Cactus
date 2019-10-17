@@ -130,6 +130,7 @@ static t_attribute *CreateAttribute(const char *where,
                                     int n_sync_groups,
                                     int n_writes,
                                     int n_reads,
+                                    int n_invalidates,
                                     int n_options,
                                     const int *timelevels,
                                     va_list *ap);
@@ -501,6 +502,7 @@ int CCTKi_ScheduleFunction(void *function,
                            int n_sync_groups,
                            int n_writes,
                            int n_reads,
+                           int n_invalidates,
                            int n_options,
                            int n_before,
                            int n_after,
@@ -512,14 +514,14 @@ int CCTKi_ScheduleFunction(void *function,
 {
   int retcode;
   t_attribute *attribute;
-  t_sched_modifier *modifier;
+  t_sched_modifier *modifier=0;
   va_list ap;
 
   va_start(ap, timelevels);
 
   attribute = CreateAttribute(where,name,description, language, thorn, implementation,
                               n_mem_groups, n_comm_groups, n_trigger_groups,
-                              n_sync_groups, n_writes, n_reads,
+                              n_sync_groups, n_writes, n_reads, n_invalidates,
                               n_options, timelevels, &ap);
   modifier  = CreateModifiers(n_before, n_after, n_while, n_if, &ap);
 
@@ -623,6 +625,11 @@ int CCTKi_ScheduleFunction(void *function,
    @vtype   int
    @vio     in
    @endvar
+   @var     n_invalidates_
+   @vdesc   Number of invalidates clauses
+   @vtype   int
+   @vio     in
+   @endvar
    @var     n_options
    @vdesc   Number of options for this schedule block
    @vtype   int
@@ -675,6 +682,7 @@ int CCTKi_ScheduleGroup(const char *realname,
                         int n_sync_groups,
                         int n_writes,
                         int n_reads,
+                        int n_invalidates,
                         int n_options,
                         int n_before,
                         int n_after,
@@ -693,7 +701,7 @@ int CCTKi_ScheduleGroup(const char *realname,
 
   attribute = CreateAttribute(where,name,description, NULL, thorn, implementation,
                               n_mem_groups, n_comm_groups, n_trigger_groups,
-                              n_sync_groups, n_writes, n_reads,
+                              n_sync_groups, n_writes, n_reads, n_invalidates,
                               n_options, timelevels, &ap);
   modifier  = CreateModifiers(n_before, n_after, n_while, n_if, &ap);
 
@@ -703,6 +711,7 @@ int CCTKi_ScheduleGroup(const char *realname,
 
   if(attribute && (modifier || (n_before == 0 && n_after == 0 &&
                                 n_writes == 0 && n_reads == 0 &&
+                                n_invalidates == 0 &&
                                 n_while == 0 && n_if == 0)))
   {
     retcode = CCTKi_DoScheduleGroup(where, name, realname, modifier, (void *)attribute);
@@ -1448,6 +1457,11 @@ static int ScheduleTraverse(const char *where,
    @vtype   int
    @vio     in
    @endvar
+   @var     n_invalidates
+   @vdesc   Number of invalidates clauses
+   @vtype   int
+   @vio     in
+   @endvar
    @var     n_options
    @vdesc   Number of options for this schedule block
    @vtype   int
@@ -1481,6 +1495,7 @@ static t_attribute *CreateAttribute(const char *where,
                                     int n_sync_groups,
                                     int n_writes,
                                     int n_reads,
+                                    int n_invalidates,
                                     int n_options,
                                     const int *timelevels,
                                     va_list *ap)
@@ -1519,6 +1534,10 @@ static t_attribute *CreateAttribute(const char *where,
     {
       this->FunctionData.ReadsClauses = malloc(n_reads*sizeof(char*));
     }
+    if (n_invalidates > 0)
+    {
+      this->FunctionData.InvalidatesClauses = malloc(n_invalidates*sizeof(char*));
+    }
     if (n_comm_groups > 0)
     {
       this->comm_groups    = malloc(n_comm_groups*sizeof(int));
@@ -1537,7 +1556,9 @@ static t_attribute *CreateAttribute(const char *where,
        (this->FunctionData.TriggerGroups || n_trigger_groups==0) &&
        (this->FunctionData.SyncGroups || n_sync_groups==0) &&
        (this->FunctionData.WritesClauses || n_writes==0) &&
-       (this->FunctionData.ReadsClauses || n_reads==0))
+       (this->FunctionData.ReadsClauses || n_reads==0) &&
+       (this->FunctionData.InvalidatesClauses || n_invalidates==0)
+       )
     {
       strcpy(this->FunctionData.where,where);
       strcpy(this->FunctionData.routine,name);
@@ -1563,6 +1584,7 @@ static t_attribute *CreateAttribute(const char *where,
       CreateGroupIndexList(n_sync_groups,    this->FunctionData.SyncGroups, ap);
       CreateStringList    (n_writes,       this->FunctionData.WritesClauses, ap);
       CreateStringList    (n_reads,       this->FunctionData.ReadsClauses, ap);
+      CreateStringList    (n_invalidates, this->FunctionData.InvalidatesClauses, ap);
 
       for(i=0; i< n_mem_groups; i++)
       {
@@ -1583,6 +1605,7 @@ static t_attribute *CreateAttribute(const char *where,
       this->FunctionData.n_SyncGroups = n_sync_groups;
       this->FunctionData.n_WritesClauses = n_writes;
       this->FunctionData.n_ReadsClauses = n_reads;
+      this->FunctionData.n_InvalidatesClauses = n_invalidates;
       CCTKi_CreateRDWRData(&this->FunctionData);
 
       this->timers = NULL;

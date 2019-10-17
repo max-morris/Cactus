@@ -6,6 +6,8 @@
 
 namespace cctki {
 
+enum rdwr_t { reads_t, writes_t, invalidates_t };
+
 cFunctionData *func;
 
 struct EntryComp {
@@ -25,7 +27,7 @@ inline void tolower(std::string& s) {
   }
 }
 
-void add_entry(int vi,int tl,bool is_write,int where,std::set<RDWR_entry,EntryComp>& s) {
+void add_entry(int vi,int tl,rdwr_t rdwr,int where,std::set<RDWR_entry,EntryComp>& s) {
     RDWR_entry entry;
     entry.var_id = vi;
     entry.time_level = tl;
@@ -33,25 +35,34 @@ void add_entry(int vi,int tl,bool is_write,int where,std::set<RDWR_entry,EntryCo
     if(iter == s.end()) {
         entry.where_wr = 0;
         entry.where_rd = 0;
+        entry.where_inv = 0;
     } else {
-        if(is_write && iter->where_wr != 0) {
+        if(rdwr == writes_t && iter->where_wr != 0) {
             std::ostringstream msg;
             msg << "Duplicate write specification for " << CCTK_FullName(vi) << " in function " << func->routine << std::endl;
             CCTK_Error(-1,0,func->thorn,msg.str().c_str());
         }
-        if(!is_write && iter->where_rd != 0) {
+        if(rdwr == reads_t && iter->where_rd != 0) {
+            std::ostringstream msg;
+            msg << "Duplicate read specification for " << CCTK_FullName(vi) << " in function " << func->routine << std::endl;
+            CCTK_Error(-1,0,func->thorn,msg.str().c_str());
+        }
+        if(rdwr == invalidates_t && iter->where_inv != 0) {
             std::ostringstream msg;
             msg << "Duplicate read specification for " << CCTK_FullName(vi) << " in function " << func->routine << std::endl;
             CCTK_Error(-1,0,func->thorn,msg.str().c_str());
         }
         entry.where_wr = iter->where_wr;
         entry.where_rd = iter->where_rd;
+        entry.where_inv = iter->where_inv;
         s.erase(iter);
     }
-    if(is_write) {
+    if(rdwr == writes_t) {
         entry.where_wr |= where;
-    } else {
+    } else if(rdwr == reads_t) {
         entry.where_rd |= where;
+    } else {
+        entry.where_inv |= where;
     }
     s.insert(entry);
 }
@@ -63,7 +74,7 @@ void add_entry(int vi,int tl,bool is_write,int where,std::set<RDWR_entry,EntryCo
  * and VAR_OR_GROUP refers to a variable or group name. In either case, a suffix
  * of _p indicates a past time level, i.e. "foo_p" refers to "foo" at time level 1.
  */
-void parse(const char *str,bool is_write,std::set<RDWR_entry,EntryComp>& s) {
+void parse(const char *str,rdwr_t rdwr,std::set<RDWR_entry,EntryComp>& s) {
     std::string fstr{str};
     std::string imp;
     std::string var;
@@ -104,7 +115,7 @@ void parse(const char *str,bool is_write,std::set<RDWR_entry,EntryComp>& s) {
         wh = WH_BOUNDARY;
     else {
         std::ostringstream msg;
-        msg << "Invalid where specification '" << where << "' while parsing schedule for '" << func->thorn << "::" << func->routine << "'" << std::endl;
+        msg << "Invalid where specification '" << where << "' while parsing string '" << str << "' in schedule for '" << func->thorn << "::" << func->routine << "'" << std::endl;
         CCTK_Error(-1,0,imp.c_str(),msg.str().c_str());
     }
     var.resize(n+2);
@@ -120,10 +131,10 @@ void parse(const char *str,bool is_write,std::set<RDWR_entry,EntryComp>& s) {
         int i0 = CCTK_FirstVarIndexI(gi);
         int iN = i0+CCTK_NumVarsInGroupI(gi);
         for(vi=i0;vi<iN;vi++) {
-            add_entry(vi,tl,is_write,wh,s);
+            add_entry(vi,tl,rdwr,wh,s);
         }
     } else {
-        add_entry(vi,tl,is_write,wh,s);
+        add_entry(vi,tl,rdwr,wh,s);
     }
 }
 
@@ -134,11 +145,15 @@ void CCTKi_CreateRDWRData(cFunctionData *f)
     func = f;
 
     for(int i=0;i<f->n_WritesClauses;i++) {
-        parse(f->WritesClauses[i],true,s);
+        parse(f->WritesClauses[i],writes_t,s);
     }
 
     for(int i=0;i<f->n_ReadsClauses;i++) {
-        parse(f->ReadsClauses[i],false,s);
+        parse(f->ReadsClauses[i],reads_t,s);
+    }
+
+    for(int i=0;i<f->n_InvalidatesClauses;i++) {
+        parse(f->InvalidatesClauses[i],invalidates_t,s);
     }
 
     f->n_RDWR = s.size();

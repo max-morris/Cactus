@@ -46,6 +46,7 @@ storage = (?i:storage) : {vname}( , {vname}|[ \t]{vname})*
 triggers = (?i:triggers?) : {vname}( , {vname}|[ \t]{vname})*
 reads = (?i:reads) : {qname}
 writes = (?i:writes) : {qname}
+invalidates = (?i:invalidates) : {qname}
 qrname = {name} ( \( {region} \)|)
 qname = {vname} (\( {region} \)|)( , {qrname}|[ \t]+{qrname})*
 region = (?i:everywhere|interiorwithboundary|interior|all|in|boundary|scalar)
@@ -59,6 +60,7 @@ schedule = (?i:
         | {triggers}
         | {reads}
         | {writes}
+        | {invalidates}
         | {tags}
     )*
  \} {quote}
