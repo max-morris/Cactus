@@ -906,11 +906,10 @@ int CCTK_ParameterValInt (const char *param_name, const char *thorn)
 {
   int param_type;
   const void *param_data;
-  char *retval;
-  char buffer[80];
+  int retval;
 
 
-  retval = NULL;
+  retval = 0;
 
   param_data = CCTK_ParameterGet (param_name, thorn, &param_type);
   if (param_data != NULL)
