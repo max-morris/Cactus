@@ -11,6 +11,12 @@
 use File::stat;
 use File::Path qw{ mkpath };
 
+#############################################################################
+###### Package variables ####################################################
+#############################################################################
+
+our $piraha_cache_dir = undef;
+
 #/*@@
 #  @routine   CST_error
 #  @date      4 July 1999
@@ -930,11 +936,13 @@ sub parse_ccl
   $ccl_file =~ s{//+}{/}g; # remove double slashes
   croak "bad ccl file '$ccl_file'" unless($ccl_file =~ m{([^/]+)/([^/]+)/(\w+)\.ccl$});
   my ($arr,$thorn,$ccl)=($1,$2,$3);
-  my $top = $ENV{TOP};
-  croak "TOP not defined" unless(defined($top));
-  my $ccl_dir = "$top/piraha/$arr/$thorn";
-  mkpath($ccl_dir);
-  my $ccl_cache = "$ccl_dir/$ccl.cache";
+  our $piaraha_cache_dir;
+  my $ccl_cache = undef;
+  if(defined $piraha_cache_dir) {
+    my $ccl_dir = "$piraha_cache_dir/$arr/$thorn";
+    mkpath($ccl_dir);
+    $ccl_cache = "$ccl_dir/$ccl.cache";
+  }
 
   # If the cache file exists and is newer than the
   # ccl file Use it instead.
@@ -942,14 +950,14 @@ sub parse_ccl
   my $ccl_tm = stat($ccl_file)->mtime;
   my $peg_tm = stat($peg_file)->mtime;
   my $tm = $ccl_tm < $peg_tm ? $peg_tm : $ccl_tm;
-  if(-r $ccl_cache and stat($ccl_cache)->mtime > $tm) {
+  if(defined $cccl_cache and -r $ccl_cache and stat($ccl_cache)->mtime > $tm) {
     $gr = piraha::load_tree($ccl_cache);
   }
   if(!defined($gr)) {
     my $p=piraha::parse_src($grammar,$rule,$ccl_file);
     my $m = $p->matches();
     if($m) {
-      piraha::store_tree($ccl_cache,$p->{gr});
+      piraha::store_tree($ccl_cache,$p->{gr}) if defined $ccl_cache;
       $gr = $p->{gr};
     } else {
       print "CST ERROR IN FILE '$ccl_file' ";

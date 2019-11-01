@@ -134,6 +134,9 @@ if($main::cctk_parser eq "old") {
   sleep 5;
 }
 
+# cache location for piraha
+$piraha_cache_dir = "$top/piraha";
+
 # Find out which thorns we have and the location of the ccl files.
 print "Reading ThornList...\n";
 %thorns = &CreateThornList($cctk_home, $thornlist);
