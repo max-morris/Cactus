@@ -776,10 +776,12 @@ sub parse_param_ccl
     for my $k (keys %parameter_db1) {
       $parameter_db{$k} = $parameter_db1{$k};
     }
-  } else {
+  } elsif($main::cctk_parser eq "old") {
     for my $k (keys %parameter_db2) {
       $parameter_db{$k} = $parameter_db2{$k};
     }
+  } else {
+    die "Internal error: main::cctk_parser not 'new', 'old' or 'both' but '$main::cctk_parser'";
   }
 
   return %parameter_db;

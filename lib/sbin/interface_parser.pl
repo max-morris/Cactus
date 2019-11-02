@@ -1449,10 +1449,12 @@ sub parse_interface_ccl
     for my $k (keys %{$interface_data_ref1}) {
       $interface_data_ref->{$k} .= $interface_data_ref1->{$k};
     }
-  } else {
+  } elsif($main::cctk_parser eq "old") {
     for my $k (keys %{$interface_data_ref2}) {
       $interface_data_ref->{$k} .= $interface_data_ref2->{$k};
     }
+  } else {
+    die "Internal error: main::cctk_parser not 'new', 'old' or 'both' but '$main::cctk_parser'"
   }
 }
 
