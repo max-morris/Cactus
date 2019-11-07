@@ -6,7 +6,7 @@
 
 echo "Creating thorn documentation (HTML)..."
 
-type -P htlatex &>/dev/null || { echo "htlatex not found.  Aborting." >&2; exit 1; }
+type -P "$HTLATEX" &>/dev/null || { echo "htlatex not found.  Aborting." >&2; exit 1; }
 
 # Selected thorn; process all thorns if this is empty
 selection="$1"
@@ -49,9 +49,12 @@ for arr in `cd arrangements; echo *`; do
               $abspath/lib/sbin/ConvertFigures $path
 
               echo "  Running htlatex..."
-              {
-                htlatex documentation "xhtml,mathml,charset=utf-8" " -cunihtf -utf8" "" -interaction=nonstopmode  < /dev/null > LATEX_MESSAGES 2>&1
-              } ||
+              (
+                # the complicated expansion is needed to deal with quotes in
+                # HTLATEXFLAGS
+                eval set $HTLATEXFLAGS
+                $HTLATEX documentation "$@"> LATEX_MESSAGES 2>&1
+              ) ||
               echo "    ERROR: Could not create documentation (check for latex errors)"
             )
                         

@@ -194,6 +194,9 @@ SETUP    = lib/make/setup_configuration.pl
 NEWTHORN = lib/make/new_thorn.pl
 BUILD_ACTIVETHORNS = lib/sbin/BuildActiveThorns.pl
 
+HTLATEX = htlatex
+HTLATEXFLAGS = "xhtml,mathml,charset=utf-8" " -cunihtf -utf8" "" -interaction=nonstopmode
+
 # Dividers to make the screen output slightly nicer
 DIVEL   =  __________________
 DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
@@ -1040,7 +1043,7 @@ UsersGuideHTML: doc/UsersGuide/bincactus2.ps
 	cd doc/UsersGuide;                         \
 	$(CCTK_HOME)/lib/sbin/ConvertFigures;      \
 	echo "  Running htlatex....";              \
-	htlatex UsersGuide.tex "html,2,fn-in" "" "" -interaction=nonstopmode > LATEX_MESSAGES 2>&1; \
+	$(HTLATEX) UsersGuide.tex $(HTLATEXFLAGS) > LATEX_MESSAGES 2>&1; \
 	if [ $$? -ne 0 ]; then                                                \
 	  echo "  Problem executing htlatex. See doc/UsersGuide/LATEX_MESSAGES."; \
 		exit 1;                                                           \
@@ -1091,7 +1094,7 @@ ReferenceManualHTML:
 	cd doc/ReferenceManual;                    \
 	$(CCTK_HOME)/lib/sbin/ConvertFigures;      \
 	echo "  Running htlatex....";              \
-	htlatex ReferenceManual.tex "html,2,fn-in" "" "" -interaction=nonstopmode  > LATEX_MESSAGES 2>&1; \
+	$(HTLATEX) ReferenceManual.tex $(HTLATEXFLAGS)  > LATEX_MESSAGES 2>&1; \
 	if [ $$? -ne 0 ]; then                                                \
 	  echo "  Problem executing htlatex. See doc/UsersGuide/LATEX_MESSAGES."; \
 		exit 1;                                                           \
@@ -1142,7 +1145,7 @@ MaintGuideHTML:
 	cd doc/MaintGuide;                          \
 	$(CCTK_HOME)/lib/sbin/ConvertFigures;             \
 	echo "  Running htlatex....";              \
-	htlatex MaintGuide.tex "html,2,fn-in" "" "" -interaction=nonstopmode  > LATEX_MESSAGES 2>&1; \
+	$(HTLATEX) MaintGuide.tex $(HTLATEXFLAGS)  > LATEX_MESSAGES 2>&1; \
 	if [ $$? -ne 0 ]; then                                                \
 	  echo "  Problem executing htlatex. See doc/UsersGuide/LATEX_MESSAGES."; \
 		exit 1;                                                           \
@@ -1221,19 +1224,19 @@ ArrangementDoc:
 .PHONY: ThornDocHTML
 %-ThornDocHTML: doc/UsersGuide/bincactus2.ps
 	$(NOTIFY_DEVIDER)
-	@lib/sbin/ThornDocHTML $(@:%-ThornDocHTML=%)
+	@HTLATEX=$(HTLATEX) HTLATEXFLAGS='$(HTLATEXFLAGS)' lib/sbin/ThornDocHTML $(@:%-ThornDocHTML=%)
 	$(NOTIFY_DIVIDER)
 ThornDocHTML: doc/UsersGuide/bincactus2.ps
 	$(NOTIFY_DEVIDER)
-	@lib/sbin/ThornDocHTML
+	@HTLATEX=$(HTLATEX) HTLATEXFLAGS='$(HTLATEXFLAGS)' lib/sbin/ThornDocHTML
 	$(NOTIFY_DIVIDER)
 %-ArrangementDocHTML: doc/UsersGuide/bincactus2.ps
 	$(NOTIFY_DEVIDER)
-	@lib/sbin/ArrangementDocHTML $(@:%-ArrangementDocHTML=%)
+	@HTLATEX=$(HTLATEX) HTLATEXFLAGS='$(HTLATEXFLAGS)' lib/sbin/ArrangementDocHTML $(@:%-ArrangementDocHTML=%)
 	$(NOTIFY_DIVIDER)
 ArrangementDocHTML: doc/UsersGuide/bincactus2.ps
 	$(NOTIFY_DEVIDER)
-	@lib/sbin/ArrangementDocHTML
+	@HTLATEX=$(HTLATEX) HTLATEXFLAGS='$(HTLATEXFLAGS)' lib/sbin/ArrangementDocHTML
 	$(NOTIFY_DIVIDER)
 
 ###############################################################################
