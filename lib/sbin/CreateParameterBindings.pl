@@ -249,7 +249,7 @@ sub CreateParameterBindings
 # Write this one to a temporary file and read it back in
 # Can probably do this better
 
-  open(OUT, "| $ENV{'PERLINTERP'} $sbin_dir/c_file_processor.pl $top/config-data > include/CParameterStructNames_temp.h") || die 'Cannot create CParameterStructNames.h by running c_file_processor.pl';
+  open(OUT, "| $^X $sbin_dir/c_file_processor.pl $top/config-data > include/CParameterStructNames_temp.h") || die 'Cannot create CParameterStructNames.h by running c_file_processor.pl';
 
   foreach $structure (sort keys %structures)
   {
