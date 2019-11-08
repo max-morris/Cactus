@@ -9,6 +9,7 @@
 #  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.81 2009-09-11 22:15:48 knarf Exp $
 #@@*/
 
+use FindBin;
 use FileHandle;
 use lib ".";
 use Carp;
@@ -48,7 +49,7 @@ BEGIN {
     $cctk_home = $ENV{'CCTK_HOME'} || "$ENV{HOME}/CCTK";
     $cctk_home =~ s:/$::g;
   }
-  $sbin_dir = "$cctk_home/lib/sbin";
+  $sbin_dir = $FindBin::Bin;
   die "Unable to find CCTK sbin directory - tried $sbin_dir\n"
     if (! -e "$sbin_dir/parameter_parser.pl");
 }

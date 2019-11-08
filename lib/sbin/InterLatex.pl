@@ -42,13 +42,12 @@ if ($h || $help) {
    exit 0;
 }
 
+use FindBin;
 my $sbin_dir;
 BEGIN {
 # setup the cctk_home, if it doesn't exist, we leave it blank
 $cctk_home  .= '/' if (($cctk_home !~ /\/$/) && (defined $cctk_home));
-
-# set up the sbin dir, tacking cctk_home on the front
-$sbin_dir = "${cctk_home}lib/sbin";
+$sbin_dir = $FindBin::Bin;
 }
 use lib $sbin_dir;
 

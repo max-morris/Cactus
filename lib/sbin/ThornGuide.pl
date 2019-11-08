@@ -46,8 +46,10 @@ if ($help || $h) {
 # setup the cctk_home, if it doesn't exist, we leave it blank
 $cctk_home  .= '/' if (($cctk_home !~ /\/$/) && (defined $cctk_home));
 
-# set up the sbin dir, tacking cctk_home on the front
-my $sbin_dir = "${cctk_home}lib/sbin";
+use FindBin;
+BEGIN {
+$sbin_dir = $FindBin::Bin;
+}
 
 # has to be absolute path because the ThornGuide can be build in different
 # directory depths (doc/ThornGuide/build and configs/X/dox/build)

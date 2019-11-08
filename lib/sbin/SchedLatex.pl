@@ -50,11 +50,11 @@ if ($h || $help) {
 ##############
 # REQUIRE(S) #
 ##############
+use FindBin;
 my $sbin_dir;
 BEGIN {
 $cctk_home .= '/' if (($cctk_home !~ /\/$/) && defined $cctk_home);
-
-$sbin_dir = "${cctk_home}lib/sbin";
+$sbin_dir = $FindBin::Bin;
 }
 use lib $sbin_dir;
 require "$sbin_dir/ScheduleParser.pl";

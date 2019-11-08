@@ -8,7 +8,10 @@ if(! $cctk_home)
   $cctk_home =~ s:/$::g;
 }
 
-$sbin_dir = "$cctk_home/lib/sbin";
+use FindBin;
+BEGIN {
+$sbin_dir = $FindBin::Bin;
+}
 
 die "Unable to find CCTK sbin directory - tried $sbin_dir\n"
   if (! -e "$sbin_dir/parameter_parser.pl");
