@@ -3,6 +3,7 @@ use strict;
 
 my $ccl_file = undef;
 
+use FindBin;
 use Carp;
 use FileHandle;
 use Data::Dumper;
@@ -70,7 +71,7 @@ sub create_interface_database
   %thorns = @inargs[2*$n_system..$#inargs];
   @thorns = sort keys %thorns;
 
-  my $peg_file = $ENV{CCTK_HOME}."/src/piraha/pegs/interface.peg";
+  my $peg_file = "$FindBin::Bin/../../src/piraha/pegs/interface.peg";
   my ($grammar,$rule) = piraha::parse_peg_file($peg_file);
 
   #  Loop through each  thorn's interface file.

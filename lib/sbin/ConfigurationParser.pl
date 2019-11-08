@@ -11,6 +11,7 @@ use strict;
 #  @version  $Header$
 #@@*/
 
+use FindBin;
 use lib ".";
 my $ccl_file;
 
@@ -29,7 +30,7 @@ sub CreateConfigurationDatabase
   my(%cfg) = ();
   my(%thorn_dependencies);
 
-  my $peg_file = $ENV{CCTK_HOME}."/src/piraha/pegs/config.peg";
+  my $peg_file = "$FindBin::Bin/../../src/piraha/pegs/config.peg";
   my ($grammar,$rule) = piraha::parse_peg_file($peg_file);
 
   # Loop through each thorn's configuration file.
