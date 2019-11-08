@@ -253,7 +253,7 @@ sub get_implementation_ancestors
 {
   my($implementation, $interface_data_ref, $ancestors_ref) = @_;
   my(%info);
-  my $cctk_home = $ENV{CCTK_HOME};
+  die "main::cctk_home not defined" unless defined($main::cctk_home);
 
   $interface_data_ref->{"IMPLEMENTATION \U$implementation\E THORNS"} =~ m:(\w+):;
 
@@ -268,7 +268,7 @@ sub get_implementation_ancestors
       if(! $interface_data_ref->{"IMPLEMENTATION \U$ancestor\E THORNS"})
       {
         # Implementation not found; give extensive information
-        %info = &buildthorns("$cctk_home/arrangements","thorns");
+        %info = &buildthorns("$main::cctk_home/arrangements","thorns");
         my $suggest_thorns = "";
         foreach my $thorninfo (sort keys %info)
         {
