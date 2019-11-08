@@ -249,7 +249,14 @@ sub CreateParameterBindings
 # Write this one to a temporary file and read it back in
 # Can probably do this better
 
-  open(OUT, "| $^X $sbin_dir/c_file_processor.pl $top/config-data > include/CParameterStructNames_temp.h") || die 'Cannot create CParameterStructNames.h by running c_file_processor.pl';
+  my $pid = open(OUT, "|-") // die "Failed to fork: $!";
+  if($pid == 0)
+  {
+    # child
+    open(STDOUT, "> include/CParameterStructNames_temp.h") or
+     die "Failed to create CParameterStructNames.h";
+    exit do "$sbin_dir/c_file_processor.pl $top/config-data";
+  }
 
   foreach $structure (sort keys %structures)
   {
@@ -257,7 +264,9 @@ sub CreateParameterBindings
   }
   print OUT "\n";
 
-  close OUT;
+  close OUT or
+    die "Cannot create CParameterStructNames.h by running c_file_processor.pl: $!";
+  die "Cannot create CParameterStructNames.h by running c_file_processor.pl: $?" if $?;
 
   open(IN,'< include/CParameterStructNames_temp.h');
   $dataout = join ('', <IN>);
