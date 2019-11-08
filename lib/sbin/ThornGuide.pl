@@ -233,6 +233,8 @@ sub Read_New_Thorn_Doc
       if (/^% START CACTUS THORNGUIDE\s*$/) {
          $start = 1;
 
+         $contents .= "\\begingroup\n";
+
          while (($_ = <DOC>) && ($_ !~ /^% END CACTUS THORNGUIDE\s*$/))
          {
             if (/(.*)\\begin\{abstract\}(.*)/) {
@@ -263,6 +265,7 @@ sub Read_New_Thorn_Doc
    $contents .= "\n\\include{${arrangement}_${thorn}_param}\n";
    $contents .= "\n\\include{" . ThornUtils::ToLower("${arrangement}_${thorn}_inter") . "\}\n";
    $contents .= "\n\\include{${arrangement}_${thorn}_schedule}\n";
+   $contents .= "\\endgroup\n";
 
    # If it never started reading, then return 0.
    # (It is probably an older documentation.doc.)
