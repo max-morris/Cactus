@@ -39,7 +39,10 @@ for arr in `cd arrangements; echo *`; do
                             cat ${arr}_${th}_param.tex >> documentation.tex
                             cat $inter_file >> documentation.tex
                             cat ${arr}_${th}_schedule.tex >> documentation.tex
-                            echo '\end{document}' >> documentation.tex
+                            # cannot use echo here since echo's behaviour when
+                            # \ is present is implementation dependent (and
+                            # bash and dash differ)
+                            printf '\\end{document}\n' >> documentation.tex
                             
                             {
                                 pdflatex documentation < /dev/null > LATEX_MESSAGES 2>&1
