@@ -1048,7 +1048,8 @@ UsersGuideHTML: doc/UsersGuide/bincactus2.ps
 	  echo "  Problem executing htlatex. See doc/UsersGuide/LATEX_MESSAGES."; \
 		exit 1;                                                           \
 	fi;                                                                 \
-	if grep "^\! " "LATEX_MESSAGES"; then                               \
+	if grep "^\! " "LATEX_MESSAGES" ||                                  \
+           grep -e "--- error ---" "LATEX_MESSAGES"; then                   \
 	  echo "  Problem in $<.  See doc/UsersGuide/LATEX_MESSAGES.";      \
 	  exit 1;                                                           \
 	elif grep "^LaTeX Warning:" "LATEX_MESSAGES"; then                  \
@@ -1099,7 +1100,8 @@ ReferenceManualHTML:
 	  echo "  Problem executing htlatex. See doc/UsersGuide/LATEX_MESSAGES."; \
 		exit 1;                                                           \
 	fi;                                                                 \
-	if grep "^\! " "LATEX_MESSAGES"; then                            \
+	if grep "^\! " "LATEX_MESSAGES" ||                                  \
+           grep -e "--- error ---" "LATEX_MESSAGES"; then                   \
 	  echo "  Problem in $<.  See doc/ReferenceManual/LATEX_MESSAGES."; \
 	  exit 1;                                                           \
 	elif grep "^LaTeX Warning:" "LATEX_MESSAGES"; then    \
@@ -1150,7 +1152,8 @@ MaintGuideHTML:
 	  echo "  Problem executing htlatex. See doc/UsersGuide/LATEX_MESSAGES."; \
 		exit 1;                                                           \
 	fi;                                                                 \
-	if grep "^\! " "LATEX_MESSAGES"; then                               \
+	if grep "^\! " "LATEX_MESSAGES" ||                                  \
+           grep -e "--- error ---" "LATEX_MESSAGES"; then                   \
 	  echo "  Problem in $<.  See doc/MaintGuide/LATEX_MESSAGES.";      \
 	  exit 1;                                                           \
 	elif grep "^LaTeX Warning:" "LATEX_MESSAGES"; then                  \
