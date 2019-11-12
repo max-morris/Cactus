@@ -1052,7 +1052,8 @@ UsersGuideHTML: doc/UsersGuide/bincactus2.ps
            grep -e "--- error ---" "LATEX_MESSAGES"; then                   \
 	  echo "  Problem in $<.  See doc/UsersGuide/LATEX_MESSAGES.";      \
 	  exit 1;                                                           \
-	elif grep "^LaTeX Warning:" "LATEX_MESSAGES"; then                  \
+	elif grep "^LaTeX Warning:" "LATEX_MESSAGES" ||                     \
+	     grep -e "--- warning ---" "LATEX_MESSAGES"; then         \
 	  echo "  For more information see doc/UsersGuide/LATEX_MESSAGES."; \
 	fi;                                                                 \
   mkdir -p $(CCTK_HOME)/doc/HTML/UsersGuide;            \
@@ -1104,7 +1105,8 @@ ReferenceManualHTML:
            grep -e "--- error ---" "LATEX_MESSAGES"; then                   \
 	  echo "  Problem in $<.  See doc/ReferenceManual/LATEX_MESSAGES."; \
 	  exit 1;                                                           \
-	elif grep "^LaTeX Warning:" "LATEX_MESSAGES"; then    \
+	elif grep "^LaTeX Warning:" "LATEX_MESSAGES" ||                     \
+	     grep -e "--- warning ---" "LATEX_MESSAGES"; then         \
 	  echo "  For more information see doc/ReferenceManual/LATEX_MESSAGES."; \
 	fi;                                         \
 	mkdir -p $(CCTK_HOME)/doc/HTML/ReferenceManual;                \
@@ -1156,7 +1158,8 @@ MaintGuideHTML:
            grep -e "--- error ---" "LATEX_MESSAGES"; then                   \
 	  echo "  Problem in $<.  See doc/MaintGuide/LATEX_MESSAGES.";      \
 	  exit 1;                                                           \
-	elif grep "^LaTeX Warning:" "LATEX_MESSAGES"; then                  \
+	elif grep "^LaTeX Warning:" "LATEX_MESSAGES" ||                     \
+	     grep -e "--- warning ---" "LATEX_MESSAGES"; then         \
 	  echo "  For more information see doc/MaintGuide/LATEX_MESSAGES."; \
 	fi;                                                                 \
 	mkdir -p $(CCTK_HOME)/doc/HTML/MaintGuide;                          \
