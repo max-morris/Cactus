@@ -1,7 +1,6 @@
 #!/usr/bin/perl -s
 
 #use strict;
-use lib ".";
 use vars qw($cctk_home $debug $verbose $h $help $document_type $outdir $directory $thornlist $thorn);
 
 #/*@@
@@ -56,14 +55,14 @@ use lib $sbin_dir;
 ##############
 
 # common procedures used to create the thornguide(s)
-require "$sbin_dir/ThornUtils.pm";
+require "ThornUtils.pm";
 
 # for use of create_parametere_database
-require "$sbin_dir/interface_parser.pl";
-require "$sbin_dir/CSTUtils.pl";
+require "interface_parser.pl";
+require "CSTUtils.pl";
 
 # for reading of the thornlist routine: %thorns = &ReadThornlist($thornlist)
-require "$sbin_dir/MakeUtils.pl";
+require "MakeUtils.pl";
 
 ####################
 # GLOBAL VARIABLES #

@@ -11,8 +11,6 @@ use strict;
 #  @version  $Header$
 #@@*/
 
-use FindBin;
-use lib ".";
 my $ccl_file;
 
 #/*@@

@@ -11,7 +11,6 @@
 
 use FindBin;
 use FileHandle;
-use lib ".";
 use Carp;
 
 # Global parameter to track the number of errors from the CST
@@ -92,25 +91,25 @@ sub CheckCSTErrors
 
 use lib $sbin_dir;
 
-require "$sbin_dir/parameter_parser.pl";
-require "$sbin_dir/interface_parser.pl";
-require "$sbin_dir/ScheduleParser.pl";
-require "$sbin_dir/ConfigurationParser.pl";
-require "$sbin_dir/ProcessConfiguration.pl";
-require "$sbin_dir/create_c_stuff.pl";
-require "$sbin_dir/create_fortran_stuff.pl";
-require "$sbin_dir/GridFuncStuff.pl";
-require "$sbin_dir/ImpParamConsistency.pl";
-require "$sbin_dir/CSTUtils.pl";
-require "$sbin_dir/MakeUtils.pl";
-require "$sbin_dir/CreateParameterBindings.pl";
-require "$sbin_dir/CreateImplementationBindings.pl";
-require "$sbin_dir/CreateScheduleBindings.pl";
-require "$sbin_dir/CreateFunctionBindings.pl";
-require "$sbin_dir/BuildHeaders.pl";
-require "$sbin_dir/CreateConfigurationBindings.pl";
-require "$sbin_dir/ConfigScriptParser.pl";
-require "$sbin_dir/Logger.pl";
+require "parameter_parser.pl";
+require "interface_parser.pl";
+require "ScheduleParser.pl";
+require "ConfigurationParser.pl";
+require "ProcessConfiguration.pl";
+require "create_c_stuff.pl";
+require "create_fortran_stuff.pl";
+require "GridFuncStuff.pl";
+require "ImpParamConsistency.pl";
+require "CSTUtils.pl";
+require "MakeUtils.pl";
+require "CreateParameterBindings.pl";
+require "CreateImplementationBindings.pl";
+require "CreateScheduleBindings.pl";
+require "CreateFunctionBindings.pl";
+require "BuildHeaders.pl";
+require "CreateConfigurationBindings.pl";
+require "ConfigScriptParser.pl";
+require "Logger.pl";
 
 #######################################################################
 #

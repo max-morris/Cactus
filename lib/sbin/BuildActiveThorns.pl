@@ -9,14 +9,13 @@
 #  @version $Id$
 #@@*/
 
-use lib ".";
 use FindBin;
 use lib "$FindBin::Bin";
 BEGIN {
 my $sbin_dir = $FindBin::Bin;
 }
 
-require "$sbin_dir/MakeUtils.pl";
+require "MakeUtils.pl";
 
 $package_dir = shift(@ARGV);
 

@@ -4,7 +4,6 @@
 # the following variables in the 'use vars' statement, that can be passed in from 
 # the command.
 use strict;
-use lib ".";
 use vars qw($h $help $cctk_home $thornlist $outdir $verbose $debug $arrangements_dir $document_type $thorn);
 
 #########################
@@ -62,14 +61,14 @@ use lib $sbin_dir;
 ##############
 
 # common procedures used to create the thornguide(s)
-require "$sbin_dir/ThornUtils.pm";
+require "ThornUtils.pm";
 
 # for use of create_parametere_database
-require "$sbin_dir/parameter_parser.pl";
-require "$sbin_dir/CSTUtils.pl";
+require "parameter_parser.pl";
+require "CSTUtils.pl";
 
 # for reading of the thornlist routine: %thorns = &ReadThornlist($thornlist)
-require "$sbin_dir/MakeUtils.pl";
+require "MakeUtils.pl";
 
 ####################
 # GLOBAL VARIABLES #

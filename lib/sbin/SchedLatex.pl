@@ -1,7 +1,6 @@
 #!/usr/bin/perl -s
 
 use strict;
-use lib ".";
 use vars qw($h $help $cctk_home $thornlist $outdir $verbose $debug $directory $document_type $thorn);
 
 #/*@@
@@ -57,14 +56,14 @@ $cctk_home .= '/' if (($cctk_home !~ /\/$/) && defined $cctk_home);
 $sbin_dir = $FindBin::Bin;
 }
 use lib $sbin_dir;
-require "$sbin_dir/ScheduleParser.pl";
-require "$sbin_dir/CSTUtils.pl";
+require "ScheduleParser.pl";
+require "CSTUtils.pl";
 
 # common procedures used to create the thornguide(s)
-require "$sbin_dir/ThornUtils.pm";
+require "ThornUtils.pm";
 
 # for reading of the thornlist routine: %thorns = &ReadThornlist($thornlist)
-require "$sbin_dir/MakeUtils.pl";
+require "MakeUtils.pl";
 
 ####################
 # GLOBAL VARIABLES #

@@ -1,7 +1,6 @@
 #!/usr/local/bin/perl
 
 use strict;
-use lib ".";
 use vars qw($h $help $cctk_home $thornlist $directory $outdir $verbose $debug $outfile $tocdepth);
 #$debug = 1;
 
@@ -60,10 +59,10 @@ my $cactus_style_file = "${cctk_home}doc/latex/cactus";
 ##############
 
 # common procedures used to create the thornguide(s)
-require "$sbin_dir/ThornUtils.pm";
+require "ThornUtils.pm";
 
 # for reading of the thornlist routine: %thorns = &ReadThornlist($thornlist)
-require "$sbin_dir/MakeUtils.pl";
+require "MakeUtils.pl";
 
 #####################
 # INITIAL VARIABLES #
