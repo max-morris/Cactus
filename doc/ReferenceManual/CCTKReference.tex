@@ -876,6 +876,10 @@ from Fortran.
   Prints a formatted string with a variable argument list as an information
   message to screen
 
+\item[\code{CCTK\_VPARAMWARN}] [\pageref{CCTK-VPARAMWARN}]
+  Prints a formatted string with a variable argument list as a warning from
+  parameter checking, and possibly stops the code
+
 \item[\code{CCTK\_VParamWarn}] [\pageref{CCTK-VParamWarn}]
   Prints a formatted string with a variable argument list as a warning from
   parameter checking, and possibly stops the code
@@ -13816,7 +13820,7 @@ checked.
 \begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
-CCTK_VParamWarn("Mass cannot be negative: %g", (double)mass);
+CCTK_VParamWarn(CCTK_THORNSTRING, "Mass cannot be negative: %g", (double)mass);
 \end{verbatim}
 \end{Example}
 \end{ExampleSection}
@@ -13824,6 +13828,58 @@ CCTK_VParamWarn("Mass cannot be negative: %g", (double)mass);
 \begin{SeeAlsoSection}
 \begin{SeeAlso2}{CCTK\_PARAMWARN}{CCTK-PARAMWARN}
 Prints a warning from parameter checking, and possibly stops the code
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_VPARAMWARN}{CCTK-VPARAMWARN}
+Prints a formatted string with a variable argument list as a warning from
+parameter checking, and possibly stops the code
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+\end{FunctionDescription}
+
+% WarnLevel.c
+\begin{FunctionDescription}{CCTK\_VPARAMWARN}{Prints a formatted string with a
+variable argument list as a warning from parameter checking, and possibly
+stops the code}
+\label{CCTK-VPARAMWARN}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include <cctk.h>
+
+int status = CCTK_VPARAMWARN(const char *format,
+                             ...);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{format}
+Format for variable argument list
+\end{Parameter}
+\begin{Parameter}{\ldots}
+Variable argument list
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
+The call should be used in routines registered at the schedule point \code{CCTK\_PARAMCHECK}
+to indicate that there is parameter error or conflict and the code should
+terminate. The code will terminate only after all the parameters have been
+checked.
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+CCTK_VPARAMWARN("Mass cannot be negative: %g", (double)mass);
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_PARAMWARN}{CCTK-PARAMWARN}
+Prints a warning from parameter checking, and possibly stops the code
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_VParamWarn}{CCTK-VParamWarn}
+Prints a formatted string with a variable argument list as a warning from
+parameter checking, and possibly stops the code
 \end{SeeAlso2}
 \end{SeeAlsoSection}
 \end{FunctionDescription}
@@ -13963,7 +14019,7 @@ macro to print a warning message with a single string argument
 
 const char *outdir;
 
-CCTK_VWarn(CCTK_WARN_ALERT, __LINE__, __FILE__, CCTK_THORNSTRING,
+CCTK_VWARN(CCTK_WARN_ALERT,
            "Output directory '%s' could not be created", outdir);
 \end{verbatim}
 \end{Example}
