@@ -272,7 +272,7 @@ sub ParseTestConfigs
         elsif ($line =~ m/^\s*TEST\s*(.*)/i)
         {
           ($test, $ABSTOL, $RELTOL, $NPROCS, $line_number) =
-            &ParseTestBlock($line_number, \@config);
+            &ParseTestBlock($line_number, $config_file, \@config);
           $rundata->{"$thorn $test ABSTOL"} = $ABSTOL;
           $rundata->{"$thorn $test RELTOL"} = $RELTOL;
           $rundata->{"$thorn $test NPROCS"} = $NPROCS;
@@ -303,11 +303,11 @@ sub ParseTestConfigs
 ############################################################
 sub ParseTestBlock
 {
-  my ($line_number, $data) = @_;
+  my ($line_number, $file_name, $data) = @_;
   my ($Test, $NPROCS) = ();
   my (%ABSTOL, %RELTOL) = (); 
 
-  $data->[$line_number] =~ m/^\s*PROVIDES\s*(.*)/i;
+  $data->[$line_number] =~ m/^\s*TEST\s+(.*)/i;
 
   $Test = $1;
 
@@ -315,13 +315,12 @@ sub ParseTestBlock
 
   if($data->[$line_number] !~ m/^\s*\{\s*$/)
   {
-    $line_number++ while($data[$line_number] !~ m:\s*\}\s*:);
+    $line_number++ while($line_number < @{$data} && $data->[$line_number] !~ m:\s*\}\s*:);
   }
   else
   {
-    while($data->[$line_number] !~ m:\s*\}\s*:)
+    for($line_number += 1 ; $line_number < @{$data} && $data->[$line_number] !~ m:\s*\}\s*: ; $line_number++)
     {
-      $line_number++;
       if ($data->[$line_number] =~ m/^\s*ABSTOL\s*(\S*)\s*(\S*)\s*$/i)
       {
         my $newtol=$1;
@@ -355,8 +354,12 @@ sub ParseTestBlock
       }
       else
       {
-        print STDERR "Error parsing test config block line '$data->[$line_number]'\n";
+        print STDERR "Error parsing test config $file_name block $Test line '$data->[$line_number]'\n";
       }
+    }
+    if($line_number == @{$data})
+    {
+      print STDERR "Error parsing test config $file_name block $Test: unexpectedly reached end of file \n";
     }
   }
   return ($Test, \%ABSTOL, \%RELTOL, $NPROCS, $line_number);
