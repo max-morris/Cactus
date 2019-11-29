@@ -976,12 +976,31 @@ for the all thorns you have compiled use
 
 \texttt{gmake <\var{configuration}>-testsuite}
 
-Setting \var{CCTK\_TESTSUITE\_RUN\_TESTS} to a space separated list of \var{thorn} and
-\var{thorn/test} entries lets you choose which tests to run.
+which interactively query for which tests to run and how many MPI processes
+to use.
+
+You can use environment variables or variables set on the \texttt{gmake}
+command line to choose defaults for these for non-interactive use.
+
+Setting \var{CCTK\_TESTSUITE\_RUN\_TESTS} to a space separated list of
+\var{thorn} and \var{thorn/test} entries lets you choose which tests to run.
 
 Setting \var{TESTS\_DIR} lets you choose the directory where tests are run
 in, by default this is the \texttt{TEST} directory in the Cactus main
 directory.
+
+Setting \var{CCTK\_TESTSUITE\_RUN\_PROCESSORS} chooses the number MPI
+processes (ranks) to use. It defaults to $2$.
+
+Setting \var{CCTK\_TESTSUITE\_RUN\_COMMAND} sets the command to execute to
+start a single test. Cactus will replace the strings \var{\$nprocs},
+\var{\$exe}, and \var{\$parfile} by the requested number of MPI processes,
+the Cactus executable of the configuration being tested and the test
+parameter file. It defaults to \texttt{mpirun -np \$nprocs \$exe \$parfile}
+if MPI is used and \texttt{\$exe \$parfile} otherwise.
+
+Setting \var{PROMPT} to \texttt{no} skips the interactive prompts and uses
+the (potentially customized) defaults.
 
 These test suite serve the dual purpose of
 
