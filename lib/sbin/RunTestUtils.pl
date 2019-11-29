@@ -38,7 +38,7 @@ require "CSTUtils.pl";
 sub Configure
 {
   my($config,$home_dir,$prompt) = @_;
-  my($configs_dir,$tests_dir);
+  my($configs_dir,$tests_dir,$tests_list);
 
   # Cactus home directory
   $config_data->{"CCTK_DIR"} = $home_dir;
@@ -67,6 +67,17 @@ sub Configure
     $tests_dir = $home_dir."/TEST";
   }
   $config_data->{"TESTS_DIR"} = $tests_dir;
+
+  # List of thorns to test (empty to test all thorns)
+  if ($ENV{"CCTK_TESTSUITE_RUN_TESTS"})
+  {
+    $tests_list = $ENV{"CCTK_TESTSUITE_RUN_TESTS"};
+  }
+  else
+  {
+    $tests_list = "";
+  }
+  $config_data->{"CCTK_TESTSUITE_RUN_TESTS"} = $tests_list;
 
   $config_data->{"SEPARATOR"} = "/";
   $config_data->{"CONFIG"} = $config;
@@ -439,11 +450,14 @@ sub FindTestParameterFiles
   my($testdata,$config_data) = @_;
   my($config,$config_dir);
   my($thorn);
+  my(%tests_list);
   my(%found_thorns) = ();
 
   $config      = $config_data->{"CONFIG"};
   $configs_dir = $config_data->{"CONFIGSDIR"};
   $sep         = $config_data->{"SEPARATOR"};
+
+  %tests_list = map {($_,1)} split /\s+/,$config_data->{"CCTK_TESTSUITE_RUN_TESTS"};
 
   open (AT, "< $configs_dir${sep}$config${sep}ThornList") || print "Cannot find ThornList for $config";
 
@@ -486,6 +500,8 @@ sub FindTestParameterFiles
       {
         $file =~ m:^(.*)\.par$:;
         $filedir = $1;
+        next if scalar %tests_list and not exists $tests_list{$thorn} and
+                not exists $tests_list{"$thorn/$filedir"};
         if (-d $filedir or -f "$filedir.tar" or
             -f "$filedir.tar.gz"  or -f "$filedir.tgz" or
             -f "$filedir.tar.bz2" or -f "$filedir.tbz" or
