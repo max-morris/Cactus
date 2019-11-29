@@ -15,9 +15,9 @@ Note that this whole Chapter is out-dated and needs a rewrite.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Use of CVS} 
+\chapter{Use of git}
 
-Version control in Cactus is maintained by the use of the CVS
+Version control in Cactus is maintained by the use of the git
 software.  This software allows one to trace any change to a file from 
 the creation of a file to the present version, and provides an
 automatic notification system to alert interested parties of changes
@@ -35,24 +35,28 @@ This makes sure the code compiles, runs, and produces the correct results.
 \item[{\em Know which files you are going to commit}]
 Always check what you are about to commit by use of the
 
-{\tt cvs -n -q update} 
+{\tt git status}
 
 command.  This ensures that you know which files have been modified,
 which files have been removed and which files have been added, and
-provides a useful reminder to use the {\tt \verb.cvs add.} and {\tt
-\verb.cvs remove.} commands.
+provides a useful reminder to use the {\tt \verb.git add.} and {\tt
+\verb.git rm.} commands.
 \item[{\em Know what has changed}]
 The use of the
 
-{\tt cvs diff} 
+{\tt git diff}
 
-command on each modified file is a good check that you are not just
+command or
+
+{\tt git add --patch}
+
+is a good check that you are not just
 committing an accidental keystroke or a debug statement.  Moreover it
 is a good reminder of what has changed and needs to be mentioned in
 the commit message.
 \item[{\em Provide clear and meaningful and relevant commit messages}]
 The commit message should explain what has changed and why, for
-details people can use {\tt \verb.cvs diff.}, however the commit
+details people can use {\tt \verb.git diff.}, however the commit
 message should be clear enough for people to have a good idea of what
 is going on.  This is strongly coupled to the item about making only
 one change listed above - if two distinct things have been changed,
@@ -63,17 +67,17 @@ should be noted in the commit message.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Use of GNATS}
+\chapter{Use of the Issue Tracker}
 
-Bug tracking in Cactus is maintained by use of the GNATS software.
+Bug tracking in Cactus is maintained by use of the bitbucket platform.
 This software provides audit trails of the status and all
 correspondence concerning any problem report (PR).  Each problem is
 given a unique number and assigned a responsible person.
 
 \begin{Lentry}
 \item[{\em Correspondence}]
-All correspondence with the author of the PR should be copied to {\tt
-\verb,bugs@cactuscode.org,} with the subject line assigned by Gnats.
+All correspondence with the author of the PR should be copied to the
+bitbucket ticket.
 This ensures that the correspondence is entered into the audit trail.
 \item[{\em Responsiblity}]
 When a PR comes in, it is assigned a responsible person.  If another
@@ -96,8 +100,8 @@ of the problem and mark it as {\tt Analysed}.
 \item[{\em Closing a PR}]
 Once a problem is fixed, the PR state should be changed to the current 
 version number of Cactus.  The {\tt Fix} field should be filled out
-with what was done, and {\tt CVS} version numbers for the changed
-files should be noted.  Any miscellaneous comments about the problem
+with what was done, and {\tt git} hash for the change
+should be noted.  Any miscellaneous comments about the problem
 should be noted in the {\tt Release-Note} field.
 \end{Lentry}
 
@@ -105,16 +109,16 @@ should be noted in the {\tt Release-Note} field.
 
 \chapter{Release procedure}
 
-In the beta release cycle, Cactus is maintained in two CVS
-repositories - the `stable' \verb./cactus. and the development
-\verb./cactusdevcvs..  The stable version is the last beta release and 
-no commits should ever be made to it - it is for people who do not
+In the release cycle, Cactus is maintained in two git
+branches - the `stable' \verb.Cactus_XXX. and the development
+\verb.master. branches.  The stable version is the last release and
+no non-reviewed commits should ever be made to it - it is for people who do
+not
 want to worry about things breaking from day to day.  The development
-version is the tree used for developing the next beta release.
+version is the tree used for developing the next release.
 
-Making a beta release consists of copying the cvs modules from the
-development repository to the stable repository.  The following
-procedure is used:
+Making a release consists of creating a new release branch from the
+master branch.  The following procedure is used:
 
 \begin{Lentry}
 \item[{\em Notify committers of start of release procedure}]
@@ -138,51 +142,9 @@ Tag the code with the latest release tag and update the {\tt LATEST}
 and {\tt STABLE} tags.  The easiest way to do this is from a clean
 checkout.
 \begin{verbatim}
-cvs -d:pserver:<...>@cvs.cactuscode.org:/cactusdevcvs co Cactus
-cd /Cactus
-make checkout
-cvs tag Cactus_4_0_Beta_X
-cvs tag -F LATEST
-cvs tag -F STABLE
+git tag Cactus_4_0_Beta_X_v0
 \end{verbatim}
 
-\item[{\em Log into cvs machine as cactus\_admin}]
-All repository maintanence should be done as the cactus admin user.
-\item[{\em Store old module files}]
-A directory should be made in the stable repository, and all
-releaseable modules should be moved into that directory.  This will
-temporarily break checkouts/updates from that repository.  A suggested 
-command is of the form
-
-\begin{verbatim}
-cd /cactus
-mkdir 4.0/betaX
-mv Cactus{,Base,Bench,Connect,Einstein,Elliptic,Examples,...} betaX
-\end{verbatim}
-
-\item[{\em Copy new module files}]
-e.g.
-\begin{verbatim}
-cp -r /cactusdevcvs/Cactus{,Base,Connect,Einstein,X,X,X} .
-\end{verbatim}
-\item[{\em Fix permissions on new module files}]
-\begin{verbatim}
-find Cactus{,Base,Connect,Einstein,X,X,X} -type d -exec chmod 777 {} \;
-export CVSROOT=/cactus
-Setperms.pl public Cactus{,Base,Connect,Einstein,X,X,X}
-\end{verbatim}
-\item[{\em Update CVS {\tt modules} file for new modules}]
-The stable repository's {\tt modules} file should be updated with any
-new module information added. 
-\item[{\em Check that checkout/update works}]
-A fresh checkout should be made as a double check that all permissions 
-have been set correctly.
-\item[{\em Update version of development tree}]
-Update the version in {\tt Makefile} and commit it to the development
-tree.
-\item[{\em Re-enable commit access}]
-People whose commit access was removed in the first part of this
-procedure should have access re-enabled.
 \item[{\em Notify people}]
 The relase notes should be sent out to the cactus mailing lists and
 any other relevant places such as linux-announce and Freshmeat.
