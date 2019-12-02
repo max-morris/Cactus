@@ -115,7 +115,7 @@ while ($choice !~ /^Q/i)
           my $retcode = 0;
 	  if ($choice !~ /^O/i)
 	  {
-	    $retcode = &RunTest("log",$test,$thorn,$config_data,$testdata);
+	    $retcode = &RunTest("log",$test,$thorn,$config_data,$testdata,\%runconfig);
 	  }
 
 	  $rundata = &CompareTestFiles($test,$thorn,\%runconfig,$rundata,$config_data,$testdata,$retcode);
@@ -145,7 +145,7 @@ while ($choice !~ /^Q/i)
 	print "  Test $thorn: $test\n";
 	print "    \"$testdata->{\"$thorn $test DESC\"}\"\n";
         my $retcode = 0;
-	$retcode = &RunTest("log",$tests[2*$i],$tests[2*$i+1],$config_data,$testdata);
+	$retcode = &RunTest("log",$tests[2*$i],$tests[2*$i+1],$config_data,$testdata,\%runconfig);
 	$rundata = &CompareTestFiles($tests[2*$i],$tests[2*$i+1],\%runconfig,$rundata,$config_data,$testdata,$retcode);
 	$rundata = &ReportOnTest($tests[2*$i],$tests[2*$i+1],$rundata,$testdata);
 	&ViewResults($tests[2*$i],$tests[2*$i+1],\%runconfig,$rundata,$testdata);
@@ -161,11 +161,11 @@ while ($choice !~ /^Q/i)
         my $retcode = 0;
 	if ($choice =~ /^S/i)
 	{
-	  $retcode = &RunTest("log stdout",$test,$thorn,$config_data,$testdata);
+	  $retcode = &RunTest("log stdout",$test,$thorn,$config_data,$testdata,\%runconfig);
 	}
 	else
 	{
-	  $retcode = &RunTest("log",$test,$thorn,$config_data,$testdata);
+	  $retcode = &RunTest("log",$test,$thorn,$config_data,$testdata,\%runconfig);
 	}
 	$rundata = &CompareTestFiles($test,$thorn,\%runconfig,$rundata,$config_data,$testdata,$retcode);
 	$rundata = &ReportOnTest($test,$thorn,,$rundata,$testdata);

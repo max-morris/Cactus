@@ -1588,7 +1588,7 @@ sub ChooseTests
 ############################################################
 sub RunTest
 {
-  my ($output,$test,$thorn,$config_data,$testdata) = @_;
+  my ($output,$test,$thorn,$config_data,$testdata,$rundata) = @_;
   my ($test_dir,$config);
   my ($retcode);
 
@@ -1614,7 +1614,15 @@ sub RunTest
   # substitute the ($nprocs, $exe, $parfile) templates in the command
   my $cmd = $config_data->{'COMMAND'};
   $cmd =~ s/\$exe/$config_data->{'EXE'}/g;
-  $cmd =~ s/\$nprocs/$config_data->{'NPROCS'}/g;
+  my $NPROCS;
+  if($rundata->{"$thorn NPROCS"}) {
+    $NPROCS = $rundata->{"$thorn NPROCS"};
+  } elsif($rundata->{"$thorn $test NPROCS"}) {
+    $NPROCS = $rundata->{"$thorn $test NPROCS"};
+  } else {
+    $NPROCS = $config_data->{'NPROCS'};
+  }
+  $cmd =~ s/\$nprocs/$NPROCS/g;
   $cmd =~ s/\$parfile/$parfile/g;
 
   $retcode, $elapsed = &RunCactus($output,$test,$cmd);
@@ -2138,7 +2146,7 @@ sub ParseAllParameterFiles
         $testdata->{"$thorn $testbase MISSING"} .= $missing;
         $testdata->{'NUNRUNNABLE'}++;
       }
-      elsif ($nprocs_required != $nprocs_available)
+      elsif ($nprocs_required > $nprocs_available)
       {
         $testdata->{"$thorn UNRUNNABLE"} .= "$testbase ";
         $testdata->{"$thorn $testbase NPROCS"} = $nprocs_required;
