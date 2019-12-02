@@ -215,7 +215,6 @@ sub ParseTestConfigs
 {
   my($testdata,$config_data,$rundata) = @_;
   my($line_number, $line);
-  my($test, $ABSTOL, $RELTOL);
 
   my $arrangement_dir = "$config_data->{'CCTK_DIR'}${sep}arrangements${sep}";
   foreach $thorn (split(" ",$testdata->{"THORNS"}))
@@ -250,7 +249,6 @@ sub ParseTestConfigs
              $varRegex=".*";
           }
           $rundata->{"$thorn ABSTOL"}{$varRegex}=$newtol;
-          $ABSTOL=$$rundata{"$thorn ABSTOL"};
         }
         elsif ($line =~ m/^\s*RELTOL\s*(\S*)\s*(\S*)\s*$/i)
         {
@@ -261,11 +259,10 @@ sub ParseTestConfigs
              $varRegex=".*";
           }
           $rundata->{"$thorn RELTOL"}{$varRegex}= $newtol;
-          $RELTOL=$$rundata{"$thorn RELTOL"};
         }
         elsif ($line =~ m/^\s*NPROCS\s+(\d+)\s*$/i)
         {
-          $NPROCS = $rundata->{"$thorn NPROCS"} = $1;
+          $rundata->{"$thorn NPROCS"} = $1;
         }
         elsif ($line =~ m/^\s*EXTENSIONS\s*(.*)/i)
         {
@@ -273,6 +270,7 @@ sub ParseTestConfigs
         }
         elsif ($line =~ m/^\s*TEST\s*(.*)/i)
         {
+          my ($test, $ABSTOL, $RELTOL, $NPROCS);
           ($test, $ABSTOL, $RELTOL, $NPROCS, $line_number) =
             &ParseTestBlock($line_number, $config_file, \@config);
           $rundata->{"$thorn $test ABSTOL"} = $ABSTOL;
@@ -790,7 +788,7 @@ sub InitialiseTestData
 
 =item $runconfig
  $runconfig consists of ABSTOL (default 1e-12) and
- RELTOL (1e-12).
+ RELTOL (1e-12) globally and for each thorn and thorn/test.
 
 =back
 
@@ -1577,8 +1575,8 @@ sub ChooseTests
 
 =over 
 
-=item RunTest($output, $test, $thorn, $config_data, $testdata)
- This subroutine runs $test of $thorn with $config_data
+=item RunTest($output, $test, $thorn, $config_data, $testdata, $rundata)
+ This subroutine runs $test of $thorn with $config_data and $rundata
  and returns $testdata.
 
 =back
