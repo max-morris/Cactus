@@ -1295,7 +1295,7 @@ sub WriteFullResults
       push (@summary, "    $thorn:\n");
       foreach $test (sort split(" ",$testdata->{"$thorn RUNNABLE"}))
       {
-    push (@summary, "      $test\n");
+        push (@summary, "      $test\n");
       }
     }
   }
