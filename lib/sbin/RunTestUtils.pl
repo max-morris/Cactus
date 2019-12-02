@@ -1210,11 +1210,11 @@ sub WriteFullResults
   my @summary = ();
   my ($separator);
 
-  $separator1 = "========================================================================\n\n";
-  $separator2 = "------------------------------------------------------------------------\n\n";
+  $separator1 = "========================================================================\n";
+  $separator2 = "------------------------------------------------------------------------\n";
 
   push (@summary, $separator2);
-  push (@summary, "  Warnings for configuration $config_data->{\"CONFIG\"}\n  --------\n\n");
+  push (@summary, "  Warnings for configuration $config_data->{\"CONFIG\"}\n  --------\n");
 
   # Missing thorns for tests
 
@@ -1232,7 +1232,7 @@ sub WriteFullResults
       $missingtests++;
     }
   }
-  push (@summary, "$message\n") if ($missingtests > 0);
+  push (@summary, "$message") if ($missingtests > 0);
 
   # Different number of processors required
   $message = "  Tests missed for different number of processors required:\n";
@@ -1249,7 +1249,7 @@ sub WriteFullResults
       $missingtests++;
     }
   }
-  push (@summary, "$message\n") if ($missingtests > 0);
+  push (@summary, "$message") if ($missingtests > 0);
 
   # Different numbers of test files
 
@@ -1268,14 +1268,14 @@ sub WriteFullResults
       }
     }
   }
-  push (@summary, "$message\n") if ($extratests > 0);
+  push (@summary, "$message") if ($extratests > 0);
 
   push (@summary, $separator2);
 
-  push (@summary, "  Testsuite Summary for configuration $config_data->{\"CONFIG\"}\n");
-  push (@summary, "  -----------------\n\n");
+  push (@summary, "  Testsuite Summary for configuration $config_data->{\"CONFIG\"}");
+  push (@summary, "  -----------------\n");
 
-  push (@summary, "  Suitable testsuite parameter files found in:\n\n");
+  push (@summary, "  Suitable testsuite parameter files found in:\n");
 
   $tested = 0;
   $nottested = "";
@@ -1284,7 +1284,7 @@ sub WriteFullResults
     $num = scalar(split(" ",$testdata->{"$thorn RUNNABLE"}));
     if ($num > 0)
     {
-      push (@summary, "    $thorn [$num]\n");
+      push (@summary, "    $thorn [$num]");
       $tested++;
     }
     else
@@ -1293,27 +1293,27 @@ sub WriteFullResults
     }
   }
 
-  push (@summary, "\n");
-  push (@summary, "  Details:\n\n");
+  push (@summary, "");
+  push (@summary, "  Details:\n");
   foreach $thorn (sort split(" ",$testdata->{"THORNS"}))
   {
     $num = scalar(split(" ",$testdata->{"$thorn RUNNABLE"}));
     if ($num > 0)
     {
-      push (@summary, "    $thorn:\n");
+      push (@summary, "    $thorn:");
       foreach $test (sort split(" ",$testdata->{"$thorn RUNNABLE"}))
       {
         my $elapsed = sprintf "%.1f", $testdata->{"$thorn $test ELAPSEDTIME"};
-        push (@summary, "      $test ($elapsed s)\n");
+        push (@summary, "      $test ($elapsed s)");
       }
     }
   }
 
-  push (@summary, "\n");
+  push (@summary, "");
   if ($nottested)
   {
-    push (@summary, "  Thorns with no valid testsuite parameter files:\n");
-    push (@summary, "$nottested\n\n");
+    push (@summary, "  Thorns with no valid testsuite parameter files:");
+    push (@summary, "$nottested\n");
   }
 
   $unknown = 0;
@@ -1328,16 +1328,16 @@ sub WriteFullResults
         {
           if (!$unknown)
           {
-            push (@summary, "  Thorns with unrecognized test output files:\n");
+            push (@summary, "  Thorns with unrecognized test output files:");
             $unknown = 1;
           }
 
           if (!$gotthorn)
           {
-            push (@summary, "    $thorn\n");
+            push (@summary, "    $thorn");
             $gotthorn = 1;
           }
-          push (@summary, "       $test: $testdata->{\"$thorn $test UNKNOWNFILES\"}\n");
+          push (@summary, "       $test: $testdata->{\"$thorn $test UNKNOWNFILES\"}");
         }
       }
     }
