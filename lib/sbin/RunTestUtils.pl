@@ -1,3 +1,5 @@
+use Time::HiRes;
+
 $top = `pwd` if (! $top);
 $config_dir = "$top/config-data" if (! $config_dir);
 
@@ -1295,7 +1297,8 @@ sub WriteFullResults
       push (@summary, "    $thorn:\n");
       foreach $test (sort split(" ",$testdata->{"$thorn RUNNABLE"}))
       {
-        push (@summary, "      $test\n");
+        my $elapsed = sprintf "%.1f", $testdata->{"$thorn $test ELAPSEDTIME"};
+        push (@summary, "      $test ($elapsed s)\n");
       }
     }
   }
@@ -1608,8 +1611,12 @@ sub RunTest
   $cmd =~ s/\$nprocs/$config_data->{'NPROCS'}/g;
   $cmd =~ s/\$parfile/$parfile/g;
 
+  my $start_time = &Time::HiRes::gettimeofday();
   $retcode = &RunCactus($output,$test,$cmd);
+  my $end_time = &Time::HiRes::gettimeofday();
   chdir $config_data->{"CCTK_DIR"};
+
+  $testdata->{"$thorn $test ELAPSEDTIME"} = $end_time - $start_time;
 
   # Deal with the error code
   if($retcode != 0)
