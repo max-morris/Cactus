@@ -1073,22 +1073,28 @@ sub RunCactus
   printf "\n  Issuing $command\n";
 
   $retcode = 0;
-  open (CMD, "pwd; $command 2>&1 |");
   open (LOG, "> $testname.log");
+
+  my $start_time = &Time::HiRes::gettimeofday();
+  open (CMD, "pwd; $command 2>&1 |");
 
   while (<CMD>)
   {
     print LOG if ($output =~ /log/);
     print STDOUT if ($output =~ /stdout/);
   }
-  close LOG;
   close CMD;
-
   $retcode = $? >> 8 if($retcode==0);
+  my $end_time = &Time::HiRes::gettimeofday();
+
+  my $elapsed = $end_time - $start_time;
+  printf LOG "  Elapsed time: %.1f s\n", $elapsed if ($output =~ /log/);
+  printf LOG "  Elapsed time: %.1f s\n", $elapsed if ($output =~ /stdout/);
+  close LOG;
 
   print STDOUT "\n\n" if ($output =~ /stdout/);
 
-  return $retcode;
+  return $retcode, $elapsed;
 }
 
 
@@ -1611,12 +1617,10 @@ sub RunTest
   $cmd =~ s/\$nprocs/$config_data->{'NPROCS'}/g;
   $cmd =~ s/\$parfile/$parfile/g;
 
-  my $start_time = &Time::HiRes::gettimeofday();
-  $retcode = &RunCactus($output,$test,$cmd);
-  my $end_time = &Time::HiRes::gettimeofday();
+  $retcode, $elapsed = &RunCactus($output,$test,$cmd);
   chdir $config_data->{"CCTK_DIR"};
 
-  $testdata->{"$thorn $test ELAPSEDTIME"} = $end_time - $start_time;
+  $testdata->{"$thorn $test ELAPSEDTIME"} = $elapsed;
 
   # Deal with the error code
   if($retcode != 0)
