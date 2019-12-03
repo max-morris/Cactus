@@ -1613,10 +1613,10 @@ sub RunTest
   my $cmd = $config_data->{'COMMAND'};
   $cmd =~ s/\$exe/$config_data->{'EXE'}/g;
   my $NPROCS;
-  if($rundata->{"$thorn NPROCS"}) {
-    $NPROCS = $rundata->{"$thorn NPROCS"};
-  } elsif($rundata->{"$thorn $test NPROCS"}) {
+  if($rundata->{"$thorn $test NPROCS"}) {
     $NPROCS = $rundata->{"$thorn $test NPROCS"};
+  } elsif($rundata->{"$thorn NPROCS"}) {
+    $NPROCS = $rundata->{"$thorn NPROCS"};
   } else {
     $NPROCS = $config_data->{'NPROCS'};
   }
