@@ -812,7 +812,7 @@ $(addsuffix -reconfig,$(CONFIGURATIONS)): int_version
 	if test ! -r "$(CONFIGS_DIR)/$(@:%-reconfig=%)/config-info"; then \
 	  echo ""; \
 	  echo "Error reconfiguring '$(@:%-reconfig=%)': configuration is incomplete."; \
-	  echo "Use '$(MAKE) $(@:%-config=%)' to configure the configuration."; \
+	  echo "Use '$(MAKE) $(@:%-reconfig=%-config)' to configure the configuration."; \
 	  exit 2; \
 	elif ! head -n 1 $(CONFIGS_DIR)/$(@:%-reconfig=%)/config-info | grep -q '# CONFIGURATION'; then \
 	  echo "Error reconfiguring '$(@:%-reconfig=%)': unrecognized config-info file format" ; \
