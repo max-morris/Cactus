@@ -692,6 +692,9 @@ sub ParseConfigInfo
       if(! $options{$1})
       {
         $options{$1} = $2;
+        # replace all $(...) constructs with ENV variable values (but only is
+        # not preceeded by $ sign
+        $options{$1} =~ s/(?<!\$)\$\(([^)]*)\)/$ENV{$1}/g;
       }
       else
       {
