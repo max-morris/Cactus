@@ -110,6 +110,7 @@ require "BuildHeaders.pl";
 require "CreateConfigurationBindings.pl";
 require "ConfigScriptParser.pl";
 require "Logger.pl";
+require "rdwr.pl";
 
 #######################################################################
 #
