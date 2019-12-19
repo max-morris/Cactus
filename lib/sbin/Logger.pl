@@ -10,8 +10,9 @@
 #@@*/
 
 
-use lib ".";
-require "$sbin_dir/CSTUtils.pl";
+use FindBin;
+use lib "$FindBin::Bin";
+require "CSTUtils.pl";
 
 #/*@@
 #  @routine   CreateLogFile

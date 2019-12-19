@@ -3,6 +3,7 @@ use strict;
 
 my $ccl_file = undef;
 
+use FindBin;
 use Carp;
 use FileHandle;
 use Data::Dumper;
@@ -70,7 +71,7 @@ sub create_interface_database
   %thorns = @inargs[2*$n_system..$#inargs];
   @thorns = sort keys %thorns;
 
-  my $peg_file = $ENV{CCTK_HOME}."/src/piraha/pegs/interface.peg";
+  my $peg_file = "$FindBin::Bin/../../src/piraha/pegs/interface.peg";
   my ($grammar,$rule) = piraha::parse_peg_file($peg_file);
 
   #  Loop through each  thorn's interface file.
@@ -252,7 +253,7 @@ sub get_implementation_ancestors
 {
   my($implementation, $interface_data_ref, $ancestors_ref) = @_;
   my(%info);
-  my $cctk_home = $ENV{CCTK_HOME};
+  die "main::cctk_home not defined" unless defined($main::cctk_home);
 
   $interface_data_ref->{"IMPLEMENTATION \U$implementation\E THORNS"} =~ m:(\w+):;
 
@@ -267,7 +268,7 @@ sub get_implementation_ancestors
       if(! $interface_data_ref->{"IMPLEMENTATION \U$ancestor\E THORNS"})
       {
         # Implementation not found; give extensive information
-        %info = &buildthorns("$cctk_home/arrangements","thorns");
+        %info = &buildthorns("$main::cctk_home/arrangements","thorns");
         my $suggest_thorns = "";
         foreach my $thorninfo (sort keys %info)
         {
@@ -1449,10 +1450,12 @@ sub parse_interface_ccl
     for my $k (keys %{$interface_data_ref1}) {
       $interface_data_ref->{$k} .= $interface_data_ref1->{$k};
     }
-  } else {
+  } elsif($main::cctk_parser eq "old") {
     for my $k (keys %{$interface_data_ref2}) {
       $interface_data_ref->{$k} .= $interface_data_ref2->{$k};
     }
+  } else {
+    die "Internal error: main::cctk_parser not 'new', 'old' or 'both' but '$main::cctk_parser'"
   }
 }
 

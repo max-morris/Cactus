@@ -241,9 +241,9 @@ sub GetThornPaths
    my %paths;
 
    foreach (@$rlListOfThorns) {
-      /^(.*?)\/(.*?)$/;
+      m/^(.*?)\/(.*?)$/ or die "Internal error: expected 'arragnement/thorn', but received '$_'";
       if (($interestingFile eq "") || (-e "${arrangementsDir}${_}/${interestingFile}")) {
-         my $key = $keepArrInKey ? "$1/$2" : "$1";
+         my $key = $keepArrInKey ? "$1/$2" : "$2";
          $paths{$key} = "$arrangementsDir$_";
       }
    }

@@ -18,20 +18,14 @@ A3  How can I get involved?
 
 
 ------------------------------------------------------------------------------
-Distributions and CVS Checkout:
+Distributions and git Checkout:
 
-B1  When doing a cvs update I get 'not enough slashes in ...' .
+B1  How do I checkout an earlier version of Cactus ?
 
-B2  I want to recreate a Cactus executable from last year, I have a thorn list
-    but when I try and check it out from the /cactus or /cactusdevcvs
-    repository I don't get some of the thorns.
-
-B3  How do I checkout an earlier version of Cactus ?
-
-B4  When running GetCactus it tells me it is refusing to update my thorn
+B2  When running GetCactus it tells me it is refusing to update my thorn
     because it is installed from a different repository.
 
-B5  Tell me how I can get thorns?
+B3  Tell me how I can get thorns?
 
 
 ------------------------------------------------------------------------------
@@ -284,7 +278,7 @@ F3  Why is there an MPI call in the Flesh (MPI_Init)? I thought that the
     Cactus flesh was independent of any parallel protocol, why isn't this
     call made from a driver thorn?
 
-F4  Is there any way to tell what CVS version of individual source files
+F4  Is there any way to tell what git version of individual source files
     was used to build an executable?
 
 F5  Why is the main routine of Cactus written in C++ (src/main/flesh.cc) when
@@ -381,67 +375,36 @@ A3  How can I get involved?
 
 
 -------------------------------------------------------------------------------
-Distributions and CVS Checkout:
+Distributions and git Checkout:
 
-B1  When doing a cvs update I get 'not enough slashes in ...' .
+B1  How do I checkout an earlier version of Cactus ?
 
-    It seems that CVS sometimes gets confused with multiple repositories.
-    Check that you are using the latest version of CVS, otherwise moving into
-    the arrangements directory and performing another 'cvs update', followed
-    by a final one in the top-level directory should complete your update.
+    Cactus is "tagged" in git for each release, so to checkout for example
+    the flesh for 4.7.0 use:
 
-    There is now a Cactus make target "gmake cvsupdate" which avoids this
-    problem by updating the flesh and checked out thorns explicitly.
+    git checkout Cactus_4.7.0_v0
 
-
-B2  I want to recreate a Cactus executable from last year, I have a thorn list
-    but when I try and check it out from the /cactus or /cactusdevcvs
-    repository I don't get some of the thorns.
-
-    This is probably because the thorns moved arrangement, or were rewritten.
-    To checkout the right code, look in doc/ReleaseNotes to decide which
-    release the thorn was in, and then checkout the thorn from the /cactus
-    repository, eg. if the thorn "OldThorn" was last in the Beta 7 release use:
-
-    cvs -d :pserver:cvs_anon@cvs.cactuscode.org:/cactus co -d OldThorn \
-                                                             beta7/OldThorn
+    [to see a list of possible tags go to the Cactus flesh repository and type
+     "git tag -l"]
 
 
-B3  How do I checkout an earlier version of Cactus ?
-
-    Cactus is "tagged" in CVS for each release, so to checkout for example
-    the flesh for Beta 10 use:
-
-    cvs -d :pserver:cvs_anon@cvs.cactuscode.org:/cactus checkout -r \
-                Cactus_4_0_Beta_10 Cactus
-
-    [to see a list of possible tags go to the Cactus home directory
-     and type "cvs status -v Makefile"]
-
-    To checkout from a particular date, for example the 7th July 2000, use
-
-    cvs -d :pserver:cvs_anon@cvs.cactuscode.org:/cactus checkout -D \
-                "7 July 2000"
-
-    Also look at FAQ B2.
-
-
-B4  When running GetCactus it tells me it is refusing to update my thorn
+B2  When running GetComponents it tells me it is refusing to update my thorn
     because it is installed from a different repository.
 
-    What GetCactus does is look in the thorn's CVS/Root to get the repository
+    What GetComponents does is look in the thorn's repo to get the repository
     that it was originally installed from.  If the repository specified in
-    your thornlist (using the !REPOSITORY_LOCATION directive) is not the same,
-    then GetCactus will refuse to update your thorn.
+    your thornlist (using the !URL directive) is not the same, then
+    GetComponents will refuse to update your thorn.
 
     This problem commonly occurs when people interchange repository locations
-    that actually point to the same place.  For example, using cvs.aei.mpg.de
-    for the initial checkout, and then using cvs.cactuscode.org for an update.
+    that actually point to the same place.  For example, using
+    https://bitbucket.org/cactuscode/cactus for the initial checkout, and then
+    using git@bitbucket.org:cactuscode/cactus for an update.
 
     To fix this problem, simply be consistent with repository locations.
 
 
-B5  Tell me how I can get thorns?
+B3  Tell me how I can get thorns?
 
     The best way is using an annotated thorn list together with
     the GetComponents script, which should then be as simple as
@@ -1571,20 +1534,12 @@ F3  Why is there an MPI call in the Flesh (MPI_Init)? I thought that the
     uglier option.
 
 
-F4  Is there any way to tell what CVS version of individual source files
+F4  Is there any way to tell what git version of individual source files
     was used to build an executable?
 
-    Actually there is, just issue the Unix command:
-
-    strings cactus_<config> | grep Header
-
-    to see all the version information for all source files, and
-
-    strings cactus_<config> | grep Header | grep <filename>
-
-    to look for a particular file.
-
-    (Note that this only works for files using the CCTK_FILEVERSION macro.)
+    There is currently no way to find out which version of the code was used to
+    build the executable. You can however use the Formaline thorn to store a
+    full copy of the source code used to build the exectable in the executable.
 
 
 F5  Why is the main routine of Cactus written in C++ (src/main/flesh.cc) when

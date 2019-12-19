@@ -194,6 +194,9 @@ SETUP    = lib/make/setup_configuration.pl
 NEWTHORN = lib/make/new_thorn.pl
 BUILD_ACTIVETHORNS = lib/sbin/BuildActiveThorns.pl
 
+HTLATEX = htlatex
+HTLATEXFLAGS = "xhtml,mathml,charset=utf-8" " -cunihtf -utf8" "" -interaction=nonstopmode
+
 # Dividers to make the screen output slightly nicer
 DIVEL   =  __________________
 DIVIDER =  $(DIVEL)$(DIVEL)$(DIVEL)$(DIVEL)
@@ -391,7 +394,6 @@ else
 	@echo "  -testsuite     : run the test suites."
 	@echo "  -thornlist     : regenerate the ThornList file."
 	@echo "  -ThornGuide    : create the thorn manual for a specific configuration."
-	@echo "  -update        : update the files for a specific configuration from CVS and/or SVN."
 	@echo "  -examples      : copy thorn parameter files to examples directory."
 endif
 	$(NOTIFY_DIVIDER)
@@ -410,11 +412,6 @@ endif
 	$(NOTIFY_DIVIDER)
 	@echo $(MAKE) also knows the following targets
 	@echo
-	@echo "  checkout            - checkout public arrangements/thorns."
-	@echo "  cvsdiff             - show differences between installed Cactus and"
-	@echo "                        version in CVS repository."
-	@echo "  cvsstatus           - report on status of Cactus (when installed from CVS)."
-	@echo "  update              - update flesh and arrangements from CVS and/or SVN."
 	@echo "  default             - create a new configuration with a default name."
 	@echo "  distclean           - delete all existing configurations."
 	@echo "  downsize            - remove non-essential files."
@@ -818,7 +815,7 @@ $(addsuffix -reconfig,$(CONFIGURATIONS)): int_version
 	if test ! -r "$(CONFIGS_DIR)/$(@:%-reconfig=%)/config-info"; then \
 	  echo ""; \
 	  echo "Error reconfiguring '$(@:%-reconfig=%)': configuration is incomplete."; \
-	  echo "Use '$(MAKE) $(@:%-config=%)' to configure the configuration."; \
+	  echo "Use '$(MAKE) $(@:%-reconfig=%-config)' to configure the configuration."; \
 	  exit 2; \
 	elif ! head -n 1 $(CONFIGS_DIR)/$(@:%-reconfig=%)/config-info | grep -q '# CONFIGURATION'; then \
 	  echo "Error reconfiguring '$(@:%-reconfig=%)': unrecognized config-info file format" ; \
@@ -1046,15 +1043,17 @@ UsersGuideHTML: doc/UsersGuide/bincactus2.ps
 	cd doc/UsersGuide;                         \
 	$(CCTK_HOME)/lib/sbin/ConvertFigures;      \
 	echo "  Running htlatex....";              \
-	htlatex UsersGuide.tex "html,2,fn-in" "" "" -interaction=nonstopmode > LATEX_MESSAGES 2>&1; \
+	$(HTLATEX) UsersGuide.tex $(HTLATEXFLAGS) > LATEX_MESSAGES 2>&1; \
 	if [ $$? -ne 0 ]; then                                                \
 	  echo "  Problem executing htlatex. See doc/UsersGuide/LATEX_MESSAGES."; \
 		exit 1;                                                           \
 	fi;                                                                 \
-	if grep "^\! " "LATEX_MESSAGES"; then                               \
+	if grep "^\! " "LATEX_MESSAGES" ||                                  \
+           grep -e "--- error ---" "LATEX_MESSAGES"; then                   \
 	  echo "  Problem in $<.  See doc/UsersGuide/LATEX_MESSAGES.";      \
 	  exit 1;                                                           \
-	elif grep "^LaTeX Warning:" "LATEX_MESSAGES"; then                  \
+	elif grep "^LaTeX Warning:" "LATEX_MESSAGES" ||                     \
+	     grep -e "--- warning ---" "LATEX_MESSAGES"; then         \
 	  echo "  For more information see doc/UsersGuide/LATEX_MESSAGES."; \
 	fi;                                                                 \
   mkdir -p $(CCTK_HOME)/doc/HTML/UsersGuide;            \
@@ -1097,15 +1096,17 @@ ReferenceManualHTML:
 	cd doc/ReferenceManual;                    \
 	$(CCTK_HOME)/lib/sbin/ConvertFigures;      \
 	echo "  Running htlatex....";              \
-	htlatex ReferenceManual.tex "html,2,fn-in" "" "" -interaction=nonstopmode  > LATEX_MESSAGES 2>&1; \
+	$(HTLATEX) ReferenceManual.tex $(HTLATEXFLAGS)  > LATEX_MESSAGES 2>&1; \
 	if [ $$? -ne 0 ]; then                                                \
 	  echo "  Problem executing htlatex. See doc/UsersGuide/LATEX_MESSAGES."; \
 		exit 1;                                                           \
 	fi;                                                                 \
-	if grep "^\! " "LATEX_MESSAGES"; then                            \
+	if grep "^\! " "LATEX_MESSAGES" ||                                  \
+           grep -e "--- error ---" "LATEX_MESSAGES"; then                   \
 	  echo "  Problem in $<.  See doc/ReferenceManual/LATEX_MESSAGES."; \
 	  exit 1;                                                           \
-	elif grep "^LaTeX Warning:" "LATEX_MESSAGES"; then    \
+	elif grep "^LaTeX Warning:" "LATEX_MESSAGES" ||                     \
+	     grep -e "--- warning ---" "LATEX_MESSAGES"; then         \
 	  echo "  For more information see doc/ReferenceManual/LATEX_MESSAGES."; \
 	fi;                                         \
 	mkdir -p $(CCTK_HOME)/doc/HTML/ReferenceManual;                \
@@ -1148,15 +1149,17 @@ MaintGuideHTML:
 	cd doc/MaintGuide;                          \
 	$(CCTK_HOME)/lib/sbin/ConvertFigures;             \
 	echo "  Running htlatex....";              \
-	htlatex MaintGuide.tex "html,2,fn-in" "" "" -interaction=nonstopmode  > LATEX_MESSAGES 2>&1; \
+	$(HTLATEX) MaintGuide.tex $(HTLATEXFLAGS)  > LATEX_MESSAGES 2>&1; \
 	if [ $$? -ne 0 ]; then                                                \
 	  echo "  Problem executing htlatex. See doc/UsersGuide/LATEX_MESSAGES."; \
 		exit 1;                                                           \
 	fi;                                                                 \
-	if grep "^\! " "LATEX_MESSAGES"; then                               \
+	if grep "^\! " "LATEX_MESSAGES" ||                                  \
+           grep -e "--- error ---" "LATEX_MESSAGES"; then                   \
 	  echo "  Problem in $<.  See doc/MaintGuide/LATEX_MESSAGES.";      \
 	  exit 1;                                                           \
-	elif grep "^LaTeX Warning:" "LATEX_MESSAGES"; then                  \
+	elif grep "^LaTeX Warning:" "LATEX_MESSAGES" ||                     \
+	     grep -e "--- warning ---" "LATEX_MESSAGES"; then         \
 	  echo "  For more information see doc/MaintGuide/LATEX_MESSAGES."; \
 	fi;                                                                 \
 	mkdir -p $(CCTK_HOME)/doc/HTML/MaintGuide;                          \
@@ -1227,19 +1230,19 @@ ArrangementDoc:
 .PHONY: ThornDocHTML
 %-ThornDocHTML: doc/UsersGuide/bincactus2.ps
 	$(NOTIFY_DEVIDER)
-	@lib/sbin/ThornDocHTML $(@:%-ThornDocHTML=%)
+	@HTLATEX=$(HTLATEX) HTLATEXFLAGS='$(HTLATEXFLAGS)' lib/sbin/ThornDocHTML $(@:%-ThornDocHTML=%)
 	$(NOTIFY_DIVIDER)
 ThornDocHTML: doc/UsersGuide/bincactus2.ps
 	$(NOTIFY_DEVIDER)
-	@lib/sbin/ThornDocHTML
+	@HTLATEX=$(HTLATEX) HTLATEXFLAGS='$(HTLATEXFLAGS)' lib/sbin/ThornDocHTML
 	$(NOTIFY_DIVIDER)
 %-ArrangementDocHTML: doc/UsersGuide/bincactus2.ps
 	$(NOTIFY_DEVIDER)
-	@lib/sbin/ArrangementDocHTML $(@:%-ArrangementDocHTML=%)
+	@HTLATEX=$(HTLATEX) HTLATEXFLAGS='$(HTLATEXFLAGS)' lib/sbin/ArrangementDocHTML $(@:%-ArrangementDocHTML=%)
 	$(NOTIFY_DIVIDER)
 ArrangementDocHTML: doc/UsersGuide/bincactus2.ps
 	$(NOTIFY_DEVIDER)
-	@lib/sbin/ArrangementDocHTML
+	@HTLATEX=$(HTLATEX) HTLATEXFLAGS='$(HTLATEXFLAGS)' lib/sbin/ArrangementDocHTML
 	$(NOTIFY_DIVIDER)
 
 ###############################################################################
@@ -1254,59 +1257,6 @@ thorninfo:
 	@echo Displaying info for all thorns in the arrangements directory
 	$(PERL) -s $(BUILD_ACTIVETHORNS) $(CCTK_HOME)/arrangements | cat;
 	$(NOTIFY_DIVIDER)
-
-# Processed CVS information
-
-.PHONY: cvsstatus
-
-cvsstatus:
-	$(PERL) -s $(CCTK_HOME)/lib/sbin/CVSStatus.pl
-
-# run cvsudpate on a configuration
-
-.PHONY: update
-
-cvsupdate:
-	$(PERL) -s $(CCTK_HOME)/lib/sbin/CVSUpdate.pl arrangements
-update:
-	$(PERL) -s $(CCTK_HOME)/lib/sbin/CVSUpdate.pl arrangements
-
-
-ifneq ($strip($(CONFIGURATIONS)),)
-.PHONY $(addsuffix -cvsupdate,$(CONFIGURATIONS)):
-.PHONY $(addsuffix -update,$(CONFIGURATIONS)):
-
-$(addsuffix -cvsupdate,$(CONFIGURATIONS)):
-	$(NOTIFY_DIVIDER)
-	@echo Updating files for configuration $(@:%-cvsupdate=%)
-	if test -r $(CONFIGS_DIR)/$(@:%-cvsupdate=%)/ThornList ; then \
-          $(PERL) -s lib/sbin/CVSUpdate.pl arrangements $(CONFIGS_DIR)/$(@:%-cvsupdate=%)/ThornList; \
-        fi
-	@echo Done.
-
-$(addsuffix -update,$(CONFIGURATIONS)):
-	$(NOTIFY_DIVIDER)
-	@echo Updating files for configuration $(@:%-update=%)
-	if test -r $(CONFIGS_DIR)/$(@:%-update=%)/ThornList ; then \
-          $(PERL) -s lib/sbin/CVSUpdate.pl arrangements $(CONFIGS_DIR)/$(@:%-update=%)/ThornList; \
-        fi
-	@echo Done.
-endif
-
-%-cvsupdate:
-	$(NOTIFY_DIVIDER)
-	@echo Configuration $(@:%-cvsupdate=%) does not exist.
-	@echo CVS Update aborted.
-
-%-update:
-	$(NOTIFY_DIVIDER)
-	@echo Configuration $(@:%-update=%) does not exist.
-	@echo Update aborted.
-
-.PHONY: cvsdiff
-
-cvsdiff:
-	$(PERL) -s $(CCTK_HOME)/lib/sbin/CVSStatus.pl -case=diff
 
 # Remove non-essential files
 

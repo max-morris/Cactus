@@ -24,8 +24,9 @@ sub debug_dedent
   $debug_indent_level--;
 }
 
-use lib ".";
-require "lib/sbin/RunTestUtils.pl";
+use FindBin;
+use lib "$FindBin::Bin";
+require "RunTestUtils.pl";
 
 # Read options from command line
 $prompt = shift;   

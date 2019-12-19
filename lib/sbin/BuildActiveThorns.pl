@@ -9,16 +9,13 @@
 #  @version $Id$
 #@@*/
 
-use lib ".";
+use FindBin;
+use lib "$FindBin::Bin";
+BEGIN {
+my $sbin_dir = $FindBin::Bin;
+}
 
-if ($ENV{'CCTK_HOME'})
-{
-  require "$ENV{'CCTK_HOME'}/lib/sbin/MakeUtils.pl";
-}
-else
-{
-  require "lib/sbin/MakeUtils.pl";
-}
+require "MakeUtils.pl";
 
 $package_dir = shift(@ARGV);
 

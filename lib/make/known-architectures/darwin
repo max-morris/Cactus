@@ -39,7 +39,7 @@ else
 
   if test "`$CC --version 2>&1 | head -n 1 | grep -i gcc`" ; then
       MAC_C_COMP=gcc
-  elif test "`$CC --version 2>&1 | head -n 1 | grep -i clang`" ; then
+  elif test "`$CC --version 2>&1 | grep -i clang`" ; then
       MAC_C_COMP=clang
   elif test "`$CC -version 2>&1 | grep xlc`" ; then
       MAC_C_COMP=ibm
@@ -51,7 +51,7 @@ else
 
   if test "`$CXX --version 2>&1 | head -n 1 | grep -i gcc`" ; then
       MAC_CXX_COMP=gcc
-  elif test "`$CXX --version 2>&1 | head -n 1 | grep -i clang`" ; then
+  elif test "`$CXX --version 2>&1 | grep -i clang`" ; then
       MAC_CXX_COMP=clang
   elif test "`$CXX -version 2>&1 | grep xlc`" ; then
       MAC_CXX_COMP=ibm
@@ -100,7 +100,7 @@ else
       MAC_F90_COMP=absoft
     elif test "`$F90 --version 2>&1 | head -n 1 | grep -i gcc`" ; then
       MAC_F90_COMP=gcc
-    elif test "`$F90 --version 2>&1 | head -n 1 | grep -i clang`" ; then
+    elif test "`$F90 --version 2>&1 | grep -i clang`" ; then
       MAC_F90_COMP=clang
     elif test "`$F90 -V 2>&1 | grep -i intel`" ; then
       MAC_F90_COMP=intel
@@ -141,7 +141,7 @@ else
       MAC_F77_COMP=absoft77
     elif test "`$F77 --version 2>&1 | head -n 1 | grep -i gcc`" ; then
       MAC_F77_COMP=gcc
-    elif test "`$F77 --version 2>&1 | head -n 1 | grep -i clang`" ; then
+    elif test "`$F77 --version 2>&1 | grep -i clang`" ; then
       MAC_F77_COMP=clang
     elif test "`$F77 -V 2>&1 | grep -i intel`" ; then
       MAC_F77_COMP=intel
@@ -255,6 +255,7 @@ else
       # : ${F77FLAGS='-mlongcall'}
       # : ${F90FLAGS='-mlongcall'}
       : ${LIBS='gfortran'}
+      : ${LIBDIRS="$(dirname $($F90 --print-file-name libgfortran.a))"}
       ;;
     ibm)
 #      : ${LD='xlC'}

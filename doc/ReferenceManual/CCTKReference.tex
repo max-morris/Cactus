@@ -261,6 +261,22 @@ from Fortran.
   Given the index of a clock, returns a pointer to the corresponding
   {\t cTimerVal} structure within the {\t cTimerData} structure.
 
+\item[\code{CCTK\_GFINDEX1D}] [\pageref{CCTK-GFINDEX1D}]
+  Given a set of multidimensional indices compute the 1-dimensional index into
+  a grid function.
+
+\item[\code{CCTK\_GFINDEX2D}] [\pageref{CCTK-GFINDEX2D}]
+  Given a set of multidimensional indices compute the 2-dimensional index into
+  a grid function.
+
+\item[\code{CCTK\_GFINDEX3D}] [\pageref{CCTK-GFINDEX3D}]
+  Given a set of multidimensional indices compute the 3-dimensional index into
+  a grid function.
+
+\item[\code{CCTK\_GFINDEX4D}] [\pageref{CCTK-GFINDEX4D}]
+  Given a set of multidimensional indices compute the 4-dimensional index into
+  a grid function.
+
 \item[\code{CCTK\_GHExtension}] [\pageref{CCTK-GHExtension}]
   Get the pointer to a registered extension to the Cactus GH structure
 
@@ -860,6 +876,22 @@ from Fortran.
 \item[\code{CCTK\_VarTypeSize}] [\pageref{CCTK-VarTypeSize}]
   Provides variable type size in bytes from the variable type index
 
+\item[\code{CCTK\_VECTGFINDEX1D}] [\pageref{CCTK-GFINDEX1D}]
+  Given a set of vector and multidimensional indices compute the 1-dimensional
+  index into a vector grid function.
+
+\item[\code{CCTK\_VECTGFINDEX1D}] [\pageref{CCTK-GFINDEX2D}]
+  Given a set of vector and multidimensional indices compute the 2-dimensional
+  index into a vector grid function.
+
+\item[\code{CCTK\_VECTGFINDEX3D}] [\pageref{CCTK-GFINDEX3D}]
+  Given a set of vector and multidimensional indices compute the 3-dimensional
+  index into a vector grid function.
+
+\item[\code{CCTK\_VECTGFINDEX4D}] [\pageref{CCTK-GFINDEX4D}]
+  Given a set of vector and multidimensional indices compute the 4-dimensional
+  index into a vector grid function.
+
 \item[\code{CCTK\_VERROR}] [\pageref{CCTK-VERROR}]
   Macro to print a formatted string with a variable argument list as
   error message to standard error and stops the code
@@ -875,6 +907,10 @@ from Fortran.
 \item[\code{CCTK\_VInfo}] [\pageref{CCTK-VInfo}]
   Prints a formatted string with a variable argument list as an information
   message to screen
+
+\item[\code{CCTK\_VPARAMWARN}] [\pageref{CCTK-VPARAMWARN}]
+  Prints a formatted string with a variable argument list as a warning from
+  parameter checking, and possibly stops the code
 
 \item[\code{CCTK\_VParamWarn}] [\pageref{CCTK-VParamWarn}]
   Prints a formatted string with a variable argument list as a warning from
@@ -4030,6 +4066,248 @@ Do not attempt to free the returned pointer directly.
 A null return value indicates an error.
 \end{Error}
 \end{ErrorSection}
+\end{FunctionDescription}
+
+
+
+\begin{FunctionDescription}{CCTK\_GFINDEX1D}
+\label{CCTK-GFINDEX1D}
+Given a set of multidimensional indices compute the 1-dimensional index into a
+grid function.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+int CCTK_GFINDEX1D(const cGH *restrict cctkGH, int i)
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter} {const cGH *restrict cctkGH}
+The pointer to the CCTK grid hierarchy
+\end{Parameter}
+
+\begin{Parameter} {int i}
+Index in the \t{i} direction
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Grid functions are held in memory as 1-dimensional C arrays. These are
+laid out in memory as in Fortran. Cactus provides macros to find the
+1-dimensional index which is needed from the multidimensional indices which
+are usually used. In Fortran, grid functions are accessed as Fortran arrays.
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+for (i=0; i<cctk_lsh[0]; i++)
+{
+  int const ind1d = CCTK_GFINDEX1D(cctkGH,i);
+  rho[ind1d] = exp(-pow(r[ind1d],2));
+}
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_VECTGFINDEX1D()}
+Given a set of vector and multidimensional indices compute the 1-dimensional
+index into a vector grid function.
+\end{SeeAlso}
+
+\end{SeeAlsoSection}
+\end{FunctionDescription}
+
+
+
+\begin{FunctionDescription}{CCTK\_GFINDEX2D}
+\label{CCTK-GFINDEX2D}
+Given a set of multidimensional indices compute the 2-dimensional index into a
+grid function.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+int CCTK_GFINDEX2D(const cGH *restrict cctkGH, int i, int j)
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter} {const cGH *restrict cctkGH}
+The pointer to the CCTK grid hierarchy
+\end{Parameter}
+
+\begin{Parameter} {int i}
+Index in the \t{i} direction
+\end{Parameter}
+
+\begin{Parameter} {int j}
+Index in the \t{j} direction
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Grid functions are held in memory as 1-dimensional C arrays. These are
+laid out in memory as in Fortran. Cactus provides macros to find the
+1-dimensional index which is needed from the multidimensional indices which
+are usually used. In Fortran, grid functions are accessed as Fortran arrays.
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+for (j=0; j<cctk_lsh[1]; j++)
+{
+  for (i=0; i<cctk_lsh[0]; i++)
+  {
+    int const ind2d = CCTK_GFINDEX2D(cctkGH,i,j);
+    rho[ind2d] = exp(-pow(r[ind2d],2));
+  }
+}
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_VECTGFINDEX2D()}
+Given a set of vector and multidimensional indices compute the 2-dimensional
+index into a vector grid function.
+\end{SeeAlso}
+
+\end{SeeAlsoSection}
+\end{FunctionDescription}
+
+
+
+\begin{FunctionDescription}{CCTK\_GFINDEX3D}
+\label{CCTK-GFINDEX3D}
+Given a set of multidimensional indices compute the 3-dimensional index into a
+grid function.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+int CCTK_GFINDEX3D(const cGH *restrict cctkGH, int i, int j, int k)
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter} {const cGH *restrict cctkGH}
+The pointer to the CCTK grid hierarchy
+\end{Parameter}
+
+\begin{Parameter} {int i}
+Index in the \t{i} direction
+\end{Parameter}
+
+\begin{Parameter} {int j}
+Index in the \t{j} direction
+\end{Parameter}
+
+\begin{Parameter} {int k}
+Index in the \t{k} direction
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Grid functions are held in memory as 1-dimensional C arrays. These are
+laid out in memory as in Fortran. Cactus provides macros to find the
+1-dimensional index which is needed from the multidimensional indices which
+are usually used. In Fortran, grid functions are accessed as Fortran arrays.
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+for (k=0; k<cctk_lsh[2]; k++)
+{
+  for (j=0; j<cctk_lsh[1]; j++)
+  {
+    for (i=0; i<cctk_lsh[0]; i++)
+    {
+      int const ind3d = CCTK_GFINDEX3D(cctkGH,i,j,k);
+      rho[ind3d] = exp(-pow(r[ind3d],2));
+    }
+  }
+}
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_VECTGFINDEX3D()}
+Given a set of vector and multidimensional indices compute the 3-dimensional
+index into a vector grid function.
+\end{SeeAlso}
+
+\end{SeeAlsoSection}
+\end{FunctionDescription}
+
+
+
+\begin{FunctionDescription}{CCTK\_GFINDEX4D}
+\label{CCTK-GFINDEX4D}
+Given a set of multidimensional indices compute the 4-dimensional index into a
+grid function.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+int CCTK_GFINDEX4D(const cGH *restrict cctkGH, int i, int j, int k, int l)
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter} {const cGH *restrict cctkGH}
+The pointer to the CCTK grid hierarchy
+\end{Parameter}
+
+\begin{Parameter} {int i}
+Index in the \t{i} direction
+\end{Parameter}
+
+\begin{Parameter} {int j}
+Index in the \t{j} direction
+\end{Parameter}
+
+\begin{Parameter} {int k}
+Index in the \t{k} direction
+\end{Parameter}
+
+\begin{Parameter} {int l}
+Index in the \t{l} direction
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Grid functions are held in memory as 1-dimensional C arrays. These are
+laid out in memory as in Fortran. Cactus provides macros to find the
+1-dimensional index which is needed from the multidimensional indices which
+are usually used. In Fortran, grid functions are accessed as Fortran arrays.
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+for (l=0; l<cctk_lsh[3]; l++)
+{
+  for (k=0; k<cctk_lsh[2]; k++)
+  {
+    for (j=0; j<cctk_lsh[1]; j++)
+    {
+      for (i=0; i<cctk_lsh[0]; i++)
+      {
+        int const ind4d = CCTK_GFINDEX4D(cctkGH,i,j,k,l);
+        rho[ind4d] = exp(-pow(r[ind4d],2));
+      }
+    }
+  }
+}
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_VECTGFINDEX4D()}
+Given a set of vector and multidimensional indices compute the 4-dimensional
+index into a vector grid function.
+\end{SeeAlso}
+
+\end{SeeAlsoSection}
 \end{FunctionDescription}
 
 
@@ -13468,6 +13746,270 @@ function returns the size in bytes of the corresponding data type
 \end{FunctionDescription}
 
 
+
+\begin{FunctionDescription}{CCTK\_VECTGFINDEX1D}
+\label{CCTK-VECTGFINDEX1D}
+Given a set of vector and multidimensional indices compute the 1-dimensional
+index into a vector grid function.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+int CCTK_VECTGFINDEX1D(const cGH *restrict cctkGH, int i, int n)
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter} {const cGH *restrict cctkGH}
+The pointer to the CCTK grid hierarchy
+\end{Parameter}
+
+\begin{Parameter} {int i}
+Index in the \t{i} direction
+\end{Parameter}
+
+\begin{Parameter} {int n}
+The vector index
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Grid functions are held in memory as 1-dimensional C arrays. These are
+laid out in memory as in Fortran. Cactus provides macros to find the
+1-dimensional index which is needed from the multidimensional indices which
+are usually used. In Fortran, grid functions are accessed as Fortran arrays.
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+for (i=0; i<cctk_lsh[0]; i++)
+{
+  /* vector indices are 0, 1, 2 */
+  vel[CCTK_VECTGFINDEX4D(cctkGH,i,0)] = 1.0;
+  vel[CCTK_VECTGFINDEX4D(cctkGH,i,1)] = 0.0;
+  vel[CCTK_VECTGFINDEX4D(cctkGH,i,2)] = 0.0;
+}
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_GFINDEX1D()}
+Given a set of multidimensional indices compute the 1-dimensional index into a
+grid function.
+\end{SeeAlso}
+
+\end{SeeAlsoSection}
+\end{FunctionDescription}
+
+
+
+\begin{FunctionDescription}{CCTK\_VECTGFINDEX2D}
+\label{CCTK-VECTGFINDEX2D}
+Given a set of vector and multidimensional indices compute the 2-dimensional
+index into a vector grid function.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+int CCTK_VECTGFINDEX2D(const cGH *restrict cctkGH, int i, int j, int n)
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter} {const cGH *restrict cctkGH}
+The pointer to the CCTK grid hierarchy
+\end{Parameter}
+
+\begin{Parameter} {int i}
+Index in the \t{i} direction
+\end{Parameter}
+
+\begin{Parameter} {int j}
+Index in the \t{j} direction
+\end{Parameter}
+
+\begin{Parameter} {int n}
+The vector index
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Grid functions are held in memory as 1-dimensional C arrays. These are
+laid out in memory as in Fortran. Cactus provides macros to find the
+1-dimensional index which is needed from the multidimensional indices which
+are usually used. In Fortran, grid functions are accessed as Fortran arrays.
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+for (j=0; j<cctk_lsh[1]; j++)
+{
+  for (i=0; i<cctk_lsh[0]; i++)
+  {
+    /* vector indices are 0, 1, 2 */
+    vel[CCTK_VECTGFINDEX4D(cctkGH,i,j,0)] = 1.0;
+    vel[CCTK_VECTGFINDEX4D(cctkGH,i,j,1)] = 0.0;
+    vel[CCTK_VECTGFINDEX4D(cctkGH,i,j,2)] = 0.0;
+  }
+}
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_GFINDEX2D()}
+Given a set of multidimensional indices compute the 2-dimensional index into a
+grid function.
+\end{SeeAlso}
+
+\end{SeeAlsoSection}
+\end{FunctionDescription}
+
+
+
+\begin{FunctionDescription}{CCTK\_VECTGFINDEX3D}
+\label{CCTK-VECTGFINDEX3D}
+Given a set of vector and multidimensional indices compute the 3-dimensional
+index into a vector grid function.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+int CCTK_VECTGFINDEX3D(const cGH *restrict cctkGH, int i, int j, int k, int n)
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter} {const cGH *restrict cctkGH}
+The pointer to the CCTK grid hierarchy
+\end{Parameter}
+
+\begin{Parameter} {int i}
+Index in the \t{i} direction
+\end{Parameter}
+
+\begin{Parameter} {int j}
+Index in the \t{j} direction
+\end{Parameter}
+
+\begin{Parameter} {int n}
+The vector index
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Grid functions are held in memory as 1-dimensional C arrays. These are
+laid out in memory as in Fortran. Cactus provides macros to find the
+1-dimensional index which is needed from the multidimensional indices which
+are usually used. In Fortran, grid functions are accessed as Fortran arrays.
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+for (k=0; k<cctk_lsh[2]; k++)
+{
+  for (j=0; j<cctk_lsh[1]; j++)
+  {
+    for (i=0; i<cctk_lsh[0]; i++)
+    {
+      /* vector indices are 0, 1, 2 */
+      vel[CCTK_VECTGFINDEX4D(cctkGH,i,j,k,0)] = 1.0;
+      vel[CCTK_VECTGFINDEX4D(cctkGH,i,j,k,1)] = 0.0;
+      vel[CCTK_VECTGFINDEX4D(cctkGH,i,j,k,2)] = 0.0;
+    }
+  }
+}
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_GFINDEX3D()}
+Given a set of multidimensional indices compute the 3-dimensional index into a
+grid function.
+\end{SeeAlso}
+
+\end{SeeAlsoSection}
+\end{FunctionDescription}
+
+
+
+\begin{FunctionDescription}{CCTK\_VECTGFINDEX4D}
+\label{CCTK-VECTGFINDEX4D}
+Given a set of vector and multidimensional indices compute the 4-dimensional
+index into a vector grid function.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+int CCTK_VECTGFINDEX4D(const cGH *restrict cctkGH, int i, int j, int k, int l, int n)
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ParameterSection}
+\begin{Parameter} {const cGH *restrict cctkGH}
+The pointer to the CCTK grid hierarchy
+\end{Parameter}
+
+\begin{Parameter} {int i}
+Index in the \t{i} direction
+\end{Parameter}
+
+\begin{Parameter} {int j}
+Index in the \t{j} direction
+\end{Parameter}
+
+\begin{Parameter} {int k}
+Index in the \t{k} direction
+\end{Parameter}
+
+\begin{Parameter} {int l}
+Index in the \t{l} direction
+\end{Parameter}
+
+\begin{Parameter} {int n}
+The vector index
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{Discussion}
+Grid functions are held in memory as 1-dimensional C arrays. These are
+laid out in memory as in Fortran. Cactus provides macros to find the
+1-dimensional index which is needed from the multidimensional indices which
+are usually used. In Fortran, grid functions are accessed as Fortran arrays.
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+for (l=0; l<cctk_lsh[3]; l++)
+{
+  for (k=0; k<cctk_lsh[2]; k++)
+  {
+    for (j=0; j<cctk_lsh[1]; j++)
+    {
+      for (i=0; i<cctk_lsh[0]; i++)
+      {
+        /* vector indices are 0, 1, 2 */
+        vel[CCTK_VECTGFINDEX4D(cctkGH,i,j,k,l,0)] = 1.0;
+        vel[CCTK_VECTGFINDEX4D(cctkGH,i,j,k,l,1)] = 0.0;
+        vel[CCTK_VECTGFINDEX4D(cctkGH,i,j,k,l,2)] = 0.0;
+      }
+    }
+  }
+}
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\begin{SeeAlsoSection}
+\begin{SeeAlso}{CCTK\_GFINDEX4D()}
+Given a set of multidimensional indices compute the 4-dimensional index into a
+grid function.
+\end{SeeAlso}
+
+\end{SeeAlsoSection}
+\end{FunctionDescription}
+
+
+
+
 %Entering a function description for CCTK_VERROR
 \begin{FunctionDescription}{CCTK\_VERROR}
 \label{CCTK-VERROR}
@@ -13816,7 +14358,7 @@ checked.
 \begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
-CCTK_VParamWarn("Mass cannot be negative: %g", (double)mass);
+CCTK_VParamWarn(CCTK_THORNSTRING, "Mass cannot be negative: %g", (double)mass);
 \end{verbatim}
 \end{Example}
 \end{ExampleSection}
@@ -13824,6 +14366,58 @@ CCTK_VParamWarn("Mass cannot be negative: %g", (double)mass);
 \begin{SeeAlsoSection}
 \begin{SeeAlso2}{CCTK\_PARAMWARN}{CCTK-PARAMWARN}
 Prints a warning from parameter checking, and possibly stops the code
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_VPARAMWARN}{CCTK-VPARAMWARN}
+Prints a formatted string with a variable argument list as a warning from
+parameter checking, and possibly stops the code
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+\end{FunctionDescription}
+
+% WarnLevel.c
+\begin{FunctionDescription}{CCTK\_VPARAMWARN}{Prints a formatted string with a
+variable argument list as a warning from parameter checking, and possibly
+stops the code}
+\label{CCTK-VPARAMWARN}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include <cctk.h>
+
+int status = CCTK_VPARAMWARN(const char *format,
+                             ...);
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{format}
+Format for variable argument list
+\end{Parameter}
+\begin{Parameter}{\ldots}
+Variable argument list
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
+The call should be used in routines registered at the schedule point \code{CCTK\_PARAMCHECK}
+to indicate that there is parameter error or conflict and the code should
+terminate. The code will terminate only after all the parameters have been
+checked.
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+CCTK_VPARAMWARN("Mass cannot be negative: %g", (double)mass);
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_PARAMWARN}{CCTK-PARAMWARN}
+Prints a warning from parameter checking, and possibly stops the code
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_VParamWarn}{CCTK-VParamWarn}
+Prints a formatted string with a variable argument list as a warning from
+parameter checking, and possibly stops the code
 \end{SeeAlso2}
 \end{SeeAlsoSection}
 \end{FunctionDescription}
@@ -13963,7 +14557,7 @@ macro to print a warning message with a single string argument
 
 const char *outdir;
 
-CCTK_VWarn(CCTK_WARN_ALERT, __LINE__, __FILE__, CCTK_THORNSTRING,
+CCTK_VWARN(CCTK_WARN_ALERT,
            "Output directory '%s' could not be created", outdir);
 \end{verbatim}
 \end{Example}

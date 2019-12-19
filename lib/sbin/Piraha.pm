@@ -1,5 +1,6 @@
 package piraha;
 use strict;
+use Carp;
 ##############################################################################
 # A minimal Piraha script loos like this:
 # For a definitions of Piraha syntax and grammar

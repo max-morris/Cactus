@@ -8,6 +8,9 @@
 #  @version   $Header$
 #@@*/
 
+use FindBin;
+$sbin_dir = $FindBin::Bin;
+
 #/*@@
 #  @routine    CreateParameterBindings
 #  @date       Thu Jan 28 15:27:16 1999
@@ -28,7 +31,6 @@ sub CreateParameterBindings
   my(%routines);
   my($structure, %structures);
   my(%header_files);
-
 
   if(! -d $bindings_dir)
   {
@@ -247,7 +249,7 @@ sub CreateParameterBindings
 # Write this one to a temporary file and read it back in
 # Can probably do this better
 
-  open(OUT, "| $ENV{'PERLINTERP'} $cctk_home/lib/sbin/c_file_processor.pl $top/config-data > include/CParameterStructNames_temp.h") || die 'Cannot create CParameterStructNames.h by running c_file_processor.pl';
+  open(OUT, "| $^X $sbin_dir/c_file_processor.pl $top/config-data > include/CParameterStructNames_temp.h") || die 'Cannot create CParameterStructNames.h by running c_file_processor.pl';
 
   foreach $structure (sort keys %structures)
   {
