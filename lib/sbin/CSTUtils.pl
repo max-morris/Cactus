@@ -694,7 +694,7 @@ sub ParseConfigInfo
         $options{$1} = $2;
         # replace all $(...) constructs with ENV variable values (but only is
         # not preceeded by a $ sign)
-        $options{$1} =~ s#(?<!\$)(\$+)\(([^)]*)\)#'$'x(length($1)/2).(length($1)%2?$ENV{$2}:"($2)")#eg;
+        $options{$1} =~ s#(\$+)\(([^)]*)\)#'$'x(length($1)/2).(length($1)%2?$ENV{$2}:"($2)")#eg;
       }
       else
       {
