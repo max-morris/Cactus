@@ -692,9 +692,10 @@ sub ParseConfigInfo
       if(! $options{$1})
       {
         $options{$1} = $2;
-        # replace all $(...) constructs with ENV variable values (but only is
-        # not preceeded by a $ sign)
-        $options{$1} =~ s#(\$+)\(([a-zA-Z0-9_]+)\)#'$'x(length($1)/2).(length($1)%2?$ENV{$2}:"($2)")#eg;
+        # scan through option value and replace all "$" followed by "(WORD)" by
+        # the value of the env variable "WORD". Allow "$" to be escaped by
+        # duplicating it.
+        $options{$1} =~ s#\$(\$|\((\w+)\))#$2 ? $ENV{$2} : "\$"#eg;
       }
       else
       {
