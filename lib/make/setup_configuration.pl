@@ -228,13 +228,19 @@ sub ParseOptionsFile
     # or  keyword = value
     if (/^\s*(\w+)[=\s]+(.*)\s*/)
     {
+      my ($setting, $value) = ($1, $2);
       # only set it if it wasn't already
-      if(! $options->{$1})
+      if(! $options->{$setting})
       {
-        print "  Setting $1 to '$2'\n";
-        $env->{$1} = $2;
+        # scan through option value and replace all "$" followed by "{WORD}" by
+        # the value of the env variable "WORD". Allow "$" to be escaped by
+        # duplicating it.
+        $value =~ s#\$(\$|\{(\w+)\})#$2 ? $ENV{$2} : "\$"#eg;
+
+        print "  Setting $setting to '$value'\n";
+        $env->{$setting} = $value;
         # Remember it for writing to config-info
-        $options->{$1} = AddQuotes($2);
+        $options->{$setting} = AddQuotes($value);
       }
     }
     else
