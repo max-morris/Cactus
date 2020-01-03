@@ -1983,7 +1983,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GroupDimFromVarI)
    @vio        in
    @endvar
    @var        callback
-   @vdesc      routine to call for every variable and/or group found
+   @vdesc      routine to call for every variable found
    @vtype      int (*) (int idx, const char *optstring, void *callback_arg)
    @vio        int
    @endvar
@@ -2189,14 +2189,7 @@ int CCTK_TraverseString (const char *traverse_string,
       else if (selected_all)
       {
         first = 0;
-        if (selection == CCTK_GROUP)
-        {
-          last = CCTK_NumGroups () - 1;
-        }
-        else
-        {
-          last = CCTK_NumVars () - 1;
-        }
+        last = CCTK_NumVars () - 1;
       }
       else
       {
