@@ -291,9 +291,22 @@ CCTK_CreateFile make.arch.defn '# Stuff from known architectures '
 
 CCTK_CONFIG_STAGE='misc'
 
+changequote(<, >)
 if test -r $srcdir/known-architectures/$host_os ; then
-. $srcdir/known-architectures/$host_os
+  . $srcdir/known-architectures/$host_os
+else
+  # parse the architecture files for the marker #CCTK ARCHITECURE and use the
+  # third word on that line as a glob to match the host os against
+  # parser for the marker is done like for PBS ie parsing ends with the first
+  # excution line which is a line whose first non-space character is not a #
+  for arch in $srcdir/known-architectures/* ; do
+    archglob=$($AWK '{sub("^[[:space:]]*","")} /^[^#]/{exit} /^#CCTK[[:space:]]+ARCHITECTURE/{arch=$3} END{print arch}' $arch)
+    if test -n "$archglob" ; then
+      case "$host_os" in $archglob) . $arch ; break ;; esac
+    fi
+  done
 fi
+changequote([, ])
 
 # Finish the architecture stuff
 CCTK_WriteLine cctk_Archdefs.h '#endif /* _CCTK_ARCHDEFS_H_ */'
@@ -446,6 +459,7 @@ AC_SUBST(CXX_OPENMP_FLAGS)
 AC_SUBST(CUCC_OPENMP_FLAGS)
 AC_SUBST(F90_OPENMP_FLAGS)
 AC_SUBST(F77_OPENMP_FLAGS)
+F77_OPENMP_FLAGS="$F90_OPENMP_FLAGS"
 
 ##########################################################################
 
@@ -486,7 +500,16 @@ if test -z "$F90" || test "x$F90" = xnone ; then
 else
   F77="$F90"
   # autoconf2.13 only knows about F77 so we cannot check F90
+  if ! test "x${FFLAGS+y}" = x ; then
+    ac_save_FFLAGS="$FFLAGS"
+  fi
+  FFLAGS="$F90FLAGS"
   CCTK_PROG_F77_WORKS
+  if ! test "x${ac_save_FFLAGS+y}" = x ; then
+    FFLAGS="$ac_save_FFLAGS"
+  else
+    unset FFLAGS
+  fi
 fi
 
 # Checks for libraries.
@@ -628,6 +651,7 @@ AC_SUBST(CUCC_VERSION)
 AC_SUBST(FPP_VERSION)
 AC_SUBST(F90_VERSION)
 AC_SUBST(F77_VERSION)
+F77_VERSION="$F90_VERSION"
 
 dnl Checks for library functions.
 

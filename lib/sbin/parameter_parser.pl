@@ -13,6 +13,7 @@
 
 #%parameter_database = create_parameter_database(%implementations);
 use strict;
+use FindBin;
 use Carp;
 use Piraha;
 my $ccl_file;
@@ -33,7 +34,7 @@ sub create_parameter_database
   my(@new_parameter_data);
   my(@parameter_data);
 
-  my $peg_file = $ENV{CCTK_HOME}."/src/piraha/pegs/param.peg";
+  my $peg_file = "$FindBin::Bin/../../src/piraha/pegs/param.peg";
   my ($grammar,$rule) = piraha::parse_peg_file($peg_file);
 
   # Loop through each implementation's parameter file.
@@ -776,10 +777,12 @@ sub parse_param_ccl
     for my $k (keys %parameter_db1) {
       $parameter_db{$k} = $parameter_db1{$k};
     }
-  } else {
+  } elsif($main::cctk_parser eq "old") {
     for my $k (keys %parameter_db2) {
       $parameter_db{$k} = $parameter_db2{$k};
     }
+  } else {
+    die "Internal error: main::cctk_parser not 'new', 'old' or 'both' but '$main::cctk_parser'";
   }
 
   return %parameter_db;

@@ -55,6 +55,7 @@ for my $s (@schedule_bins) {
 
 my $ccl_file = undef;
 
+use FindBin;
 use Carp;
 use FileHandle;
 use Data::Dumper;
@@ -81,7 +82,7 @@ sub create_schedule_database
   my(@new_schedule_data);
   my(@schedule_data);
 
-  my $peg_file = $ENV{CCTK_HOME}."/src/piraha/pegs/schedule.peg";
+  my $peg_file = "$FindBin::Bin/../../src/piraha/pegs/schedule.peg";
   my($grammar,$rule)=piraha::parse_peg_file($peg_file);
 
   #  Loop through each implementation's schedule file.

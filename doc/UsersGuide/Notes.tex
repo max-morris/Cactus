@@ -379,7 +379,12 @@ compiler reports error messages about unrecognised \verb|#| directives.
 
 \item [\texttt{CROSS\_COMPILE}] Enables cross compilation.
   Available options are \texttt{yes} and \texttt{no}, the default is
-  \texttt{no}. To create a cross-compiled configuration one must explicitly set   this option to \texttt{yes}.
+  \texttt{no}. To create a cross-compiled configuration one must explicitly
+  set this option to \texttt{yes}.  You will also have to set \texttt{ENDIAN}.
+
+\item [\texttt{ENDIAN}] Explicitly sets the endianess of multi-byte types.
+  Normally this is detected automatically but needs to be specified for
+  cross-compilations.  Available options are \texttt{little} and \texttt{big}.
 
 \item [\texttt{DISABLE\_INT16}] Disable support for the data type
 \texttt{CCTK\_INT16}.  The only options available are \texttt{yes} and
@@ -758,6 +763,9 @@ is to do. The command \texttt{gmake help} lists all \texttt{gmake} targets:
         builds a configuration. If the configuration doesn't exist,
         it will create it.
 
+\item [\texttt{gmake <\var{config}>-build BUILDLIST="<list of thorns>"}]
+compiles only the thorns listed.
+
 \item [\texttt{gmake <\var{config}>-clean}] removes all object and dependency
 files from a configuration.
 
@@ -774,9 +782,6 @@ The configuration options are stored in a file
 
 \item [\texttt{gmake <\var{config}>-configinfo}] displays the options
 of the configuration (\texttt{cat configs/<\var{config}>/config-info}).
-
-%% \item[\texttt{gmake <\var{config}>-cvsupdate}] updates the flesh and this
-%% configuration's thorns from the CVS repositories.
 
 \item [\texttt{gmake <\var{config}>-delete}] deletes a configuration
 (\texttt{rm -r configs/<\var{config}>}).
@@ -872,8 +877,8 @@ the same.
 \begin{Lentry}
 \item [\texttt{gmake <\var{target}> PROMPT=no}] turns off all prompts from the
 make system.
-\item [\texttt{gmake <\var{target}> SILENT=no}] prints the commands that gmake
-is executing.
+\item [\texttt{gmake <\var{target}> VERBOSE=yes}] prints the commands that
+gmake is executing.
 \item [\texttt{gmake <\var{target}> WARN=yes}] shows compiler warnings during
 compilation.
 \item [\texttt{gmake <\var{target}> FJOBS=<\var{number}>}] compiles in parallel,
