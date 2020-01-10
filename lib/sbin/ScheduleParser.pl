@@ -948,7 +948,7 @@ sub check_schedule_database
     $allgroups{lc $bin}++;
     $allgroups{lc $cbin}++;
   }
-  my @allgroups = keys %allgroups;
+  my @allgroups = sort keys %allgroups;
 
   # check that scheduling in is only for a known group
   foreach my $thorn (sort keys %thorns)

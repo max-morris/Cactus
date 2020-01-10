@@ -228,7 +228,7 @@ sub ThornInfo
     $requires =~ s:\s*$::;
     $requires =~ s:[\s\t\n]+:,:g;
     # remove duplicates for thorns listed both in REQUIRES and REQUIRES THORNS:
-    $requires = join(",", keys %{ {map {$_, 1} split ",", $requires} });
+    $requires = join(",", sort keys %{ {map {$_, 1} split ",", $requires} });
   }
 
   return "$implementation ($inherits) [$friends] {$shares} <$requires>";

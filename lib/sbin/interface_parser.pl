@@ -1447,11 +1447,11 @@ sub parse_interface_ccl
       if($main::cctk_parser eq "both");
   }
   if($main::cctk_parser eq "new" or $main::cctk_parser eq "both") {
-    for my $k (keys %{$interface_data_ref1}) {
+    for my $k (sort keys %{$interface_data_ref1}) {
       $interface_data_ref->{$k} .= $interface_data_ref1->{$k};
     }
   } elsif($main::cctk_parser eq "old") {
-    for my $k (keys %{$interface_data_ref2}) {
+    for my $k (sort keys %{$interface_data_ref2}) {
       $interface_data_ref->{$k} .= $interface_data_ref2->{$k};
     }
   } else {
