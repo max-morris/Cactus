@@ -207,7 +207,7 @@
 #undef const
 
 /* Define to empty if the 'restrict' keyword does not work. */
-#ifdef CCTK_DISABLE_RESTRICT
+#if (defined CCTK_DISABLE_RESTRICT && !defined CCTK_INTEL_COMPILER_DONT_DISABLE_RESTRICT)
 #  define CCTK_C_RESTRICT
 #else
 #  undef HAVE_CCTK_C_RESTRICT
@@ -673,7 +673,7 @@
 
 /* Some C++ compilers recognise the restrict keyword */
 /* Define to empty if the keyword does not work. */
-#ifdef CCTK_DISABLE_RESTRICT
+#if (defined CCTK_DISABLE_RESTRICT && !defined CCTK_INTEL_COMPILER_DONT_DISABLE_RESTRICT)
 #  define CCTK_CXX_RESTRICT
 #else
 #  undef HAVE_CCTK_CXX_RESTRICT
