@@ -154,6 +154,11 @@
 
 /******************************************************************************/
 
+/* Disable omp collapse for compiler versions known to be bugger */
+#undef CCTK_DISABLE_OMP_COLLAPSE
+
+/******************************************************************************/
+
 #ifdef CCODE
 
 /* CCTK C/C++ Integer datatypes */
@@ -416,14 +421,8 @@
 #endif
 
 /* OpenMP collapse clause */
-#if (defined CCTK_DISABLE_OMP_COLLAPSE ||                               \
-     (defined __IBMC__ && defined _ARCH_450D) ||                        \
-     (defined __INTEL_COMPILER && __INTEL_COMPILER_BUILD_DATE < 20100801))
-/* see http://software.intel.com/en-us/articles/intel-professional-edition-compilers-111-fixes-list/ */
+#if (defined CCTK_DISABLE_OMP_COLLAPSE && !defined CCTK_OMP_DONT_DISABLE_COLLAPSE)
 #  define collapse(N)
-#  ifndef CCTK_DISABLE_OMP_COLLAPSE
-#    error "OpenMP collapse directive disabled for C, but enabled for Fortran -- likely an error in the option list. Please add -DCCTK_DISABLE_OMP_COLLAPSE to FPPFLAGS and CPPFLAGS."
-#  endif
 #else
 #  undef collapse
 #endif
@@ -692,10 +691,7 @@
 #endif
 
 /* OpenMP collapse clause */
-#if (defined CCTK_DISABLE_OMP_COLLAPSE ||                               \
-     (defined __IBMCPP__ && defined _ARCH_450D) ||                      \
-     ( defined __INTEL_COMPILER && __INTEL_COMPILER_BUILD_DATE < 20100801))
-/* see http://software.intel.com/en-us/articles/intel-professional-edition-compilers-111-fixes-list/ */
+#if (defined CCTK_DISABLE_OMP_COLLAPSE && !defined CCTK_OMP_DONT_DISABLE_COLLAPSE)
 #  define collapse(N)
 #else
 #  undef collapse
@@ -721,8 +717,7 @@
 #undef CCTK_COMPLEX32_KIND
 
 /* OpenMP collapse clause */
-#ifdef CCTK_DISABLE_OMP_COLLAPSE
-/* see http://software.intel.com/en-us/articles/intel-professional-edition-compilers-111-fixes-list/ */
+#if (defined CCTK_DISABLE_OMP_COLLAPSE && !defined CCTK_OMP_DONT_DISABLE_COLLAPSE)
 #  define collapse(N)
 #  define COLLAPSE(N)
 #else
