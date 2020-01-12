@@ -252,9 +252,9 @@ setting
 \begin{verbatim}
 CC = $${CXX} $(CXXFLAGS) $$(CPPFLAGS) -license ${HOME}/.license -I$$$${HDF5_HOME}/include
 \end{verbatim}
-expands \verb|${CXX}|, \verb|$(CXXFLAGS)|, \verb|$(CPPFLAGS)| in the Makefile,
-\verb|${HOME}| when \texttt{gmake <\var{config name}>-config} runs, and
-\verb|${HDF5_HOME}| when the compiler \verb|${CXX}| runs.
+expands \verb|${CXX}|, \verb|$(CXXFLAGS)|, and \verb|$(CPPFLAGS)| in the
+Makefile, \verb|${HOME}| when \texttt{<\var{config name}>-config} runs,
+and \verb|${HDF5_HOME}| when the compiler \verb|${CXX}| runs.
 
 It is important to note that these methods cannot be used to, for example, add
 options to the default values for \texttt{CFLAGS}.  Setting any variable in the
