@@ -301,20 +301,17 @@ This defaults to the current working directory.
 
 \item {Compiler and tool specification}
 
-These are used to specify which compilers and other tools to use. Entries followed
-by * may be specified on the command line.
-
 \begin{Lentry}
-\item [\texttt{CC}]   * The C compiler.
+\item [\texttt{CC}]     The C compiler.
 \item [\texttt{CXX}]    The C++ compiler.
-\item [\texttt{CUCC}] * The CUDA compiler.
-\item [\texttt{F90}]  * The Fortran compiler.
-\item [\texttt{F77}]  * Ignored
+\item [\texttt{CUCC}]   The CUDA compiler.
+\item [\texttt{F90}]    The Fortran compiler.
+\item [\texttt{F77}]    Ignored
 \item [\texttt{CPP}]    The preprocessor used to generate dependencies
 for and to preprocess C and C++ code.
 \item [\texttt{FPP}]    The preprocessor used to generate dependencies
 for and to preprocess Fortran code.
-\item [\texttt{LD}]   * The linker.
+\item [\texttt{LD}]     The linker.
 \item [\texttt{AR}]     The archiver used for generating libraries.
 \item [\texttt{RANLIB}] The archive indexer to use.
 \item [\texttt{MKDIR}]  The program to use to create a directory.
@@ -344,10 +341,10 @@ Flags for the CUDA compiler.
 Flags for the C++ compiler.
 
 \item [\texttt{F90FLAGS}]
-* Flags for the Fortran compiler.
+Flags for the Fortran compiler.
 
 \item [\texttt{F77FLAGS}]
-* Ignored
+Ignored
 
 \item [\texttt{CPPFLAGS}]
 Flags for the preprocessor (used to generate compilation dependencies
@@ -361,7 +358,7 @@ for and preprocess Fortran code).
 Flags for \texttt{MKDIR}, so that no error is given if the directory exists.
 
 \item [\texttt{LDFLAGS}]
-* Flags for the linker.  \emph{Warning:} This variable is ignored
+Flags for the linker.  \emph{Warning:} This variable is ignored
 while the compilers and linkers are autodetected.  This can lead to
 strange errors while configuring.  You can pass the linker flags in
 the variable \texttt{LD} instead.
@@ -418,7 +415,7 @@ compiler reports error messages about unrecognised \verb|#| directives.
   if they exist.
 
 \item [\texttt{DEBUG}]
-* Specifies what type of debug mode should be used,
+Specifies what type of debug mode should be used,
 the default is no debugging.
 Current options are \texttt{yes}, \texttt{no}, or \texttt{memory}. The option
 \texttt{yes} switches on all debugging features, whereas \texttt{memory} just
@@ -444,7 +441,7 @@ type of debugging being used.
 Ignored.
 
 \item [\texttt{OPTIMISE, OPTIMIZE}]
-* Specifies what type of optimisation should be used. The only options currently
+Specifies what type of optimisation should be used. The only options currently
 available are \texttt{yes} and \texttt{no}.  The default is to use optimisation.\\
 Note that the British spelling \texttt{OPTIMISE} will be checked first and, if set,
 will override any setting of the American-spelled \texttt{OPTIMIZE}.
@@ -488,7 +485,7 @@ performed.  These are invoked when OPTIMISE=no is used.
 Ignored.
 
 \item [\texttt{PROFILE}]
-  * Specifies what type of profiling should be used.  The only options
+  Specifies what type of profiling should be used.  The only options
   currently available are \texttt{yes} and \texttt{no}.  The default
   is to use no profiling.
 
@@ -512,7 +509,7 @@ Ignored.
   Ignored.
 
 \item [\texttt{WARN}]
-  * Specifies what type of build warnings should be used.  The only
+  Specifies what type of build warnings should be used.  The only
   options currently available are \texttt{yes} and \texttt{no}.  The
   default is to produce no warnings.
 
@@ -585,10 +582,10 @@ values will be valid on all architectures.
 \begin{Lentry}
 
 \item [\texttt{REAL\_PRECISION}]
-* Allowed values are \texttt{16, 8, 4}.
+Allowed values are \texttt{16, 8, 4}.
 
 \item [\texttt{INTEGER\_PRECISION}]
-* Allowed values are \texttt{8, 4, 2}.
+Allowed values are \texttt{8, 4, 2}.
 
 \end{Lentry}
 
