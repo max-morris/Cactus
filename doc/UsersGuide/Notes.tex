@@ -240,6 +240,21 @@ Cactus configuration files. Default options from
 \texttt{\$\{HOME\}/.cactus/config} will only be read if the
 environment variable \texttt{CACTUS\_CONFIG\_FILES} is not set.
 
+Options read from configuration files can use expressions of the form
+\verb|${VARIABLE}| which are replaced by the value of the environment
+variable \verb|$VARIABLE| at the time \texttt{gmake <\var{config
+name}>-config} runs. The \verb|$| sign can be escaped by duplicating it
+\verb|$$|, and \verb|$| followed by any character other than \verb|$| or
+\verb|{| is left as is.  Since \texttt{gmake} also interprets \verb|$$| in
+order to have a \verb|$| show up to the shell it must be quadrupled
+\verb|$$$$|. For example setting
+\begin{verbatim}
+CC = $${CXX} $(CXXFLAGS) -license ${HOME}/.license -I$$$${HDF5_HOME}/include
+\end{verbatim}
+expands \verb|${CXX}| and \verb|$(CXXFLAGS)| in the Makefile,
+\verb|${HOME}| when \texttt{gmake <\var{config name}>-config} runs, and
+\verb|${HDF5_HOME}| when the compiler \verb|${CXX}| runs.
+
 It is important to note that these methods cannot be used to, for example, add
 options to the default values for \texttt{CFLAGS}.  Setting any variable in the
 configuration file or the command line will overwrite completely the
