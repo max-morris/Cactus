@@ -470,7 +470,7 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
                     val->ddata = cbrt(val->realValue());
                     val->type = PIR_REAL;
                     return val;
-                } else if(fn == "cbrt") {
+                } else if(fn == "atan") {
                     val->ddata = atan(val->realValue());
                     val->type = PIR_REAL;
                     return val;
