@@ -895,7 +895,7 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
         std::string par = get_parfile();
         msg << "Pattern not handled[" << gr->getPatternName() << "]=" << gr->substring() <<
             " at " << gr->line() << " in " << par << std::endl;
-        CCTK_Error(__LINE__,__FILE__,"piraha",msg.str().c_str());
+        CCTK_Error(__LINE__,__FILE__,"Cactus",msg.str().c_str());
     }
     return ret;
 }
@@ -959,7 +959,7 @@ extern "C" void *Util_ExpressionParse(const char *expr) {
     } else {
       std::ostringstream msg;
       m2->showError(msg);
-      CCTK_Error(__LINE__,__FILE__,"Piraha",msg.str().c_str());
+      CCTK_Error(__LINE__,__FILE__,"Cactus",msg.str().c_str());
       return 0;
     }
 }
