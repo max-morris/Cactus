@@ -585,9 +585,10 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
                     return val;
                 }
             }
-            else {
+            // if we get here, nothing matched
+            {
                 std::ostringstream msg;
-                msg << "Unknown func: " << fn << "(" << val->type << ")" << std::endl;
+                msg << "Unknown function: " << fn << "(" << val->type << ")" << std::endl;
                 std::string par = get_parfile();
                 CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
             }
