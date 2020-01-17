@@ -168,7 +168,7 @@ while ($choice !~ /^Q/i)
         # handle and print output
 	print "------------------------------------------------------------------------\n\n";
 	print "  Test $thorn: $test \n";
-	print "    \"$testdata->{\"$thorn $test DESC\"}\"\n";
+	print "    \"".$testdata->{"$thorn $test DESC"}."\"\n";
         print STDOUT $TESTOUT;
         print STDERR $TESTERR;
 
@@ -254,7 +254,7 @@ while ($choice !~ /^Q/i)
 	$thorn = $tests[2*$i+1];
 	print "------------------------------------------------------------------------\n\n";
 	print "  Test $thorn: $test\n";
-	print "    \"$testdata->{\"$thorn $test DESC\"}\"\n";
+	print "    \"".$testdata->{"$thorn $test DESC"}."\"\n";
         my $retcode = 0;
 	$retcode = &RunTest("log",$tests[2*$i],$tests[2*$i+1],$config_data,$testdata,\%runconfig);
 	$rundata = &CompareTestFiles($tests[2*$i],$tests[2*$i+1],\%runconfig,$rundata,$config_data,$testdata,$retcode);
@@ -268,7 +268,7 @@ while ($choice !~ /^Q/i)
       {
 	print "------------------------------------------------------------------------\n\n";
 	print "  Test $thorn: $test \n";
-	print "    \"$testdata->{\"$thorn $test DESC\"}\"\n";
+	print "    \"".$testdata->{"$thorn $test DESC"}."\"\n";
         my $retcode = 0;
 	if ($choice =~ /^S/i)
 	{
@@ -310,11 +310,11 @@ while ($choice !~ /^Q/i)
           $choice = &defprompt("  Select choice: ","");
           if ($choice =~ /A/i)
           {
-            $runconfig{"$thorn $test ABSTOL"}{".*"} = &defprompt("  New absolute tolerance: ","$runconfig{\"$thorn $test ABSTOL\"}{\".*\"}");
+            $runconfig{"$thorn $test ABSTOL"}{".*"} = &defprompt("  New absolute tolerance: ",$runconfig{"$thorn $test ABSTOL"}{".*"});
           }
           elsif ($choice =~ /R/i)
           {
-            $runconfig{"$thorn $test RELTOL"}{".*"} = &defprompt("  New relative tolerance: ","$runconfig{\"$thorn $test RELTOL\"}{\".*\"}");
+            $runconfig{"$thorn $test RELTOL"}{".*"} = &defprompt("  New relative tolerance: ",$runconfig{"$thorn $test RELTOL"}{".*"});
           }
         }
       }
@@ -322,16 +322,16 @@ while ($choice !~ /^Q/i)
       {
         while ($choice !~ /^[AR]/i)
         {
-          print "    Change absolute tolerance from $runconfig{\"ABSTOL\"} for all further runs [A]\n";
-          print "    Change relative tolerance from $runconfig{\"RELTOL\"} for all further runs [R]\n";
+          print "    Change absolute tolerance from $runconfig{'ABSTOL'} for all further runs [A]\n";
+          print "    Change relative tolerance from $runconfig{'RELTOL'} for all further runs [R]\n";
           $choice = &defprompt("  Select choice: ","");
           if ($choice =~ /^A/i)
           {
-            $runconfig{"ABSTOL"} = &defprompt("  New absolute tolerance: ","$runconfig{\"ABSTOL\"}");
+            $runconfig{"ABSTOL"} = &defprompt("  New absolute tolerance: ",$runconfig{"ABSTOL"});
           }
           elsif ($choice =~ /^R/i)
           {
-            $runconfig{"RELTOL"} = &defprompt("  New relative tolerance: ","$runconfig{\"RELTOL\"}");
+            $runconfig{"RELTOL"} = &defprompt("  New relative tolerance: ",$runconfig{"RELTOL"});
           }
         }
       }
