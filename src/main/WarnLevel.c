@@ -1231,29 +1231,15 @@ int CCTKi_SetParameterLevel (int level)
 
    @returntype int
    @returndesc
-                1 - increased logging level <BR>
-                0 - logging level unchanged <BR>
-               -1 - decreased logging level
+                previous logging level
    @endreturndesc
 @@*/
 int CCTKi_SetLogLevel (int level)
 {
-  int retval;
+  int retval = logging_level;
 
 
-  if (logging_level != level)
-  {
-    retval = level > logging_level ? +1 : -1;
-    CCTK_VInfo ("Cactus", "%s logging level from %d to %d",
-                retval > 0 ? "Increasing" : "Decreasing", logging_level, level);
-    logging_level = level;
-  }
-  else
-  {
-    CCTK_VInfo ("Cactus",
-                "Logging level is already %d", level);
-    retval = 0;
-  }
+  logging_level = level;
 
   return (retval);
 }
@@ -1277,29 +1263,15 @@ int CCTKi_SetLogLevel (int level)
 
    @returntype int
    @returndesc
-                1 - increased warning level <BR>
-                0 - warning level unchanged <BR>
-               -1 - decreased warning level
+                previous warning level
    @endreturndesc
 @@*/
 int CCTKi_SetWarnLevel (int level)
 {
-  int retval;
+  int retval = warning_level;
 
 
-  if (warning_level != level)
-  {
-    retval = level > warning_level ? +1 : -1;
-    CCTK_VInfo ("Cactus", "%s warning level from %d to %d",
-                retval > 0 ? "Increasing" : "Decreasing", warning_level, level);
-    warning_level = level;
-  }
-  else
-  {
-    CCTK_VInfo ("Cactus",
-                "Warning level is already %d", level);
-    retval = 0;
-  }
+  warning_level = level;
 
   if (warning_level < error_level)
   {
@@ -1330,46 +1302,29 @@ int CCTKi_SetWarnLevel (int level)
 
    @returntype int
    @returndesc
-                1 - increased error level <BR>
-                0 - error level unchanged <BR>
-               -1 - decreased error level
+                previous error level
    @endreturndesc
 @@*/
 int CCTKi_SetErrorLevel (int level)
 {
-  int retval;
+  int retval = error_level;
 
   if (level < 0)
   {
     CCTK_VWarn (3, __LINE__, __FILE__, "Cactus",
                 "Error level cannot be negative (%d requested)", level);
-    retval = 0;
   }
   else if (level <= warning_level)
   {
-    if (error_level != level)
-    {
-      retval = level > error_level ? +1 : -1;
-      CCTK_VInfo ("Cactus", "%s error level from %d to %d",
-                  retval > 0 ? "Increasing" : "Decreasing", error_level, level);
-      error_level = level;
-    }
-    else
-    {
-      CCTK_VWarn (3, __LINE__, __FILE__, "Cactus",
-                  "Error level is already %d", level);
-      retval = 0;
-    }
+    error_level = level;
   }
   else
   {
-    retval = level > error_level ? +1 : -1;
     error_level = level;
     CCTK_VInfo ("Cactus",
                 "Increasing warning level from %d to match error level %d",
                 warning_level,error_level);
     warning_level = level;
-    retval = 0;
   }
 
   return (retval);

@@ -54,6 +54,11 @@ static redirect_t requested_stderr_redirection = REDIRECT_NONE;
 static int buffering_type = 0;
 /* buffering: 0=default, 1=unbuffered, 2=line, 3=fully */
 static int paramchecking = 0;
+/* record changes to log levels so that we can inform the user about them
+ * afterwards */
+static struct loglevel_change_t {
+  int previous, requested, changed;
+} logginglevel_change, warninglevel_change, errorlevel_change;
 
 
 /********************************************************************
@@ -293,7 +298,7 @@ void CCTKi_CommandLineTestParameters (const char *argument)
    @desc
                Sets the CCTK logging level from a command line argument.
    @enddesc
-   @calls      CCTKi_SetLoggingLevel
+   @calls      CCTKi_SetLogLevel
                CCTKi_CommandLineUsage
 
    @var        argument
@@ -311,7 +316,9 @@ void CCTKi_CommandLineLoggingLevel (const char *argument)
   logginglevel = strtol (argument, &endptr, 10);
   if (endptr && *endptr == 0)
   {
-    CCTKi_SetLogLevel (logginglevel);
+    logginglevel_change.previous = CCTKi_SetLogLevel(logginglevel);
+    logginglevel_change.requested = logginglevel;
+    logginglevel_change.changed = 1;
   }
   else
   {
@@ -345,7 +352,9 @@ void CCTKi_CommandLineWarningLevel (const char *argument)
   warninglevel = strtol (argument, &endptr, 10);
   if (endptr && *endptr == 0)
   {
-    CCTKi_SetWarnLevel (warninglevel);
+    warninglevel_change.previous = CCTKi_SetWarnLevel(warninglevel);
+    warninglevel_change.requested = warninglevel;
+    warninglevel_change.changed = 1;
   }
   else
   {
@@ -381,14 +390,15 @@ void CCTKi_CommandLineErrorLevel (const char *argument)
   {
     if (errorlevel < 0)
     {
-      CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+      CCTK_VError (__LINE__, __FILE__, "Cactus",
                   "Error level cannot be negative, but %d was requested.",
                   (int)errorlevel);
-      CCTK_Exit (NULL, 1);
     }
     else
     {
-      CCTKi_SetErrorLevel (errorlevel);
+      errorlevel_change.previous = CCTKi_SetErrorLevel(errorlevel);
+      errorlevel_change.requested = errorlevel;
+      errorlevel_change.changed = 1;
     }
   }
   else
@@ -815,6 +825,36 @@ void CCTKi_CommandLineFinished (void)
   
   /* ensure that stderr is unbuffered (best for debugging) */
   setvbuf (stderr, NULL, _IONBF, 0);
+
+  /* inform user about changed logging/warning/error levels now that we know
+   * where to output them */
+  struct {
+    const char *name;
+    struct loglevel_change_t *change;
+  } changes[3] = {
+    {"logging", &logginglevel_change},
+    {"warning", &warninglevel_change},
+    {"error", &errorlevel_change},
+  };
+  for(int i = 0 ; i < sizeof(changes)/sizeof(changes[0]) ; i++)
+  {
+    if (changes[i].change->changed)
+    {
+      if (changes[i].change->previous != changes[i].change->requested)
+      {
+        int updown = changes[i].change->requested > changes[i].change->previous ? +1 : -1;
+        CCTK_VInfo ("Cactus", "%s %s level from %d to %d",
+                    updown > 0 ? "Increased" : "Decreased", changes[i].name,
+                    changes[i].change->previous, changes[i].change->requested);
+      }
+      else
+      {
+        CCTK_VInfo ("Cactus",
+                    "Not changing %s level; was already %d", changes[i].name,
+                    changes[i].change->previous);
+      }
+    }
+  }
 }
 
 
