@@ -38,12 +38,15 @@ in single processor mode. Please refer to the architecture section
   henceforth). While other make utilities may also work, this is not
   guaranteed. Gmake can be obtained from your favorite GNU site, or
   from \url{http://www.gnu.org}.
-\item[C] C compiler. For example, the GNU compiler. This
- is available for most supported platforms.  Platform specific compilers
- should also work.
+\item[C] C compiler. Cactus requires it to support the C99 standard. For
+  example, the GNU compiler. This is available for most supported platforms.
+  Platform specific compilers should also work.
 \item[CPP] C Preprocessor. For example, the GNU \texttt{cpp}.  These are
   normally provided on most platforms, and many C compilers have an option
   to just run as a preprocessor.
+\item[C++] C++ compiler. Cactus requires it to support the C++11 standard. For
+  example, the GNU compiler. This is available for most supported platforms.
+  Platform specific compilers should also work.
 \item[GIT] \textit{git} is not needed
   to run/compile Cactus, but you are strongly encouraged to install
   this software to take advantage of the update procedures. It can be
@@ -64,17 +67,6 @@ that is very likely to be compatible with Cactus. Otherwise, there are
 various freely available ones available, e.g. the OpenMPI
 version of MPI is available for various architectures and operating
 systems at \url{http://www.open-mpi.org/}.
-\end{Lentry}
-
-\noindent
-If you are using any thorns containing routines
-written in C++ you also need
-\begin{Lentry}
-\item[C++] C++ compiler. For example, the GNU compiler. This
- is available for most supported platforms.  Platform specific compilers
- should also work.  Note that if a C++ compiler is available, then the
- \text{main()} routine in the flesh is compiled with C++ to allow static
- class initialisations.
 \end{Lentry}
 
 \noindent
