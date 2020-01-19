@@ -1311,45 +1311,45 @@ Please see the file \texttt{par.peg} in the directory
 \begin{table}[htbp]
     \begin{tabular}{|ll@{\hspace{.5cm}}|ll|}
         \hline
-        \multicolumn{2}{|c|}{Logical operators}        & \verb|+| & no-op\\ 
+        \multicolumn{2}{|c|}{Logical operators}        & \verb|!| & logical not\\
         \hline
-        \verb|&&| & logical and		               & \verb|!| & logical not\\
+        \verb|&&| & logical and		               & \multicolumn{2}{c|}{Mathematical functions}\\
         \hline
-        \verb%||% & logical or		               & \multicolumn{2}{c|}{Mathematical functions}\\
+        \verb%||% & logical or		               & \verb|acos| & inverse cosine\\
         \hline
-        \multicolumn{2}{|c|}{Relational operators}     & \verb|acos| & inverse cosine\\
+        \multicolumn{2}{|c|}{Relational operators}     & \verb|asin| & inverse sine\\
         \hline
-        \verb|==| & tests for equality		       & \verb|asin| & inverse sine\\
+        \verb|==| & tests for equality		       & \verb|atan| & inverse tangent \\
         \hline
-        \verb|!=| & tests for inequality	       & \verb|atan| & inverse tangent \\
+        \verb|!=| & tests for inequality	       & \verb|ceil| & round up to nearest integer \\
         \hline
-        \verb|<| & tests for less than		       & \verb|ceil| & round up to nearest integer \\
+        \verb|<| & tests for less than		       & \verb|cos| & cosine \\
         \hline
-        \verb|>| & tests for greater than	       & \verb|cos| & cosine \\
+        \verb|>| & tests for greater than	       & \verb|cosh| & hyperbolic cosine \\
         \hline
-        \verb|<=| & tests for less or equal	       & \verb|cosh| & hyperbolic cosine \\
+        \verb|<=| & tests for less or equal	       & \verb|exp| & exponentiation $e^x$\\
         \hline
-        \verb|>=| & tests for greater or equal	       & \verb|exp| & exponentiation $e^x$\\
+        \verb|>=| & tests for greater or equal	       & \verb|abs| & absolute value $|x|$\\
         \hline
-        \multicolumn{2}{|c|}{Binary operators}	       & \verb|abs| & absolute value $|x|$\\
+        \multicolumn{2}{|c|}{Binary operators}	       & \verb|floor| & round down to nearest integer \\
         \hline
-        \verb|+| & addition		               & \verb|floor| & round down to nearest integer \\
+        \verb|+| & addition		               & \verb|log| & natural logarithm \\
         \hline
-        \verb|-| & subtraction		               & \verb|log| & natural logarithm \\
+        \verb|-| & subtraction		               & \verb|bool,int,real| & convert to bool, int, or real \\
         \hline
-        \verb|/| & C-like division		       & \verb|bool,int,real| & convert to bool, int, or real \\
+        \verb|/| & C-like division		       & \verb|sin| & sine \\
         \hline
-        \verb|%| & remainder of division	       & \verb|sin| & sine \\
+        \verb|%| & remainder of division	       & \verb|sinh| & hyperbolic sine \\
         \hline
-        \verb|*| & multiplication		       & \verb|sinh| & hyperbolic sine \\
+        \verb|*| & multiplication		       & \verb|sqrt| & square root \\
         \hline
-        \verb|**| & exponentiation $x^y$	       & \verb|sqrt| & square root \\
+        \verb|**| & exponentiation $x^y$	       & \verb|cbrt| & cube root \\
         \hline
         \multicolumn{2}{|c|}{Unary operators}	       & \verb|tan| & tangent \\
         \hline
         \verb|-| & negate sign		               & \verb|tanh| & hyperbolic tangent \\
         \hline
-                                                     & & \verb|trunc| & integer part of $x$\\
+        \verb|+| & no-op                               & \verb|trunc| & integer part of $x$\\
 	\hline
     \end{tabular}
     \caption{Supported functions inside of expressions, in increasing order of
