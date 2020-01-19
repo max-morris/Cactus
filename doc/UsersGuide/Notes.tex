@@ -1212,7 +1212,7 @@ all following characters. A parameter statement is an expression of the form
 \textit{Left-Hand-Side} = \textit{Right-Hand-Side}.
 The \textit{Left-Hand-Side} may be a fully qualified parameter name
 (i.e. a thorn or implementation name, two colons, and a name defined in a \verb=param.ccl= file),
-a variable name (the `\textit{\$}' character followed by a c-identifier), or
+a variable name (the `\textit{\$}' character followed by a C-identifier), or
 the special variable \textit{ActiveThorns}.
 The \textit{Right-Hand-Side} is a value.
 
@@ -1226,7 +1226,7 @@ Values can be any of the following (all of which are case insensitive):
  with exponents (e.g. \verb=1.0e-3=, or \verb=-2.94d+10=).
 \item Keywords: For keyword parameters, only the values enumerated in the parameter
 file are allowed. Like booleans, keywords may be put inside quotes. If they contain
-characters other than those found in c-identifiers, they must be.
+characters other than those found in C-identifiers, they must be.
 \item Strings: Sequences of characters delimited by quotes. If a quote is preceded by
 a backslash, it is not counted as a closing quote. A sequence of two backslashes will
 be interpreted as a single backslash.
