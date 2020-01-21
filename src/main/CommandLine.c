@@ -8,6 +8,7 @@
    @version   $Id$
  @@*/
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -53,11 +54,12 @@ static redirect_t requested_stdout_redirection = REDIRECT_NONE;
 static redirect_t requested_stderr_redirection = REDIRECT_NONE;
 static int buffering_type = 0;
 /* buffering: 0=default, 1=unbuffered, 2=line, 3=fully */
-static int paramchecking = 0;
+static bool paramchecking = false;
 /* record changes to log levels so that we can inform the user about them
  * afterwards */
 static struct loglevel_change_t {
-  int previous, requested, changed;
+  int previous, requested; /* previus and new log level */
+  bool changed;            /* was a change request made? */
 } logginglevel_change, warninglevel_change, errorlevel_change;
 
 
@@ -285,7 +287,7 @@ void CCTKi_CommandLineTestParameters (const char *argument)
     }
   }
 
-  paramchecking = 1;
+  paramchecking = true;
   cctki_paramchecking = 1;
   cctki_paramcheck_nprocs = nprocs;
 }
@@ -318,7 +320,7 @@ void CCTKi_CommandLineLoggingLevel (const char *argument)
   {
     logginglevel_change.previous = CCTKi_SetLogLevel(logginglevel);
     logginglevel_change.requested = logginglevel;
-    logginglevel_change.changed = 1;
+    logginglevel_change.changed = true;
   }
   else
   {
@@ -354,7 +356,7 @@ void CCTKi_CommandLineWarningLevel (const char *argument)
   {
     warninglevel_change.previous = CCTKi_SetWarnLevel(warninglevel);
     warninglevel_change.requested = warninglevel;
-    warninglevel_change.changed = 1;
+    warninglevel_change.changed = true;
   }
   else
   {
@@ -398,7 +400,7 @@ void CCTKi_CommandLineErrorLevel (const char *argument)
     {
       errorlevel_change.previous = CCTKi_SetErrorLevel(errorlevel);
       errorlevel_change.requested = errorlevel;
-      errorlevel_change.changed = 1;
+      errorlevel_change.changed = true;
     }
   }
   else
