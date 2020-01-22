@@ -392,6 +392,7 @@ else
 	@echo "                   using its previous configuration options."
 	@echo "  -utils         : build a configuration's utility programs."
 	@echo "  -testsuite     : run the test suites."
+	@echo "                   set CCTK_TESTSUITE_RUN_TESTS to list of thorns/tests to test."
 	@echo "  -thornlist     : regenerate the ThornList file."
 	@echo "  -ThornGuide    : create the thorn manual for a specific configuration."
 	@echo "  -examples      : copy thorn parameter files to examples directory."

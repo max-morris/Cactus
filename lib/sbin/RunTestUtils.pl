@@ -1,3 +1,5 @@
+use Time::HiRes;
+
 $top = `pwd` if (! $top);
 $config_dir = "$top/config-data" if (! $config_dir);
 
@@ -36,7 +38,7 @@ require "CSTUtils.pl";
 sub Configure
 {
   my($config,$home_dir,$prompt) = @_;
-  my($configs_dir,$tests_dir);
+  my($configs_dir,$tests_dir,$tests_list);
 
   # Cactus home directory
   $config_data->{"CCTK_DIR"} = $home_dir;
@@ -65,6 +67,17 @@ sub Configure
     $tests_dir = $home_dir."/TEST";
   }
   $config_data->{"TESTS_DIR"} = $tests_dir;
+
+  # List of thorns to test (empty to test all thorns)
+  if ($ENV{"CCTK_TESTSUITE_RUN_TESTS"})
+  {
+    $tests_list = $ENV{"CCTK_TESTSUITE_RUN_TESTS"};
+  }
+  else
+  {
+    $tests_list = "";
+  }
+  $config_data->{"CCTK_TESTSUITE_RUN_TESTS"} = $tests_list;
 
   $config_data->{"SEPARATOR"} = "/";
   $config_data->{"CONFIG"} = $config;
@@ -213,7 +226,6 @@ sub ParseTestConfigs
 {
   my($testdata,$config_data,$rundata) = @_;
   my($line_number, $line);
-  my($test, $ABSTOL, $RELTOL);
 
   my $arrangement_dir = "$config_data->{'CCTK_DIR'}${sep}arrangements${sep}";
   foreach $thorn (split(" ",$testdata->{"THORNS"}))
@@ -248,7 +260,6 @@ sub ParseTestConfigs
              $varRegex=".*";
           }
           $rundata->{"$thorn ABSTOL"}{$varRegex}=$newtol;
-          $ABSTOL=$$rundata{"$thorn ABSTOL"};
         }
         elsif ($line =~ m/^\s*RELTOL\s*(\S*)\s*(\S*)\s*$/i)
         {
@@ -259,11 +270,10 @@ sub ParseTestConfigs
              $varRegex=".*";
           }
           $rundata->{"$thorn RELTOL"}{$varRegex}= $newtol;
-          $RELTOL=$$rundata{"$thorn RELTOL"};
         }
         elsif ($line =~ m/^\s*NPROCS\s+(\d+)\s*$/i)
         {
-          $NPROCS = $rundata->{"$thorn NPROCS"} = $1;
+          $rundata->{"$thorn NPROCS"} = $1;
         }
         elsif ($line =~ m/^\s*EXTENSIONS\s*(.*)/i)
         {
@@ -271,8 +281,9 @@ sub ParseTestConfigs
         }
         elsif ($line =~ m/^\s*TEST\s*(.*)/i)
         {
+          my ($test, $ABSTOL, $RELTOL, $NPROCS);
           ($test, $ABSTOL, $RELTOL, $NPROCS, $line_number) =
-            &ParseTestBlock($line_number, \@config);
+            &ParseTestBlock($line_number, $config_file, \@config);
           $rundata->{"$thorn $test ABSTOL"} = $ABSTOL;
           $rundata->{"$thorn $test RELTOL"} = $RELTOL;
           $rundata->{"$thorn $test NPROCS"} = $NPROCS;
@@ -303,11 +314,11 @@ sub ParseTestConfigs
 ############################################################
 sub ParseTestBlock
 {
-  my ($line_number, $data) = @_;
+  my ($line_number, $file_name, $data) = @_;
   my ($Test, $NPROCS) = ();
   my (%ABSTOL, %RELTOL) = (); 
 
-  $data->[$line_number] =~ m/^\s*PROVIDES\s*(.*)/i;
+  $data->[$line_number] =~ m/^\s*TEST\s+(.*)/i;
 
   $Test = $1;
 
@@ -315,13 +326,12 @@ sub ParseTestBlock
 
   if($data->[$line_number] !~ m/^\s*\{\s*$/)
   {
-    $line_number++ while($data[$line_number] !~ m:\s*\}\s*:);
+    $line_number++ while($line_number < @{$data} && $data->[$line_number] !~ m:\s*\}\s*:);
   }
   else
   {
-    while($data->[$line_number] !~ m:\s*\}\s*:)
+    for($line_number += 1 ; $line_number < @{$data} && $data->[$line_number] !~ m:\s*\}\s*: ; $line_number++)
     {
-      $line_number++;
       if ($data->[$line_number] =~ m/^\s*ABSTOL\s*(\S*)\s*(\S*)\s*$/i)
       {
         my $newtol=$1;
@@ -355,8 +365,12 @@ sub ParseTestBlock
       }
       else
       {
-        print STDERR "Error parsing test config block line '$data->[$line_number]'\n";
+        print STDERR "Error parsing test config $file_name block $Test line '$data->[$line_number]'\n";
       }
+    }
+    if($line_number == @{$data})
+    {
+      print STDERR "Error parsing test config $file_name block $Test: unexpectedly reached end of file \n";
     }
   }
   return ($Test, \%ABSTOL, \%RELTOL, $NPROCS, $line_number);
@@ -436,11 +450,14 @@ sub FindTestParameterFiles
   my($testdata,$config_data) = @_;
   my($config,$config_dir);
   my($thorn);
+  my(%tests_list);
   my(%found_thorns) = ();
 
   $config      = $config_data->{"CONFIG"};
   $configs_dir = $config_data->{"CONFIGSDIR"};
   $sep         = $config_data->{"SEPARATOR"};
+
+  %tests_list = map {($_,1)} split /\s+/,$config_data->{"CCTK_TESTSUITE_RUN_TESTS"};
 
   open (AT, "< $configs_dir${sep}$config${sep}ThornList") || print "Cannot find ThornList for $config";
 
@@ -483,6 +500,8 @@ sub FindTestParameterFiles
       {
         $file =~ m:^(.*)\.par$:;
         $filedir = $1;
+        next if scalar %tests_list and not exists $tests_list{$thorn} and
+                not exists $tests_list{"$thorn/$filedir"};
         if (-d $filedir or -f "$filedir.tar" or
             -f "$filedir.tar.gz"  or -f "$filedir.tgz" or
             -f "$filedir.tar.bz2" or -f "$filedir.tbz" or
@@ -785,7 +804,7 @@ sub InitialiseTestData
 
 =item $runconfig
  $runconfig consists of ABSTOL (default 1e-12) and
- RELTOL (1e-12).
+ RELTOL (1e-12) globally and for each thorn and thorn/test.
 
 =back
 
@@ -1068,22 +1087,28 @@ sub RunCactus
   printf "\n  Issuing $command\n";
 
   $retcode = 0;
-  open (CMD, "pwd; $command 2>&1 |");
   open (LOG, "> $testname.log");
+
+  my $start_time = &Time::HiRes::gettimeofday();
+  open (CMD, "pwd; $command 2>&1 |");
 
   while (<CMD>)
   {
     print LOG if ($output =~ /log/);
     print STDOUT if ($output =~ /stdout/);
   }
-  close LOG;
   close CMD;
-
   $retcode = $? >> 8 if($retcode==0);
+  my $end_time = &Time::HiRes::gettimeofday();
+
+  my $elapsed = $end_time - $start_time;
+  printf LOG "  Elapsed time: %.1f s\n", $elapsed if ($output =~ /log/);
+  printf LOG "  Elapsed time: %.1f s\n", $elapsed if ($output =~ /stdout/);
+  close LOG;
 
   print STDOUT "\n\n" if ($output =~ /stdout/);
 
-  return $retcode;
+  return $retcode, $elapsed;
 }
 
 
@@ -1199,11 +1224,11 @@ sub WriteFullResults
   my @summary = ();
   my ($separator);
 
-  $separator1 = "========================================================================\n\n";
-  $separator2 = "------------------------------------------------------------------------\n\n";
+  $separator1 = "========================================================================\n";
+  $separator2 = "------------------------------------------------------------------------\n";
 
   push (@summary, $separator2);
-  push (@summary, "  Warnings for configuration $config_data->{\"CONFIG\"}\n  --------\n\n");
+  push (@summary, "  Warnings for configuration $config_data->{\"CONFIG\"}\n  --------\n");
 
   # Missing thorns for tests
 
@@ -1221,7 +1246,7 @@ sub WriteFullResults
       $missingtests++;
     }
   }
-  push (@summary, "$message\n") if ($missingtests > 0);
+  push (@summary, "$message") if ($missingtests > 0);
 
   # Different number of processors required
   $message = "  Tests missed for different number of processors required:\n";
@@ -1238,7 +1263,7 @@ sub WriteFullResults
       $missingtests++;
     }
   }
-  push (@summary, "$message\n") if ($missingtests > 0);
+  push (@summary, "$message") if ($missingtests > 0);
 
   # Different numbers of test files
 
@@ -1257,14 +1282,14 @@ sub WriteFullResults
       }
     }
   }
-  push (@summary, "$message\n") if ($extratests > 0);
+  push (@summary, "$message") if ($extratests > 0);
 
   push (@summary, $separator2);
 
-  push (@summary, "  Testsuite Summary for configuration $config_data->{\"CONFIG\"}\n");
-  push (@summary, "  -----------------\n\n");
+  push (@summary, "  Testsuite Summary for configuration $config_data->{\"CONFIG\"}");
+  push (@summary, "  -----------------\n");
 
-  push (@summary, "  Suitable testsuite parameter files found in:\n\n");
+  push (@summary, "  Suitable testsuite parameter files found in:\n");
 
   $tested = 0;
   $nottested = "";
@@ -1273,7 +1298,7 @@ sub WriteFullResults
     $num = scalar(split(" ",$testdata->{"$thorn RUNNABLE"}));
     if ($num > 0)
     {
-      push (@summary, "    $thorn [$num]\n");
+      push (@summary, "    $thorn [$num]");
       $tested++;
     }
     else
@@ -1282,26 +1307,27 @@ sub WriteFullResults
     }
   }
 
-  push (@summary, "\n");
-  push (@summary, "  Details:\n\n");
+  push (@summary, "");
+  push (@summary, "  Details:\n");
   foreach $thorn (sort split(" ",$testdata->{"THORNS"}))
   {
     $num = scalar(split(" ",$testdata->{"$thorn RUNNABLE"}));
     if ($num > 0)
     {
-      push (@summary, "    $thorn:\n");
+      push (@summary, "    $thorn:");
       foreach $test (sort split(" ",$testdata->{"$thorn RUNNABLE"}))
       {
-    push (@summary, "      $test\n");
+        my $elapsed = sprintf "%.1f", $testdata->{"$thorn $test ELAPSEDTIME"};
+        push (@summary, "      $test ($elapsed s)");
       }
     }
   }
 
-  push (@summary, "\n");
+  push (@summary, "");
   if ($nottested)
   {
-    push (@summary, "  Thorns with no valid testsuite parameter files:\n");
-    push (@summary, "$nottested\n\n");
+    push (@summary, "  Thorns with no valid testsuite parameter files:");
+    push (@summary, "$nottested\n");
   }
 
   $unknown = 0;
@@ -1316,16 +1342,16 @@ sub WriteFullResults
         {
           if (!$unknown)
           {
-            push (@summary, "  Thorns with unrecognized test output files:\n");
+            push (@summary, "  Thorns with unrecognized test output files:");
             $unknown = 1;
           }
 
           if (!$gotthorn)
           {
-            push (@summary, "    $thorn\n");
+            push (@summary, "    $thorn");
             $gotthorn = 1;
           }
-          push (@summary, "       $test: $testdata->{\"$thorn $test UNKNOWNFILES\"}\n");
+          push (@summary, "       $test: $testdata->{\"$thorn $test UNKNOWNFILES\"}");
         }
       }
     }
@@ -1565,8 +1591,8 @@ sub ChooseTests
 
 =over 
 
-=item RunTest($output, $test, $thorn, $config_data, $testdata)
- This subroutine runs $test of $thorn with $config_data
+=item RunTest($output, $test, $thorn, $config_data, $testdata, $rundata)
+ This subroutine runs $test of $thorn with $config_data and $rundata
  and returns $testdata.
 
 =back
@@ -1576,7 +1602,7 @@ sub ChooseTests
 ############################################################
 sub RunTest
 {
-  my ($output,$test,$thorn,$config_data,$testdata) = @_;
+  my ($output,$test,$thorn,$config_data,$testdata,$rundata) = @_;
   my ($test_dir,$config);
   my ($retcode);
 
@@ -1602,11 +1628,21 @@ sub RunTest
   # substitute the ($nprocs, $exe, $parfile) templates in the command
   my $cmd = $config_data->{'COMMAND'};
   $cmd =~ s/\$exe/$config_data->{'EXE'}/g;
-  $cmd =~ s/\$nprocs/$config_data->{'NPROCS'}/g;
+  my $NPROCS;
+  if($rundata->{"$thorn $test NPROCS"}) {
+    $NPROCS = $rundata->{"$thorn $test NPROCS"};
+  } elsif($rundata->{"$thorn NPROCS"}) {
+    $NPROCS = $rundata->{"$thorn NPROCS"};
+  } else {
+    $NPROCS = $config_data->{'NPROCS'};
+  }
+  $cmd =~ s/\$nprocs/$NPROCS/g;
   $cmd =~ s/\$parfile/$parfile/g;
 
-  $retcode = &RunCactus($output,$test,$cmd);
+  $retcode, $elapsed = &RunCactus($output,$test,$cmd);
   chdir $config_data->{"CCTK_DIR"};
+
+  $testdata->{"$thorn $test ELAPSEDTIME"} = $elapsed;
 
   # Deal with the error code
   if($retcode != 0)
@@ -2124,7 +2160,7 @@ sub ParseAllParameterFiles
         $testdata->{"$thorn $testbase MISSING"} .= $missing;
         $testdata->{'NUNRUNNABLE'}++;
       }
-      elsif ($nprocs_required != $nprocs_available)
+      elsif ($nprocs_required > $nprocs_available)
       {
         $testdata->{"$thorn UNRUNNABLE"} .= "$testbase ";
         $testdata->{"$thorn $testbase NPROCS"} = $nprocs_required;

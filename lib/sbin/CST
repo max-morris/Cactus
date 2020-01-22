@@ -11,7 +11,6 @@
 
 use FindBin;
 use FileHandle;
-use Carp;
 
 # Global parameter to track the number of errors from the CST
 # The file make.thornlist is only created if the number of errors is zero.
