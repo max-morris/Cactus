@@ -114,7 +114,7 @@ struct Value {
         } else {
             std::ostringstream o;
             if(type == PIR_REAL) {
-                o << std::setprecision(15) << ddata;
+                o << std::setprecision(17) << ddata;
             } else {
                 o << idata;
             }
