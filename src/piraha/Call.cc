@@ -794,6 +794,7 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
             return meval(gr->group(0),eedata);
         smart_ptr<Value> v1 = meval(gr->group(0),eedata);
         for(int i=1;i+1<gr->groupCount();i+=2) {
+            ret = new Value(gr);
             std::string addop = gr->group(i)->substring();
             smart_ptr<Value> v2 = meval(gr->group(i+1),eedata);
             assert(v2.valid());
@@ -847,6 +848,7 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
             return meval(gr->group(0),eedata);
         smart_ptr<Value> v1 = meval(gr->group(0),eedata);
         for(int i=1;i+1<gr->groupCount();i+=2) {
+            ret = new Value(gr);
             std::string mulop = gr->group(i)->substring();
             smart_ptr<Value> v2 = meval(gr->group(i+1),eedata);
             if(v1->type == PIR_INT && v2->type == PIR_INT) {
