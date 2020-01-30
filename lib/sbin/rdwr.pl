@@ -11,6 +11,40 @@ my($S_grammar,$S_rule)=piraha::parse_peg_file($sch_file);
 my $int_file = $ENV{CCTK_HOME}."/src/piraha/pegs/interface.peg";
 my($I_grammar,$I_rule)=piraha::parse_peg_file($int_file);
 
+sub thorn_args {
+    my $th = shift;
+    my $TOP = $ENV{TOP};
+    my $fname="$TOP/bindings/include"; #${th}_Arguments.h";
+    my $found = 0;
+    for my $f (<*_Arguments.h>) {
+        if(uc($f) eq "${th}_ARGUMENTS.H") {
+            $fname .= "/$f";
+            $found = 1;
+            last;
+        }
+    }
+    if(!$found) {
+        print("Not found: thorn '$th'\n");
+        return [];
+    }
+    my $fd = new FileHandle;
+    my $find = "#define \U${th}\E_(PRIVATE|PUBLIC|PROTECTED)_FARGUMENTS ";
+    unless(open($fd,$fname)) {
+        print("No such file: '$fname'\n");
+        return [];
+    }
+    my @vars = ();
+    while(my $line=<$fd>) {
+        if($line =~ /$find/) {
+            $line=<$fd>;
+            while($line =~ /\w+/g) {
+                push @vars, $&;
+            }
+        }
+    }
+    return \@vars
+}
+
 sub interface_starter
 {
   my $thornname = uc shift;
@@ -210,10 +244,13 @@ sub create_macros
   my $lang = shift;
   my $data = shift;
   my $ccl_file = shift;
+  my $thorn_args = thorn_args($tnm);
+  my $all_cctk_arguments = [];
+  push @$all_cctk_arguments, @$thorn_args;
   $$data .= "#ifndef CCTK_ARGUMENTS_CHECKED_H\n";
   $$data .= "#define CCTK_ARGUMENTS_CHECKED_H 1\n";
   for my $namekey (sort keys %{$reads_writes}) {
-    my $temp_data = "";
+    my %cctk_arguments = ();
     my $nm = substr($namekey,0,-2); # removing language suffix from function name
     if(defined($reads_writes->{$namekey}->{$namekey}->{$namekey})) {
       # This generates macros for functions with no read/write declarations.
@@ -230,10 +267,12 @@ sub create_macros
         $$data .= "#ifndef DECLARE_CCTK_ARGUMENTS_${nm} \n";
         $$data .= "#define DECLARE_CCTK_ARGUMENTS_${nm} \\\n";
         $$data .= "  _DECLARE_CCTK_FARGUMENTS; \\\n";
+        for my $var (@$all_cctk_arguments) {
+          if(not defined($cctk_arguments{$var})) {
+              $$data .= " characTer*8, intent(IN) :: $var /* dummy-rdwr-var */ && \\\n";
+          }
+        }
         $$data .= "  /* end $nm */\n";
-        $$data .= "#endif\n";
-        $$data .= "#ifndef CCTK_ARGUMENTS_${nm} \n";
-        $$data .= "#define CCTK_ARGUMENTS_$nm _CCTK_ARGUMENTS \n";
         $$data .= "#endif\n";
         $$data .= "#endif\n";
       } else {
@@ -397,7 +436,7 @@ sub create_macros
               if($var_group->{vector} ne "0") {
                 my $glen = $group."_length";
                 if(!defined($vector_len->{$glen})) {
-                  $temp_data .= ", $glen";
+                  $cctk_arguments{$glen}=1;
                   $$data .= "  integer :: $glen &&\\\n";
                   $vector_len->{$glen} = 1;
                 }
@@ -412,7 +451,7 @@ sub create_macros
               #}
               my $glen = "X0".$group;
               if(!defined($vector_len->{$glen})) {
-                $temp_data .= ", $glen";
+                $cctk_arguments{$glen}=1;
                 $$data .= "  integer :: $glen &&\\\n";
                 $vector_len->{$glen} = 1;
               }
@@ -420,7 +459,7 @@ sub create_macros
                 my $temp_glen .= "X".$i.$group;
                 $glen .= ",".$temp_glen;
                 if(!defined($vector_len->{$temp_glen})) {
-                  $temp_data .= ", $temp_glen";
+                  $cctk_arguments{$temp_glen}=1;
                   $$data .= "  integer :: $temp_glen &&\\\n";
                   $vector_len->{$temp_glen} = 1;
                 }
@@ -428,34 +467,35 @@ sub create_macros
               $arrays = qq(($glen));
             } elsif($var_group->{vector} ne "0") {
               my $glen = $group."_length";
-              $temp_data .= ", $glen";
+              $cctk_arguments{$glen}=1;
               $$data .= "  integer :: $glen &&\\\n";
               $arrays = qq(($glen));
             }
             if($group_register eq "yes") {
-              for my $variables (sort keys %{$var_group->{grp_vars}}) {
-                $temp_data .= ", $variables";
-                $$data .= "  $vtype :: $variables $arrays &&\\\n";
-                $$data .= "  integer, parameter :: cctki_use_$variables = kind($variables) &&\\\n";
+              for my $variable (sort keys %{$var_group->{grp_vars}}) {
+                $cctk_arguments{$variable}=1;
+                $$data .= "  $vtype :: $variable $arrays &&\\\n";
+                $$data .= "  integer, parameter :: cctki_use_$variable = kind($variable) &&\\\n";
               }
             } else {
-              $temp_data .= ", $full_var";
+              $cctk_arguments{$full_var}=1;
               $$data .= "  $vtype :: $full_var $arrays &&\\\n";
               $$data .= "  integer, parameter :: cctki_use_$full_var = kind($full_var) &&\\\n";
             }
           } # loop over read/write variables
         } # loop over read/write thorns
+        # Declare the variables that got missed...
+        for my $var (@$all_cctk_arguments) {
+          if(not defined($cctk_arguments{$var})) {
+              $$data .= " characTer*8, intent(IN) :: $var /* dummy-rdwr-var */ && \\\n";
+          }
+        }
       } else {
         &CST_error(0, "Failed to match the language for the function $nm."
             ,"", __LINE__, __FILE__);
       }
       $$data .= "  /* end $nm */\n";
       $$data .= "#endif\n";
-      if($lang->{$namekey} eq "FORTRAN") {
-        $$data .= "#ifndef CCTK_ARGUMENTS_${nm} \n";
-        $$data .= "#define CCTK_ARGUMENTS_$nm _CCTK_ARGUMENTS$temp_data \n";
-        $$data .= "#endif\n";
-      }
       $$data .= "#endif\n";
     } # if logic for empty/non-empty macros
   } #loop over functions
