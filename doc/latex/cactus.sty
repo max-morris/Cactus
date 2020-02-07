@@ -94,8 +94,8 @@
 
 % get git revision to include in documentation
 
-% read git revision from .git directory #1
 \makeatletter
+% read git revision from .git directory #1
 \newcommand{\gitrevision}[1]{%
   \begingroup%
   % given a string "a b" return "b"
@@ -105,7 +105,7 @@
   \def\capturefilecontent##1##2{%
     \begingroup%
       \endlinechar=-1\everyeof={\noexpand}%
-      \edef\x{\csname @@input\endcsname ##2 }%
+      \edef\x{\@@input ##2 }%
     \expandafter\endgroup\expandafter\edef\expandafter##1\expandafter{\x}%
   }%
   % get the current HEAD
@@ -113,7 +113,7 @@
     \capturefilecontent{\head@content}{#1/HEAD}%
     % if its a reflink, read the link
     %
-    % check of #1 contain the string "ref: "
+    % check if HEAD contains the string "ref: "
     % expanded from from https://tex.stackexchange.com/a/26873
     \@expandtwoargs\in@{ref: }{\head@content}\ifin@%
       % read reflink
@@ -123,7 +123,7 @@
       \let\git@revision\head@content%
     \fi%
   }{%
-    \let\git@revision{<unknown git revision>}%
+    \let\git@revision{\textless unknown git revision \textgreater}%
   }%
   \expandafter\endgroup%
   \git@revision%
