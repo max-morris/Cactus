@@ -92,6 +92,49 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% get git revision to include in documentation
+
+% read git revision from .git directory #1
+\makeatletter
+\newcommand{\gitrevision}[1]{%
+  \begingroup%
+  % given a string "a b" return "b"
+  \def\secondoftwo##1 ##2\relax{##2}%
+  % read content of file #2 into command #1
+  % from https://tex.stackexchange.com/a/203488
+  \def\capturefilecontent##1##2{%
+    \begingroup%
+      \endlinechar=-1\everyeof={\noexpand}%
+      \edef\x{\csname @@input\endcsname ##2 }%
+    \expandafter\endgroup\expandafter\edef\expandafter##1\expandafter{\x}%
+  }%
+  % get the current HEAD
+  \IfFileExists{#1/HEAD}{%
+    \capturefilecontent{\head@content}{#1/HEAD}%
+    % if its a reflink, read the link
+    %
+    % check of #1 contain the string "ref: "
+    % expanded from from https://tex.stackexchange.com/a/26873
+    \@expandtwoargs\in@{ref: }{\head@content}\ifin@%
+      % read reflink
+      \capturefilecontent{\reflink@content}{#1/\expandafter\secondoftwo\head@content\relax}%
+      \let\git@revision\reflink@content%
+    \else%
+      \let\git@revision\head@content%
+    \fi%
+  }{%
+    \let\git@revision{<unknown git revision>}%
+  }%
+  \expandafter\endgroup%
+  \git@revision%
+}
+\makeatother
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % MANPAGE like description setting for options, use as % \begin{Lentry}
 %\item[text] text \end{Lentry} \usepackage{ifthen,calc}
 \newcommand{\entrylabel}[1]{\mbox{\textsf{#1}}\hfil}
