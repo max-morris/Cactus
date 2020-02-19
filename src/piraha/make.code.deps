@@ -1,4 +1,2 @@
 $(BINDINGS_DIR)/include/ParGrammar.hh : $(CCTK_HOME)/src/piraha/pegs/par.peg
 	$(PERL) $(CCTK_HOME)/src/piraha/make.hh.pl $< $@
-
-$(CCTK_HOME)/src/piraha/Call.cc :  $(TOP)/bindings/include/ParGrammar.hh
