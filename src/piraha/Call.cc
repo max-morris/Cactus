@@ -340,7 +340,7 @@ std::string string_reparser(std::string s) {
         std::string out = "";
         for(int i=0;i < m->groupCount(); i++) {
             std::string pn = m->group(i)->getPatternName();
-            if(pn == "any" || pn == "name") {
+            if(pn == "any" || pn == "name" || pn == "stringfirstname") {
                 out += m->group(i)->substring();
             } else if(pn == "stringcomment") {
                 ;
