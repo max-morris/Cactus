@@ -803,7 +803,7 @@ sub parse_peg_file
   my $peg = shift;
   local $/ = undef;
   my $fd = new FileHandle;
-  open($fd,$peg) or die "cannot open $peg";
+  open($fd,$peg) or die "cannot open $peg: $!";
   my $peg_contents = <$fd>;
   close($fd);
   return parse_peg_src($peg_contents);
@@ -828,7 +828,7 @@ sub parse_src
   my $rule = shift;
   my $src = shift;
   my $fd = new FileHandle;
-  open($fd,$src) or croak "cannot open $src";
+  open($fd,$src) or croak "cannot open $src: $!";
   my $src_contents = <$fd>;
   close($fd);
   my $m = new Matcher($g,$rule,$src_contents);
@@ -840,7 +840,7 @@ sub load_tree
 {
   my $file = shift;
   my $fd = new FileHandle;
-  open($fd,$file) or die $file;
+  open($fd,$file) or die "cannot open $file: $!";
   my $txt = <$fd>;
   chomp($txt);
   $txt =~ s/\&([a-f0-9]{2});/chr(hex($1))/ge;
