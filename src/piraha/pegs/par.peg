@@ -6,7 +6,7 @@ skipeol = ([ \t\r]|\#.*)*($|\n)
 any = [^]
 stringfirstline = .*
 stringcomment = #.*
-stringparser = ^{stringfirstline}({stringcomment}|{var}|{name}|{any})*$
+stringparser = ^({var}|{name}|{stringfirstline})*(\n({stringcomment}|{var}|{name}|{any})*)?$
 # Note that / occurs in some par files. It is my
 # feeling that this should require quote marks.
 name = [a-zA-Z][a-zA-Z0-9_]*
