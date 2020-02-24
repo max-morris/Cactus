@@ -108,9 +108,22 @@
       \edef\x{\@@input ##2 }%
     \expandafter\endgroup\expandafter\edef\expandafter##1\expandafter{\x}%
   }%
+  % remove last "/*" from a string
+  \def\dir@part##1/##2\relax{\if\relax##2\relax\else##1/\dir@part##2\relax\fi}%
   % get the current HEAD
-  \IfFileExists{#1/HEAD}{%
-    \capturefilecontent{\head@content}{#1/HEAD}%
+  \IfFileExists{#1/HEAD}{% regular git checkout
+    \def\git@HEAD{#1/HEAD}%
+  }{%
+    \IfFileExists{#1}{% as a submodule
+      \capturefilecontent{\git@content}{#1}%
+      \def\module@dir{\expandafter\secondoftwo\git@content\relax}%
+      \def\git@HEAD{\dir@part#1/\relax/\module@dir/HEAD}%
+    }{%
+     \def\git@HEAD{#1}% does not exist
+    }%
+  }%
+  \IfFileExists{\git@HEAD}{%
+    \capturefilecontent{\head@content}{\git@HEAD}%
     % if its a reflink, read the link
     %
     % check if HEAD contains the string "ref: "
