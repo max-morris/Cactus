@@ -1023,7 +1023,7 @@ UsersGuide:
 	pdflatex  -interaction=nonstopmode UsersGuide.tex > LATEX_MESSAGES 2>&1; \
 	pdflatex  -interaction=nonstopmode UsersGuide.tex > LATEX_MESSAGES 2>&1; \
 	if grep "^\! " "LATEX_MESSAGES"; then                            \
-	  echo "  Problem in $<.  See doc/UsersGuide/LATEX_MESSAGES.";      \
+	  echo "  Problem in $@.  See doc/UsersGuide/LATEX_MESSAGES.";      \
 	  exit 1;                                                           \
 	elif grep "^LaTeX Warning:" "LATEX_MESSAGES"; then                  \
 	  echo "  For more information see doc/UsersGuide/LATEX_MESSAGES."; \
@@ -1051,7 +1051,7 @@ UsersGuideHTML: doc/UsersGuide/bincactus2.ps
 	fi;                                                                 \
 	if grep "^\! " "LATEX_MESSAGES" ||                                  \
            grep -e "--- error ---" "LATEX_MESSAGES"; then                   \
-	  echo "  Problem in $<.  See doc/UsersGuide/LATEX_MESSAGES.";      \
+	  echo "  Problem in $@.  See doc/UsersGuide/LATEX_MESSAGES.";      \
 	  exit 1;                                                           \
 	elif grep "^LaTeX Warning:" "LATEX_MESSAGES" ||                     \
 	     grep -e "--- warning ---" "LATEX_MESSAGES"; then         \
@@ -1080,7 +1080,7 @@ ReferenceManual:
 	pdflatex  -interaction=nonstopmode ReferenceManual.tex > LATEX_MESSAGES 2>&1; \
 	pdflatex  -interaction=nonstopmode ReferenceManual.tex > LATEX_MESSAGES 2>&1; \
 	if grep "^\! " "LATEX_MESSAGES"; then                            \
-	  echo "  Problem in $<.  See doc/ReferenceManual/LATEX_MESSAGES."; \
+	  echo "  Problem in $@.  See doc/ReferenceManual/LATEX_MESSAGES."; \
 	  exit 1;                                                           \
 	elif grep "^LaTeX Warning:" "LATEX_MESSAGES"; then    \
 	  echo "  For more information see doc/ReferenceManual/LATEX_MESSAGES."; \
@@ -1104,7 +1104,7 @@ ReferenceManualHTML:
 	fi;                                                                 \
 	if grep "^\! " "LATEX_MESSAGES" ||                                  \
            grep -e "--- error ---" "LATEX_MESSAGES"; then                   \
-	  echo "  Problem in $<.  See doc/ReferenceManual/LATEX_MESSAGES."; \
+	  echo "  Problem in $@.  See doc/ReferenceManual/LATEX_MESSAGES."; \
 	  exit 1;                                                           \
 	elif grep "^LaTeX Warning:" "LATEX_MESSAGES" ||                     \
 	     grep -e "--- warning ---" "LATEX_MESSAGES"; then         \
@@ -1133,7 +1133,7 @@ MaintGuide:
 	pdflatex  -interaction=nonstopmode MaintGuide.tex > LATEX_MESSAGES 2>&1; \
 	pdflatex  -interaction=nonstopmode MaintGuide.tex > LATEX_MESSAGES 2>&1; \
 	if grep "^\! " "LATEX_MESSAGES"; then                               \
-	  echo "  Problem in $<.  See doc/MaintGuide/LATEX_MESSAGES.";      \
+	  echo "  Problem in $@.  See doc/MaintGuide/LATEX_MESSAGES.";      \
 	  exit 1;                                                           \
 	elif grep "^LaTeX Warning:" "LATEX_MESSAGES"; then                  \
 	  echo "  For more information see doc/MaintGuide/LATEX_MESSAGES."; \
@@ -1157,7 +1157,7 @@ MaintGuideHTML:
 	fi;                                                                 \
 	if grep "^\! " "LATEX_MESSAGES" ||                                  \
            grep -e "--- error ---" "LATEX_MESSAGES"; then                   \
-	  echo "  Problem in $<.  See doc/MaintGuide/LATEX_MESSAGES.";      \
+	  echo "  Problem in $@.  See doc/MaintGuide/LATEX_MESSAGES.";      \
 	  exit 1;                                                           \
 	elif grep "^LaTeX Warning:" "LATEX_MESSAGES" ||                     \
 	     grep -e "--- warning ---" "LATEX_MESSAGES"; then         \
