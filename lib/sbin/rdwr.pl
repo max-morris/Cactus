@@ -11,6 +11,25 @@ my($S_grammar,$S_rule)=piraha::parse_peg_file($sch_file);
 my $int_file = $ENV{CCTK_HOME}."/src/piraha/pegs/interface.peg";
 my($I_grammar,$I_rule)=piraha::parse_peg_file($int_file);
 
+#############################################################################
+#
+#                      Subroutines
+#
+#############################################################################
+
+#/*@@
+#  @routine thorn_args
+#  @date    Mon Feb 24 16:10:38 EST 2020
+#  @author  Steven R. Brandt
+#  @desc
+#           Parses previously generated
+#           Fortran headers to determine
+#           the list of grid functions passed
+#           to Fortran function calls within
+#           a thorn.
+#  @enddesc
+#@@*/
+
 sub thorn_args {
     my $th = shift;
     my $TOP = $ENV{TOP};
@@ -45,6 +64,16 @@ sub thorn_args {
     return \@vars
 }
 
+#/*@@
+#  @routine interface_starter
+#  @date    Mon Feb 24 16:10:38 EST 2020
+#  @author  Steven R. Brandt and Samuel D. Cupp
+#  @desc
+#           Walk through the Piraha parse tree
+#           and process all implementations.
+#  @enddesc
+#@@*/
+
 sub interface_starter
 {
   my $thornname = uc shift;
@@ -69,6 +98,17 @@ sub interface_starter
     }
   }
 }
+
+#/*@@
+#  @routine do_interfaces
+#  @date    Mon Feb 24 16:10:38 EST 2020
+#  @author  Steven R. Brandt and Samuel D. Cupp
+#  @desc
+#           Walk through the Piraha parse tree
+#           and process all items under the
+#           GROUP_VARS rule.
+#  @enddesc
+#@@*/
 
 sub do_interfaces
 {
@@ -140,12 +180,26 @@ sub do_interfaces
       $hash->{$gname}->{grp_vars}->{$gname} = $gname;
       $hash->{variable_list}->{$gname} = $gname;
     }
-  } else {
+  } elsif($gr->{name} =~ /^(intr|FUNC_GROUP)$/) {
+    # 'intr' is the name of the top-level pattern for an entire interface file
     for my $ch (@{$gr->{children}}) {
       do_interfaces($hash,$ch,$ccl_file);
     }
   }
 }
+
+#/*@@
+#  @routine schedule_starter
+#  @date    Mon Feb 24 16:10:38 EST 2020
+#  @author  Steven R. Brandt and Samuel D. Cupp
+#  @desc
+#           Declare some variables, then
+#           call do_schedules to parse the
+#           schedule tree, and create_macros
+#           to generate the per-function
+#           macro definitions.
+#  @enddesc
+#@@*/
 
 sub schedule_starter
 {
@@ -161,6 +215,16 @@ sub schedule_starter
   return $data;
 }
 
+#/*@@
+#  @routine do_schedule
+#  @date    Mon Feb 24 16:10:38 EST 2020
+#  @author  Steven R. Brandt and Samuel D. Cupp
+#  @desc
+#           Parse the schedule tree and look for
+#           reads/writes/invalidates definitions.
+#  @enddesc
+#@@*/
+
 sub do_schedules
 {
   my $gr = shift;
@@ -170,7 +234,7 @@ sub do_schedules
   $ccl_file =~ m{([^/]+)/schedule.ccl$};
   my $parsing_thorn = $1;
   if($gr->is("schedule")) {
-    next if($gr->has(0,"group")); #group scheduling has no rd/wr clauses
+    next if($gr->has(0,"group")); #groups have no rd/wr clauses...
     my $nm;
     for my $ch (@{$gr->{children}}) {
       if($ch->is("name")) {
@@ -190,6 +254,8 @@ sub do_schedules
     for my $ch (@{$gr->{children}}) {
       if($ch->is("reads") or $ch->is("writes")) {
         my $is_writes = $ch->is("writes");
+        
+        # First we extract the thorn and variable name from the reads/writes clause
         my $qname = $ch->has(0,"qname");
         my $vname = $qname->has(0,"vname");
         my $thorn_or_var = $vname->has(0,"name")->substring();
@@ -202,10 +268,17 @@ sub do_schedules
             $thorn = uc $parsing_thorn;
             $var = $thorn_or_var;
         }
+
+        # update informational data structures
         $reads_writes->{$nm}->{$thorn}->{$var}->{rdwr} += $is_writes;
         $reads_writes->{$nm}->{$thorn}->{$var}->{line} = $vname->linenum();
         my $i = 1;
+
+        # we skip over the region, e.g. interior, boundary, etc.
+        # as that doesn't play a part in the generation of the macros.
         $i++ if($qname->has($i,"region"));
+
+        # Process additional variable names in this definition.
         while($qname->has($i,"qrname")) {
           my $qrname = $qname->group($i);
           $var = $qrname->has(0,"name")->substring();
@@ -213,6 +286,8 @@ sub do_schedules
           $reads_writes->{$nm}->{$thorn}->{$var}->{line} = $vname->linenum();
           $i++;
         }
+
+        # TODO: What is this?
         if(defined($reads_writes->{$nm}->{$nm})) {
             delete $reads_writes->{$nm}->{$nm}->{$nm};
         }
@@ -235,6 +310,15 @@ sub do_schedules
   }
 }
 
+#/*@@
+#  @routine create_macros
+#  @date    Mon Feb 24 16:10:38 EST 2020
+#  @author  Steven R. Brandt and Samuel D. Cupp
+#  @desc
+#           Generate the function specific macros.
+#  @enddesc
+#@@*/
+
 sub create_macros
 {
   my $tnm = uc shift;
@@ -251,6 +335,10 @@ sub create_macros
   $$data .= "#define CCTK_ARGUMENTS_CHECKED_H 1\n";
   for my $namekey (sort keys %{$reads_writes}) {
     my %cctk_arguments = ();
+
+    # Ensure the Fortran or C suffix is present
+    croak($namekey) unless($namekey =~ /_(F|C)$/);
+
     my $nm = substr($namekey,0,-2); # removing language suffix from function name
     if(defined($reads_writes->{$namekey}->{$namekey}->{$namekey})) {
       # This generates macros for functions with no read/write declarations.
@@ -269,6 +357,13 @@ sub create_macros
         $$data .= "  _DECLARE_CCTK_FARGUMENTS; \\\n";
         for my $var (@$all_cctk_arguments) {
           if(not defined($cctk_arguments{$var})) {
+              # In Fortran, all GF's are passed in regardless of
+              # whether a read or write declaration exists. Since
+              # we cannot avoid declaring them, we declare them
+              # as something useless that cannot automatically
+              # be converted into an int or float. The unsual
+              # capitalization makes it easier to identify in
+              # generated files.
               $$data .= " characTer*8, intent(IN) :: $var /* dummy-rdwr-var */ && \\\n";
           }
         }
@@ -314,6 +409,11 @@ sub create_macros
               $var_group = $hash->{$th}->{$var};
               $group_register = "yes";
             } else {
+              # So $var isn't a public variable, a private variable,
+              # or a group name...
+              #
+              # Maybe it's a capitalization problem?
+              #
               # We need the write directive in the schedule.ccl to
               # match the case of the corresponding declaration in
               # the interface.ccl. If it doesn't line up, an error
@@ -336,20 +436,28 @@ sub create_macros
                     $hint = "Did you mean ${th}::$g instead of ${th}::$full_var?";
                 }
               }
+              # Regardless of whether we found a capitalization
+              # match or not, we report an error.
               &CST_error(0, "Error in $nm schedule. Check variable or group '$full_var'" .
                     ' and verify correct implementation/thorn name and variable name.'
                     ,$hint, , $errline, $ccl_file);
               next;
             }
             my $vtype = "CCTK_".$var_group->{vtype};
+            # This next test only fails if we could not determine
+            # the variable type...
             if($vtype eq "CCTK_") {
               my $hint = "Bad variable group name '$full_var' at $errline";
               &CST_error(0, "Error in $nm schedule. Check variable or group '$full_var'" .
                     ' and verify correct implementation/thorn name and variable name.'
                     ,$hint, , $errline, $ccl_file);
             }
+
+            # Add const for read-only variables.
             my $const = "";
             $const = "const" if($reads_writes->{$namekey}->{$th}->{$full_var}->{rdwr}==0);
+
+            # Write out the C++ declarations for the group or variable
             if($group_register eq "yes") {
               for my $variables (sort keys %{$var_group->{grp_vars}}) {
                 my $var = $variables;
@@ -405,6 +513,11 @@ sub create_macros
               $var_group = $hash->{$th}->{$var};
               $group_register = "yes";
             } else {
+              # So $var isn't a public variable, a private variable,
+              # or a group name...
+              #
+              # Maybe it's a capitalization problem?
+              #
               # We need the write directive in the schedule.ccl to
               # match the case of the corresponding declaration in
               # the interface.ccl. If it doesn't line up, an error
@@ -445,6 +558,7 @@ sub create_macros
                 $arrays = qq((cctk_ash1,cctk_ash2,cctk_ash3));
               }
             } elsif($var_group->{gtype} eq "ARRAY") {
+              #TODO: What is this?
               #if($var_group->{vector} ne "0") {
                 #I haven't seen a vector-array in fortran yet, so I don't know
                 #the proper order for the arguments.
@@ -502,6 +616,18 @@ sub create_macros
   $$data .= "#endif";
 }
 
+#/*@@
+#  @routine GenerateArguments
+#  @date    Mon Feb 24 16:10:38 EST 2020
+#  @author  Steven R. Brandt and Samuel D. Cupp
+#  @desc
+#           This is the entry point into the
+#           rdwr macro generation logic. It
+#           is also reponsible for calling
+#           WriteFile.
+#  @enddesc
+#@@*/
+#
 sub GenerateArguments
 {
   my %thorns = @_;

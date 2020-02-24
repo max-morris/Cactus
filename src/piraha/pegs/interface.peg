@@ -74,7 +74,6 @@ GROUP_VARS = (?i:CCTK_|){vtype} {gname} (?i:TYPE = {gtype} |DIM = {dim}
  )?
  
 
-# Contents of the file:
 FUNC_GROUP = ({FUNCTION} |{access}: |{GROUP_VARS} |{INCLUDE} |{IMPLEMENTS} |{INHERITS} |{FRIEND} )
 
 # double-quoted string
@@ -85,4 +84,5 @@ squote = '(\\{-any}|[^'])*'
 
 quote = {dquote}|{squote}
 
+# Contents of the file:
 intr = ^(?i: {FUNC_GROUP}*)$

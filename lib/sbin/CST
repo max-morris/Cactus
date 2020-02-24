@@ -207,7 +207,7 @@ for my $header (@$definethisthornheader) {
 # Create the header files used by the thorns
 &BuildHeaders($cctk_home,$bindings_dir,%interface_database);
 
-# Wrie configuration scripts messages/errors to log file
+# Write configuration scripts messages/errors to log file
 &CreateLogFile($config_dir, $configuration_database,\%thorns);
 
 print "Generating arguments...\n";
