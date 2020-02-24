@@ -123,7 +123,7 @@
       \let\git@revision\head@content%
     \fi%
   }{%
-    \let\git@revision{\textless unknown git revision \textgreater}%
+    \def\git@revision{\textless unknown git revision \textgreater}%
   }%
   \expandafter\endgroup%
   \git@revision%
