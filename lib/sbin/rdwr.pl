@@ -417,13 +417,13 @@ sub create_macros
               # match the case of the corresponding declaration in
               # the interface.ccl. If it doesn't line up, an error
               # will occur. This helps the user figure it out.
-              my $hint = "???";
+              my $hint = undef;
               for my $v (%{$hash->{$th}->{variable_list}}) {
                 if(lc $v eq lc $var) {
                     $hint = "Did you mean ${th}::$v?";
                 }
               }
-              if($hint eq "" and $tnm eq $th) {
+              if(!defined($hint) and $tnm eq $th) {
                 for my $v (%{$hash->{private_variable}->{$th}->{variable_list}}) {
                   if(lc $v eq lc $var) {
                       $hint = "Did you mean ${th}::$v?";
@@ -437,8 +437,11 @@ sub create_macros
               }
               # Regardless of whether we found a capitalization
               # match or not, we report an error.
-              &CST_error(0, "Error in $nm schedule. Check variable or group '$full_var'" .
-                    ' and verify correct implementation/thorn name and variable name.'
+              if(!defined($hint)) {
+                $hint = "Check variable or group '${th}::$full_var' and verify ".
+                    "correct implementation/thorn name and variable name.'";
+              }
+              &CST_error(0, "Error in $nm schedule."
                     ,$hint, , $errline, $ccl_file);
               next;
             }
