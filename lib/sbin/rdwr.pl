@@ -287,8 +287,7 @@ sub do_schedules
           $i++;
         }
 
-        # TODO: What is this?
-        if(defined($reads_writes->{$nm}->{$nm})) {
+        if(defined($reads_writes->{$nm}->{$nm}->{$nm})) {
             delete $reads_writes->{$nm}->{$nm}->{$nm};
         }
       }
@@ -535,12 +534,12 @@ sub create_macros
                   }
                 }
               }
-              &CST_error(0, "Error in $nm schedule. Check variable or group ${th}::$full_var" .
+              &CST_error(0, "Error in $nm schedule. Check variable or group '${th}::$full_var'" .
                     ' and verify correct implementation/thorn name and variable name.'
                     ,$hint, , __LINE__, __FILE__);
             }
             my $vtype = "CCTK_".$var_group->{vtype};
-            $vtype .= ", intent(in)" if($reads_writes->{$namekey}->{$th}->{$full_var}==0);
+            $vtype .= ", iNteNt(iN)" if($reads_writes->{$namekey}->{$th}->{$full_var}==0);
             my $arrays = "";
             # The following logic determines the correct
             # indexing for the Fortran arrays and adds the
@@ -558,11 +557,9 @@ sub create_macros
                 $arrays = qq((cctk_ash1,cctk_ash2,cctk_ash3));
               }
             } elsif($var_group->{gtype} eq "ARRAY") {
-              #TODO: What is this?
-              #if($var_group->{vector} ne "0") {
-                #I haven't seen a vector-array in fortran yet, so I don't know
-                #the proper order for the arguments.
-              #}
+              if($var_group->{vector} ne "0") {
+                croak("Not supported yet.");
+              }
               my $glen = "X0".$group;
               if(!defined($vector_len->{$glen})) {
                 $cctk_arguments{$glen}=1;
