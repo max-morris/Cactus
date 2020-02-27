@@ -2240,7 +2240,18 @@ containing the index of the current grid point. Similarly \texttt{ni},
 (outwards pointing) normal direction to the boundary as well as the
 distance to the boundary.
 
-
+\paragraph{\texttt{OpenMP}} All \texttt{CCTK\_LOOP} macros include support for
+\texttt{OpenMP} based multi-threading when called inside of an \texttt{OpenMP}
+parallel section. They do no themselves create such a parallel section and
+therefore should be preceded by a \texttt{\#pragma omp parallel}:
+\begin{verbatim}
+#pragma omp parallel
+CCTK_LOOP3_ALL(name, cctkGH, i,j,k) {
+  ... body of the loop
+} CCTK_ENDLOOP3_ALL(name);
+\end{verbatim}
+and similar for \texttt{CCTK\_LOOP3\_INT}, \texttt{CCTK\_LOOP3\_BND}, and
+\texttt{CCTK\_LOOP3\_INTBND}.
 
 \subsection{Coordinates}
 \label{sec:CactusAPI.coordinates}

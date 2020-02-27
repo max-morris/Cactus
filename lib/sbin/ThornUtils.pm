@@ -658,7 +658,7 @@ sub ProcessAllArrangements
    my ($hrArrangements) = shift;
 
    # go through and find  each arrangement
-   foreach my $arrangement (keys %$hrArrangements) {
+   foreach my $arrangement (sort keys %$hrArrangements) {
       &ProcessOneArrangement($$hrArrangements{$arrangement}, $arrangement);
    }
 }
@@ -687,7 +687,7 @@ sub ProcessOneArrangement
    my ($hrArr) = shift;
    my ($arrangement) = shift;
 
-   foreach my $thorn (keys %$hrArr) {
+   foreach my $thorn (sort keys %$hrArr) {
       # please note, you will not get good results unless a sub-routine called
       # ProcessOneThorn exists in your main perl file.  (where this is called from)
       main::ProcessOneThorn($$hrArr{$thorn}, $arrangement, $thorn);

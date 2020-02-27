@@ -366,7 +366,7 @@ static char *ReadFile(FILE *file, long *filesize)
   }
   /* Read file into buffer and return */
   size_t iret = fread(buffer, *filesize, 1, file);
-  if (iret < 1)
+  if (iret < 1 && ferror(file))
   {
     fprintf(stderr, "Could not read data from file: %s\n", strerror(errno));
     return NULL;

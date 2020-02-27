@@ -46,9 +46,11 @@ if ($help || $h) {
 $cctk_home  .= '/' if (($cctk_home !~ /\/$/) && (defined $cctk_home));
 
 use FindBin;
+my $sbin_dir;
 BEGIN {
 $sbin_dir = $FindBin::Bin;
 }
+use lib $sbin_dir;
 
 # has to be absolute path because the ThornGuide can be build in different
 # directory depths (doc/ThornGuide/build and configs/X/dox/build)
@@ -233,6 +235,8 @@ sub Read_New_Thorn_Doc
       if (/^% START CACTUS THORNGUIDE\s*$/) {
          $start = 1;
 
+         $contents .= "\\begingroup\n";
+
          while (($_ = <DOC>) && ($_ !~ /^% END CACTUS THORNGUIDE\s*$/))
          {
             if (/(.*)\\begin\{abstract\}(.*)/) {
@@ -263,6 +267,7 @@ sub Read_New_Thorn_Doc
    $contents .= "\n\\include{${arrangement}_${thorn}_param}\n";
    $contents .= "\n\\include{" . ThornUtils::ToLower("${arrangement}_${thorn}_inter") . "\}\n";
    $contents .= "\n\\include{${arrangement}_${thorn}_schedule}\n";
+   $contents .= "\\endgroup\n";
 
    # If it never started reading, then return 0.
    # (It is probably an older documentation.doc.)

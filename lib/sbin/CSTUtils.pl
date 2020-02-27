@@ -816,7 +816,7 @@ sub find_dep_cycles
   my($stack,$keyu,$returned);
   my $debug = 0;
 
-  foreach $key (keys %thorns)
+  foreach $key (sort keys %thorns)
   {
     $key = uc ($key);
     #next if($visted{$key} && 1 == $visted{$key});
