@@ -4,7 +4,7 @@ skipper = ([ \t\r\n]|\#.*)*
 # comment
 skipeol = ([ \t\r]|\#.*)*($|\n)
 any = [^]
-stringfirstline = .*
+stringfirstline = .
 stringcomment = #.*
 stringparser = ^({var}|{name}|{stringfirstline})*(\n({stringcomment}|{var}|{name}|{any})*)?$
 # Note that / occurs in some par files. It is my
