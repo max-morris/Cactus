@@ -344,9 +344,12 @@ std::string string_reparser(std::string s) {
                 out += m->group(i)->substring();
             } else if(pn == "stringcomment") {
                 ;
-            } else {
+            } else if(pn == "var") {
                 smart_ptr<Value> val = lookup_var(m->group(i));
                 out += val->copy();
+            } else {
+                CCTK_VError(__LINE__, __FILE__, "Cactus",
+                            "Unexpected pattern name : %s", pn.c_str());
             }
         }
         return out;
