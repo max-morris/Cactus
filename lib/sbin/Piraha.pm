@@ -1877,6 +1877,7 @@ sub is
 {
   my $self = shift;
   my $nm = shift;
+  return 0 unless(defined($self->{name}));
   return $self->{name} eq $nm;
 }
 
@@ -2030,10 +2031,11 @@ sub showError
   my $txt = $self->{text};
   my $pre = substr($txt,0,$pos);
   my $line = 1;
+  my $msg = "";
   while($pre =~ /\n/g) {
     $line++;
   }
-  print "ERROR ON LINE $line:\n";
+  $msg .= "ERROR ON LINE $line:\n";
   if($pre =~ /.*\n.*\n.*\n*$/) {
     $pre = $&.$';
   }
@@ -2056,10 +2058,10 @@ sub showError
   #print $pre,"\e[1;37;41m",$c,"\e[0;m",$post;
   #print $pre,"<<<",$c,">>>",$post;
   $post = "" if($c eq "\n");
-  print $pre,$c,$post;
+  $msg .= $pre.$c.$post;
   $pre =~ /.*$/;
-  print " " x length($&),"^\n";
-  print " " x length($&),"| here\n";
+  $msg .= " " x length($&)."^\n";
+  $msg .= " " x length($&)."| here\n";
   my @out = ();
   my @count = ();
   my @k = sort keys %hash;
@@ -2085,8 +2087,9 @@ sub showError
       $out2[$#out2+1]="'$k' to '".chr(ord($k)+$count[$i]-1)."'";
     }
   }
-  print "FOUND CHARACTER: ",expand_char($c),"\n";
-  print "EXPECTED CHARACTER(S): ",join(", ",@out2),"\n";
+  $msg .= "FOUND CHARACTER: ".expand_char($c)."\n";
+  $msg .= "EXPECTED CHARACTER(S): ".join(", ",@out2)."\n";
+  return $msg;
 }
 
 sub upos

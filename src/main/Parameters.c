@@ -877,6 +877,77 @@ char *CCTK_ParameterValString (const char *param_name, const char *thorn)
 }
 
 /*@@
+   @routine    CCTK_ParameterValInt
+   @date       Thu Jan 12 2018
+   @author     Steven R. Brandt
+   @desc
+               Gets the int representation of a parameter's value
+               - can be used for checkpointing and recovery. If the
+               parameter is not representable as an int, it aborts.
+   @enddesc
+   @calls      CCTK_ParameterGet
+
+   @var        param_name
+   @vdesc      The name of the parameter
+   @vtype      const char *
+   @vio        in
+   @endvar
+   @var        thorn
+   @vdesc      The originating thorn
+   @vtype      const char *
+   @vio        in
+   @endvar
+
+   @returntype int
+   @returndesc
+   @endreturndesc
+@@*/
+int CCTK_ParameterValInt (const char *param_name, const char *thorn)
+{
+  int param_type;
+  const void *param_data;
+  int retval;
+
+
+  retval = 0;
+
+  param_data = CCTK_ParameterGet (param_name, thorn, &param_type);
+  if (param_data != NULL)
+  {
+    switch (param_type)
+    {
+      case PARAMETER_KEYWORD:
+      case PARAMETER_STRING:
+      case PARAMETER_SENTENCE:
+        CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                    "CCTK_ParameterValInt: Invalid type %d for parameter "
+                    "'%s::%s'", param_type, thorn, param_name);
+        break;
+
+      case PARAMETER_BOOLEAN:
+      case PARAMETER_INT:
+        return *(const CCTK_INT *) param_data;
+        break;
+
+      case PARAMETER_REAL:
+        return (int)((double) (*(const CCTK_REAL *) param_data));
+        break;
+
+      default:
+        CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+              "CCTK_ParameterValInt: Unknown type %d for parameter "
+              "'%s::%s'", param_type, thorn, param_name);
+        break;
+    }
+  }
+  CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+       "CCTK_ParameterValInt: Unknown parameter "
+       "'%s::%s'", thorn, param_name);
+
+  return (retval);
+}
+
+/*@@
    @routine    CCTK_PARAMETERVALSTRING
    @date       Thu Jan 21 2000
    @author     Thomas Radke

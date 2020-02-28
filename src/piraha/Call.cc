@@ -445,6 +445,14 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
             }
             return val;
         }
+        // From here on only functions that take exactly one argument: the majority.
+        else if (gr->groupCount() != 2) {
+            std::ostringstream msg;
+            msg << fn << "() needs exactly one argument, but got " << gr->groupCount()
+                << "." << std::endl;
+            std::string par = get_parfile();
+            CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
+        }
         else {
             // From here on only functions that take exactly one argument: the majority.
             bool known_function = false;

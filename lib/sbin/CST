@@ -109,6 +109,7 @@ require "BuildHeaders.pl";
 require "CreateConfigurationBindings.pl";
 require "ConfigScriptParser.pl";
 require "Logger.pl";
+require "rdwr.pl";
 
 #######################################################################
 #
@@ -206,14 +207,17 @@ for my $header (@$definethisthornheader) {
 # Create the header files used by the thorns
 &BuildHeaders($cctk_home,$bindings_dir,%interface_database);
 
-# Wrie configuration scripts messages/errors to log file
+# Write configuration scripts messages/errors to log file
 &CreateLogFile($config_dir, $configuration_database,\%thorns);
 
-# Finally (must be last), create the make.thornlist file.
-$make_thornlist = &CreateMakeThornlist(\%thorns, \%interface_database, $configuration_database);
+print "Generating arguments...\n";
+&GenerateArguments(%thorns);
 
 # Stop the make process if there were any errors
 &CheckCSTErrors();
+
+# Finally (must be last), create the make.thornlist file.
+$make_thornlist = &CreateMakeThornlist(\%thorns, \%interface_database, $configuration_database);
 
 &WriteFile("$config_dir/make.thornlist", \$make_thornlist);
 

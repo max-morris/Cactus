@@ -186,7 +186,7 @@ sub WriteFile
 
 # Set this to an illegal value,
 # so that the comparison later is guaranteed to fail if this is not changed
-  $data_in = undefined;
+  $data_in = undef;
 
 # Read in file
   if (-e $filename) 
@@ -201,7 +201,7 @@ sub WriteFile
     }
   }
 
-  if ($$rdata ne $data_in)   
+  if (not defined $data_in or $$rdata ne $data_in)
   {
 #    print "Creating new file $filename\n";
     open(OUT, ">$filename") || die("Can't open $filename\n");
