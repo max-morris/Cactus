@@ -432,7 +432,25 @@ sub create_macros
               }
               for my $g (keys %{$hash->{$th}->{group_list}}) {
                 if(lc($g) eq lc($full_var)) {
-                    $hint = "Did you mean ${th}::$g instead of ${th}::$full_var?";
+                    $hint = "Did you mean ${th}::$g?";
+                }
+              }
+              # Do a brute force search of the world...
+              for my $th2 (keys %$hash) {
+                for my $v (%{$hash->{private_variable}->{$th2}->{variable_list}}) {
+                  if(lc $v eq lc $var) {
+                    $hint .= " Did you mean ${th}::$v?";
+                  }
+                }
+                for my $v (%{$hash->{$th2}->{variable_list}}) {
+                  if(lc $v eq lc $var) {
+                    $hint .= " Did you mean ${th}::$v?";
+                  }
+                }
+                for my $v (%{$hash->{$th2}->{group_list}}) {
+                  if(lc $v eq lc $var) {
+                    $hint .= " Did you mean ${th}::$v?";
+                  }
                 }
               }
               # Regardless of whether we found a capitalization
@@ -441,7 +459,7 @@ sub create_macros
                 $hint = "Check variable or group '${th}::$full_var' and verify ".
                     "correct implementation/thorn name and variable name.'";
               }
-              &CST_error(0, "Error in $nm schedule."
+              &CST_error(1, "Error read/write declaration in $nm schedule."
                     ,$hint, , $errline, $ccl_file);
               next;
             }
@@ -450,9 +468,10 @@ sub create_macros
             # the variable type...
             if($vtype eq "CCTK_") {
               my $hint = "Bad variable group name '$full_var' at $errline";
-              &CST_error(0, "Error in $nm schedule. Check variable or group '$full_var'" .
+              &CST_error(1, "Error in read/write declaration $nm schedule. Check variable or group '$full_var'" .
                     ' and verify correct implementation/thorn name and variable name.'
                     ,$hint, , $errline, $ccl_file);
+              next;
             }
 
             # Add const for read-only variables.
