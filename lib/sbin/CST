@@ -188,6 +188,9 @@ $err_msg = &CheckCrossConsistency(\%interface_database,\%parameter_database);
 
 &print_database("schedule", \%schedule_database) if($debug_schedule);
 
+# Stop the make early process if there were any errors parsing ccl files
+&CheckCSTErrors();
+
 # Create all the bindings
 print "Creating Thorn-Flesh bindings...\n";
 &CreateBindings($bindings_dir, \%parameter_database, \%interface_database, \%schedule_database, $configuration_database);
