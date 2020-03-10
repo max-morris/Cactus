@@ -17,6 +17,38 @@ my($I_grammar,$I_rule)=piraha::parse_peg_file($int_file);
 #
 #############################################################################
 
+
+#/*@@
+#  @routine get_cap
+#  @date    Tue 17 Mar 2020 10:12:37 PM UTC
+#  @author  Steven R. Brandt
+#  @desc
+#           Look up correct capitalization (interface.ccl file)
+#           so that READ/WRITE declarations don't need to worry
+#           about case.
+#  @enddesc
+#@@*/
+sub get_cap {
+    my $hash = shift;
+    my $th = shift;
+    my $var = shift;
+    my $realvar = $var;;
+    my $suffix = "";
+    if($var =~ /(.*?)((_p)*)$/) {
+        $realvar = $1;
+        $suffix = $2;
+    }
+    my $outvar;
+    if(defined($hash->{private_variable}->{$th}->{capitalization}->{$realvar})) {
+        $outvar = $hash->{private_variable}->{$th}->{capitalization}->{$realvar} . $suffix;
+    } elsif(defined($hash->{$th}->{capitalization}->{$realvar})) {
+        $outvar = $hash->{$th}->{capitalization}->{$realvar} . $suffix;
+    } else {
+        croak("No Capitalization for ($realvar)");
+    }
+    return $outvar;
+}
+
 #/*@@
 #  @routine thorn_args
 #  @date    Mon Feb 24 16:10:38 EST 2020
@@ -57,7 +89,7 @@ sub thorn_args {
         if($line =~ /$find/) {
             $line=<$fd>;
             while($line =~ /\w+/g) {
-                push @vars, $&;
+                push @vars, lc $&;
             }
         }
     }
@@ -122,9 +154,11 @@ sub do_interfaces
     my $dim = 0;
     my $gname;
     my $gtype;
+    my $cap_gname;
     for my $ch (@{$gr->{children}}) {
       if($ch->is("gname")) {
-        $gname = $ch->has(0,"name")->substring();
+        $cap_gname = $ch->has(0,"name")->substring();
+        $gname = lc $cap_gname;
         if($ch->has(1,"expr")) {
           # This section finds the length for vectors.
           my $expr = $ch->has(1,"expr")->has(0,"addexpr")->has(0,"mulexpr")->has(0,"powexpr");
@@ -159,6 +193,7 @@ sub do_interfaces
     $hash->{$gname}->{gtype} = uc $gtype;
     $hash->{$gname}->{array_dim} = $dim;
     $hash->{group_list}->{$gname}=1;
+    $hash->{capitalization}->{$gname}=$cap_gname;
     my $Detect = 0;
     for my $ch (@{$gr->{children}}) {
       # Looping over variables in the group
@@ -166,9 +201,11 @@ sub do_interfaces
         my $i = 0;
         $Detect = 1;
         while($ch->has($i,"name")) {
-          my $var = $ch->has($i,"name")->substring();
+          my $cap_var = $ch->has($i,"name")->substring();
+          my $var = lc $cap_var;
           $hash->{$gname}->{grp_vars}->{$var} = $var;
           $hash->{variable_list}->{$var} = $gname;
+          $hash->{capitalization}->{$var} = $cap_var;
           $i++;
         }
         last;
@@ -179,6 +216,7 @@ sub do_interfaces
       # is also the variable name.
       $hash->{$gname}->{grp_vars}->{$gname} = $gname;
       $hash->{variable_list}->{$gname} = $gname;
+      $hash->{capitalization}->{$gname} = $cap_gname;
     }
   } elsif($gr->{name} =~ /^(intr|FUNC_GROUP)$/) {
     # 'intr' is the name of the top-level pattern for an entire interface file
@@ -261,17 +299,24 @@ sub do_schedules
         my $thorn_or_var = $vname->has(0,"name")->substring();
         my $thorn = undef;
         my $var = undef;
+        my $cap_thorn = undef;
+        my $cap_var = undef;
         if($vname->has(1,"name")) {
-            $thorn = uc $thorn_or_var;
-            $var = $vname->has(1,"name")->substring();
+            $cap_thorn = $thorn_or_var;
+            $cap_var = $vname->has(1,"name")->substring();
+            $thorn = uc $cap_thorn;
+            $var = lc $cap_var;
         } else {
-            $thorn = uc $parsing_thorn;
-            $var = $thorn_or_var;
+            $cap_thorn = $parsing_thorn;
+            $cap_var = $thorn_or_var;
+            $thorn = uc $cap_thorn;
+            $var = lc $cap_var;
         }
 
         # update informational data structures
         $reads_writes->{$nm}->{$thorn}->{$var}->{rdwr} += $is_writes;
         $reads_writes->{$nm}->{$thorn}->{$var}->{line} = $vname->linenum();
+        $reads_writes->{$nm}->{$thorn}->{$var}->{cap} = "${cap_thorn}::${cap_var}";
         my $i = 1;
 
         # we skip over the region, e.g. interior, boundary, etc.
@@ -281,7 +326,7 @@ sub do_schedules
         # Process additional variable names in this definition.
         while($qname->has($i,"qrname")) {
           my $qrname = $qname->group($i);
-          $var = $qrname->has(0,"name")->substring();
+          $var = lc $qrname->has(0,"name")->substring();
           $reads_writes->{$nm}->{$thorn}->{$var}->{rdwr} += $is_writes;
           $reads_writes->{$nm}->{$thorn}->{$var}->{line} = $vname->linenum();
           $i++;
@@ -408,50 +453,30 @@ sub create_macros
               $var_group = $hash->{$th}->{$var};
               $group_register = "yes";
             } else {
-              # So $var isn't a public variable, a private variable,
-              # or a group name...
-              #
-              # Maybe it's a capitalization problem?
-              #
-              # We need the write directive in the schedule.ccl to
-              # match the case of the corresponding declaration in
-              # the interface.ccl. If it doesn't line up, an error
-              # will occur. This helps the user figure it out.
-              my $hint = undef;
-              for my $v (%{$hash->{$th}->{variable_list}}) {
-                if(lc $v eq lc $var) {
-                    $hint = "Did you mean ${th}::$v?";
-                }
-              }
-              if(!defined($hint) and $tnm eq $th) {
-                for my $v (%{$hash->{private_variable}->{$th}->{variable_list}}) {
-                  if(lc $v eq lc $var) {
-                      $hint = "Did you mean ${th}::$v?";
-                  }
-                }
-              }
-              for my $g (keys %{$hash->{$th}->{group_list}}) {
-                if(lc($g) eq lc($full_var)) {
-                    $hint = "Did you mean ${th}::$g?";
-                }
-              }
+              my $cap = $reads_writes->{$namekey}->{$th}->{$var}->{cap};
+              my $hint = "Is $cap a correctly declared variable?";
+              my %hints = ();
               # Do a brute force search of the world...
               for my $th2 (keys %$hash) {
                 for my $v (%{$hash->{private_variable}->{$th2}->{variable_list}}) {
-                  if(lc $v eq lc $var) {
-                    $hint .= " Did you mean ${th}::$v?";
+                  if($v eq lc $var) {
+                    $hints{" Did you mean ${th2}::$v?"}=1;
                   }
                 }
                 for my $v (%{$hash->{$th2}->{variable_list}}) {
-                  if(lc $v eq lc $var) {
-                    $hint .= " Did you mean ${th}::$v?";
+                  if($v eq lc $var) {
+                    $hints{" Did you mean ${th2}::$v?"}=1;
                   }
                 }
                 for my $v (%{$hash->{$th2}->{group_list}}) {
-                  if(lc $v eq lc $var) {
-                    $hint .= " Did you mean ${th}::$v?";
+                  if($v eq lc $var) {
+                    $hints{" Did you mean ${th2}::$v?"}=1;
                   }
                 }
+              }
+              my @hints = keys %hints;
+              if($#hints >= 0) {
+                $hint = join(" ",@hints);
               }
               # Regardless of whether we found a capitalization
               # match or not, we report an error.
@@ -489,14 +514,16 @@ sub create_macros
                 if ($var_group->{vector} ne "0") {
                   $vname .= "[0]";
                 }
-                $$data .= qq(static int cctki_vi_$var = -100; if (cctki_vi_$var == -100) cctki_vi_$var = CCTK_VarIndex("$vname"); $vtype * restrict const $var __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, cctki_vi_$var));; /* group $group_register */\\\n);
+                my $ivar = get_cap($hash, $th, $var);
+                $$data .= qq(static int cctki_vi_$ivar = -100; if (cctki_vi_$ivar == -100) cctki_vi_$ivar = CCTK_VarIndex("$vname"); $vtype * restrict const $ivar __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, cctki_vi_$ivar));; /* group $group_register */\\\n);
               }
             } else {
-              my $vname = "${th}::$var";
+              my $ivar = get_cap($hash, $th, $full_var);
+              my $vname = "${th}::$ivar";
               if ($var_group->{vector} ne "0") {
                 $vname .= "[0]";
               }
-              $$data .= qq(static int cctki_vi_$full_var = -100; if (cctki_vi_$full_var == -100) cctki_vi_$full_var = CCTK_VarIndex("$vname"); $vtype * restrict const $full_var __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, cctki_vi_$full_var));; /* TL: $namekey --> $timelevel $group_register*/\\\n);
+              $$data .= qq(static int cctki_vi_$ivar = -100; if (cctki_vi_$ivar == -100) cctki_vi_$ivar = CCTK_VarIndex("$vname"); $vtype * restrict const $ivar __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, cctki_vi_$ivar));; /* TL: $namekey --> $timelevel $group_register*/\\\n);
             }
           } # loop over read/write variables
         } # loop over read/write thorns
@@ -543,19 +570,34 @@ sub create_macros
               # match the case of the corresponding declaration in
               # the interface.ccl. If it doesn't line up, an error
               # will occur. This helps the user figure it out.
-              my $hint = "";
-              for my $v (%{$hash->{$th}->{variable_list}}) {
-                if(lc $v eq lc $var) {
-                    $hint = "Did you mean ${th}::$v?";
+              my $hint = undef;
+              ###
+              my $cap = $reads_writes->{$namekey}->{$th}->{$var}->{cap};
+              my $hint = "Is $cap a correctly declared variable?";
+              my %hints = ();
+              # Do a brute force search of the world...
+              for my $th2 (keys %$hash) {
+                for my $v (%{$hash->{private_variable}->{$th2}->{variable_list}}) {
+                  if($v eq lc $var) {
+                    $hints{" Did you mean ${th2}::$v?"}=1;
+                  }
                 }
-              }
-              if($hint eq "" and $tnm eq $th) {
-                for my $v (%{$hash->{private_variable}->{$th}->{variable_list}}) {
-                  if(lc $v eq lc $var) {
-                      $hint = "Did you mean ${th}::$v?";
+                for my $v (%{$hash->{$th2}->{variable_list}}) {
+                  if($v eq lc $var) {
+                    $hints{" Did you mean ${th2}::$v?"}=1;
+                  }
+                }
+                for my $v (%{$hash->{$th2}->{group_list}}) {
+                  if($v eq lc $var) {
+                    $hints{" Did you mean ${th2}::$v?"}=1;
                   }
                 }
               }
+              my @hints = keys %hints;
+              if($#hints >= 0) {
+                $hint = join(" ",@hints);
+              }
+              ###
               &CST_error(0, "Error in $nm schedule. Check variable or group '${th}::$full_var'" .
                     ' and verify correct implementation/thorn name and variable name.'
                     ,$hint, , __LINE__, __FILE__);
@@ -582,14 +624,14 @@ sub create_macros
               if($var_group->{vector} ne "0") {
                 croak("Not supported yet.");
               }
-              my $glen = "X0".$group;
+              my $glen = "x0".$group;
               if(!defined($vector_len->{$glen})) {
                 $cctk_arguments{$glen}=1;
                 $$data .= "  integer :: $glen &&\\\n";
                 $vector_len->{$glen} = 1;
               }
               for(my $i = 1; $i < $var_group->{array_dim}; $i++) {
-                my $temp_glen .= "X".$i.$group;
+                my $temp_glen .= "x".$i.$group;
                 $glen .= ",".$temp_glen;
                 if(!defined($vector_len->{$temp_glen})) {
                   $cctk_arguments{$temp_glen}=1;
@@ -676,3 +718,5 @@ sub GenerateArguments
     }
   }
 }
+
+1;
