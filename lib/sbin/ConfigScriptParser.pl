@@ -33,7 +33,8 @@ sub ParseConfigScript
     
     # Run the configuration script in the config_dir folder
     chdir $config_dir;
-    open (my $lines, '-|', "$lang $script");
+    open (my $lines, '-|', "$lang $script") or
+        &CST_error(0, "Configuration script for thorn $thorn failed to start: $!");
     
     my $line_number = 0;
     while (my $line = <$lines>) {
@@ -66,6 +67,7 @@ sub ParseConfigScript
     }
     
     close $lines;
+    my $perl_error = $!;
     my $exit_value  = $? >> 8;
     my $signal_num  = $? & 127;
     my $dumped_core = $? & 128;
@@ -79,6 +81,8 @@ sub ParseConfigScript
     }
     
     my $msg = "Configuration script for thorn $thorn";
+    &CST_error(0, "$msg failed to execute: $perl_error\n$error_msg")
+        if $perl_error;
     &CST_error(0, "$msg returned exit code $exit_value\n$error_msg")
         if $exit_value;
     &CST_error(0, "$msg received signal $signal_num\n$error_msg")
