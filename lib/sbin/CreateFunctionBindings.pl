@@ -935,7 +935,7 @@ sub RegisterAllFunctions
   foreach my $thorn (sort keys %FunctionDatabase)
   {
     my @required = ();
-    foreach my $Function (sort values %{$FunctionDatabase{$thorn}})
+    foreach my $Function (sort {$a->{Name} cmp $b->{Name}} values %{$FunctionDatabase{$thorn}})
     {
       if ($Function && $Function->{'Used'} == 2 && ! $Function->{'Provided'})
       {
@@ -945,7 +945,9 @@ sub RegisterAllFunctions
         {
           next if ($provider eq $thorn);
 
-          foreach my $providing_fn (sort values %{$FunctionDatabase{$provider}})
+          # searches for the (single) providing_fn matching Function->{Name} so
+          # no sorting needed
+          foreach my $providing_fn (values %{$FunctionDatabase{$provider}})
           {
             if ($Function->{'Name'} eq $providing_fn->{'Name'}
                 && $providing_fn->{'Provided'})
