@@ -63,27 +63,12 @@ sub get_cap {
 #@@*/
 
 sub thorn_args {
-    my $th = shift;
+    my $tnm = shift;
     my $TOP = $ENV{TOP};
-    my $fname="$TOP/bindings/include"; #${th}_Arguments.h";
-    my $found = 0;
-    for my $f (<*_Arguments.h>) {
-        if($f eq "${th}_Arguments.h") {
-            $fname .= "/$f";
-            $found = 1;
-            last;
-        }
-    }
-    if(!$found) {
-        print("Not found: thorn '$th'\n");
-        return [];
-    }
-    my $fd = new FileHandle;
-    my $find = "#define \U${th}\E_(PRIVATE|PUBLIC|PROTECTED)_FARGUMENTS ";
-    unless(open($fd,$fname)) {
-        print("No such file: '$fname'\n");
-        return [];
-    }
+    my $fname = "$TOP/bindings/include/${tnm}_Arguments.h";
+    open(my $fd,"<",$fname) or
+      &CST_error(0, "Could not open file $fname: $!", "", __LINE__, __FILE__);
+    my $find = "#define \U${tnm}\E_(PRIVATE|PUBLIC|PROTECTED)_FARGUMENTS ";
     my @vars = ();
     while(my $line=<$fd>) {
         if($line =~ /$find/) {
