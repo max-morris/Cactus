@@ -490,12 +490,12 @@ sub create_macros
 
             # Write out the C++ declarations for the group or variable
             if($group_register eq "yes") {
-              for my $variables (sort keys %{$var_group->{grp_vars}}) {
-                my $var = $variables;
+              for my $var (sort keys %{$var_group->{grp_vars}}) {
+                my $full_var = $var;
                 for(my $tl=0;$tl<$timelevel;$tl++) {
-                    $var .= "_p";
+                    $full_var .= "_p";
                 }
-                my $vname = "${th}::$variables";
+                my $vname = "${th}::$var";
                 if ($var_group->{vector} ne "0") {
                   $vname .= "[0]";
                 }
@@ -503,11 +503,11 @@ sub create_macros
                 $$data .= qq(static int cctki_vi_$ivar = -100; if (cctki_vi_$ivar == -100) cctki_vi_$ivar = CCTK_VarIndex("$vname"); $vtype * restrict const $ivar __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, cctki_vi_$ivar));; /* group $group_register */\\\n);
               }
             } else {
-              my $ivar = get_cap($hash, $th, $full_var);
-              my $vname = "${th}::$ivar";
+              my $vname = "${th}::$var";
               if ($var_group->{vector} ne "0") {
                 $vname .= "[0]";
               }
+              my $ivar = get_cap($hash, $th, $full_var);
               $$data .= qq(static int cctki_vi_$ivar = -100; if (cctki_vi_$ivar == -100) cctki_vi_$ivar = CCTK_VarIndex("$vname"); $vtype * restrict const $ivar __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, cctki_vi_$ivar));; /* TL: $namekey --> $timelevel $group_register*/\\\n);
             }
           } # loop over read/write variables
