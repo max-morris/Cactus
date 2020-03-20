@@ -68,7 +68,7 @@ sub thorn_args {
     my $fname="$TOP/bindings/include"; #${th}_Arguments.h";
     my $found = 0;
     for my $f (<*_Arguments.h>) {
-        if(uc($f) eq "${th}_ARGUMENTS.H") {
+        if($f eq "${th}_Arguments.h") {
             $fname .= "/$f";
             $found = 1;
             last;
@@ -108,7 +108,7 @@ sub thorn_args {
 
 sub interface_starter
 {
-  my $thornname = uc shift;
+  my $thornname = shift;
   my $hash = shift;
   my $gr = shift;
   my $ccl_file = shift;
@@ -117,13 +117,13 @@ sub interface_starter
       for my $gch (@{$ch->{children}}) {
         if($gch->is("IMPLEMENTS")) {
           # This finds the implementation name for the thorn.
-          my $name = uc $gch->has(0,"name")->substring();
+          my $name = lc $gch->has(0,"name")->substring();
           $hash->{$name} = {} if(!defined($hash->{$name}));
           do_interfaces($hash->{$name},$gr,$ccl_file);
           # Private variables are referenced by thorn name instead
           # of implementation name. The 'private' key stores the
           # variables under the thorn name to handle this.
-          $hash->{private_variable}->{$thornname} = $hash->{$name};
+          $hash->{private_variable}->{lc $thornname} = $hash->{$name};
           return;
         }
       }
@@ -241,7 +241,7 @@ sub do_interfaces
 
 sub schedule_starter
 {
-  my $tnm = uc shift;
+  my $tnm = shift;
   my $hash = shift;
   my $gr = shift;
   my $ccl_file = shift;
@@ -304,12 +304,12 @@ sub do_schedules
         if($vname->has(1,"name")) {
             $cap_thorn = $thorn_or_var;
             $cap_var = $vname->has(1,"name")->substring();
-            $thorn = uc $cap_thorn;
+            $thorn = lc $cap_thorn;
             $var = lc $cap_var;
         } else {
             $cap_thorn = $parsing_thorn;
             $cap_var = $thorn_or_var;
-            $thorn = uc $cap_thorn;
+            $thorn = lc $cap_thorn;
             $var = lc $cap_var;
         }
 
@@ -365,7 +365,7 @@ sub do_schedules
 
 sub create_macros
 {
-  my $tnm = uc shift;
+  my $tnm = shift;
   my $hash = shift;
   my $gr = shift;
   my $reads_writes = shift;
@@ -444,7 +444,7 @@ sub create_macros
               # public variables
               my $group = $hash->{$th}->{variable_list}->{$var};
               $var_group = $hash->{$th}->{$group};
-            } elsif(($tnm eq $th) && defined($hash->{private_variable}->{$th}->{variable_list}->{$var})) {
+            } elsif((lc $tnm eq $th) && defined($hash->{private_variable}->{$th}->{variable_list}->{$var})) {
               # private variables
               my $group = $hash->{private_variable}->{$th}->{variable_list}->{$var};
               $var_group = $hash->{private_variable}->{$th}->{$group};
@@ -551,7 +551,7 @@ sub create_macros
               # public variables
               $group = $hash->{$th}->{variable_list}->{$var};
               $var_group = $hash->{$th}->{$group};
-            } elsif(($tnm eq $th) && defined($hash->{private_variable}->{$th}->{variable_list}->{$var})) {
+            } elsif((lc $tnm eq $th) && defined($hash->{private_variable}->{$th}->{variable_list}->{$var})) {
               # private variables
               $group = $hash->{private_variable}->{$th}->{variable_list}->{$var};
               $var_group = $hash->{private_variable}->{$th}->{$group};
@@ -687,6 +687,13 @@ sub create_macros
 #           is also reponsible for calling
 #           WriteFile.
 #  @enddesc
+#
+#  @var        %thorns
+#  @vdesc      The parsed Cactus thornlist (from CreateThornList)
+#  @vtype      hash, keys are thorn names from ThornList, values are path to
+#              thorn directory
+#  @vio        in
+#  @endvar
 #@@*/
 #
 sub GenerateArguments
@@ -694,6 +701,7 @@ sub GenerateArguments
   my %thorns = @_;
   my $hash = {};
   my $ccl_file;
+  # keys are thorn names from thornlist
   for my $key (keys %thorns) {
     $ccl_file = $thorns{$key}."/interface.ccl";
     my $gr=parse_ccl($I_grammar,$I_rule,$ccl_file,$int_file);
@@ -701,6 +709,7 @@ sub GenerateArguments
       interface_starter($key,$hash,$gr,$ccl_file);
     }
   }
+  # keys are thorn names from thornlist
   for my $key (keys %thorns) {
     $ccl_file = $thorns{$key}."/schedule.ccl";
     my $gr=parse_ccl($S_grammar,$S_rule,$ccl_file,$sch_file);
