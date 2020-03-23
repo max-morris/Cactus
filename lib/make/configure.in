@@ -774,6 +774,7 @@ AC_MSG_RESULT($rtc_ok)
 
 CCTK_CHECK_FUNCS(mallinfo)
 CCTK_CHECK_FUNCS(mallopt)
+CCTK_CHECK_FUNC(malloc_info)
 
 # Check if M_MMAP_THRESHOLD is defined
 AC_MSG_CHECKING([whether M_MMAP_THRESHOLD is defined])
