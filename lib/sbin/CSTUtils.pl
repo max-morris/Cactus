@@ -961,9 +961,11 @@ sub parse_ccl
       piraha::store_tree($ccl_cache,$p->{gr}) if defined $ccl_cache;
       $gr = $p->{gr};
     } else {
-      print "CST ERROR IN FILE '$ccl_file' ";
-      $p->showError();
-      confess("Parse Error");
+      my $help = $p->showError();
+      $help =~ /LINE\s+(\d+)/;
+      my $line = $1;
+      &CST_error(0,"SYNTAX ERROR",$help,$line,$ccl_file);
+      return {};
     }
   }
   # Debugging
