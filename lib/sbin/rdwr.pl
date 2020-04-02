@@ -588,7 +588,7 @@ sub create_macros
                     ,$hint, , __LINE__, __FILE__);
             }
             my $vtype = "CCTK_".$var_group->{vtype};
-            $vtype .= ", iNteNt(iN)" if($reads_writes->{$namekey}->{$th}->{$full_var}==0);
+            $vtype .= ", iNteNt(iN)" if($reads_writes->{$namekey}->{$th}->{$full_var}->{rdwr}==0);
             my $arrays = "";
             # The following logic determines the correct
             # indexing for the Fortran arrays and adds the
@@ -632,10 +632,14 @@ sub create_macros
               $arrays = qq(($glen));
             }
             if($group_register eq "yes") {
-              for my $variable (sort keys %{$var_group->{grp_vars}}) {
-                $cctk_arguments{$variable}=1;
-                $$data .= "  $vtype :: $variable $arrays &&\\\n";
-                $$data .= "  integer, parameter :: cctki_use_$variable = kind($variable) &&\\\n";
+              for my $var (sort keys %{$var_group->{grp_vars}}) {
+                my $full_var = $var;
+                for(my $tl=0;$tl<$timelevel;$tl++) {
+                    $full_var .= "_p";
+                }
+                $cctk_arguments{$full_var}=1;
+                $$data .= "  $vtype :: $full_var $arrays &&\\\n";
+                $$data .= "  integer, parameter :: cctki_use_$full_var = kind($full_var) &&\\\n";
               }
             } else {
               $cctk_arguments{$full_var}=1;
