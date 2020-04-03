@@ -632,16 +632,15 @@ sub create_macros
               $arrays = qq(($glen));
             }
             if($group_register eq "yes") {
-              for my $var (sort keys %{$var_group->{grp_vars}}) {
-                my $full_var = $var;
-                for(my $tl=0;$tl<$timelevel;$tl++) {
-                    $full_var .= "_p";
+              for my $variable (sort keys %{$var_group->{grp_vars}}) {
+                my $tvar = $variable . "_p" x $timelevel;
+                if(!defined($cctk_arguments{$tvar})) {
+                  $cctk_arguments{$tvar}=1;
+                  $$data .= "  $vtype :: $tvar $arrays &&\\\n";
+                  $$data .= "  inteGer, parameter :: cctki_use_$tvar = kind($tvar) &&\\\n";
                 }
-                $cctk_arguments{$full_var}=1;
-                $$data .= "  $vtype :: $full_var $arrays &&\\\n";
-                $$data .= "  integer, parameter :: cctki_use_$full_var = kind($full_var) &&\\\n";
               }
-            } else {
+            } elsif(!defined($cctk_arguments{$full_var})) {
               $cctk_arguments{$full_var}=1;
               $$data .= "  $vtype :: $full_var $arrays &&\\\n";
               $$data .= "  integer, parameter :: cctki_use_$full_var = kind($full_var) &&\\\n";
