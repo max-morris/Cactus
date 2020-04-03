@@ -49,37 +49,6 @@ sub get_cap {
     return $outvar;
 }
 
-#/*@@
-#  @routine thorn_args
-#  @date    Mon Feb 24 16:10:38 EST 2020
-#  @author  Steven R. Brandt
-#  @desc
-#           Parses previously generated
-#           Fortran headers to determine
-#           the list of grid functions passed
-#           to Fortran function calls within
-#           a thorn.
-#  @enddesc
-#@@*/
-
-sub thorn_args {
-    my $tnm = shift;
-    my $TOP = $ENV{TOP};
-    my $fname = "$TOP/bindings/include/${tnm}_Arguments.h";
-    open(my $fd,"<",$fname) or
-      &CST_error(0, "Could not open file $fname: $!", "", __LINE__, __FILE__);
-    my $find = "#define \U${tnm}\E_(PRIVATE|PUBLIC|PROTECTED)_FARGUMENTS ";
-    my @vars = ();
-    while(my $line=<$fd>) {
-        if($line =~ /$find/) {
-            $line=<$fd>;
-            while($line =~ /\w+/g) {
-                push @vars, lc $&;
-            }
-        }
-    }
-    return \@vars
-}
 
 #/*@@
 #  @routine interface_starter
@@ -357,7 +326,7 @@ sub create_macros
   my $lang = shift;
   my $data = shift;
   my $ccl_file = shift;
-  my $thorn_args = thorn_args($tnm);
+  my $thorn_args = $main::fortran_decls{uc $tnm};
   my $all_cctk_arguments = [];
   push @$all_cctk_arguments, @$thorn_args;
   $$data .= "#ifndef CCTK_ARGUMENTS_CHECKED_H\n";
@@ -632,15 +601,13 @@ sub create_macros
               $arrays = qq(($glen));
             }
             if($group_register eq "yes") {
-              for my $variable (sort keys %{$var_group->{grp_vars}}) {
-                my $tvar = $variable . "_p" x $timelevel;
-                if(!defined($cctk_arguments{$tvar})) {
-                  $cctk_arguments{$tvar}=1;
-                  $$data .= "  $vtype :: $tvar $arrays &&\\\n";
-                  $$data .= "  inteGer, parameter :: cctki_use_$tvar = kind($tvar) &&\\\n";
-                }
+              for my $var (sort keys %{$var_group->{grp_vars}}) {
+                my $full_var = $var . "_p" x $timelevel;
+                $cctk_arguments{$full_var}=1;
+                $$data .= "  $vtype :: $full_var $arrays &&\\\n";
+                $$data .= "  integer, parameter :: cctki_use_$full_var = kind($full_var) &&\\\n";
               }
-            } elsif(!defined($cctk_arguments{$full_var})) {
+            } else {
               $cctk_arguments{$full_var}=1;
               $$data .= "  $vtype :: $full_var $arrays &&\\\n";
               $$data .= "  integer, parameter :: cctki_use_$full_var = kind($full_var) &&\\\n";
