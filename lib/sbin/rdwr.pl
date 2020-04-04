@@ -618,6 +618,7 @@ sub create_macros
         for my $var (@$all_cctk_arguments) {
           if(not defined($cctk_arguments{$var})) {
               $$data .= " characTer*8, intent(IN) :: $var /* dummy-rdwr-var */ && \\\n";
+              $$data .= " integer, parameter :: cctki_use_$var = kind($var) &&\\\n";
           }
         }
       } else {
