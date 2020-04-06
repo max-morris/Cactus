@@ -1072,7 +1072,7 @@ sub CleanDir
 =over 
 
 =item RunCactus($output, $testname, $command)
- Runs Cactus and returns $retcode.
+ Runs Cactus and returns ($retcode, $elapsed_time).
 
 =back
 
@@ -1639,7 +1639,7 @@ sub RunTest
   $cmd =~ s/\$nprocs/$NPROCS/g;
   $cmd =~ s/\$parfile/$parfile/g;
 
-  $retcode, $elapsed = &RunCactus($output,$test,$cmd);
+  ($retcode, $elapsed) = &RunCactus($output,$test,$cmd);
   chdir $config_data->{"CCTK_DIR"};
 
   $testdata->{"$thorn $test ELAPSEDTIME"} = $elapsed;
