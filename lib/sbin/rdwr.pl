@@ -39,9 +39,7 @@ sub get_cap {
         $suffix = $2;
     }
     my $outvar;
-    if(defined($hash->{private_variable}->{$th}->{capitalization}->{$realvar})) {
-        $outvar = $hash->{private_variable}->{$th}->{capitalization}->{$realvar} . $suffix;
-    } elsif(defined($hash->{$th}->{capitalization}->{$realvar})) {
+    if(defined($hash->{$th}->{capitalization}->{$realvar})) {
         $outvar = $hash->{$th}->{capitalization}->{$realvar} . $suffix;
     } else {
         croak("No Capitalization for ($realvar)");
@@ -71,13 +69,13 @@ sub interface_starter
       for my $gch (@{$ch->{children}}) {
         if($gch->is("IMPLEMENTS")) {
           # This finds the implementation name for the thorn.
-          my $name = lc $gch->has(0,"name")->substring();
+          my $name = uc $gch->has(0,"name")->substring();
+          my $th_name = uc $thornname;
+          my $priv = {"access" => "private"};
           $hash->{$name} = {} if(!defined($hash->{$name}));
-          do_interfaces($hash->{$name},$gr,$ccl_file);
-          # Private variables are referenced by thorn name instead
-          # of implementation name. The 'private' key stores the
-          # variables under the thorn name to handle this.
-          $hash->{private_variable}->{lc $thornname} = $hash->{$name};
+          $hash->{$th_name} = {} if(!defined($hash->{$th_name}));
+          $hash->{find_impl}->{$th_name} = $name;
+          do_interfaces($hash->{$name},$hash->{$th_name},$gr,$ccl_file,$priv);
           return;
         }
       }
@@ -98,9 +96,13 @@ sub interface_starter
 
 sub do_interfaces
 {
-  my $hash = shift;
+  my $pub_hash = shift;
+  my $priv_hash = shift;
   my $gr = shift;
   my $ccl_file = shift;
+  my $priv = shift;
+  my $hash = $pub_hash;
+  $hash = $priv_hash if($priv->{access} eq "private");
   if($gr->is("GROUP_VARS")) {
     my $vtype = $gr->has(0,"vtype")->substring();
     my $level = 0;
@@ -175,7 +177,15 @@ sub do_interfaces
   } elsif($gr->{name} =~ /^(intr|FUNC_GROUP)$/) {
     # 'intr' is the name of the top-level pattern for an entire interface file
     for my $ch (@{$gr->{children}}) {
-      do_interfaces($hash,$ch,$ccl_file);
+      do_interfaces($pub_hash,$priv_hash,$ch,$ccl_file,$priv);
+    }
+  } elsif($gr->is("access")) {
+    my $ac = lc $gr->substring();
+    $priv->{access} = $ac;
+    if($ac eq "private") {
+        $hash = $priv_hash;
+    } else {
+        $hash = $pub_hash;
     }
   }
 }
@@ -202,7 +212,7 @@ sub schedule_starter
   my $lang = {};
   my $reads_writes = {};
   my $data = "";
-  do_schedules($gr,$reads_writes,$lang,$ccl_file);
+  do_schedules($gr,$reads_writes,$lang,$ccl_file,$hash);
   create_macros($tnm,$hash,$gr,$reads_writes,$lang,\$data,$ccl_file);
   return $data;
 }
@@ -223,6 +233,7 @@ sub do_schedules
   my $reads_writes = shift;
   my $lang = shift;
   my $ccl_file = shift;
+  my $hash = shift;
   $ccl_file =~ m{([^/]+)/schedule.ccl$};
   my $parsing_thorn = $1;
   if($gr->is("schedule")) {
@@ -258,13 +269,25 @@ sub do_schedules
         if($vname->has(1,"name")) {
             $cap_thorn = $thorn_or_var;
             $cap_var = $vname->has(1,"name")->substring();
-            $thorn = lc $cap_thorn;
+            $thorn = uc $cap_thorn;
             $var = lc $cap_var;
         } else {
             $cap_thorn = $parsing_thorn;
             $cap_var = $thorn_or_var;
-            $thorn = lc $cap_thorn;
+            $thorn = uc $cap_thorn;
             $var = lc $cap_var;
+            my $base_var = $var;
+            $base_var =~ s/(_p)+$//;
+            if(!defined($hash->{$thorn}->{variable_list}->{$base_var})) {
+               my $impl = $hash->{find_impl}->{$thorn};
+               if(defined($hash->{$impl}->{variable_list}->{$base_var})) {
+                 $thorn = $impl;
+               } elsif(!defined($hash->{$thorn}->{group_list}->{$base_var})) {
+                 if(defined($hash->{$impl}->{group_list}->{$base_var})) {
+                   $thorn = $impl;
+                 }
+               }
+            }
         }
 
         # update informational data structures
@@ -303,7 +326,7 @@ sub do_schedules
     }
   } else {
     for my $ch (@{$gr->{children}}) {
-      do_schedules($ch,$reads_writes,$lang);
+      do_schedules($ch,$reads_writes,$lang,$ccl_file,$hash);
     }
   }
 }
@@ -398,10 +421,6 @@ sub create_macros
               # public variables
               my $group = $hash->{$th}->{variable_list}->{$var};
               $var_group = $hash->{$th}->{$group};
-            } elsif((lc $tnm eq $th) && defined($hash->{private_variable}->{$th}->{variable_list}->{$var})) {
-              # private variables
-              my $group = $hash->{private_variable}->{$th}->{variable_list}->{$var};
-              $var_group = $hash->{private_variable}->{$th}->{$group};
             } elsif(defined($hash->{$th}->{group_list}->{$var})) {
               # variable name is actually a group
               $var_group = $hash->{$th}->{$var};
@@ -412,19 +431,14 @@ sub create_macros
               my %hints = ();
               # Do a brute force search of the world...
               for my $th2 (keys %$hash) {
-                for my $v (%{$hash->{private_variable}->{$th2}->{variable_list}}) {
+                for my $v (keys %{$hash->{$th2}->{variable_list}}) {
                   if($v eq lc $var) {
-                    $hints{" Did you mean ${th2}::$v?"}=1;
+                    $hints{" Did you mean ${th2}::$v? [ERR1]"}=1;
                   }
                 }
-                for my $v (%{$hash->{$th2}->{variable_list}}) {
+                for my $v (keys %{$hash->{$th2}->{group_list}}) {
                   if($v eq lc $var) {
-                    $hints{" Did you mean ${th2}::$v?"}=1;
-                  }
-                }
-                for my $v (%{$hash->{$th2}->{group_list}}) {
-                  if($v eq lc $var) {
-                    $hints{" Did you mean ${th2}::$v?"}=1;
+                    $hints{" Did you mean ${th2}::$v? [ERR2]"}=1;
                   }
                 }
               }
@@ -438,7 +452,7 @@ sub create_macros
                 $hint = "Check variable or group '${th}::$full_var' and verify ".
                     "correct implementation/thorn name and variable name.'";
               }
-              &CST_error(1, "Error read/write declaration in $nm schedule."
+              &CST_error(1, "Error in read/write declaration of '${th}::$full_var' for '$nm' in schedule."
                     ,$hint, , $errline, $ccl_file);
               next;
             }
@@ -505,10 +519,6 @@ sub create_macros
               # public variables
               $group = $hash->{$th}->{variable_list}->{$var};
               $var_group = $hash->{$th}->{$group};
-            } elsif((lc $tnm eq $th) && defined($hash->{private_variable}->{$th}->{variable_list}->{$var})) {
-              # private variables
-              $group = $hash->{private_variable}->{$th}->{variable_list}->{$var};
-              $var_group = $hash->{private_variable}->{$th}->{$group};
             } elsif(defined($hash->{$th}->{$var})) {
               # variable name is actually a group
               $group = $var;
@@ -527,23 +537,19 @@ sub create_macros
               my $hint = undef;
               ###
               my $cap = $reads_writes->{$namekey}->{$th}->{$var}->{cap};
+              my $line = $reads_writes->{$namekey}->{$th}->{$var}->{line};
               my $hint = "Is $cap a correctly declared variable?";
               my %hints = ();
               # Do a brute force search of the world...
               for my $th2 (keys %$hash) {
-                for my $v (%{$hash->{private_variable}->{$th2}->{variable_list}}) {
+                for my $v (keys %{$hash->{$th2}->{variable_list}}) {
                   if($v eq lc $var) {
-                    $hints{" Did you mean ${th2}::$v?"}=1;
+                    $hints{" Did you mean ${th2}::$v? [ERR3]"}=1;
                   }
                 }
-                for my $v (%{$hash->{$th2}->{variable_list}}) {
+                for my $v (keys %{$hash->{$th2}->{group_list}}) {
                   if($v eq lc $var) {
-                    $hints{" Did you mean ${th2}::$v?"}=1;
-                  }
-                }
-                for my $v (%{$hash->{$th2}->{group_list}}) {
-                  if($v eq lc $var) {
-                    $hints{" Did you mean ${th2}::$v?"}=1;
+                    $hints{" Did you mean ${th2}::$v? [ERR4]"}=1;
                   }
                 }
               }
@@ -554,7 +560,7 @@ sub create_macros
               ###
               &CST_error(0, "Error in $nm schedule. Check variable or group '${th}::$full_var'" .
                     ' and verify correct implementation/thorn name and variable name.'
-                    ,$hint, , __LINE__, __FILE__);
+                    ,$hint, , $line, $ccl_file);
             }
             my $vtype = "CCTK_".$var_group->{vtype};
             $vtype .= ", iNteNt(iN)" if($reads_writes->{$namekey}->{$th}->{$full_var}->{rdwr}==0);
