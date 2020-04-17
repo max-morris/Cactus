@@ -213,7 +213,7 @@ sub schedule_starter
   my $reads_writes = {};
   my $data = "";
   do_schedules($gr,$reads_writes,$lang,$ccl_file,$hash);
-  create_macros($tnm,$hash,$gr,$reads_writes,$lang,\$data,$ccl_file);
+  create_macros($tnm,$hash,$gr,$reads_writes,$lang,\$data,$ccl_file,uc $tnm);
   return $data;
 }
 
@@ -349,6 +349,7 @@ sub create_macros
   my $lang = shift;
   my $data = shift;
   my $ccl_file = shift;
+  my $parsing_thorn = shift;
   my $thorn_args = $main::fortran_decls{uc $tnm};
   my $all_cctk_arguments = [];
   push @$all_cctk_arguments, @$thorn_args;
@@ -471,6 +472,13 @@ sub create_macros
             my $const = "";
             $const = "const" if($reads_writes->{$namekey}->{$th}->{$full_var}->{rdwr}==0);
 
+            # Get all declared variables
+            # and convert them to a hash
+            my $decls = {};
+            for my $decl (@{$main::fortran_decls{$parsing_thorn}}) {
+                $decls->{$decl} = 1;
+            }
+
             # Write out the C++ declarations for the group or variable
             if($group_register eq "yes") {
               for my $var (sort keys %{$var_group->{grp_vars}}) {
@@ -483,6 +491,12 @@ sub create_macros
                   $vname .= "[0]";
                 }
                 my $ivar = get_cap($hash, $th, $full_var);
+                if(!defined($decls->{$full_var})) {
+                  my $line = $reads_writes->{$namekey}->{$th}->{$full_var}->{line};
+                  my $hint = "Check access of variable. Maybe dd an inherits clause to your interface.ccl";
+                  &CST_error(1, "No access to variable '${th}::$ivar'" 
+                    ,$hint, , $line, $ccl_file);
+                }
                 $$data .= qq(static int cctki_vi_$ivar = -100; if (cctki_vi_$ivar == -100) cctki_vi_$ivar = CCTK_VarIndex("$vname"); $vtype $const * restrict const $ivar __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, cctki_vi_$ivar));; /* group $group_register */\\\n);
               }
             } else {
@@ -491,6 +505,12 @@ sub create_macros
                 $vname .= "[0]";
               }
               my $ivar = get_cap($hash, $th, $full_var);
+              if(!defined($decls->{$full_var})) {
+                my $line = $reads_writes->{$namekey}->{$th}->{$full_var}->{line};
+                my $hint = "Check access of variable. Maybe dd an inherits clause to your interface.ccl";
+                &CST_error(1, "No access to variable '${th}::$ivar'" 
+                  ,$hint, , $line, $ccl_file);
+              }
               $$data .= qq(static int cctki_vi_$ivar = -100; if (cctki_vi_$ivar == -100) cctki_vi_$ivar = CCTK_VarIndex("$vname"); $vtype $const * restrict const $ivar __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, cctki_vi_$ivar));; /* TL: $namekey --> $timelevel $group_register*/\\\n);
             }
           } # loop over read/write variables
