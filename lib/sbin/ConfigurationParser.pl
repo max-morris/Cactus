@@ -11,7 +11,6 @@ use strict;
 #  @version  $Header$
 #@@*/
 
-use lib ".";
 my $ccl_file;
 
 #/*@@
@@ -29,7 +28,7 @@ sub CreateConfigurationDatabase
   my(%cfg) = ();
   my(%thorn_dependencies);
 
-  my $peg_file = $ENV{CCTK_HOME}."/src/piraha/pegs/config.peg";
+  my $peg_file = "$FindBin::Bin/../../src/piraha/pegs/config.peg";
   my ($grammar,$rule) = piraha::parse_peg_file($peg_file);
 
   # Loop through each thorn's configuration file.
@@ -526,10 +525,12 @@ sub ParseConfigurationCCL
     for my $k (sort keys %$cfg1) {
       $cfg->{$k} = $cfg1->{$k};
     }
-  } else {
+  } elsif($main::cctk_parser eq "old") {
     for my $k (sort keys %$cfg2) {
       $cfg->{$k} = $cfg2->{$k};
     }
+  } else {
+    die "Internal error: main::cctk_parser not 'new', 'old' or 'both' but '$main::cctk_parser'"
   }
 }
 

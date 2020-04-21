@@ -7,8 +7,6 @@
 #  @enddesc 
 #@@*/
 
-use lib ".";
-
 #/*@@
 #  @routine    SplitThorns
 #  @date       Mon May  8 16:04:59 2000
@@ -143,7 +141,7 @@ sub ProcessConfiguration
       my %need = ();
       map { $need{"\U$_\E"} = 1; } @requires_list;
       map { delete $need{"\U$_\E"}; } @provides_list;
-      map { next THORN unless exists $requirements_done{"\U$_\E"}; } keys %need;
+      map { next THORN unless exists $requirements_done{"\U$_\E"}; } sort keys %need;
 
 #      print "DEBUG:       Processing thorn $thorn\n";
       foreach my $provides (@provides_list)
@@ -165,7 +163,7 @@ sub ProcessConfiguration
         # available to the following scripts
         my $config = $config_database->{"\U$thorn $provides\E MAKE_DEFINITION"};
         my %options = $config =~ /^\s*(\w+)\s*=(.*)$/mg;
-        foreach my $option (keys %options)
+        foreach my $option (sort keys %options)
         {
           my $value = $options{$option};
           $value =~ s/^\s*//;

@@ -12,10 +12,18 @@
 #define _CCTK_SCHEDULE_H_
 
 #include <stdio.h>
+#include "PreSync.h"
 
 typedef enum {LangNone, LangC, LangFortran} cLanguage;
 
 typedef enum {FunctionNoArgs, FunctionOneArg, FunctionStandard} cFunctionType;
+
+typedef struct
+{
+  int var_id;
+  int time_level;
+  int where_wr, where_rd, where_inv;
+} RDWR_entry;
 
 typedef struct
 {
@@ -58,6 +66,11 @@ typedef struct
   const char **WritesClauses;
   int n_ReadsClauses;
   const char **ReadsClauses;
+  int n_InvalidatesClauses;
+  const char **InvalidatesClauses;
+
+  int n_RDWR;
+  RDWR_entry *RDWR;
 
   char *where;
   char *routine;

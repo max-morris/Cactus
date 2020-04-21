@@ -241,9 +241,9 @@ sub GetThornPaths
    my %paths;
 
    foreach (@$rlListOfThorns) {
-      /^(.*?)\/(.*?)$/;
+      m/^(.*?)\/(.*?)$/ or die "Internal error: expected 'arragnement/thorn', but received '$_'";
       if (($interestingFile eq "") || (-e "${arrangementsDir}${_}/${interestingFile}")) {
-         my $key = $keepArrInKey ? "$1/$2" : "$1";
+         my $key = $keepArrInKey ? "$1/$2" : "$2";
          $paths{$key} = "$arrangementsDir$_";
       }
    }
@@ -658,7 +658,7 @@ sub ProcessAllArrangements
    my ($hrArrangements) = shift;
 
    # go through and find  each arrangement
-   foreach my $arrangement (keys %$hrArrangements) {
+   foreach my $arrangement (sort keys %$hrArrangements) {
       &ProcessOneArrangement($$hrArrangements{$arrangement}, $arrangement);
    }
 }
@@ -687,7 +687,7 @@ sub ProcessOneArrangement
    my ($hrArr) = shift;
    my ($arrangement) = shift;
 
-   foreach my $thorn (keys %$hrArr) {
+   foreach my $thorn (sort keys %$hrArr) {
       # please note, you will not get good results unless a sub-routine called
       # ProcessOneThorn exists in your main perl file.  (where this is called from)
       main::ProcessOneThorn($$hrArr{$thorn}, $arrangement, $thorn);

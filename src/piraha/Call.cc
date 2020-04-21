@@ -114,7 +114,7 @@ struct Value {
         } else {
             std::ostringstream o;
             if(type == PIR_REAL) {
-                o << std::setprecision(15) << ddata;
+                o << std::setprecision(17) << ddata;
             } else {
                 o << idata;
             }
@@ -340,13 +340,16 @@ std::string string_reparser(std::string s) {
         std::string out = "";
         for(int i=0;i < m->groupCount(); i++) {
             std::string pn = m->group(i)->getPatternName();
-            if(pn == "any" || pn == "name") {
+            if(pn == "any" || pn == "name" || pn == "stringfirstline") {
                 out += m->group(i)->substring();
             } else if(pn == "stringcomment") {
                 ;
-            } else {
+            } else if(pn == "var") {
                 smart_ptr<Value> val = lookup_var(m->group(i));
                 out += val->copy();
+            } else {
+                CCTK_VError(__LINE__, __FILE__, "Cactus",
+                            "Unexpected pattern name : %s", pn.c_str());
             }
         }
         return out;
@@ -396,6 +399,8 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
     } else if(pn == "func") {
         std::string fn = gr->group(0)->substring();
         fn = mklower(fn);
+        // the grammer disallows empyt function arguments foo() so there is
+        // always at least group(0) and group(1)
         smart_ptr<Value> val = meval(gr->group(1),eedata);
         // First, functions with at least one, but potentially more than one argument
         if (fn == "max" || fn == "min") {
@@ -443,92 +448,98 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
         // From here on only functions that take exactly one argument: the majority.
         else if (gr->groupCount() != 2) {
             std::ostringstream msg;
-            msg << fn << "() needs exactly one argument, but got" << gr->groupCount()
+            msg << fn << "() needs exactly one argument, but got " << gr->groupCount()
                 << "." << std::endl;
             std::string par = get_parfile();
             CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
         }
         else {
+            // From here on only functions that take exactly one argument: the majority.
+            bool known_function = false;
             if(val->type == PIR_REAL || val->type == PIR_INT) {
                 if(fn == "trunc") {
                     val->ddata = trunc(val->realValue());
                     val->type = PIR_REAL;
-                    return val;
+                    known_function = true;;
                 } else if(fn == "floor") {
                     val->ddata = floor(val->realValue());
                     val->type = PIR_REAL;
-                    return val;
+                    known_function = true;;
                 } else if(fn == "ceil") {
                     val->ddata = ceil(val->realValue());
                     val->type = PIR_REAL;
-                    return val;
+                    known_function = true;;
                 } else if(fn == "sqrt") {
                     val->ddata = sqrt(val->realValue());
                     val->type = PIR_REAL;
-                    return val;
+                    known_function = true;;
+                } else if(fn == "cbrt") {
+                    val->ddata = cbrt(val->realValue());
+                    val->type = PIR_REAL;
+                    known_function = true;;
                 } else if(fn == "atan") {
                     val->ddata = atan(val->realValue());
                     val->type = PIR_REAL;
-                    return val;
+                    known_function = true;;
                 } else if(fn == "sin") {
                     val->ddata = sin(val->realValue());
                     val->type = PIR_REAL;
-                    return val;
+                    known_function = true;;
                 } else if(fn == "cos") {
                     val->ddata = cos(val->realValue());
                     val->type = PIR_REAL;
-                    return val;
+                    known_function = true;;
                 } else if(fn == "tan") {
                     val->ddata = tan(val->realValue());
                     val->type = PIR_REAL;
-                    return val;
+                    known_function = true;;
                 } else if(fn == "exp") {
                     val->ddata = exp(val->realValue());
                     val->type = PIR_REAL;
-                    return val;
+                    known_function = true;;
                 } else if(fn == "log") {
                     val->ddata = log(val->realValue());
                     val->type = PIR_REAL;
-                    return val;
+                    known_function = true;;
                 } else if(fn == "abs") {
                     val->ddata = fabs(val->realValue());
                     val->type = PIR_REAL;
-                    return val;
+                    known_function = true;;
                 } else if(fn == "acos") {
                     val->ddata = acos(val->realValue());
                     val->type = PIR_REAL;
-                    return val;
+                    known_function = true;;
                 } else if(fn == "asin") {
                     val->ddata = asin(val->realValue());
                     val->type = PIR_REAL;
-                    return val;
+                    known_function = true;;
                 } else if(fn == "bool") {
                     if(val->type == PIR_REAL) {
                         val->idata = std::lrint(val->ddata);
                     }
                     val->type = PIR_BOOL;
-                    return val;
+                    known_function = true;;
                 } else if(fn == "int") {
                     if(val->type == PIR_REAL) {
                         val->idata = std::lrint(val->ddata);
                         val->type = PIR_INT;
                     }
-                    return val;
+                    known_function = true;;
                 } else if(fn == "real") {
                     if(val->type == PIR_INT) {
                         val->ddata = val->idata;
                         val->type = PIR_REAL;
                     }
-                    return val;
+                    known_function = true;;
                 }
             } else if(val->type == PIR_BOOL) {
                 if(fn == "int") {
                     val->type = PIR_INT;
-                    return val;
+                    known_function = true;;
                 } else if(fn == "real") {
                     val->type = PIR_REAL;
                     val->ddata = val->idata;
-                    return val;
+                    known_function = true;;
                 }
             } else if(val->type == PIR_STRING) {
                 if(fn == "int") {
@@ -547,7 +558,7 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
                         std::string par = get_parfile();
                         CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
                     }
-                    return val;
+                    known_function = true;;
                 } else if(fn == "real") {
                     val->type = PIR_REAL;
                     std::istringstream buf(val->sdata);
@@ -564,7 +575,7 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
                         std::string par = get_parfile();
                         CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
                     }
-                    return val;
+                    known_function = true;;
                 } else if(fn == "bool") {
                     val->type = PIR_BOOL;
                     std::string s = mklower(val->sdata);
@@ -578,15 +589,25 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
                         std::string par = get_parfile();
                         CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
                     }
-                    return val;
+                    known_function = true;;
                 }
             }
-            else {
+            // check if any errors were detected above
+            if(!known_function) {
                 std::ostringstream msg;
-                msg << "Unknown func: " << fn << "(" << val->type << ")" << std::endl;
+                msg << "Unknown function: " << fn << "(" << val->type << ")" << std::endl;
                 std::string par = get_parfile();
                 CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
             }
+            if(gr->groupCount() != 2) {
+              // All functions that take exactly one argument, but we got a different number
+              std::ostringstream msg;
+              msg << fn << "() needs exactly one argument, but got" << gr->groupCount()-1
+                  << "." << std::endl;
+              std::string par = get_parfile();
+              CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
+            }
+            return val;
         }
     } else if(pn == "name"||pn == "dname") {
         std::string s = gr->substring();
@@ -776,6 +797,7 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
             return meval(gr->group(0),eedata);
         smart_ptr<Value> v1 = meval(gr->group(0),eedata);
         for(int i=1;i+1<gr->groupCount();i+=2) {
+            ret = new Value(gr);
             std::string addop = gr->group(i)->substring();
             smart_ptr<Value> v2 = meval(gr->group(i+1),eedata);
             assert(v2.valid());
@@ -829,6 +851,7 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
             return meval(gr->group(0),eedata);
         smart_ptr<Value> v1 = meval(gr->group(0),eedata);
         for(int i=1;i+1<gr->groupCount();i+=2) {
+            ret = new Value(gr);
             std::string mulop = gr->group(i)->substring();
             smart_ptr<Value> v2 = meval(gr->group(i+1),eedata);
             if(v1->type == PIR_INT && v2->type == PIR_INT) {
@@ -890,7 +913,7 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
         std::string par = get_parfile();
         msg << "Pattern not handled[" << gr->getPatternName() << "]=" << gr->substring() <<
             " at " << gr->line() << " in " << par << std::endl;
-        CCTK_Error(__LINE__,__FILE__,"piraha",msg.str().c_str());
+        CCTK_Error(__LINE__,__FILE__,"Cactus",msg.str().c_str());
     }
     return ret;
 }
@@ -954,7 +977,7 @@ extern "C" void *Util_ExpressionParse(const char *expr) {
     } else {
       std::ostringstream msg;
       m2->showError(msg);
-      CCTK_Error(__LINE__,__FILE__,"Piraha",msg.str().c_str());
+      CCTK_Error(__LINE__,__FILE__,"Cactus",msg.str().c_str());
       return 0;
     }
 }

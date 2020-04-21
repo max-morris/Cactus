@@ -1,3 +1,7 @@
+#!/usr/bin/env perl
+
+use warnings;
+use FindBin;
 
 # this scrips gathers some basic info on the system it runs on.
 # This is intended to be included in bugreports etc.
@@ -63,16 +67,23 @@ while (<MF>)
 
 close(MF);
 
-#Get the CVS repository
-if (-e "CVS/Root") 
+#Get the git repository
+$gitrep = "NO GIT";
+if (-e "$FindBin::Bin/../../.git")
 {
-   open(CVS,"CVS/Root");
-   $cvsrep = <CVS>;
-   chop($cvsrep);
+   $ENV{'GIT_DIR'} = "$FindBin::Bin/../../.git";
+   $branch = `git rev-parse --abbrev-ref --symbolic-full-name '\@{upstream}'`;
+   if ($branch =~ m!^([^/]+)!) {
+     $remote = $1;
+     $gitrep = `git remote get-url '$remote'`;
+     chomp $gitrep;
+   } else {
+     print "Could not parse git branch for remote: $branch\n";
+   }
 } 
 else
 {
-    printf "NO CVS";
+    printf "NO GIT\n";
 }
 
 
@@ -81,6 +92,7 @@ $uname = `uname -a`;
 chop($uname);
 
 #get hinv
+$hinv = "";
 if ($uname=~m/IRIX/i) 
 {
   $hinv = `hinv`;
@@ -100,7 +112,7 @@ open (INFO,">sysinfo${sep}$config.sysinfo");
 print INFO "VERSION: $version\n";
 print INFO "UNAME  : $uname \n";
 print INFO "MPI    : $mpi \n";
-print INFO "CVSROOT: $cvsrep\n";
+print INFO "GIT ORG: $gitrep\n";
 if ($hinv=~m/.*/) {
   print INFO "HINV   : $hinv \n";
 }

@@ -288,7 +288,7 @@ sub CreateFunctionBindings
 # function.
 ###
 
-  foreach $thorn (keys %{$function_db})
+  foreach $thorn (sort keys %{$function_db})
   {
     $dataout = &UsesPrototypes($thorn,$function_db->{"$thorn"});
     my $filename = "${thorn}_Prototypes.h";
@@ -465,9 +465,9 @@ sub CheckRequiredFunctions
   use strict;
   my %FunctionDatabase = %{$_[0]};
 
-  foreach my $thorn (keys %FunctionDatabase)
+  foreach my $thorn (sort keys %FunctionDatabase)
   {
-    foreach my $Function (values %{$FunctionDatabase{$thorn}})
+    foreach my $Function (sort values %{$FunctionDatabase{$thorn}})
     {
       # need to check only if this thorn doesn't provide the function itself
       if ($Function->{'Used'} == 2 && ! $Function->{'Provided'})
@@ -475,11 +475,11 @@ sub CheckRequiredFunctions
         my $is_provided = 0;
 
         # now go through the function database again to find the providing thorn
-        foreach my $provider (keys %FunctionDatabase)
+        foreach my $provider (sort keys %FunctionDatabase)
         {
           next if ($provider eq $thorn);
 
-          foreach my $ProvidingFunction (values %{$FunctionDatabase{$provider}})
+          foreach my $ProvidingFunction (sort values %{$FunctionDatabase{$provider}})
           {
             $is_provided = $Function->{'Name'} eq $ProvidingFunction->{'Name'}
                            && $ProvidingFunction->{'Provided'};
@@ -915,7 +915,7 @@ sub RegisterAllFunctions
   # generate code to register aliased functions for all active thorns
   foreach my $thorn (sort keys %FunctionDatabase)
   {
-    foreach my $Function (values %{$FunctionDatabase{$thorn}})
+    foreach my $Function (sort values %{$FunctionDatabase{$thorn}})
     {
       if ($Function && $Function->{'Provided'})
       {
@@ -935,16 +935,18 @@ sub RegisterAllFunctions
   foreach my $thorn (sort keys %FunctionDatabase)
   {
     my @required = ();
-    foreach my $Function (values %{$FunctionDatabase{$thorn}})
+    foreach my $Function (sort {$a->{Name} cmp $b->{Name}} values %{$FunctionDatabase{$thorn}})
     {
       if ($Function && $Function->{'Used'} == 2 && ! $Function->{'Provided'})
       {
         # go through the function database again to find all providing thorns
         my @providing_thorns = ();
-        foreach my $provider (keys %FunctionDatabase)
+        foreach my $provider (sort keys %FunctionDatabase)
         {
           next if ($provider eq $thorn);
 
+          # searches for the (single) providing_fn matching Function->{Name} so
+          # no sorting needed
           foreach my $providing_fn (values %{$FunctionDatabase{$provider}})
           {
             if ($Function->{'Name'} eq $providing_fn->{'Name'}
@@ -1681,9 +1683,9 @@ sub IsFunctionAliased
 
   # Insert function protypes:
   my %names;
-  foreach $thornFunctionList (values %FunctionDatabase)
+  foreach $thornFunctionList (sort values %FunctionDatabase)
   {
-    foreach $Function (values %{$thornFunctionList})
+    foreach $Function (sort values %{$thornFunctionList})
     {
       if ($Function)
       {
@@ -1757,10 +1759,10 @@ sub ThornMasterIncludes
   use strict;
 
   my %function_db = %{$_[0]};
-  my @thorns = keys %function_db;
+  my @thorns = sort keys %function_db;
 
   my $thorn;
-  foreach $thorn (sort @thorns)
+  foreach $thorn (@thorns)
   {
     my(@data) = ();
 

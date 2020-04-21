@@ -55,6 +55,7 @@ for my $s (@schedule_bins) {
 
 my $ccl_file = undef;
 
+use FindBin;
 use Carp;
 use FileHandle;
 use Data::Dumper;
@@ -81,7 +82,7 @@ sub create_schedule_database
   my(@new_schedule_data);
   my(@schedule_data);
 
-  my $peg_file = $ENV{CCTK_HOME}."/src/piraha/pegs/schedule.peg";
+  my $peg_file = "$FindBin::Bin/../../src/piraha/pegs/schedule.peg";
   my($grammar,$rule)=piraha::parse_peg_file($peg_file);
 
   #  Loop through each implementation's schedule file.
@@ -138,12 +139,33 @@ sub qname
 {
   my $qname = shift;
   confess("not a qname ".$qname->dump()) unless($qname->is("qname"));
-  my $out = vname($qname->group(0,"vname"));
-  if($qname->groupCount() > 1) {
-    $out .= "(" . $qname->group(1,"region")->substring() . ")";
+  my $vname = $qname->group(0,"vname");
+  my $out = "";
+  my $thorn_or_var = $vname->group(0,"name")->substring();
+  if($vname->groupCount() > 1) {
+    $main::thorn = $thorn_or_var;
+    $out = $main::thorn . "::" . $vname->group(1,"name")->substring();
+  } else {
+    $out = $main::thorn . "::" . $thorn_or_var;
+  }
+  my $iter = 1;
+  if($qname->has(1,"region")) {
+    $main::region = $qname->group(1,"region")->substring();
+    $iter++;
+  }
+  $out .= "(" . $main::region . ")";
+  while($qname->has($iter,"qrname")) {
+    my $qrname = $qname->has($iter,"qrname");
+    $out .="," . $main::thorn . "::" . $qrname->group(0,"name")->substring();
+    if($qrname->has(1,"region")) {
+        $main::region = $qrname->group(1,"region")->substring();
+    }
+    $out .= "(" . $main::region . ")";
+    $iter++;
   }
   return $out;
 }
+###
 
 sub parse_schedule_statement
 {
@@ -158,7 +180,7 @@ sub parse_schedule_statement
       my ($name, $as, $type, $description, $where, $language,
        $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
        $options, $tags, $before_list, $after_list,
-       $writes_list, $reads_list, $while_list, $if_list,$qthorn);
+       $writes_list, $reads_list, $invalidates_list, $while_list, $if_list,$qthorn);
       for my $schedule (@{$statement->{children}}) {
         my $nm = $schedule->{name};
         if($nm eq "schedule") {
@@ -250,14 +272,28 @@ sub parse_schedule_statement
               }
             } elsif($child->is("writes")) {
               my $qthorn = "";
+              $main::thorn = $thorn;
+              $main::region = "Interior";
               for my $qname (@{$child->{children}}) {
                 if($qname->is("qname")) {
                   $writes_list .= "," if(defined($writes_list));
                   $writes_list .= qname($qname);
                 }
               }
+            } elsif($child->is("invalidates")) {
+              my $qthorn = "";
+              $main::thorn = $thorn;
+              $main::region = "Everywhere";
+              for my $qname (@{$child->{children}}) {
+                if($qname->is("qname")) {
+                  $invalidates_list .= "," if(defined($writes_list));
+                  $invalidates_list .= qname($qname);
+                }
+              }
             } elsif($child->is("reads")) {
               my $qthorn = "";
+              $main::thorn = $thorn;
+              $main::region = "Everywhere";
               for my $qname (@{$child->{children}}) {
                 if($qname->is("qname")) {
                   $reads_list .= "," if(defined($reads_list));
@@ -325,6 +361,7 @@ sub parse_schedule_statement
         $schedule_db->{"\U$thorn\E BLOCK_$$n_blocks AFTER"}       = $after_list;
         $schedule_db->{"\U$thorn\E BLOCK_$$n_blocks WRITES"}      = $writes_list;
         $schedule_db->{"\U$thorn\E BLOCK_$$n_blocks READS"}       = $reads_list;
+        $schedule_db->{"\U$thorn\E BLOCK_$$n_blocks INVALIDATES"} = $invalidates_list;
         $schedule_db->{"\U$thorn\E BLOCK_$$n_blocks WHILE"}       = $while_list;
         $schedule_db->{"\U$thorn\E BLOCK_$$n_blocks IF"}          = $if_list;
         $$buffer .= "\@BLOCK\@$$n_blocks\n";
@@ -373,7 +410,7 @@ sub parse_schedule_ccl
   my ($name, $as, $type, $description, $where, $language,
        $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
        $options, $tags, $before_list, $after_list,
-       $writes_list, $reads_list, $while_list, $if_list);
+       $writes_list, $reads_list, $invalidates_list, $while_list, $if_list);
 
   $buffer       = "";
   $n_blocks     = 0;
@@ -402,7 +439,7 @@ sub parse_schedule_ccl
          $name, $as, $type, $description, $where, $language,
          $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
          $options, $tags, $before_list, $after_list,
-         $writes_list, $reads_list, $while_list, $if_list) =
+         $writes_list, $reads_list, $invalidates_list, $while_list, $if_list) =
              &ParseScheduleBlock($thorn,$line_number, @data);
 
         $after_list =~ s/[\s,]+/,/g;
@@ -424,6 +461,7 @@ sub parse_schedule_ccl
         $schedule_db2{"\U$thorn\E BLOCK_$n_blocks AFTER"}       = $after_list;
         $schedule_db2{"\U$thorn\E BLOCK_$n_blocks WRITES"}      = $writes_list;
         $schedule_db2{"\U$thorn\E BLOCK_$n_blocks READS"}       = $reads_list;
+        $schedule_db2{"\U$thorn\E BLOCK_$n_blocks INVALIDATES"} = $invalidates_list;
         $schedule_db2{"\U$thorn\E BLOCK_$n_blocks WHILE"}       = $while_list;
         $schedule_db2{"\U$thorn\E BLOCK_$n_blocks IF"}          = $if_list;
 
@@ -493,13 +531,14 @@ sub ParseScheduleBlock
   my($name, $as, $type, $description, $where, $language,
      $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
      $options, $tags, $before_list, $after_list,
-     $writes_list, $reads_list, $while_list, $if_list);
+     $writes_list, $reads_list, $invalidates_list, $while_list, $if_list);
   my(@fields);
   my($field);
   my(@before_list)    = ();
   my(@after_list)     = ();
   my(@writes_list)    = ();
   my(@reads_list)     = ();
+  my(@invalidates_list) = ();
   my(@while_list)     = ();
   my(@if_list)        = ();
   my(@mem_groups)     = ();
@@ -775,6 +814,10 @@ sub ParseScheduleBlock
       {
         push(@reads_list, split(/\s+|\s*,\s*/, $1));
       }
+      elsif($data[$line_number] =~ m/^\s*INVALIDATES\s*:\s*(.*)$/i)
+      {
+        push(@invalidates_list, split(/\s+|\s*,\s*/, $1));
+      }
       elsif($data[$line_number] =~ m/^\s*OPTI[^:]*:\s*(.*)$/i)
       {
         push(@options, split(/\s+|\s*,\s*/, $1));
@@ -825,25 +868,26 @@ sub ParseScheduleBlock
   }
 
   # Turn the arrays into strings.
-  $mem_groups     = join(",", @mem_groups);
-  $comm_groups    = join(",", @comm_groups);
-  $trigger_groups = join(",", @trigger_groups);
-  $sync_groups    = join(",", @sync_groups);
-  $options        = join(",", @options);
-  $tags           = join(" ", @tags);
-  $before_list    = join(",", @before_list);
-  $after_list     = join(",", @after_list);
-  $writes_list    = join(",", @writes_list);
-  $reads_list     = join(",", @reads_list);
-  $while_list     = join(",", @while_list);
-  $if_list        = join(",", @if_list);
+  $mem_groups       = join(",", @mem_groups);
+  $comm_groups      = join(",", @comm_groups);
+  $trigger_groups   = join(",", @trigger_groups);
+  $sync_groups      = join(",", @sync_groups);
+  $options          = join(",", @options);
+  $tags             = join(" ", @tags);
+  $before_list      = join(",", @before_list);
+  $after_list       = join(",", @after_list);
+  $writes_list      = join(",", @writes_list);
+  $reads_list       = join(",", @reads_list);
+  $invalidates_list = join(",", @invalidates_list);
+  $while_list       = join(",", @while_list);
+  $if_list          = join(",", @if_list);
 
 
   return ($line_number,
           $name, $as, $type, $description, $where, $language,
           $mem_groups, $comm_groups, $trigger_groups, $sync_groups,
           $options, $tags, $before_list, $after_list,
-          $writes_list, $reads_list, $while_list, $if_list);
+          $writes_list, $reads_list, $invalidates_list, $while_list, $if_list);
 
 }
 
@@ -947,7 +991,7 @@ sub check_schedule_database
     $allgroups{lc $bin}++;
     $allgroups{lc $cbin}++;
   }
-  my @allgroups = keys %allgroups;
+  my @allgroups = sort keys %allgroups;
 
   # check that scheduling in is only for a known group
   foreach my $thorn (sort keys %thorns)

@@ -8,6 +8,16 @@
 #  @version $Header$ 
 #@@*/
 
+use Carp;
+use File::stat;
+use File::Path qw{ mkpath };
+
+#############################################################################
+###### Package variables ####################################################
+#############################################################################
+
+our $piraha_cache_dir = undef;
+
 #/*@@
 #  @routine   CST_error
 #  @date      4 July 1999
@@ -176,7 +186,7 @@ sub WriteFile
 
 # Set this to an illegal value,
 # so that the comparison later is guaranteed to fail if this is not changed
-  $data_in = undefined;
+  $data_in = undef;
 
 # Read in file
   if (-e $filename) 
@@ -191,7 +201,7 @@ sub WriteFile
     }
   }
 
-  if ($$rdata ne $data_in)   
+  if (not defined $data_in or $$rdata ne $data_in)
   {
 #    print "Creating new file $filename\n";
     open(OUT, ">$filename") || die("Can't open $filename\n");
@@ -806,7 +816,7 @@ sub find_dep_cycles
   my($stack,$keyu,$returned);
   my $debug = 0;
 
-  foreach $key (keys %thorns)
+  foreach $key (sort keys %thorns)
   {
     $key = uc ($key);
     #next if($visted{$key} && 1 == $visted{$key});
@@ -906,5 +916,69 @@ sub save_database
   }
   close SAVE_DATABASE;
 }
+
+#/*@@
+#  @routine parse_ccl
+#  @date    Thu May 15, 2017
+#  @author  Steven R. Brandt
+#  @desc
+#           Parses any of the given ccl files.
+#           It checks if the file has been previously
+#           parsed and uses the cached parse tree if
+#           possible.
+#  @enddesc
+#@@*/
+sub parse_ccl
+{
+  my $grammar = shift;
+  my $rule = shift;
+  my $ccl_file = shift;
+  my $peg_file = shift;
+  $ccl_file =~ s{//+}{/}g; # remove double slashes
+  croak "bad ccl file '$ccl_file'" unless($ccl_file =~ m{([^/]+)/([^/]+)/(\w+)\.ccl$});
+  my ($arr,$thorn,$ccl)=($1,$2,$3);
+  our $piaraha_cache_dir;
+  my $ccl_cache = undef;
+  if(defined $piraha_cache_dir) {
+    my $ccl_dir = "$piraha_cache_dir/$arr/$thorn";
+    mkpath($ccl_dir);
+    $ccl_cache = "$ccl_dir/$ccl.cache";
+  }
+
+  # If the cache file exists and is newer than the
+  # ccl file Use it instead.
+  my $gr = undef;
+  my $ccl_tm = stat($ccl_file)->mtime;
+  my $peg_tm = stat($peg_file)->mtime;
+  my $tm = $ccl_tm < $peg_tm ? $peg_tm : $ccl_tm;
+  if(defined $cccl_cache and -r $ccl_cache and stat($ccl_cache)->mtime > $tm) {
+    $gr = piraha::load_tree($ccl_cache);
+  }
+  if(!defined($gr)) {
+    my $p=piraha::parse_src($grammar,$rule,$ccl_file);
+    my $m = $p->matches();
+    if($m) {
+      piraha::store_tree($ccl_cache,$p->{gr}) if defined $ccl_cache;
+      $gr = $p->{gr};
+    } else {
+      my $help = $p->showError();
+      $help =~ /LINE\s+(\d+)/;
+      my $line = $1;
+      &CST_error(0,"SYNTAX ERROR",$help,$line,$ccl_file);
+      return {};
+    }
+  }
+  # Debugging
+  if(defined($ENV{CCTK_MAKE_TREE})) {
+    my $fd = new FileHandle;
+    open($fd,">tree.txt");
+    print $fd $ccl_file,"\n";
+    print $fd "=" x 50,"\n";
+    print $fd $gr->dump(),"\n";
+    close($fd);
+  }
+  return $gr;
+}
+
 
 1;

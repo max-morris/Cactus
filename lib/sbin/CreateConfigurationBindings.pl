@@ -8,8 +8,9 @@
 #  @version   $Header$
 #@@*/
 
-use lib ".";
-require "$sbin_dir/CSTUtils.pl";
+use FindBin;
+use lib "$sbin_dir";
+require "CSTUtils.pl";
 
 #/*@@
 #  @routine    CreateConfigurationBindings

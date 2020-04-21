@@ -1,7 +1,6 @@
 #!/usr/local/bin/perl
 
 use strict;
-use lib ".";
 use vars qw($h $help $cctk_home $thornlist $directory $outdir $verbose $debug $outfile $tocdepth);
 #$debug = 1;
 
@@ -46,8 +45,12 @@ if ($help || $h) {
 # setup the cctk_home, if it doesn't exist, we leave it blank
 $cctk_home  .= '/' if (($cctk_home !~ /\/$/) && (defined $cctk_home));
 
-# set up the sbin dir, tacking cctk_home on the front
-my $sbin_dir = "${cctk_home}lib/sbin";
+use FindBin;
+my $sbin_dir;
+BEGIN {
+$sbin_dir = $FindBin::Bin;
+}
+use lib $sbin_dir;
 
 # has to be absolute path because the ThornGuide can be build in different
 # directory depths (doc/ThornGuide/build and configs/X/dox/build)
@@ -58,10 +61,10 @@ my $cactus_style_file = "${cctk_home}doc/latex/cactus";
 ##############
 
 # common procedures used to create the thornguide(s)
-require "$sbin_dir/ThornUtils.pm";
+require "ThornUtils.pm";
 
 # for reading of the thornlist routine: %thorns = &ReadThornlist($thornlist)
-require "$sbin_dir/MakeUtils.pl";
+require "MakeUtils.pl";
 
 #####################
 # INITIAL VARIABLES #
@@ -232,6 +235,8 @@ sub Read_New_Thorn_Doc
       if (/^% START CACTUS THORNGUIDE\s*$/) {
          $start = 1;
 
+         $contents .= "\\begingroup\n";
+
          while (($_ = <DOC>) && ($_ !~ /^% END CACTUS THORNGUIDE\s*$/))
          {
             if (/(.*)\\begin\{abstract\}(.*)/) {
@@ -262,6 +267,7 @@ sub Read_New_Thorn_Doc
    $contents .= "\n\\include{${arrangement}_${thorn}_param}\n";
    $contents .= "\n\\include{" . ThornUtils::ToLower("${arrangement}_${thorn}_inter") . "\}\n";
    $contents .= "\n\\include{${arrangement}_${thorn}_schedule}\n";
+   $contents .= "\\endgroup\n";
 
    # If it never started reading, then return 0.
    # (It is probably an older documentation.doc.)

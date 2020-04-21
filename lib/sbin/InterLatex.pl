@@ -1,7 +1,6 @@
 #!/usr/bin/perl -s
 
 #use strict;
-use lib ".";
 use vars qw($cctk_home $debug $verbose $h $help $document_type $outdir $directory $thornlist $thorn);
 
 #/*@@
@@ -42,13 +41,12 @@ if ($h || $help) {
    exit 0;
 }
 
+use FindBin;
 my $sbin_dir;
 BEGIN {
 # setup the cctk_home, if it doesn't exist, we leave it blank
 $cctk_home  .= '/' if (($cctk_home !~ /\/$/) && (defined $cctk_home));
-
-# set up the sbin dir, tacking cctk_home on the front
-$sbin_dir = "${cctk_home}lib/sbin";
+$sbin_dir = $FindBin::Bin;
 }
 use lib $sbin_dir;
 
@@ -57,14 +55,35 @@ use lib $sbin_dir;
 ##############
 
 # common procedures used to create the thornguide(s)
-require "$sbin_dir/ThornUtils.pm";
+require "ThornUtils.pm";
 
 # for use of create_parametere_database
-require "$sbin_dir/interface_parser.pl";
-require "$sbin_dir/CSTUtils.pl";
+require "interface_parser.pl";
+require "CSTUtils.pl";
 
 # for reading of the thornlist routine: %thorns = &ReadThornlist($thornlist)
-require "$sbin_dir/MakeUtils.pl";
+require "MakeUtils.pl";
+
+####################
+# GLOBAL VARIABLES #
+####################
+
+# Find out which parser to use
+#
+$main::cctk_parser = "new";
+$main::cctk_parser = $ENV{CCTK_SELECT_PARSER}
+  if(defined($ENV{CCTK_SELECT_PARSER}));
+if($main::cctk_parser !~ /^(new|old|both)$/) {
+  &CST_error(0,"Bad setting for CCTK_SELECT_PARSER");
+  $main::cctk_parser = "new";
+}
+
+if($main::cctk_parser eq "old") {
+  print STDERR "***************************************\n";
+  print STDERR "* Warning: New CST parser disabled!!! *\n";
+  print STDERR "***************************************\n";
+  sleep 5;
+}
 
 #####################
 # INITIAL VARIABLES #

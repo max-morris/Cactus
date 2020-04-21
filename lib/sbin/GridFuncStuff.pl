@@ -818,8 +818,14 @@ sub CreateThornArgumentHeaderFile
     push(@returndata, '');
 
     # Create the fortran argument list
+    my $arglist = CreateFortranArgumentList(%data);
+    if(!defined($main::fortran_decls{"\U$thorn"})) {
+      $main::fortran_decls{"\U$thorn"} = [];
+    }
+    push @{$main::fortran_decls{"\U$thorn"}}, split(/,/,lc $arglist);
+
     push(@returndata, "#define ${thorn}_${block}_FARGUMENTS \\");
-    push(@returndata, CreateFortranArgumentList(%data));
+    push(@returndata, $arglist);
     push(@returndata, '');
 
     push(@returndata, '#endif /* FCODE */');

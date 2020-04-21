@@ -1,7 +1,6 @@
 #!/usr/bin/perl -s
 
 use strict;
-use lib ".";
 use vars qw($h $help $cctk_home $thornlist $outdir $verbose $debug $directory $document_type $thorn);
 
 #/*@@
@@ -50,21 +49,42 @@ if ($h || $help) {
 ##############
 # REQUIRE(S) #
 ##############
+use FindBin;
 my $sbin_dir;
 BEGIN {
 $cctk_home .= '/' if (($cctk_home !~ /\/$/) && defined $cctk_home);
-
-$sbin_dir = "${cctk_home}lib/sbin";
+$sbin_dir = $FindBin::Bin;
 }
 use lib $sbin_dir;
-require "$sbin_dir/ScheduleParser.pl";
-require "$sbin_dir/CSTUtils.pl";
+require "ScheduleParser.pl";
+require "CSTUtils.pl";
 
 # common procedures used to create the thornguide(s)
-require "$sbin_dir/ThornUtils.pm";
+require "ThornUtils.pm";
 
 # for reading of the thornlist routine: %thorns = &ReadThornlist($thornlist)
-require "$sbin_dir/MakeUtils.pl";
+require "MakeUtils.pl";
+
+####################
+# GLOBAL VARIABLES #
+####################
+
+# Find out which parser to use
+#
+$main::cctk_parser = "new";
+$main::cctk_parser = $ENV{CCTK_SELECT_PARSER}
+  if(defined($ENV{CCTK_SELECT_PARSER}));
+if($main::cctk_parser !~ /^(new|old|both)$/) {
+  &CST_error(0,"Bad setting for CCTK_SELECT_PARSER");
+  $main::cctk_parser = "new";
+}
+
+if($main::cctk_parser eq "old") {
+  print STDERR "***************************************\n";
+  print STDERR "* Warning: New CST parser disabled!!! *\n";
+  print STDERR "***************************************\n";
+  sleep 5;
+}
 
 ##################
 # INITIALIZATION #

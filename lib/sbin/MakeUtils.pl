@@ -8,6 +8,8 @@
 #  @version $Header$
 #@@*/
 
+use Cwd;
+
 
 #/*@@
 #  @routine   buildthorns
@@ -24,26 +26,13 @@ sub buildthorns
   my($arrangement_dir,$choice) = @_;
   my(@arrangements);
   my(%info);
-  my($home);
 
-  if ($ENV{'CCTK_HOME'})
+
+  opendir(my $ARRANGEMENTS, $arrangement_dir) or
+    die "Cannot open arrangements directory '$arrangement_dir': $!";
+
+  while($_ = readdir $ARRANGEMENTS)
   {
-    $home = $ENV{'CCTK_HOME'}
-  }
-  else
-  {
-    $home = `pwd`;
-    chomp ($home);
-  }
-
-  chdir "$arrangement_dir" || die "Can't change directory to $arrangement_dir\n";
-
-  open(ARRANGEMENTS, "ls|");
-
-  while(<ARRANGEMENTS>)
-  {
-    chomp;
-
     # Ignore CVS and backup stuff
     next if (m:^CVS$:);
     next if (m:^\#:);
@@ -52,27 +41,25 @@ sub buildthorns
     next if (m:^\.:);
 
     # Just pick directories
-    if( -d $_)
+    if( -d "$arrangement_dir/$_")
     {
       push (@arrangements, $_);
     }
   }
 
-  close ARRANGEMENTS;
+  closedir $ARRANGEMENTS or
+    die "Cannot close arrangements directory '$arrangement_dir': $!";
 
   if ($choice =~ "thorns")
   {
 
     foreach $arrangement (@arrangements)
     {
-      chdir $arrangement;
+      opendir(my $THORNLIST, "$arrangement_dir/$arrangement") or
+        die "Cannot open arrangement directory '$arrangement_dir/$arrangement': $!";
 
-      open(THORNLIST, "ls|");
-
-      while(<THORNLIST>)
+      while($_ = readdir $THORNLIST)
       {
-        chomp;
-
         # Ignore CVS and backup stuff
         next if (m:^CVS$:);
         next if (m:^\#:);
@@ -84,12 +71,13 @@ sub buildthorns
         next if (m:^doc$:);
 
         # Just pick directories
-        if( -d $_)
+        if( -d "$arrangement_dir/$arrangement/$_")
         {
           push(@total_list, "$arrangement/$_");
         }
       }
-      chdir ($arrangement_dir) || die "Can't change directory to $arrangement_dir\n";
+      closedir $THORNLIST or
+        die "Cannot close arrangement directory '$arrangement_dir/$arrangement': $!";
     }
 
   }
@@ -110,9 +98,9 @@ sub buildthorns
         # (only the keys are needed by the calling routine)
         $info{$thorn} = 1;
       }
-      elsif ( -r "$thorn/interface.ccl" && -r "$thorn/param.ccl" )
+      elsif ( -r "$arrangement_dir/$thorn/interface.ccl" && -r "$arrangement_dir/$thorn/param.ccl" )
       {
-        $info{$thorn} = &ThornInfo($thorn);
+        $info{$thorn} = &ThornInfo("$arrangement_dir/$thorn");
       }
 #      print "$thorn \# $info{$thorn}\n";
     }
@@ -124,8 +112,6 @@ sub buildthorns
       $info{$arrangement} = 1;
     }
   }
-
-  chdir ($home) || die "Cannot change back to Cactus home directory\n";
 
   return %info;
 }
@@ -242,7 +228,7 @@ sub ThornInfo
     $requires =~ s:\s*$::;
     $requires =~ s:[\s\t\n]+:,:g;
     # remove duplicates for thorns listed both in REQUIRES and REQUIRES THORNS:
-    $requires = join(",", keys %{ {map {$_, 1} split ",", $requires} });
+    $requires = join(",", sort keys %{ {map {$_, 1} split ",", $requires} });
   }
 
   return "$implementation ($inherits) [$friends] {$shares} <$requires>";

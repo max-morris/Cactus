@@ -38,12 +38,15 @@ in single processor mode. Please refer to the architecture section
   henceforth). While other make utilities may also work, this is not
   guaranteed. Gmake can be obtained from your favorite GNU site, or
   from \url{http://www.gnu.org}.
-\item[C] C compiler. For example, the GNU compiler. This
- is available for most supported platforms.  Platform specific compilers
- should also work.
+\item[C] C compiler. Cactus requires it to support the C99 standard. For
+  example, the GNU compiler. This is available for most supported platforms.
+  Platform specific compilers should also work.
 \item[CPP] C Preprocessor. For example, the GNU \texttt{cpp}.  These are
   normally provided on most platforms, and many C compilers have an option
   to just run as a preprocessor.
+\item[C++] C++ compiler. Cactus requires it to support the C++11 standard. For
+  example, the GNU compiler. This is available for most supported platforms.
+  Platform specific compilers should also work.
 \item[GIT] \textit{git} is not needed
   to run/compile Cactus, but you are strongly encouraged to install
   this software to take advantage of the update procedures. It can be
@@ -64,17 +67,6 @@ that is very likely to be compatible with Cactus. Otherwise, there are
 various freely available ones available, e.g. the OpenMPI
 version of MPI is available for various architectures and operating
 systems at \url{http://www.open-mpi.org/}.
-\end{Lentry}
-
-\noindent
-If you are using any thorns containing routines
-written in C++ you also need
-\begin{Lentry}
-\item[C++] C++ compiler. For example, the GNU compiler. This
- is available for most supported platforms.  Platform specific compilers
- should also work.  Note that if a C++ compiler is available, then the
- \text{main()} routine in the flesh is compiled with C++ to allow static
- class initialisations.
 \end{Lentry}
 
 \noindent
@@ -240,6 +232,22 @@ Cactus configuration files. Default options from
 \texttt{\$\{HOME\}/.cactus/config} will only be read if the
 environment variable \texttt{CACTUS\_CONFIG\_FILES} is not set.
 
+Options read from configuration files can use expressions of the form
+\verb|${VARIABLE}| which are replaced by the value of the environment
+variable \verb|$VARIABLE| at the time \texttt{gmake <\var{config
+name}>-config} runs. The \verb|$| sign can be escaped by duplicating it
+\verb|$$|, and \verb|$| followed by any character other than \verb|$| or
+\verb|{| is left as is (this may change in the future as more expansions are
+added).  Since \texttt{gmake} also interprets \verb|$$| in order to have a
+\verb|$| show up to the shell it must be quadrupled \verb|$$$$|. For example
+setting
+\begin{verbatim}
+CC = $${CXX} $(CXXFLAGS) $$(CPPFLAGS) -license ${HOME}/.license -I$$$${HDF5_HOME}/include
+\end{verbatim}
+expands \verb|${CXX}|, \verb|$(CXXFLAGS)|, and \verb|$(CPPFLAGS)| in the
+Makefile, \verb|${HOME}| when \texttt{<\var{config name}>-config} runs,
+and \verb|${HDF5_HOME}| when the compiler \verb|${CXX}| runs.
+
 It is important to note that these methods cannot be used to, for example, add
 options to the default values for \texttt{CFLAGS}.  Setting any variable in the
 configuration file or the command line will overwrite completely the
@@ -286,20 +294,17 @@ This defaults to the current working directory.
 
 \item {Compiler and tool specification}
 
-These are used to specify which compilers and other tools to use. Entries followed
-by * may be specified on the command line.
-
 \begin{Lentry}
-\item [\texttt{CC}]   * The C compiler.
+\item [\texttt{CC}]     The C compiler.
 \item [\texttt{CXX}]    The C++ compiler.
-\item [\texttt{CUCC}] * The CUDA compiler.
-\item [\texttt{F90}]  * The Fortran compiler.
-\item [\texttt{F77}]  * Ignored
+\item [\texttt{CUCC}]   The CUDA compiler.
+\item [\texttt{F90}]    The Fortran compiler.
+\item [\texttt{F77}]    Ignored
 \item [\texttt{CPP}]    The preprocessor used to generate dependencies
 for and to preprocess C and C++ code.
 \item [\texttt{FPP}]    The preprocessor used to generate dependencies
 for and to preprocess Fortran code.
-\item [\texttt{LD}]   * The linker.
+\item [\texttt{LD}]     The linker.
 \item [\texttt{AR}]     The archiver used for generating libraries.
 \item [\texttt{RANLIB}] The archive indexer to use.
 \item [\texttt{MKDIR}]  The program to use to create a directory.
@@ -329,10 +334,10 @@ Flags for the CUDA compiler.
 Flags for the C++ compiler.
 
 \item [\texttt{F90FLAGS}]
-* Flags for the Fortran compiler.
+Flags for the Fortran compiler.
 
 \item [\texttt{F77FLAGS}]
-* Ignored
+Ignored
 
 \item [\texttt{CPPFLAGS}]
 Flags for the preprocessor (used to generate compilation dependencies
@@ -346,7 +351,7 @@ for and preprocess Fortran code).
 Flags for \texttt{MKDIR}, so that no error is given if the directory exists.
 
 \item [\texttt{LDFLAGS}]
-* Flags for the linker.  \emph{Warning:} This variable is ignored
+Flags for the linker.  \emph{Warning:} This variable is ignored
 while the compilers and linkers are autodetected.  This can lead to
 strange errors while configuring.  You can pass the linker flags in
 the variable \texttt{LD} instead.
@@ -379,7 +384,12 @@ compiler reports error messages about unrecognised \verb|#| directives.
 
 \item [\texttt{CROSS\_COMPILE}] Enables cross compilation.
   Available options are \texttt{yes} and \texttt{no}, the default is
-  \texttt{no}. To create a cross-compiled configuration one must explicitly set   this option to \texttt{yes}.
+  \texttt{no}. To create a cross-compiled configuration one must explicitly
+  set this option to \texttt{yes}.  You will also have to set \texttt{ENDIAN}.
+
+\item [\texttt{ENDIAN}] Explicitly sets the endianess of multi-byte types.
+  Normally this is detected automatically but needs to be specified for
+  cross-compilations.  Available options are \texttt{little} and \texttt{big}.
 
 \item [\texttt{DISABLE\_INT16}] Disable support for the data type
 \texttt{CCTK\_INT16}.  The only options available are \texttt{yes} and
@@ -398,7 +408,7 @@ compiler reports error messages about unrecognised \verb|#| directives.
   if they exist.
 
 \item [\texttt{DEBUG}]
-* Specifies what type of debug mode should be used,
+Specifies what type of debug mode should be used,
 the default is no debugging.
 Current options are \texttt{yes}, \texttt{no}, or \texttt{memory}. The option
 \texttt{yes} switches on all debugging features, whereas \texttt{memory} just
@@ -424,7 +434,7 @@ type of debugging being used.
 Ignored.
 
 \item [\texttt{OPTIMISE, OPTIMIZE}]
-* Specifies what type of optimisation should be used. The only options currently
+Specifies what type of optimisation should be used. The only options currently
 available are \texttt{yes} and \texttt{no}.  The default is to use optimisation.\\
 Note that the British spelling \texttt{OPTIMISE} will be checked first and, if set,
 will override any setting of the American-spelled \texttt{OPTIMIZE}.
@@ -468,7 +478,7 @@ performed.  These are invoked when OPTIMISE=no is used.
 Ignored.
 
 \item [\texttt{PROFILE}]
-  * Specifies what type of profiling should be used.  The only options
+  Specifies what type of profiling should be used.  The only options
   currently available are \texttt{yes} and \texttt{no}.  The default
   is to use no profiling.
 
@@ -492,7 +502,7 @@ Ignored.
   Ignored.
 
 \item [\texttt{WARN}]
-  * Specifies what type of build warnings should be used.  The only
+  Specifies what type of build warnings should be used.  The only
   options currently available are \texttt{yes} and \texttt{no}.  The
   default is to produce no warnings.
 
@@ -565,10 +575,10 @@ values will be valid on all architectures.
 \begin{Lentry}
 
 \item [\texttt{REAL\_PRECISION}]
-* Allowed values are \texttt{16, 8, 4}.
+Allowed values are \texttt{16, 8, 4}.
 
 \item [\texttt{INTEGER\_PRECISION}]
-* Allowed values are \texttt{8, 4, 2}.
+Allowed values are \texttt{8, 4, 2}.
 
 \end{Lentry}
 
@@ -758,6 +768,9 @@ is to do. The command \texttt{gmake help} lists all \texttt{gmake} targets:
         builds a configuration. If the configuration doesn't exist,
         it will create it.
 
+\item [\texttt{gmake <\var{config}>-build BUILDLIST="<list of thorns>"}]
+compiles only the thorns listed.
+
 \item [\texttt{gmake <\var{config}>-clean}] removes all object and dependency
 files from a configuration.
 
@@ -774,9 +787,6 @@ The configuration options are stored in a file
 
 \item [\texttt{gmake <\var{config}>-configinfo}] displays the options
 of the configuration (\texttt{cat configs/<\var{config}>/config-info}).
-
-%% \item[\texttt{gmake <\var{config}>-cvsupdate}] updates the flesh and this
-%% configuration's thorns from the CVS repositories.
 
 \item [\texttt{gmake <\var{config}>-delete}] deletes a configuration
 (\texttt{rm -r configs/<\var{config}>}).
@@ -872,8 +882,8 @@ the same.
 \begin{Lentry}
 \item [\texttt{gmake <\var{target}> PROMPT=no}] turns off all prompts from the
 make system.
-\item [\texttt{gmake <\var{target}> SILENT=no}] prints the commands that gmake
-is executing.
+\item [\texttt{gmake <\var{target}> VERBOSE=yes}] prints the commands that
+gmake is executing.
 \item [\texttt{gmake <\var{target}> WARN=yes}] shows compiler warnings during
 compilation.
 \item [\texttt{gmake <\var{target}> FJOBS=<\var{number}>}] compiles in parallel,
@@ -952,11 +962,37 @@ Guide.
 \section{Testing}
 \label{sec:testing}
 
-Some thorns come with a test suite, consisting of example parameter files
+Some thorns come with a test suite, consisting of test parameter files
 and the output files generated by running these. To run the test suite
-for the thorns you have compiled use
+for the all thorns you have compiled use
 
 \texttt{gmake <\var{configuration}>-testsuite}
+
+which interactively query for which tests to run and how many MPI processes
+to use.
+
+You can use environment variables or variables set on the \texttt{gmake}
+command line to choose defaults for these for non-interactive use.
+
+Setting \var{CCTK\_TESTSUITE\_RUN\_TESTS} to a space separated list of
+\var{thorn} and \var{thorn/test} entries lets you choose which tests to run.
+
+Setting \var{TESTS\_DIR} lets you choose the directory where tests are run
+in, by default this is the \texttt{TEST} directory in the Cactus main
+directory.
+
+Setting \var{CCTK\_TESTSUITE\_RUN\_PROCESSORS} chooses the number MPI
+processes (ranks) to use. It defaults to $2$.
+
+Setting \var{CCTK\_TESTSUITE\_RUN\_COMMAND} sets the command to execute to
+start a single test. Cactus will replace the strings \var{\$nprocs},
+\var{\$exe}, and \var{\$parfile} by the requested number of MPI processes,
+the Cactus executable of the configuration being tested and the test
+parameter file. It defaults to \texttt{mpirun -np \$nprocs \$exe \$parfile}
+if MPI is used and \texttt{\$exe \$parfile} otherwise.
+
+Setting \var{PROMPT} to \texttt{no} skips the interactive prompts and uses
+the (potentially customized) defaults.
 
 These test suite serve the dual purpose of
 
@@ -1168,7 +1204,7 @@ all following characters. A parameter statement is an expression of the form
 \textit{Left-Hand-Side} = \textit{Right-Hand-Side}.
 The \textit{Left-Hand-Side} may be a fully qualified parameter name
 (i.e. a thorn or implementation name, two colons, and a name defined in a \verb=param.ccl= file),
-a variable name (the `\textit{\$}' character followed by a c-identifier), or
+a variable name (the `\textit{\$}' character followed by a C-identifier), or
 the special variable \textit{ActiveThorns}.
 The \textit{Right-Hand-Side} is a value.
 
@@ -1182,7 +1218,7 @@ Values can be any of the following (all of which are case insensitive):
  with exponents (e.g. \verb=1.0e-3=, or \verb=-2.94d+10=).
 \item Keywords: For keyword parameters, only the values enumerated in the parameter
 file are allowed. Like booleans, keywords may be put inside quotes. If they contain
-characters other than those found in c-identifiers, they must be.
+characters other than those found in C-identifiers, they must be.
 \item Strings: Sequences of characters delimited by quotes. If a quote is preceded by
 a backslash, it is not counted as a closing quote. A sequence of two backslashes will
 be interpreted as a single backslash.
@@ -1267,45 +1303,45 @@ Please see the file \texttt{par.peg} in the directory
 \begin{table}[htbp]
     \begin{tabular}{|ll@{\hspace{.5cm}}|ll|}
         \hline
-        \multicolumn{2}{|c|}{Logical operators}        & \verb|+| & no-op\\ 
+        \multicolumn{2}{|c|}{Logical operators}        & \verb|!| & logical not\\
         \hline
-        \verb|&&| & logical and		               & \verb|!| & logical not\\
+        \verb|&&| & logical and		               & \multicolumn{2}{c|}{Mathematical functions}\\
         \hline
-        \verb%||% & logical or		               & \multicolumn{2}{c|}{Mathematical functions}\\
+        \verb%||% & logical or		               & \verb|acos| & inverse cosine\\
         \hline
-        \multicolumn{2}{|c|}{Relational operators}     & \verb|acos| & inverse cosine\\
+        \multicolumn{2}{|c|}{Relational operators}     & \verb|asin| & inverse sine\\
         \hline
-        \verb|==| & tests for equality		       & \verb|asin| & inverse sine\\
+        \verb|==| & tests for equality		       & \verb|atan| & inverse tangent \\
         \hline
-        \verb|!=| & tests for inequality	       & \verb|atan| & inverse tangent \\
+        \verb|!=| & tests for inequality	       & \verb|ceil| & round up to nearest integer \\
         \hline
-        \verb|<| & tests for less than		       & \verb|ceil| & round up to nearest integer \\
+        \verb|<| & tests for less than		       & \verb|cos| & cosine \\
         \hline
-        \verb|>| & tests for greater than	       & \verb|cos| & cosine \\
+        \verb|>| & tests for greater than	       & \verb|cosh| & hyperbolic cosine \\
         \hline
-        \verb|<=| & tests for less or equal	       & \verb|cosh| & hyperbolic cosine \\
+        \verb|<=| & tests for less or equal	       & \verb|exp| & exponentiation $e^x$\\
         \hline
-        \verb|>=| & tests for greater or equal	       & \verb|exp| & exponentiation $e^x$\\
+        \verb|>=| & tests for greater or equal	       & \verb|abs| & absolute value $|x|$\\
         \hline
-        \multicolumn{2}{|c|}{Binary operators}	       & \verb|abs| & absolute value $|x|$\\
+        \multicolumn{2}{|c|}{Binary operators}	       & \verb|floor| & round down to nearest integer \\
         \hline
-        \verb|+| & addition		               & \verb|floor| & round down to nearest integer \\
+        \verb|+| & addition		               & \verb|log| & natural logarithm \\
         \hline
-        \verb|-| & subtraction		               & \verb|log| & natural logarithm \\
+        \verb|-| & subtraction		               & \verb|bool,int,real| & convert to bool, int, or real \\
         \hline
-        \verb|/| & C-like division		       & \verb|bool,int,real| & convert to bool, int, or real \\
+        \verb|/| & C-like division		       & \verb|sin| & sine \\
         \hline
-        \verb|%| & remainder of division	       & \verb|sin| & sine \\
+        \verb|%| & remainder of division	       & \verb|sinh| & hyperbolic sine \\
         \hline
-        \verb|*| & multiplication		       & \verb|sinh| & hyperbolic sine \\
+        \verb|*| & multiplication		       & \verb|sqrt| & square root \\
         \hline
-        \verb|**| & exponentiation $x^y$	       & \verb|sqrt| & square root \\
+        \verb|**| & exponentiation $x^y$	       & \verb|cbrt| & cube root \\
         \hline
         \multicolumn{2}{|c|}{Unary operators}	       & \verb|tan| & tangent \\
         \hline
         \verb|-| & negate sign		               & \verb|tanh| & hyperbolic tangent \\
         \hline
-                                                     & & \verb|trunc| & integer part of $x$\\
+        \verb|+| & no-op                               & \verb|trunc| & integer part of $x$\\
 	\hline
     \end{tabular}
     \caption{Supported functions inside of expressions, in increasing order of

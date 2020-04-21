@@ -62,8 +62,6 @@ include $(CONFIG)/make.config.defn
 
 DATESTAMP = $(CCTK_HOME)/src/datestamp.c
 
-export PERLINTERP = $(shell echo $(PERL) | sed 's,^/cygdrive/\(.\)/,\1:/,' | sed 's,^//\(.\)/,\1:/,' )
-
 # Use a phony main target to make sure we print a nice ending message 8-)
 .PHONY: main
 
