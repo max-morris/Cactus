@@ -302,7 +302,8 @@ sub ParseTestConfigs
         }
         else
         {
-          print "  Unrecognised token $line in config file for thorn $thorn\n";
+          print "  Unrecognised token $line in config file for thorn $thorn ($config_file:$line_number)\n";
+          die;
         }
       }
     }
