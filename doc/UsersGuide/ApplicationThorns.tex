@@ -3620,8 +3620,10 @@ name of the postproc command, which should be an executable linux program stored
 in the thorn's util directory. The second is a regular expression which matches
 the files to be processed.
 
-The program should receive a single argument, a file name, and from it produce columns of ascii formatted floating
-point numbers. The test system will run the postprocesser on both the files
+The program should receive a single argument, a file name, and from it the program
+should produce columns of ascii formatted floating
+point numbers similar to what the IOASCII routines produce.
+The test system will run the postprocesser on both the files
 in the repo and the newly generated files and compare the output.
 
 For example:
@@ -3629,12 +3631,52 @@ For example:
 \begin{alltt}
 TEST \var{sol-wave-test}
 \{
-  POSTPROC \var{readhdf5} \var{h5\$}
+  POSTPROC \var{sort-txy.pl} \var{asc\$}
 \}
 \end{alltt}
 
-In the above example, files ending in ``h5'' are read using the readhdf5
-program and the output is streamed as text through the testing mechanism.
+In the above example, files ending in ``asc'' are read using the sort-txy.pl
+program, and the output is streamed as text through the testing mechanism.
+
+In this example, sort-txy.pl sorts columns first by time, then x, then y
+value, removing (for 2D simulations) the problems with ordering of data
+that sometimes occurr in simulations with more than one processor. The code
+for this example follows:
+\begin{verbatim}
+#!/usr/bin/env perl
+use strict;
+open(FD, $ARGV[0]) or die;
+
+my $data = {};
+my %t = ();
+my %x = ();
+my %y = ();
+
+while(<FD>) {
+    # skip blank or comment lines 
+    next if(/^\s(#.*)$/);
+
+    # Remove trailing spaces
+    s/\s+$//;
+
+    my @cols = split(/\s+/);
+    if($#cols < 2) {
+        print;
+        next;
+    }
+    my ($t,$x,$y) = ($cols[0], $cols[1], $cols[2]);
+    $t{$t} = 1; $x{$x} = 1; $y{$y} = 1;
+    $data->{$t}->{$x}->{$y} = \@cols;
+}
+for my $t (sort keys %t) {
+    for my $x (sort keys %x) {
+        for my $y (sort keys %y) {
+            print join(" ",@{$data->{$t}->{$x}->{$y}}),"\n"
+                if(defined($data->{$t}->{$x}->{$y}));
+        }
+    }
+}
+\end{verbatim}
 
 For details on running the test suites, see Section~\ref{sec:testing}.
 
