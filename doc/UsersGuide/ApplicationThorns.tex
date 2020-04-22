@@ -3620,7 +3620,7 @@ name of the postproc command, which should be an executable linux program stored
 in the thorn's util directory. The second is a regular expression which matches
 the files to be processed.
 
-The program should read a file and produce columns of ascii formatted floating
+The program should receive a single argument, a file name, and from it produce columns of ascii formatted floating
 point numbers. The test system will run the postprocesser on both the files
 in the repo and the newly generated files and compare the output.
 
