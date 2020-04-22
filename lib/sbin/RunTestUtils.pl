@@ -270,7 +270,7 @@ sub ParseTestConfigs
              $varRegex=".*";
           }
           $rundata->{"$thorn POSTPROC"}{$varRegex} = $procfile;
-          $POSTPROC=$$rundata{"$thorn POSTPROC"};
+          #$POSTPROC=$$rundata{"$thorn POSTPROC"};
         }
         elsif ($line =~ m/^\s*RELTOL\s*(\S*)\s*(\S*)\s*$/i)
         {
@@ -293,7 +293,8 @@ sub ParseTestConfigs
         elsif ($line =~ m/^\s*TEST\s*(.*)/i)
         {
           my ($test, $ABSTOL, $RELTOL, $POSTPROC, $NPROCS);
-          ($test, $ABSTOL, $RELTOL, $NPROCS, $line_number) =
+          ($test, $ABSTOL, $RELTOL, $POSTPROC, $NPROCS, $line_number);
+          ($test, $ABSTOL, $RELTOL, $POSTPROC, $NPROCS, $line_number) =
             &ParseTestBlock($line_number, $config_file, \@config);
           $rundata->{"$thorn $test ABSTOL"} = $ABSTOL;
           $rundata->{"$thorn $test RELTOL"} = $RELTOL;
@@ -302,8 +303,7 @@ sub ParseTestConfigs
         }
         else
         {
-          print "  Unrecognised token $line in config file for thorn $thorn ($config_file:$line_number)\n";
-          die;
+          print "  Unrecognised token $line in config file for thorn $thorn\n";
         }
       }
     }
@@ -1767,7 +1767,10 @@ sub CompareTestFiles
         }
         my $postproc_file = "$thorndir/util/$prog";
         # if the postprocessing file exsists, use it to read the file
+        my $read_old;
+        my $read_new;
         if(defined($prog)) {
+            print("Using '$postproc_file' for '$newfile'\n");
             my $fail = 0;
             unless(-x $postproc_file) {
                 print "ERROR: The postproc file '$postproc_file' does not exist or is not executable.\n";
@@ -1777,7 +1780,7 @@ sub CompareTestFiles
                 print "ERROR: The file: '$oldfile' does not exist or is not readable.\n";
                 $fail++;
             }
-            unless(-r $oldfile) {
+            unless(-r $newfile) {
                 print "ERROR: The file: '$newfile' does not exist or is not readable.\n";
                 $fail++;
             }
@@ -1789,12 +1792,14 @@ sub CompareTestFiles
                 $rundata->{"$thorn $test NFAILWEAK"} += $fail;
                 next;
             }
-            open (INORIG, "$postproc_file $oldfile |");
-            open (INNEW, "$postproc_file $newfile |");
+            $read_old = "$postproc_file $oldfile |";
+            $read_new = "$postproc_file $newfile |";
         } else {
-            open (INORIG, "<$oldfile") || print "Warning: Archive file $oldfile not found";
-            open (INNEW,  "<$newfile") || print "Warning: Test file $newfile not found";
+            $read_old = "<$oldfile";
+            $read_new = "<$newfile";
         }
+        open(INORIG, $read_old) or warn "Warning: Failed opening '$read_old'";
+        open(INNEW, $read_new) or warn "Warning: Failed opening '$read_new'";
 
         while (my $oline = <INORIG>)
         {
@@ -1903,6 +1908,17 @@ sub CompareTestFiles
           $rundata->{"$thorn $test $file NFAILSTRONG"}++;
         }
 
+        # Read remaining input to avoid broken pipe errors
+        while($_ = <INORIG>) {}
+        # Close and check return code if this was a process
+        my $rc = close(INORIG);
+        warn "Warning: failure reported on close for '$read_old'" unless($rc);
+
+        # Read remaining input to avoid broken pipe errors
+        while($_ = <INNEW>) {}
+        # Close and check return code if this was a process
+        $rc = close(INNEW);
+        warn "Warning: failure reported on close for '$read_new'" unless($rc);
       }
       elsif (!-e $newfile && -s $oldfile)
       {
