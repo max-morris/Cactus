@@ -454,7 +454,7 @@ sub create_macros
                     "correct implementation/thorn name and variable name.'";
               }
               &CST_error(1, "Error in read/write declaration of '${th}::$full_var' for '$nm' in schedule."
-                    ,$hint, , $errline, $ccl_file);
+                    ,$hint, $errline, $ccl_file);
               next;
             }
             my $vtype = "CCTK_".$var_group->{vtype};
@@ -464,7 +464,7 @@ sub create_macros
               my $hint = "Bad variable group name '$full_var' at $errline";
               &CST_error(1, "Error in read/write declaration $nm schedule. Check variable or group '$full_var'" .
                     ' and verify correct implementation/thorn name and variable name.'
-                    ,$hint, , $errline, $ccl_file);
+                    ,$hint, $errline, $ccl_file);
               next;
             }
 
@@ -493,9 +493,9 @@ sub create_macros
                 my $ivar = get_cap($hash, $th, $full_var);
                 if(!defined($decls->{$full_var})) {
                   my $line = $reads_writes->{$namekey}->{$th}->{$full_var}->{line};
-                  my $hint = "Check access of variable. Maybe dd an inherits clause to your interface.ccl";
+                  my $hint = "Check access of variable. Maybe add an inherits clause to your interface.ccl";
                   &CST_error(1, "No access to variable '${th}::$ivar'" 
-                    ,$hint, , $line, $ccl_file);
+                    ,$hint, $line, $ccl_file);
                 }
                 $$data .= qq(static int cctki_vi_$ivar = -100; if (cctki_vi_$ivar == -100) cctki_vi_$ivar = CCTK_VarIndex("$vname"); $vtype $const * restrict const $ivar __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, cctki_vi_$ivar));; /* group $group_register */\\\n);
               }
@@ -507,9 +507,9 @@ sub create_macros
               my $ivar = get_cap($hash, $th, $full_var);
               if(!defined($decls->{$full_var})) {
                 my $line = $reads_writes->{$namekey}->{$th}->{$full_var}->{line};
-                my $hint = "Check access of variable. Maybe dd an inherits clause to your interface.ccl";
+                my $hint = "Check access of variable. Maybe add an inherits clause to your interface.ccl";
                 &CST_error(1, "No access to variable '${th}::$ivar'" 
-                  ,$hint, , $line, $ccl_file);
+                  ,$hint, $line, $ccl_file);
               }
               $$data .= qq(static int cctki_vi_$ivar = -100; if (cctki_vi_$ivar == -100) cctki_vi_$ivar = CCTK_VarIndex("$vname"); $vtype $const * restrict const $ivar __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, cctki_vi_$ivar));; /* TL: $namekey --> $timelevel $group_register*/\\\n);
             }
@@ -580,7 +580,7 @@ sub create_macros
               ###
               &CST_error(0, "Error in $nm schedule. Check variable or group '${th}::$full_var'" .
                     ' and verify correct implementation/thorn name and variable name.'
-                    ,$hint, , $line, $ccl_file);
+                    ,$hint, $line, $ccl_file);
             }
             my $vtype = "CCTK_".$var_group->{vtype};
             $vtype .= ", iNteNt(iN)" if($reads_writes->{$namekey}->{$th}->{$full_var}->{rdwr}==0);
