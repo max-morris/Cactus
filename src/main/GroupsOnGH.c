@@ -18,6 +18,7 @@
 #include "cctk_FortranString.h"
 #include "cctk_Groups.h"
 #include "cctk_GroupsOnGH.h"
+#include "cctk_Main.h"
 #include "cctk_Misc.h"
 #include "cctk_WarnLevel.h"
 
@@ -380,13 +381,6 @@ void CCTK_FCALL CCTK_FNAME(CCTK_VarDataPtrI)
   *res = CCTK_VarDataPtrI (*cctkGH, *timelevel, *vindex);
 }
 
-int CCTKi_hasAccess(const cGH *cctkGH,int var_index) {
-  return 1;
-}
-
-extern int (*CCTK_hasAccess)(const cGH *cctkGH,int var_index);
-int (*CCTK_hasAccess)(const cGH *cctkGH,int var_index) = CCTKi_hasAccess;
-
  /*@@
    @routine    CCTKi_VarDataPtrI
    @date       2012-10-26
@@ -425,7 +419,7 @@ void *CCTKi_VarDataPtrI(const cGH *GH, int timelevel, int vindex)
   {
     return NULL;
   }
-  if(!(*CCTK_hasAccess)(GH,vindex))
+  if(!CCTK_HasAccess(GH,vindex))
   {
     return NULL;
   }

@@ -5,6 +5,7 @@
 SRCS=\
 ActiveThorns.c\
 Banner.c\
+CactusDefaultHasAccess.c\
 CactusDefaultInitialise.c\
 CactusDefaultEvolve.c\
 CactusDefaultShutdown.c\
