@@ -375,6 +375,7 @@ sub create_macros
       } elsif ($lang->{$namekey} eq "FORTRAN") {
         $$data .= "#ifdef FCODE \n";
         $$data .= "#ifndef DECLARE_CCTK_ARGUMENTS_${nm} \n";
+        $$data .= "#define DECLARE_CCTK_ARGUMENTS_\U${nm}\E DECLARE_CCTK_ARGUMENTS_${nm}\n";
         $$data .= "#define DECLARE_CCTK_ARGUMENTS_${nm} \\\n";
         $$data .= "  _DECLARE_CCTK_FARGUMENTS; \\\n";
         for my $var (@$all_cctk_arguments) {
@@ -519,6 +520,7 @@ sub create_macros
         my $vector_len = {};
         $$data .= "#ifdef FCODE \n";
         $$data .= "#ifndef DECLARE_CCTK_ARGUMENTS_${nm} \n";
+        $$data .= "#define DECLARE_CCTK_ARGUMENTS_\U${nm}\E DECLARE_CCTK_ARGUMENTS_${nm}\n";
         $$data .= "#define DECLARE_CCTK_ARGUMENTS_${nm} \\\n";
         $$data .= "  _DECLARE_CCTK_FARGUMENTS \\\n";
         for my $th (sort keys %{$reads_writes->{$namekey}}) {
