@@ -460,13 +460,14 @@ consists of lines of the form
 schedule <\var{name}> at <\var{time bin}> [\var{other options}]
 \{
   LANG:     <FORTRAN|C>
-  OPTIONS:  [\var{list of options}]
-  TAGS:     [\var{list of keyword=value definitions}]
-  STORAGE:  [\var{group list with timelevels}]
-  READS:    [\var{group list}]
-  WRITES:   [\var{group list}]
-  TRIGGERS: [\var{group list}]
-  SYNC:     [\var{group list}]
+  OPTIONS:     [\var{list of options}]
+  TAGS:        [\var{list of keyword=value definitions}]
+  STORAGE:     [\var{group list with timelevels}]
+  READS:       [\var{variable or group list with region specification}]
+  WRITES:      [\var{variable or group list with region specification}]
+  INVALIDATES: [\var{variable or group list with region specification}]
+  TRIGGERS:    [\var{group list}]
+  SYNC:        [\var{group list}]
 \} "\var{A description}"
 \end{alltt}
 where \texttt{<\var{name}>} is the name of the routine, and
@@ -553,19 +554,46 @@ thorn, fully qualified parameter names of the form
 \var{timelevels} can be requested, which is equivalent to the {\tt STORAGE}
 statement being absent.
 
-\item[\texttt{READS}] \texttt{READS} is used to declare which grid
-  variables are read by the routine. This information is used e.g.\ to
-  determine which variables need to be copied between host and device
-  for OpenCL or CUDA kernel. This information can also be used to
-  ensure that all variables that are read have previously been written
-  by another routine.
+\item[\texttt{READS/WRITES/INVALIDATES}] \texttt{READS/WRITES/INVALIDATES} are used to
+  declare which grid variables are read/written by the routine. This information is
+  used e.g.\ to determine which variables need to be synchronized, copied between host
+  and device for OpenCL or CUDA kernel, or poisoned as part of error checking. 
 
-\item[\texttt{WRITES}] \texttt{WRITES} is used to declare which grid
-  variables are written by the routine. This information is used e.g.\ to
-  determine which variables need to be copied between host and device
-  for OpenCL or CUDA kernel. This information can also be used to
-  ensure that all variables that are read have previously been written
-  by another routine.
+  READS/WRITE/INVALIDATES directives can be applied to either a variable or a group of
+  variables and may also contain a region specification. The region specification can
+  be EVERYWHERE, INTERIOR, or BOUNDARY. If a function needs to read a given grid function
+  everywhere and only the interior is valid (i.e. has been written to), then a synchronization
+  is required and will happen automatically if the Cactus parameter \texttt{use\_psync} is
+  set to \texttt{true}.
+
+  When grid functions are updated in this way, not only ghost zones, but boundary zones
+  will be updated if a boundary function was registered using either
+  \texttt{Boundary\_RegisterPhysicalBC} or \texttt{Driver\_RegisterPhysicalBC}. The
+  arguments to both functions are the same:
+
+\begin{verbatim}
+Driver_RegisterPhysicalBC(CCTK_POINTER cctkGH,
+                          phys_bc_fn_ptr function_pointer,
+                          CCTK_STRING bc_name)
+\end{verbatim}
+
+The function pointer (\texttt{phys\_bc\_fn\_ptr}) takes the following arguments:
+
+\begin{verbatim}
+(CCTK_POINTER cctkGH, CCTK_INT num_vars, CCTK_INT *var_indices,  
+ CCTK_INT *faces, CCTK_INT *widths, CCTK_INT *table_handles)
+\end{verbatim}
+
+\begin{itemize}
+\item \texttt{cctkGH}	pointer to the grid hierarchy
+\item \texttt{num\_vars}	number of entries passed in the following three arrays
+\item \texttt{var\_indices}	array of \texttt{num\_vars} variable indices selected for this boundary condition
+\item \texttt{faces}	array of \texttt{num\_vars} faces specifications (see section 2.4)
+\item \texttt{widths}	array of \texttt{num\_vars} boundary widths (see below)
+\item \texttt{table\_handles}	array of \texttt{num\_vars} table handles
+\end{itemize}
+
+The table handles hold extra arguments for each application of the boundary condition. The four arrays are sorted first on table handle, and then on variable index. This way variables which have precisely the same boundary condition are grouped together, and within this grouping variables are sorted by index, so that variable groups are stored together. In many cases this sorting will allow a more efficient implementation of the boundary condition. (At the moment it is not clear how face information should be considered in the sorting, so it is not.) A null pointer can be passed for \texttt{function\_pointer}, in which case no routine is executed when \texttt{Driver\_ApplyPhysicalBCs} is called.
 
 \item[\texttt{TRIGGERS}] \texttt{TRIGGERS} is used when the routine is
 registered at \texttt{ANALYSIS}.  This is a special time bin; a routine
@@ -583,6 +611,8 @@ functions \texttt{CCTK\_SyncGroup()} or \texttt{CCTK\_SyncGroupsI()}
 keyword in the \texttt{schedule.ccl} is the preferred method, since it
 provides the flesh with more information about the behaviour of your code.
 
+As an alternative to this mechanism, synchornization can happen automatically
+as variables are read/written.
 
 
 \end{Lentry}
