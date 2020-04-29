@@ -12,7 +12,7 @@
 #define _CCTK_SCHEDULE_H_
 
 #include <stdio.h>
-#include "PreSync.h"
+#include "cctk_PreSync.h"
 
 typedef enum {LangNone, LangC, LangFortran} cLanguage;
 
