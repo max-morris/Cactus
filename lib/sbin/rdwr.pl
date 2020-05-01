@@ -217,6 +217,59 @@ sub schedule_starter
   return $data;
 }
 
+
+#/*@@
+#  @routine lookup_thorn
+#  @date    Fri May 1 15:37 EST 2020
+#  @author  Steven R. Brandt
+#  @desc
+#           Determine what the declaring thorn
+#           is for a given variable or group.
+#  @enddesc
+#@@*/
+sub lookup_thorn
+{
+    my $hash = shift;
+    my $parsing_thorn = shift;
+    my $thorn_or_var = shift;
+    my $var = lc $thorn_or_var;
+    $var =~ s/(_p)+$//;
+
+    my $th_def = $main::arg_decls->{uc $parsing_thorn};
+
+    my $v_def = $th_def->{$var};
+    if(!defined($v_def)) {
+        my $thorns = {};
+        for my $k (keys %$th_def) {
+            my $ref = $th_def->{$k};
+            my $th = $ref->{impl};
+            if(!defined($thorns->{$th})) {
+                $thorns->{$th}=1;
+            }
+        }
+        # is thorn_or_var a group name?
+        outer: for my $th (keys %$thorns) {
+            if(defined($hash->{$th}->{group_list}->{$var})) {
+                for my $v (keys %{$hash->{$th}->{$var}->{grp_vars}}) {
+                    if(defined($th_def->{$v})) {
+                        $v_def = $th_def->{$v};
+                        last outer;
+                    }
+                }
+            }
+        }
+    }
+    unless(defined($v_def)) {
+        # In the event that we fail to find the variable,
+        # just ruturn the parsing thorn as the thorn. This
+        # will eventually generate a sensible CST error.
+        print Dumper($th_def);
+        die "$parsing_thorn / $var";
+        return $parsing_thorn;
+    }
+    return $v_def->{impl};
+}
+
 #/*@@
 #  @routine do_schedule
 #  @date    Mon Feb 24 16:10:38 EST 2020
@@ -272,22 +325,10 @@ sub do_schedules
             $thorn = uc $cap_thorn;
             $var = lc $cap_var;
         } else {
-            $cap_thorn = $parsing_thorn;
-            $cap_var = $thorn_or_var;
+            $cap_thorn = lookup_thorn($hash, $parsing_thorn, $thorn_or_var);
             $thorn = uc $cap_thorn;
+            $cap_var = $thorn_or_var;
             $var = lc $cap_var;
-            my $base_var = $var;
-            $base_var =~ s/(_p)+$//;
-            if(!defined($hash->{$thorn}->{variable_list}->{$base_var})) {
-               my $impl = $hash->{find_impl}->{$thorn};
-               if(defined($hash->{$impl}->{variable_list}->{$base_var})) {
-                 $thorn = $impl;
-               } elsif(!defined($hash->{$thorn}->{group_list}->{$base_var})) {
-                 if(defined($hash->{$impl}->{group_list}->{$base_var})) {
-                   $thorn = $impl;
-                 }
-               }
-            }
         }
 
         # update informational data structures
@@ -304,6 +345,9 @@ sub do_schedules
         while($qname->has($i,"qrname")) {
           my $qrname = $qname->group($i);
           $var = lc $qrname->has(0,"name")->substring();
+          $cap_thorn = lookup_thorn($hash, $parsing_thorn, $var);
+          $thorn = uc $cap_thorn;
+          $reads_writes->{$nm}->{$thorn}->{$var}->{cap} = $cap_thorn;
           $reads_writes->{$nm}->{$thorn}->{$var}->{rdwr} += $is_writes;
           $reads_writes->{$nm}->{$thorn}->{$var}->{line} = $vname->linenum();
           $i++;
@@ -440,7 +484,7 @@ sub create_macros
                 }
                 for my $v (keys %{$hash->{$th2}->{group_list}}) {
                   if($v eq lc $var) {
-                    $hints{" Did you mean ${th2}::$v? [ERR2]"}=1;
+                    $hints{" Did you mean ${th2}::$v? [ERR1]"}=1;
                   }
                 }
               }
@@ -566,12 +610,12 @@ sub create_macros
               for my $th2 (keys %$hash) {
                 for my $v (keys %{$hash->{$th2}->{variable_list}}) {
                   if($v eq lc $var) {
-                    $hints{" Did you mean ${th2}::$v? [ERR3]"}=1;
+                    $hints{" Did you mean ${th2}::$v? [ERR2]"}=1;
                   }
                 }
                 for my $v (keys %{$hash->{$th2}->{group_list}}) {
                   if($v eq lc $var) {
-                    $hints{" Did you mean ${th2}::$v? [ERR4]"}=1;
+                    $hints{" Did you mean ${th2}::$v? [ERR2]"}=1;
                   }
                 }
               }

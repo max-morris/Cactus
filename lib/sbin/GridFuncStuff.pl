@@ -10,6 +10,8 @@
 #@@*/
 use strict;
 
+$main::arg_defs = {};
+
 #/*@@
 #  @routine    CreateVariableBindings
 #  @date       Thu Jan 28 15:14:20 1999
@@ -504,6 +506,7 @@ sub CreateFortranArgumentDeclarations
 #@@*/
 sub CreateCArgumentDeclarations
 {
+  my $thorn = shift;
   my(%arguments) = @_;
   my(@declarations) = ();
 
@@ -516,6 +519,7 @@ sub CreateCArgumentDeclarations
     $arguments{$varname} =~ m\^([^! ]+) ?([^!]*)?!([^!]*)::([^!]*)!([^!]*)!([^!]*)\;
 
     my $type           = $1;
+    my $unquoted_impl = uc $3;
     my $implementation = "\U\"$3\"";
     my $ntimelevels    = $5;
     my $var            = "\"$varname$6\"";
@@ -529,6 +533,12 @@ sub CreateCArgumentDeclarations
     my $varname0 = $varname;
     push(@declarations, "static int cctki_vi_$varname0 = -100;");
     push(@declarations, "if (cctki_vi_$varname0 == -100) cctki_vi_$varname0 = CCTK_VarIndex($fullvar);");
+
+    $main::arg_decls->{uc $thorn}->{lc $varname} = {
+        "type" => $type,
+        "ntimelevels" => $ntimelevels,
+        "impl" => $unquoted_impl,
+    };
 
     for(my $level = 0; $level < $ntimelevels; $level++)
     {
@@ -839,7 +849,7 @@ sub CreateThornArgumentHeaderFile
 
     # Create the C argument declarations
     push(@returndata, "#define DECLARE_${thorn}_${block}_CARGUMENTS \\");
-    @data = CreateCArgumentDeclarations(%data);
+    @data = CreateCArgumentDeclarations($thorn, %data);
     push(@returndata, join (" \\\n", @data));
     push(@returndata, '');
 
