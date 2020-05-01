@@ -37,20 +37,20 @@ void add_entry(int vi,int tl,rdwr_t rdwr,int where,std::set<RDWR_entry,EntryComp
         entry.where_rd = 0;
         entry.where_inv = 0;
     } else {
-        if(rdwr == writes_t && iter->where_wr != 0) {
-            std::ostringstream msg;
-            msg << "Duplicate write specification for " << CCTK_FullName(vi) << " in function " << func->routine << std::endl;
-            CCTK_Error(-1,0,func->thorn,msg.str().c_str());
+        if(rdwr == writes_t && iter->where_wr != WH_NOWHERE) {
+            CCTK_VError(__LINE__,__FILE__,"Cactus",
+                        "Duplicate write specification for %s in function %s::%s",
+                        CCTK_FullVarName(vi),func->thorn,func->routine);
         }
-        if(rdwr == reads_t && iter->where_rd != 0) {
-            std::ostringstream msg;
-            msg << "Duplicate read specification for " << CCTK_FullName(vi) << " in function " << func->routine << std::endl;
-            CCTK_Error(-1,0,func->thorn,msg.str().c_str());
+        if(rdwr == reads_t && iter->where_rd != WH_NOWHERE) {
+            CCTK_VError(__LINE__,__FILE__,"Cactus",
+                        "Duplicate reads specification for %s in function %s::%s",
+                        CCTK_FullVarName(vi),func->thorn,func->routine);
         }
-        if(rdwr == invalidates_t && iter->where_inv != 0) {
-            std::ostringstream msg;
-            msg << "Duplicate read specification for " << CCTK_FullName(vi) << " in function " << func->routine << std::endl;
-            CCTK_Error(-1,0,func->thorn,msg.str().c_str());
+        if(rdwr == invalidates_t && iter->where_inv != WH_NOWHERE) {
+            CCTK_VError(__LINE__,__FILE__,"Cactus",
+                        "Duplicate invalidates specification for %s in function %s::%s",
+                        CCTK_FullVarName(vi),func->thorn,func->routine);
         }
         entry.where_wr = iter->where_wr;
         entry.where_rd = iter->where_rd;
