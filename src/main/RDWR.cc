@@ -2,6 +2,8 @@
 #include "cctk_Schedule.h"
 #include "cctk_Parameters.h"
 
+#include <cstdio>
+#include <cstring>
 #include <set>
 #include <sstream>
 #include <iostream>
@@ -79,68 +81,72 @@ void add_entry(int vi,int tl,rdwr_t rdwr,int where,std::set<RDWR_entry,EntryComp
 void parse(const char *str,rdwr_t rdwr,std::set<RDWR_entry,EntryComp>& s) {
     DECLARE_CCTK_PARAMETERS;
 
-    std::string fstr{str};
-    std::string imp;
-    std::string var;
-    std::string where;
-    int tl=0;
-    unsigned int i=0;
-    for(;i<fstr.size();++i) {
-        if(fstr[i] == ':')
-          break;
-        imp += fstr[i];
+    const char* rdwr_s = rdwr == reads_t ? "READS" : rdwr == writes_t ?
+                                          "WRITES" : "INVALIDATES";
+
+    char varbuf[256], where[256];
+    int vecnum = -1;
+    if(sscanf(str, "%256[^[][%d](%256[^)])", varbuf, &vecnum, where) != 3 and
+       sscanf(str, "%256[^(](%256[^)])", varbuf, where) != 2) {
+        CCTK_VError(__LINE__,__FILE__,"Cactus",
+                    "Could not parse specification '%s' when parsing %s statement in schedule for %s::%s",
+                    str,rdwr_s,func->thorn,func->routine);
     }
-    i += 2;
-    for(;i<fstr.size();++i) {
-        if(fstr[i] == '(')
-          break;
-        var += fstr[i];
+
+    // strip off _p's and compute timelevel
+    int tl = 0;
+    for(int pos = strlen(varbuf)-2 ; pos >= 0 ; pos -= 2) {
+      if(varbuf[pos] == '_' && varbuf[pos+1] == 'p') {
+        tl += 1;
+        varbuf[pos] = '\0';
+      } else {
+        break;
+      }
     }
-    i += 1;
-    for(;i<fstr.size();++i) {
-        if(fstr[i] == ')')
-          break;
-        where += fstr[i];
+
+    // re-add vector index
+    char fullvar[300];
+    if(vecnum >= 0) {
+      const size_t written = snprintf(fullvar, sizeof(fullvar), "%s[%d]", varbuf, vecnum);
+      assert(written < sizeof(fullvar));
+    } else {
+      const size_t written = snprintf(fullvar, sizeof(fullvar), "%s", varbuf);
+      assert(written < sizeof(fullvar));
     }
-    int n = var.size()-2;
-    while(var[n]=='_' && var[n+1]=='p') {
-      tl ++;
-      n -= 2;
-    }
-    tolower(where);
-    int wh = 0;
-    if(where == "everywhere" || where == "all")
+
+    // decode where
+    int wh = -1;
+    if(CCTK_EQUALS(where,"everywhere") || CCTK_EQUALS(where,"all"))
         wh = WH_EVERYWHERE;
-    else if(where == "interior" || where == "in")
+    else if(CCTK_EQUALS(where,"interior") || CCTK_EQUALS(where,"in"))
         wh = WH_INTERIOR;
-    else if(where == "interiorwithboundary")
+    else if(CCTK_EQUALS(where,"interiorwithboundary"))
         wh = WH_INTERIOR | WH_BOUNDARY;
-    else if(where == "boundary")
+    else if(CCTK_EQUALS(where,"boundary"))
         wh = WH_BOUNDARY;
     else {
-        std::ostringstream msg;
-        msg << "Invalid where specification '" << where << "' while parsing string '" << str << "' in schedule for '" << func->thorn << "::" << func->routine << "'" << std::endl;
-        CCTK_Error(__LINE__, __FILE__, "Cactus", msg.str().c_str());
+        CCTK_VError(__LINE__, __FILE__, "Cactus",
+                    "Invalid where specification '%s' while parsing %s statement  '%s' in schedule for %s::%s",
+                    where,rdwr_s,str,func->thorn,func->routine);
     }
-    var.resize(n+2);
-    std::string full_name = imp + "::" + var;
-    int vi = CCTK_VarIndex(full_name.c_str());
-    if(vi < 0) {
-        int gi = CCTK_GroupIndex(full_name.c_str());
-        if(gi < 0 and use_psync) {
+    assert(wh != -1);
+
+    const int vi = CCTK_VarIndex(fullvar);
+    if(vi >= 0) {
+        add_entry(vi,tl,rdwr,wh,s);
+    } else {
+        const int gi = CCTK_GroupIndex(fullvar);
+        if(gi >= 0) {
+            int i0 = CCTK_FirstVarIndexI(gi);
+            int iN = i0+CCTK_NumVarsInGroupI(gi);
+            for(int vi=i0;vi<iN;vi++) {
+                add_entry(vi,tl,rdwr,wh,s);
+            }
+        } else if(use_psync) {
             CCTK_VError(__LINE__, __FILE__, "Cactus",
                         "Invalid variable or group name '%s' in %s for routine %s::%s",
-                        full_name.c_str(),
-                        rdwr == reads_t ? "READS" : rdwr == writes_t ? "WRITES" : "INVALIDATES",
-                        func->thorn, func->routine);
+                        fullvar,rdwr_s,func->thorn,func->routine);
         }
-        int i0 = CCTK_FirstVarIndexI(gi);
-        int iN = i0+CCTK_NumVarsInGroupI(gi);
-        for(vi=i0;vi<iN;vi++) {
-            add_entry(vi,tl,rdwr,wh,s);
-        }
-    } else {
-        add_entry(vi,tl,rdwr,wh,s);
     }
 }
 
