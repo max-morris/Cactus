@@ -1,5 +1,7 @@
-#include <cctk.h>
-#include <cctk_Schedule.h>
+#include "cctk.h"
+#include "cctk_Schedule.h"
+#include "cctk_Parameters.h"
+
 #include <set>
 #include <sstream>
 #include <iostream>
@@ -75,6 +77,8 @@ void add_entry(int vi,int tl,rdwr_t rdwr,int where,std::set<RDWR_entry,EntryComp
  * of _p indicates a past time level, i.e. "foo_p" refers to "foo" at time level 1.
  */
 void parse(const char *str,rdwr_t rdwr,std::set<RDWR_entry,EntryComp>& s) {
+    DECLARE_CCTK_PARAMETERS;
+
     std::string fstr{str};
     std::string imp;
     std::string var;
@@ -116,18 +120,20 @@ void parse(const char *str,rdwr_t rdwr,std::set<RDWR_entry,EntryComp>& s) {
     else {
         std::ostringstream msg;
         msg << "Invalid where specification '" << where << "' while parsing string '" << str << "' in schedule for '" << func->thorn << "::" << func->routine << "'" << std::endl;
-        CCTK_Error(-1,0,imp.c_str(),msg.str().c_str());
+        CCTK_Error(__LINE__, __FILE__, "Cactus", msg.str().c_str());
     }
     var.resize(n+2);
     std::string full_name = imp + "::" + var;
     int vi = CCTK_VarIndex(full_name.c_str());
     if(vi < 0) {
         int gi = CCTK_GroupIndex(full_name.c_str());
-/*        if(gi < 0 and !strcmp(var,test_parameter)) {
-            std::ostringstream msg;
-            msg << "Invalid variable or group name " << full_name << std::endl;
-            CCTK_Error(-1,0,imp.c_str(),msg.str().c_str());
-        }*/
+        if(gi < 0 and use_psync) {
+            CCTK_VError(__LINE__, __FILE__, "Cactus",
+                        "Invalid variable or group name '%s' in %s for routine %s::%s",
+                        full_name.c_str(),
+                        rdwr == reads_t ? "READS" : rdwr == writes_t ? "WRITES" : "INVALIDATES",
+                        func->thorn, func->routine);
+        }
         int i0 = CCTK_FirstVarIndexI(gi);
         int iN = i0+CCTK_NumVarsInGroupI(gi);
         for(vi=i0;vi<iN;vi++) {
