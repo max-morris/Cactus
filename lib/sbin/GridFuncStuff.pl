@@ -75,8 +75,7 @@ sub CreateVariableBindings
     push(@data, '#define PASS_GROUPLEN(thorn, group) CCTKGROUPNUM_##group >= 0 ? \\');
     push(@data, '                                    CCTKi_GroupLengthAsPointer(#thorn "::" #group) : &_cctk_zero');
     push(@data, '');
-    push(@data, '#define PASS_REFERENCE(var, level)  CCTKARGNUM_##var >= 0 ? \\');
-    push(@data, '                                    GH->data[CCTKARGNUM_##var][level] : 0');
+    push(@data, '#define PASS_REFERENCE(var, level)  CCTKi_VarDataPtrI(GH, level, CCTKARGNUM_##var)');
     push(@data, '');
 
     push(@data, "#define CCTK_ARGUMENTS \U${thorn}_CARGUMENTS");
