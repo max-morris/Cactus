@@ -311,45 +311,34 @@ sub do_schedules
       if($ch->is("reads") or $ch->is("writes")) {
         my $is_writes = $ch->is("writes");
         
-        # First we extract the thorn and variable name from the reads/writes clause
-        my $qname = $ch->has(0,"qname");
-        my $vname = $qname->has(0,"vname");
-        my $thorn_or_var = $vname->has(0,"name")->substring();
-        my $thorn = undef;
-        my $var = undef;
-        my $cap_thorn = undef;
-        my $cap_var = undef;
-        if($vname->has(1,"name")) {
-            $cap_thorn = $thorn_or_var;
-            $cap_var = $vname->has(1,"name")->substring();
-            $thorn = uc $cap_thorn;
-            $var = lc $cap_var;
-        } else {
-            $cap_thorn = lookup_thorn($hash, $parsing_thorn, $thorn_or_var);
-            $thorn = uc $cap_thorn;
-            $cap_var = $thorn_or_var;
-            $var = lc $cap_var;
-        }
+        # Process variable names in this definition.
+        my $i = 0;
+        while($ch->has($i,"qrname")) {
+          # First we extract the thorn and variable name from the reads/writes clause
+          my $qrname = $ch->has($i,"qrname");
+          my $vname = $qrname->has(0,"vname");
+          my $thorn_or_var = $vname->has(0,"name")->substring();
+          my $thorn = undef;
+          my $var = undef;
+          my $cap_thorn = undef;
+          my $cap_var = undef;
+          if($vname->has(1,"name")) {
+              $cap_thorn = $thorn_or_var;
+              $cap_var = $vname->has(1,"name")->substring();
+              $thorn = uc $cap_thorn;
+              $var = lc $cap_var;
+          } else {
+              $cap_thorn = lookup_thorn($hash, $parsing_thorn, $thorn_or_var);
+              $thorn = uc $cap_thorn;
+              $cap_var = $thorn_or_var;
+              $var = lc $cap_var;
+          }
 
-        # update informational data structures
-        $reads_writes->{$nm}->{$thorn}->{$var}->{rdwr} += $is_writes;
-        $reads_writes->{$nm}->{$thorn}->{$var}->{line} = $vname->linenum();
-        $reads_writes->{$nm}->{$thorn}->{$var}->{cap} = "${cap_thorn}::${cap_var}";
-        my $i = 1;
-
-        # we skip over the region, e.g. interior, boundary, etc.
-        # as that doesn't play a part in the generation of the macros.
-        $i++ if($qname->has($i,"region"));
-
-        # Process additional variable names in this definition.
-        while($qname->has($i,"qrname")) {
-          my $qrname = $qname->group($i);
-          $var = lc $qrname->has(0,"name")->substring();
-          $cap_thorn = lookup_thorn($hash, $parsing_thorn, $var);
-          $thorn = uc $cap_thorn;
-          $reads_writes->{$nm}->{$thorn}->{$var}->{cap} = $cap_thorn;
+          # update informational data structures
           $reads_writes->{$nm}->{$thorn}->{$var}->{rdwr} += $is_writes;
           $reads_writes->{$nm}->{$thorn}->{$var}->{line} = $vname->linenum();
+          $reads_writes->{$nm}->{$thorn}->{$var}->{cap} = "${cap_thorn}::${cap_var}";
+
           $i++;
         }
 
