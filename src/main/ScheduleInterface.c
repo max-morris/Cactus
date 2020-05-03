@@ -20,6 +20,7 @@
 #include "cctk_Schedule.h"
 #include "cctki_ScheduleBindings.h"
 #include "cctki_Schedule.h"
+#include "cctki_PreSync.h"
 
 #include "cctk_Comm.h"
 #include "cctk_Sync.h"
@@ -33,9 +34,6 @@
 #include "cctk_Timers.h"
 
 #include "util_Table.h"
-
-void CCTKi_CreateRDWRData(cFunctionData *f);
-void CCTKi_FreeRDWRData(cFunctionData *f);
 
 static const char *rcsid = "$Header$";
 

@@ -2,6 +2,8 @@
 #include "cctk_Schedule.h"
 #include "cctk_Parameters.h"
 
+#include "cctki_PreSync.h"
+
 #include <cstdio>
 #include <cstring>
 #include <set>
@@ -150,6 +152,24 @@ void parse(const char *str,rdwr_t rdwr,std::set<RDWR_entry,EntryComp>& s) {
     }
 }
 
+ /*@@
+   @routine    CCTKi_CreateRDWRData
+   @date       Mon Sep 11 15:29:33 2017 -0500
+   @author     Steven R. Brandt
+   @desc
+               Parse access clauses into RDWR array associated with a scheduled
+               function.
+   @enddesc
+
+   @var        f
+   @vdesc      A cFuntionData function description whose RDWR array is to be
+               set.
+   @vtype      cFunctionData
+   @vio        inou
+   @endvar
+
+   @returntype void
+@@*/
 extern "C"
 void CCTKi_CreateRDWRData(cFunctionData *f)
 {
@@ -175,6 +195,23 @@ void CCTKi_CreateRDWRData(cFunctionData *f)
         f->RDWR[n++] = *i;
 }
 
+ /*@@
+   @routine    CCTKi_FreeRDWRData
+   @date       Mon Sep 11 15:29:33 2017 -0500
+   @author     Steven R. Brandt
+   @desc
+               Free RDWR array associated with a scheduled function.
+   @enddesc
+
+   @var        f
+   @vdesc      A cFuntionData function description whose RDWR has been
+               allocated by CCTKi_CreateRDWRData.
+   @vtype      cFunctionData
+   @vio        inou
+   @endvar
+
+   @returntype void
+@@*/
 extern "C"
 void CCTKi_FreeRDWRData(cFunctionData *f)
 {
