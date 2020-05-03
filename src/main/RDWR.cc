@@ -10,11 +10,9 @@
 #include <sstream>
 #include <iostream>
 
-namespace cctki {
+namespace {
 
 enum rdwr_t { reads_t, writes_t, invalidates_t };
-
-cFunctionData *func;
 
 struct EntryComp {
     bool operator()(const RDWR_entry& v1,const RDWR_entry& v2) const {
@@ -33,7 +31,7 @@ inline void tolower(std::string& s) {
   }
 }
 
-void add_entry(int vi,int tl,rdwr_t rdwr,int where,std::set<RDWR_entry,EntryComp>& s) {
+void add_entry(int vi,int tl,rdwr_t rdwr,int where,cFunctionData* func,std::set<RDWR_entry,EntryComp>& s) {
     RDWR_entry entry;
     entry.var_id = vi;
     entry.time_level = tl;
@@ -80,7 +78,7 @@ void add_entry(int vi,int tl,rdwr_t rdwr,int where,std::set<RDWR_entry,EntryComp
  * and VAR_OR_GROUP refers to a variable or group name. In either case, a suffix
  * of _p indicates a past time level, i.e. "foo_p" refers to "foo" at time level 1.
  */
-void parse(const char *str,rdwr_t rdwr,std::set<RDWR_entry,EntryComp>& s) {
+void parse(const char *str,rdwr_t rdwr,cFunctionData* func,std::set<RDWR_entry,EntryComp>& s) {
     DECLARE_CCTK_PARAMETERS;
 
     const char* rdwr_s = rdwr == reads_t ? "READS" : rdwr == writes_t ?
@@ -135,14 +133,14 @@ void parse(const char *str,rdwr_t rdwr,std::set<RDWR_entry,EntryComp>& s) {
 
     const int vi = CCTK_VarIndex(fullvar);
     if(vi >= 0) {
-        add_entry(vi,tl,rdwr,wh,s);
+        add_entry(vi,tl,rdwr,wh,func,s);
     } else {
         const int gi = CCTK_GroupIndex(fullvar);
         if(gi >= 0) {
             int i0 = CCTK_FirstVarIndexI(gi);
             int iN = i0+CCTK_NumVarsInGroupI(gi);
             for(int vi=i0;vi<iN;vi++) {
-                add_entry(vi,tl,rdwr,wh,s);
+                add_entry(vi,tl,rdwr,wh,func,s);
             }
         } else if(use_psync) {
             CCTK_VError(__LINE__, __FILE__, "Cactus",
@@ -174,18 +172,17 @@ extern "C"
 void CCTKi_CreateRDWRData(cFunctionData *f)
 {
     std::set<RDWR_entry,EntryComp> s;
-    func = f;
 
     for(int i=0;i<f->n_WritesClauses;i++) {
-        parse(f->WritesClauses[i],writes_t,s);
+        parse(f->WritesClauses[i],writes_t,f,s);
     }
 
     for(int i=0;i<f->n_ReadsClauses;i++) {
-        parse(f->ReadsClauses[i],reads_t,s);
+        parse(f->ReadsClauses[i],reads_t,f,s);
     }
 
     for(int i=0;i<f->n_InvalidatesClauses;i++) {
-        parse(f->InvalidatesClauses[i],invalidates_t,s);
+        parse(f->InvalidatesClauses[i],invalidates_t,f,s);
     }
 
     f->n_RDWR = s.size();
