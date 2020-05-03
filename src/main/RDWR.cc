@@ -29,9 +29,9 @@ void add_entry(int vi,int tl,rdwr_t rdwr,int where,cFunctionData* func,std::set<
     entry.time_level = tl;
     auto iter = s.find(entry);
     if(iter == s.end()) {
-        entry.where_wr = 0;
-        entry.where_rd = 0;
-        entry.where_inv = 0;
+        entry.where_wr = WH_NOWHERE;
+        entry.where_rd = WH_NOWHERE;
+        entry.where_inv = WH_NOWHERE;
     } else {
         if(rdwr == writes_t && iter->where_wr != WH_NOWHERE) {
             CCTK_VError(__LINE__,__FILE__,"Cactus",
@@ -57,8 +57,10 @@ void add_entry(int vi,int tl,rdwr_t rdwr,int where,cFunctionData* func,std::set<
         entry.where_wr |= where;
     } else if(rdwr == reads_t) {
         entry.where_rd |= where;
-    } else {
+    } else if(rdwr == invalidates_t) {
         entry.where_inv |= where;
+    } else {
+      CCTK_BUILTIN_UNREACHABLE();
     }
     s.insert(entry);
 }
