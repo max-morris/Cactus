@@ -163,10 +163,13 @@ cctk_ash1,cctk_ash2,cctk_ash3
 #include "cctk_Math.h"
 #include "cctk_Misc.h"
 #include "cctk_Parameter.h"
+#include "cctk_PreSync.h"
 #include "cctk_Reduction.h"
+#include "cctk_Schedule.h"
 #include "cctk_Sync.h"
 #include "cctk_Timers.h"
 #include "cctk_Termination.h"
+#include "cctk_Version.h"
 #include "cctk_WarnLevel.h"
 
 
