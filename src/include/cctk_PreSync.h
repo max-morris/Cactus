@@ -15,14 +15,6 @@
 extern "C" {
 #endif
 
-typedef CCTK_INT (*boundary_function)(
-  const void *cctkGH,
-  const int num_vars,
-  const int *var_indices,
-  const int *faces,
-  const int *widths,
-  const int *table_handles);
-
 int CCTK_HasAccess(const cGH *cctkGH, int var_index);
 
 #ifdef __cplusplus
