@@ -70,15 +70,6 @@ OVERLOADABLE(MainLoopIndex)
 OVERLOADABLE(SetMainLoopIndex)
 
 #undef ARGUMENTS
-#define ARGUMENTS const cGH *GH, int index
-#undef USE_ARGUMENTS
-#define USE_ARGUMENTS GH = GH, index = index;
-#undef RETURN_TYPE
-#define RETURN_TYPE int
-
-OVERLOADABLE(HasAccess)
-
-#undef ARGUMENTS
 #undef USE_ARGUMENTS
 #undef RETURN_TYPE
 #undef ATTRIBUTES

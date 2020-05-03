@@ -32,7 +32,6 @@ CCTK_FILEVERSION(main_OverloadMain_c);
 #define CCTKi_DummyShutdown         CactusDefaultShutdown
 #define CCTKi_DummyMainLoopIndex    CactusDefaultMainLoopIndex
 #define CCTKi_DummySetMainLoopIndex CactusDefaultSetMainLoopIndex
-#define CCTKi_DummyHasAccess        CactusDefaultHasAccess
 
 #include "MainOverloadables.h"
 
@@ -42,7 +41,6 @@ CCTK_FILEVERSION(main_OverloadMain_c);
 #undef CCTKi_DummyShutdown   
 #undef CCTKi_DummyMainLoopIndex
 #undef CCTKi_DummySetMainLoopIndex
-#undef CCTKi_DummyHasAccess
 
 #undef OVERLOADABLE
 

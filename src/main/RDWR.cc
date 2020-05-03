@@ -182,4 +182,78 @@ void CCTKi_FreeRDWRData(cFunctionData *f)
     f->RDWR = nullptr;
     f->n_RDWR = 0;
 }
+
+bool hasAccess(cFunctionData const * const current_function,
+               int const RDWR_entry::* const access, const int vi, const int tl) {
+  // TODO: srt rdwr and turn into binary search
+  for (int i= 0;i<current_function->n_RDWR;i++) {
+    const RDWR_entry& entry = current_function->RDWR[i];
+    // we ignore refinement levels here since RDWR does not record them
+    if(entry.var_id == vi && entry.time_level == tl)
+      return entry.*access != WH_NOWHERE;
+  }
+  return false;
+}
+
+ /*@@
+   @routine    CCTK_HasAccess
+   @date       Sat May  2 20:22:31 CDT 2020
+   @author     Roland Haas
+   @desc
+               Default access check routine
+   @enddesc
+
+   @var        index
+   @vdesc      The index of the variable
+   @vtype      int
+   @vio        in
+   @endvar
+
+   @returntype int
+   @returndesc
+   This function returns a non-zero value if the variable is accessible.
+   @endreturndesc
+@@*/
+extern "C"
+int CCTK_HasAccess(const cGH *cctkGH, int var_index)
+{
+  DECLARE_CCTK_PARAMETERS;
+  if(!psync_error)
+    return true;
+
+  cFunctionData const * const current_function = CCTK_ScheduleQueryCurrentFunction(cctkGH);
+  if(current_function == nullptr) // called directly by the driver or flesh
+    return true;
+
+  // vectors of grid functions are all accessed via a single pointer to the
+  // vector's 0th member. Thus access to the whole vector must be granted if
+  // any member has a READ / WRITE clause
+  const int gi = CCTK_GroupIndexFromVarI(var_index);
+  assert(gi >= 0);
+  cGroup group;
+  const int ierr = CCTK_GroupData(gi,&group);
+  assert(ierr == 0);
+  int var0,varn,varstep;
+  if(group.vectorgroup) {
+    // for groups of vectors the variable index steps first by group member
+    // then by vector index
+    var0 = CCTK_FirstVarIndexI(gi);
+    var0 += (var_index - var0) % group.vectorlength;
+    varn = group.numvars;
+    varstep = group.numvars / group.vectorlength;
+  } else {
+    var0 = var_index;
+    varn = 1;
+    varstep = 1;
+  }
+
+  for (int vi = var0; vi < var0 + varn; vi += varstep) {
+    if(hasAccess(current_function,&RDWR_entry::where_rd,vi,0))
+      return true;
+    if(hasAccess(current_function,&RDWR_entry::where_wr,vi,0))
+      return true;
+  }
+
+  return false;
+}
 }

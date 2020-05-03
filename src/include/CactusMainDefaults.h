@@ -19,7 +19,6 @@ int CactusDefaultInitialise(tFleshConfig *);
 int CactusDefaultEvolve(tFleshConfig *);
 int CactusDefaultShutdown(tFleshConfig *);
 int CactusDefaultExit(cGH *GH, int retval);
-int CactusDefaultHasAccess(cGH *GH, int index);
 #ifdef __cplusplus
 }
 #endif
