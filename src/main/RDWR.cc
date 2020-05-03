@@ -23,14 +23,6 @@ struct EntryComp {
     }
 };
 
-inline void tolower(std::string& s) {
-  for(auto si=s.begin();si != s.end();++si) {
-    if(*si >= 'A' && *si <= 'Z') {
-      *si = *si + 'a' - 'A';
-    }
-  }
-}
-
 void add_entry(int vi,int tl,rdwr_t rdwr,int where,cFunctionData* func,std::set<RDWR_entry,EntryComp>& s) {
     RDWR_entry entry;
     entry.var_id = vi;
