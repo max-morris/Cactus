@@ -4,26 +4,28 @@
 
 #include "cctki_PreSync.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <cstring>
 #include <set>
 #include <sstream>
 #include <iostream>
 
-namespace {
+// this cannot go into the anonymous namespace below or STL won't find it, but
+// I do not want to make the operator visible globally either
+static
+bool operator<(const RDWR_entry v1,const RDWR_entry v2){
+    if(v1.var_id < v2.var_id) return true;
+    if(v1.var_id > v2.var_id) return false;
+    if(v1.time_level < v2.time_level) return true;
+    return false;
+}
+
+namespace cctki_RDWR {
 
 enum rdwr_t { reads_t, writes_t, invalidates_t };
 
-struct EntryComp {
-    bool operator()(const RDWR_entry& v1,const RDWR_entry& v2) const {
-        if(v1.var_id < v2.var_id) return true;
-        if(v1.var_id > v2.var_id) return false;
-        if(v1.time_level < v2.time_level) return true;
-        return false;
-    }
-};
-
-void add_entry(int vi,int tl,rdwr_t rdwr,int where,cFunctionData* func,std::set<RDWR_entry,EntryComp>& s) {
+void add_entry(int vi,int tl,rdwr_t rdwr,int where,cFunctionData* func,std::set<RDWR_entry>& s) {
     RDWR_entry entry;
     entry.var_id = vi;
     entry.time_level = tl;
@@ -72,7 +74,7 @@ void add_entry(int vi,int tl,rdwr_t rdwr,int where,cFunctionData* func,std::set<
  * and VAR_OR_GROUP refers to a variable or group name. In either case, a suffix
  * of _p indicates a past time level, i.e. "foo_p" refers to "foo" at time level 1.
  */
-void parse(const char *str,rdwr_t rdwr,cFunctionData* func,std::set<RDWR_entry,EntryComp>& s) {
+void parse(const char *str,rdwr_t rdwr,cFunctionData* func,std::set<RDWR_entry>& s) {
     DECLARE_CCTK_PARAMETERS;
 
     const char* rdwr_s = rdwr == reads_t ? "READS" : rdwr == writes_t ?
@@ -165,7 +167,7 @@ void parse(const char *str,rdwr_t rdwr,cFunctionData* func,std::set<RDWR_entry,E
 extern "C"
 void CCTKi_CreateRDWRData(cFunctionData *f)
 {
-    std::set<RDWR_entry,EntryComp> s;
+    std::set<RDWR_entry> s;
 
     for(int i=0;i<f->n_WritesClauses;i++) {
         parse(f->WritesClauses[i],writes_t,f,s);
@@ -182,8 +184,20 @@ void CCTKi_CreateRDWRData(cFunctionData *f)
     f->n_RDWR = s.size();
     f->RDWR = new RDWR_entry[s.size()];
     int n = 0;
-    for(auto i=s.begin();i != s.end();++i)
+    /* a std::set is iterated in order of its comparison op which here means
+     * first in varindex then in timelevel */
+    int previous_vi = -1, previous_tl = -1;
+    for(auto i=s.begin();i != s.end();++i) {
         f->RDWR[n++] = *i;
+        // be paronoid and check order just in case the container is ever
+        // changed to something that sorts differently
+        if(previous_vi != -1 and previous_tl != -1) {
+          assert(previous_vi < i->var_id or previous_tl < i->time_level);
+          previous_vi = i->var_id;
+          previous_tl = i->time_level;
+        }
+    }
+
 }
 
  /*@@
@@ -211,18 +225,6 @@ void CCTKi_FreeRDWRData(cFunctionData *f)
     f->n_RDWR = 0;
 }
 
-bool hasAccess(cFunctionData const * const current_function,
-               int const RDWR_entry::* const access, const int vi, const int tl) {
-  // TODO: srt rdwr and turn into binary search
-  for (int i= 0;i<current_function->n_RDWR;i++) {
-    const RDWR_entry& entry = current_function->RDWR[i];
-    // we ignore refinement levels here since RDWR does not record them
-    if(entry.var_id == vi && entry.time_level == tl)
-      return entry.*access != WH_NOWHERE;
-  }
-  return false;
-}
-
  /*@@
    @routine    CCTK_HasAccess
    @date       Sat May  2 20:22:31 CDT 2020
@@ -242,6 +244,13 @@ bool hasAccess(cFunctionData const * const current_function,
    This function returns a non-zero value if the variable is accessible.
    @endreturndesc
 @@*/
+bool hasAccess(cFunctionData const * const f,
+               int const RDWR_entry::* const access, const int vi,
+               const int tl) {
+  const RDWR_entry val{vi,-1,tl};
+  const auto it = std::lower_bound(f->RDWR, f->RDWR + f->n_RDWR, val);
+  return it-f->RDWR < f->n_RDWR and it->var_id == vi and it->time_level == tl;
+}
 extern "C"
 int CCTK_HasAccess(const cGH *cctkGH, int var_index)
 {
