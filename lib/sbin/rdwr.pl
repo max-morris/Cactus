@@ -107,7 +107,8 @@ sub do_interfaces
     my $vtype = $gr->has(0,"vtype")->substring();
     my $level = 0;
     my $vecval = "0";
-    my $dim = 0;
+    my $dim = 3; # this is the default value
+    my $size = undef;
     my $gname;
     my $gtype;
     my $cap_gname;
@@ -132,12 +133,22 @@ sub do_interfaces
         }
       } elsif($ch->is("gtype")) {
         $gtype = $ch->substring();
-      } elsif($ch->is("dim") and (uc $gtype) eq "ARRAY") {
+      } elsif($ch->is("dim")) {
         $dim = $ch->substring();
+      } elsif($ch->is("size")) {
+        $size = $ch;
       } elsif($ch->is("timelevels")) {
         $level = $ch->substring();
-        last;
       }
+    }
+    # Check that size and dim agree...
+    if(defined($size)) {
+       my @children = @{$size->{children}};
+       if($#children + 1 != $dim*1) {
+          my $sz = $size->substring();
+          CST_error(0, "Disagreement in 'SIZE=$sz' and 'DIM=$dim' for $gname",
+            "DIM or SIZE may be set incorrectly", $size->linenum(),$ccl_file);
+       }
     }
     if($level-1 < 0) {
       $hash->{$gname}->{level} = 0;
@@ -636,8 +647,10 @@ sub create_macros
                 $arrays = qq((cctk_ash1,cctk_ash2,cctk_ash3));
               }
             } elsif($var_group->{gtype} eq "ARRAY") {
+              # Is there a vector of arrays?
+              my $vector = 0;
               if($var_group->{vector} ne "0") {
-                croak("Not supported yet.");
+                $vector = 1;
               }
               my $glen = "x0".$group;
               if(!defined($vector_len->{$glen})) {
@@ -646,7 +659,7 @@ sub create_macros
                 $vector_len->{$glen} = 1;
               }
               for(my $i = 1; $i < $var_group->{array_dim}; $i++) {
-                my $temp_glen .= "x".$i.$group;
+                my $temp_glen = "x".$i.$group;
                 $glen .= ",".$temp_glen;
                 if(!defined($vector_len->{$temp_glen})) {
                   $cctk_arguments{$temp_glen}=1;
@@ -654,6 +667,14 @@ sub create_macros
                   $vector_len->{$temp_glen} = 1;
                 }
               }
+
+              if($vector) {
+                my $tmp_glen = $group."_length";
+                $glen .= ",$tmp_glen";
+                $cctk_arguments{$tmp_glen}=1;
+                $$data .= "  integer :: $tmp_glen &&\\\n";
+              }
+
               $arrays = qq(($glen));
             } elsif($var_group->{vector} ne "0") {
               my $glen = $group."_length";
