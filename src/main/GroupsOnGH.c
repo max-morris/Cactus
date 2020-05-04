@@ -20,6 +20,7 @@
 #include "cctk_GroupsOnGH.h"
 #include "cctk_Main.h"
 #include "cctk_Misc.h"
+#include "cctk_PreSync.h"
 #include "cctk_WarnLevel.h"
 
 #include "cctki_GroupsOnGH.h"
