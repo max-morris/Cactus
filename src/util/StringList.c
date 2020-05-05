@@ -130,12 +130,12 @@ int Util_StringListAdd(uStringList *list, const char *item)
   int position;
   struct iInternalStringList *this, *prev;
 
+  if (list->max_size < list->fill + 1)
+  {
+    Utili_StringListExpand(list);
+  }
   if(list->fill == 0)
   {
-    if (list->max_size < list->fill + 1)
-    {
-      Utili_StringListExpand(list);
-    }
     if (list->max_size < list->fill + 1)
     {
       retval = -2;
@@ -157,10 +157,6 @@ int Util_StringListAdd(uStringList *list, const char *item)
     {
       if((position = Util_StrCmpi(item,this->string)) < 0)
       {
-        if (list->max_size < list->fill + 1)
-        {
-          Utili_StringListExpand(list);
-        }
         if (list->max_size < list->fill + 1)
         {
           retval = -2;
@@ -194,10 +190,6 @@ int Util_StringListAdd(uStringList *list, const char *item)
     
     if(!this)
     {
-      if (list->max_size < list->fill + 1)
-      {
-        Utili_StringListExpand(list);
-      }
       if (list->max_size < list->fill + 1)
       {
         retval = -2;
