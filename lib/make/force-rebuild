@@ -44,3 +44,4 @@
 29 Aug 2016: Piraha everywhere
 01 May 2020: qualify RDWR elements in schedule creator
 02 May 2020: use CCTKi_VarDataPtrI in Fortran Wrappers
+03 May 2020: correct creating schedule binding for inherited variables
