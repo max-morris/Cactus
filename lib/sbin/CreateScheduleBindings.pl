@@ -826,7 +826,7 @@ sub ScheduleSelectRDWR
         $foundit = 0;
         if($rhinterface_db->{"\U$other_thorn\E $block GROUPS"} =~ m:\b$group_or_var\b:i)
         {
-          push(@groups_or_vars, "$other_imp::$group_or_var$timelevels$vecnum($region)");
+          push(@groups_or_vars, "$other_imp\::$group_or_var$timelevels$vecnum($region)");
           $foundit = 1;
         }
         else
@@ -835,7 +835,7 @@ sub ScheduleSelectRDWR
           {
             if($rhinterface_db->{"\U$other_thorn GROUP $other_group\E"} =~ m:\b$group_or_var\b:i)
             {
-              push(@groups_or_vars, "$other_imp::$group_or_var$timelevels$vecnum($region)");
+              push(@groups_or_vars, "$other_imp\::$group_or_var$timelevels$vecnum($region)");
               $foundit = 1;
               break;
             }
