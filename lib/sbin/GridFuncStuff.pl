@@ -98,6 +98,8 @@ sub CreateVariableBindings
     push(@data, "#define DECLARE_CCTK_FARGUMENTS DECLARE_\U$thorn" . '_FARGUMENTS');
     push(@data, "#define CCTK_CARGUMENTS \U$thorn" . '_CARGUMENTS');
     push(@data, "#define DECLARE_CCTK_CARGUMENTS DECLARE_\U$thorn" . '_CARGUMENTS');
+    push(@data, '');
+    push(@data, "#include \"${thorn}/cctk_ScheduleFunctions.h\"");
     push(@data, "#endif");
     push(@data, "\n");  # workaround for perl 5.004_04 to add a trailing newline
 
@@ -118,8 +120,6 @@ sub CreateVariableBindings
     push @data, "#define _CCTK_H_ 1";
     push @data, "#include \"${thorn}/definethisthorn.h\"";
     push @data, "";
-    push @data, "/* Include prototypes for scheduled functions */";
-    push @data, "#include \"${thorn}/cctk_ScheduleFunctions.h\"";
     push @data, "#include \"cctk_core.h\"";
     push @data, "#endif";
     push @data, "";
