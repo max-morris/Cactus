@@ -16,18 +16,14 @@ pararg = ({vname}|\( {vname}( ,? {vname} )* \))
 assign = {name} = {num}
 
 boolpar = \( {boolexpr} \)
-eqfun = (?i:CCTK_Equals)
-actfun = (?i:CCTK_IsThornActive)
-actifun = (?i:CCTK_IsImplementationActive)
-booleq  = {eqfun} \( {string} , {string} \)
-boolact = ({actfun}|{actifun}) \( {string} \)
+args = ({expr}( , {expr})*|)
+fun = {name} \( {args} \)
 boolstar = \* {name}
 boolneg = \! {boolexpr}
 boolterm = (?i:{boolneg}
-         | {boolpar}
-         | {booleq}
-         | {boolact}
          | {boolstar}
+         | {boolpar}
+         | {fun}
          | {name} )
          
 boolop = (&&|\|\|)
