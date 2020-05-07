@@ -854,6 +854,8 @@ int CCTKi_ScheduleGroupComm(const char *group)
    @returndesc
    0 - success
    1 - memory failure
+   2 - schedule item not found
+   3 - unknown error
    @endreturndesc
 @@*/
 int CCTK_ScheduleTraverse(const char *where,
@@ -885,7 +887,12 @@ int CCTK_ScheduleTraverse(const char *where,
 
   if(special)
   {
-    ScheduleTraverse(where, GH, CallFunction);
+    int ierr = ScheduleTraverse(where, GH, CallFunction);
+    if(ierr == -1) {
+      retcode = 2;
+    } else if(ierr != 0) {
+      retcode = 3;
+    }
   }
   else
   {
@@ -909,7 +916,12 @@ int CCTK_ScheduleTraverse(const char *where,
       sprintf(current_point, "%s$ENTRY", where);
       ScheduleTraverse(current_point, GH, CallFunction);
 
-      ScheduleTraverse(where, GH, CallFunction);
+      int ierr = ScheduleTraverse(where, GH, CallFunction);
+      if(ierr == -1) {
+        retcode = 2;
+      } else if(ierr != 0) {
+        retcode = 3;
+      }
 
       sprintf(current_point, "%s$EXIT", where);
       ScheduleTraverse(current_point, GH, CallFunction);
@@ -1367,7 +1379,7 @@ cLanguage CCTK_TranslateLanguage(const char *sval)
 
    @returntype int
    @returndesc
-   0 - success
+   return code from CCTKi_DoScheduleTraverse
    @endreturndesc
 @@*/
 
@@ -1385,7 +1397,7 @@ static int ScheduleTraverse(const char *where,
                     schedpoint_analysis : schedpoint_misc;
   calling_function = CCTKi_ScheduleCallFunction;
 
-  CCTKi_DoScheduleTraverse(where,
+  int retcode =  CCTKi_DoScheduleTraverse(where,
      (int (*)(void *, void *))                    CCTKi_ScheduleCallEntry,
      (int (*)(void *, void *))                    CCTKi_ScheduleCallExit,
      (int (*)(int, char **, void *, void *, int)) CCTKi_ScheduleCallWhile,
@@ -1393,7 +1405,7 @@ static int ScheduleTraverse(const char *where,
      (int (*)(void *, void *, void *))            calling_function,
      (void *)&data);
 
-  return 0;
+  return retcode;
 }
 
  /*@@
