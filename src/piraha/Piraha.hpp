@@ -112,6 +112,10 @@ public:
     }
     void put(std::string key,smart_ptr<Pattern> p) {
         assert(p.valid());
+        if(m.find(key) != m.end()) {
+            std::cerr << "Duplicate key given to Grammar: '" << key << "'" << std::endl;
+            abort();
+        }
         m[key] = p;
     }
     friend std::ostream& operator<<(std::ostream&,JMap&);
