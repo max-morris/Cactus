@@ -37,11 +37,11 @@ nogroup =
 prepositions = ({preposition} )*
 preposition = {par} {pararg}
 sync = (?i:sync) : {vname}( , {vname}|[ \t]{vname})*
-options = (?i:options?) : {vname}( , {vname}|[ \t]{vname})*
-storage = (?i:storage) : {vname}( , {vname}|[ \t]{vname})*
-triggers = (?i:triggers?) : {vname}( , {vname}|[ \t]{vname})*
-reads = (?i:reads) : {qrname}( , {qrname}|[ \t]{qrname})*
-writes = (?i:writes) : {qrname}( , {qrname}|[ \t]{qrname})*
+spacing = ([ \t]|\\\r?\n)+
+options = (?i:options?) : {vname}( , {vname}|{-spacing}{vname})*
+triggers = (?i:triggers?) : {vname}( , {vname}|{-spacing}{vname})*
+reads = (?i:reads) : {qrname}( , {qrname}|{-spacing}{qrname})*
+writes = (?i:writes) : {qrname}( , {qrname}|{-spacing}{qrname})*
 invalidates = (?i:invalidates) : {qrname}( , {qrname}|[ \t]{qrname})*
 qrname = {vname} ( \( {region} \)|)
 region = (?i:everywhere|interiorwithboundary|interior|all|in|boundary|scalar)
@@ -65,7 +65,7 @@ ifbody = {block} ({else} {if}|{else} {block}|)
 if = (?i:
   if \( {boolexpr} \) {ifbody}
   )
-storage = (?i:storage: {vname}( , {vname}|([ \t]|\\\r?\n)+{vname})* )
+storage = (?i:storage: {vname}( , {vname}|{-spacing}{vname})* )
 block = \{ (({statement}|{block}) )* \} | {statement}
 
 statement = ({schedule} |{if} |{storage} )
