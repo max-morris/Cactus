@@ -463,7 +463,6 @@ sub create_macros
         $$data .= "#ifndef DECLARE_CCTK_ARGUMENTS_${nm} \n";
         $$data .= "#define DECLARE_CCTK_ARGUMENTS_${nm} \\\n";
         $$data .= "  _DECLARE_CCTK_ARGUMENTS; \\\n";
-        $$data .= "  CCTK_Checked_called(); \\\n";
         for my $th (sort keys %{$reads_writes->{$namekey}}) {
           for my $full_var (sort keys %{$reads_writes->{$namekey}->{$th}}) {
             my $errline = $reads_writes->{$namekey}->{$th}->{$full_var}->{line};
@@ -767,15 +766,7 @@ sub GenerateArguments
     $ccl_file = $thorns{$key}."/schedule.ccl";
     my $gr=parse_ccl($S_grammar,$S_rule,$ccl_file,$sch_file);
     if($gr) {
-      my $data = "";
-      $data .= "#ifdef CCODE\n";
-      $data .= "extern\n";
-      $data .= "#ifdef __cplusplus\n";
-      $data .= "\"C\"\n";
-      $data .= "#endif\n";
-      $data .= "void CCTK_Checked_called();\n";
-      $data .= "#endif\n";
-      $data .= schedule_starter($key,$hash,$gr,$ccl_file);
+      my $data = schedule_starter($key,$hash,$gr,$ccl_file);
       WriteFile($ENV{TOP}."/bindings/include/$key/cctk_Arguments_Checked.h", \$data);
     }
   }

@@ -95,20 +95,3 @@ int main(int argc, char **argv)
 
   return 0;
 }
-
-extern "C" void CCTK_Checked_called(), CCTK_Checked_reset();
-extern "C" int CCTK_Checked_get();
-
-static int checked = 0;
-
-int CCTK_Checked_get() {
-  return checked;
-}
-
-void CCTK_Checked_called() {
-  checked = 1;
-}
-
-void CCTK_Checked_reset() {
-  checked = 0;
-}
