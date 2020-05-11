@@ -61,6 +61,9 @@ sub CreateVariableBindings
     push(@data, '');
     push(@data, '');
     push(@data, "#include \"${thorn}_Arguments.h\"");
+    if($thorn ne "Cactus") {
+      push(@data, "#include \"${thorn}/cctk_Arguments_Checked.h\"");
+    }
 
     push(@data, '/* get the CCTK datatype definitions */');
     push(@data, '#include "cctk_Types.h"');
