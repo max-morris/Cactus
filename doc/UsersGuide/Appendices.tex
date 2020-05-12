@@ -2004,7 +2004,7 @@ thus the driver can update the exterior of the grid function.
 \item ``Can sync'' describes the condition in which the interior of a grid function contains valid data, but the exterior does not. This will produce a warning in \texttt{warn-only} mode, as it indicates a possibly incorrect synchronization.
 \item ``Can't sync''describes a situation where synchronization is needed, but (as far as the driver knows) the interior of the grid function is not valid.
 \item ``IO Thorns'' describes what the various IO thorns should do if they are asked to write out a
-grid function if they find invalid data in the interior and/or exterior of a thorn.
+grid function if they find invalid data in the interior and/or exterior of a grid function.
 \item ``Old Macro'' refers to the familiar \texttt{DECLARE\_CCTK\_ARGUMENTS}, which declares
 all the grid functions visible to a thorn. The \texttt{DECLARE\_CCTK\_ARGUMENTS\_func\_name} macros
 only declare arguments visible based on the READS/WRITES declarations.
