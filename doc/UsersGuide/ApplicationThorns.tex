@@ -1641,13 +1641,6 @@ the scheduler at time bins between {\t CCTK\_STARTUP} and {\t CCTK\_SHUTDOWN})
 should include at the top of the file the header
 \begin{verbatim}
 #include "cctk_Arguments.h"
-
-// This second version of Arguments needs
-// to be present for the function-specific version
-// of the DECLARE_CCTK_ARGUMENTS, i.e.
-// DECLARE_CCTK_ARGUMENTS_CHECKED(<function name>)
-// See text below.
-#include "cctk_Arguments_Checked.h"
 \end{verbatim}
 
 A Cactus macro \texttt{CCTK\_ARGUMENTS} is defined for each thorn
@@ -1736,7 +1729,6 @@ as the standard Cactus variables. The source file should look like
 \begin{verbatim}
 #include "cctk.h"
 #include "cctk_Arguments.h"
-#include "cctk_Arguments_Checked.h"
 #include "cctk_Parameters.h"
 
       subroutine MyFRoutine(CCTK_ARGUMENTS)
@@ -1846,7 +1838,6 @@ the scheduler at time bins between {\t CCTK\_STARTUP} and {\t CCTK\_SHUTDOWN}),
 should include at the top of the file the header
 \begin{verbatim}
 #include "cctk_Arguments.h"
-#include "cctk_Arguments_Checked.h"
 \end{verbatim}
 
 A Cactus macro \texttt{CCTK\_ARGUMENTS} is defined for each thorn
@@ -1898,7 +1889,6 @@ and uses Cactus parameters. The source file should look like
 \begin{verbatim}
 #include "cctk.h"
 #include "cctk_Arguments.h"
-#include "cctk_Arguments_Checked.h"
 #include "cctk_Parameters.h"
 
 void MyCRoutine(CCTK_ARGUMENTS)
