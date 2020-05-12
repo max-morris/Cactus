@@ -399,6 +399,21 @@ sub create_macros
   push @$all_cctk_arguments, @$thorn_args;
   $$data .= "#ifndef CCTK_ARGUMENTS_CHECKED_H\n";
   $$data .= "#define CCTK_ARGUMENTS_CHECKED_H 1\n";
+  $$data .= "\n";
+  $$data .= "/* needed for CCTK_ANSI_FPP */\n";
+  $$data .= "#include \"cctk_Types.h\"\n";
+  $$data .= "\n";
+  $$data .= "#ifdef CCODE\n";
+  $$data .= "#define DECLARE_CCTK_ARGUMENTS_CHECKED(func) DECLARE_CCTK_ARGUMENTS_##func\n";
+  $$data .= "#endif\n";
+  $$data .= "#ifdef FCODE\n";
+  $$data .= "#if CCTK_ANSI_FPP\n";
+  $$data .= "#define DECLARE_CCTK_ARGUMENTS_CHECKED(func) DECLARE_CCTK_ARGUMENTS_##func\n";
+  $$data .= "#else\n";
+  $$data .= "#define DECLARE_CCTK_ARGUMENTS_CHECKED(func) DECLARE_CCTK_ARGUMENTS_/**/func\n";
+  $$data .= "#endif\n";
+  $$data .= "#endif\n";
+  $$data .= "\n";
   for my $namekey (sort keys %{$reads_writes}) {
     my %cctk_arguments = ();
 
