@@ -1974,6 +1974,60 @@ Final iteration number [{\tt 10}]
 \item [{\tt max\_runtime}]
 Terminate evolution loop after a certain elapsed runtime (in minutes); set to zero to disable this termination condition [{\tt 0}]
 
+\item [{\tt psync\_mode}]
+The \texttt{psync\_mode} parameter defines the behavior of the automatic pre-synchronization of grid functions. A summary of the different modes available is available in Table~\ref{tab:psync}.
+
+The meaning of modes is as follows:
+\begin{itemize}
+\item \texttt{psync\_mode=off}: Cactus behaves as it did prior to the inclusion of PreSync. READS and
+WRITES declarations in the schedule have no effect. Synchronization of ghost zones only happens when
+a SYNC statement is encountered in the schedule.
+\item \texttt{psync\_mode=warn-only}: The same as \texttt{psync\_off}, except that now, if the Driver
+believes that a SYNC is required but not executed, it issues a warning.
+\item \texttt{psync\_mode=mixed-warn}:
+In this mode, Cactus tries to honor both SYNC statements in
+the schedule as well as providing automatic synchronization based on the READS/WRITES declarations.
+It may, however, issue warnings about possible problems.
+\item \texttt{psync\_mode=mixed-error}
+In this mode, Cactus tries to honor both SYNC statements in
+the schedule as well as providing automatic synchronization based on the READS/WRITES declarations.
+It may, however, issue errors when encountering possible problems.
+\item \texttt{psync\_mode=psync-only}:
+In this mode, Cactus will only synchronize ghost zones based on READS/WRITES declarations and will
+ingore SYNC statements in the schedule.
+\end{itemize}
+
+\begin{itemize}
+\item ``Sync triggered by'' describes what triggers the synchronization of ghost zones for a grid function. ``Schedule only,'' in this context, means an explicit declaration of \texttt{SYNC} in the schedule. ``Driver,'' in this context, means that a synchronization is triggered because the schedule requires the variable to be valid everywhere, but it is only valid in the interior.
+``sync if driver'' indicates that a physical boundary condition is registered for the grid function, and
+thus the driver can update the exterior of the grid function.
+\item ``Can sync'' describes the condition in which the interior of a grid function contains valid data, but the exterior does not. This will produce a warning in \texttt{warn-only} mode, as it indicates a possibly incorrect synchronization.
+\item ``Can't sync''describes a situation where synchronization is needed, but (as far as the driver knows) the interior of the grid function is not valid.
+\item ``IO Thorns'' describes what the various IO thorns should do if they are asked to write out a
+grid function if they find invalid data in the interior and/or exterior of a thorn.
+\item ``Old Macro'' refers to the familiar \texttt{DECLARE\_CCTK\_ARGUMENTS}, which declares
+all the grid functions visible to a thorn. The \texttt{DECLARE\_CCTK\_ARGUMENTS\_func\_name} macros
+only declare arguments visible based on the READS/WRITES declarations.
+\item ``Driver BC'' refers to boundary condition update functions registered via
+\texttt{Driver\_SelectVarForBC} or \texttt{Driver\_SelectGroupForBC}. Once registered, this function
+will be called whenever data is needed in the boundary for the grid function or group.
+\item ``Scheduled SYNC'' refers to the explicit SYNC declaration in the \texttt{schedule.ccl}.
+\end{itemize}
+\begin{table}[]
+\scriptsize
+\begin{tabular}{|l|l|l|l|l|l|l|l|}
+\hline
+\textbf{psync\_mode} & \textbf{Synch triggered by} & \textbf{Can sync}                                                   & \textbf{Can't sync} & \textbf{IO Thorns}                                                               & \textbf{Old Macro} & \textbf{Driver BC} & \textbf{Scheduled SYNC} \\ \hline
+off & schedule only & nothing & nothing & nothing & allowed & ignored & honored \\ \hline
+warn-only & schedule only & warn & warn & nothing & allowed & ignored & honored \\ \hline
+mixed-warn & \begin{tabular}[c]{@{}l@{}}driver where possible,\\ schedule otherwise\end{tabular} & \begin{tabular}[c]{@{}l@{}}sync if driver,\\ warn otherwise\end{tabular} & warn & \begin{tabular}[c]{@{}l@{}}warn for driver bc,\\ nothing otherwise\end{tabular} & allowed & allowed & ignored for driver bc \\ \hline
+mixed-error          & \begin{tabular}[c]{@{}l@{}}driver where possible,\\ schedule otherwise\end{tabular}   & \begin{tabular}[c]{@{}l@{}}sync if driver,\\ error otherwise\end{tabular} & error                     & \begin{tabular}[c]{@{}l@{}}error for driver bc,\\ nothing otherwise\end{tabular} & allowed                           & allowed                           & ignored for driver bc  \\ \hline
+psync-only & driver only & driver only & error & error & error & required & ignored \\ \hline
+\end{tabular}
+\caption{Summary of modes and meanings for the \texttt{psync\_mode} parameter.}
+\label{tab:psync}
+\end{table}
+
 \item [{\tt terminate}]
 Condition on which to terminate evolution loop [{\tt iteration}] \{{\tt never, iteration, time, runtime, any, all}\}
 
