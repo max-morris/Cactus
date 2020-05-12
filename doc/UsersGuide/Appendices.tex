@@ -1978,41 +1978,41 @@ Terminate evolution loop after a certain elapsed runtime (in minutes); set to ze
 The \texttt{psync\_mode} parameter defines the behavior of the automatic pre-synchronization of grid functions. A summary of the different modes available is available in Table~\ref{tab:psync}.
 
 The meaning of modes is as follows:
-\begin{itemize}
-\item \texttt{psync\_mode=off}: Cactus behaves as it did prior to the inclusion of PreSync. READS and
+\begin{description}
+\item[psync\_mode=off]: This is the default. Cactus behaves as it did prior to the inclusion of PreSync. READS and
 WRITES declarations in the schedule have no effect. Synchronization of ghost zones only happens when
 a SYNC statement is encountered in the schedule.
-\item \texttt{psync\_mode=warn-only}: The same as \texttt{psync\_off}, except that now, if the Driver
+\item[psync\_mode=warn-only] The same as \texttt{psync\_off}, except that now, if the Driver
 believes that a SYNC is required but not executed, it issues a warning.
-\item \texttt{psync\_mode=mixed-warn}:
+\item[psync\_mode=mixed-warn]
 In this mode, Cactus tries to honor both SYNC statements in
 the schedule as well as providing automatic synchronization based on the READS/WRITES declarations.
 It may, however, issue warnings about possible problems.
-\item \texttt{psync\_mode=mixed-error}
+\item[psync\_mode=mixed-error]
 In this mode, Cactus tries to honor both SYNC statements in
 the schedule as well as providing automatic synchronization based on the READS/WRITES declarations.
 It may, however, issue errors when encountering possible problems.
-\item \texttt{psync\_mode=psync-only}:
+\item[psync\_mode=psync-only]
 In this mode, Cactus will only synchronize ghost zones based on READS/WRITES declarations and will
 ingore SYNC statements in the schedule.
-\end{itemize}
+\end{description}
 
-\begin{itemize}
-\item ``Sync triggered by'' describes what triggers the synchronization of ghost zones for a grid function. ``Schedule only,'' in this context, means an explicit declaration of \texttt{SYNC} in the schedule. ``Driver,'' in this context, means that a synchronization is triggered because the schedule requires the variable to be valid everywhere, but it is only valid in the interior.
+\begin{description}
+\item[Sync triggered by] describes what triggers the synchronization of ghost zones for a grid function. ``Schedule only,'' in this context, means an explicit declaration of \texttt{SYNC} in the schedule. ``Driver,'' in this context, means that a synchronization is triggered because the schedule requires the variable to be valid everywhere, but it is only valid in the interior.
 ``sync if driver'' indicates that a physical boundary condition is registered for the grid function, and
 thus the driver can update the exterior of the grid function.
-\item ``Can sync'' describes the condition in which the interior of a grid function contains valid data, but the exterior does not. This will produce a warning in \texttt{warn-only} mode, as it indicates a possibly incorrect synchronization.
-\item ``Can't sync'' describes a situation where a read of the interior is needed (e.g. to perform a synchronization), but (as far as the driver knows) the interior of the grid function is not valid.
-\item ``IO Thorns'' describes what the various IO thorns should do if they are asked to write out a
+\item[Can sync] describes the condition in which the interior of a grid function contains valid data, but the exterior does not. This will produce a warning in \texttt{warn-only} mode, as it indicates a possibly incorrect synchronization.
+\item[Can't sync] describes a situation where a read of the interior is needed (e.g. to perform a synchronization), but (as far as the driver knows) the interior of the grid function is not valid.
+\item[IO Thorns] describes what the various IO thorns should do if they are asked to write out a
 grid function if they find invalid data in the interior and/or exterior of a grid function.
-\item ``Old Macro'' refers to the familiar \texttt{DECLARE\_CCTK\_ARGUMENTS}, which declares
-all the grid functions visible to a thorn. The \texttt{DECLARE\_CCTK\_ARGUMENTS\_func\_name} macros
+\item[Old Macro] refers to the familiar \texttt{DECLARE\_CCTK\_ARGUMENTS}, which declares
+all the grid functions visible to a thorn. The \texttt{DECLARE\_CCTK\_ARGUMENTS\_CHECKED(func\_name)} macros
 only declare arguments visible based on the READS/WRITES declarations.
-\item ``Driver BC'' refers to boundary condition update functions registered via
+\item[Driver BC] refers to boundary condition update functions registered via
 \texttt{Driver\_SelectVarForBC} or \texttt{Driver\_SelectGroupForBC}. Once registered, this function
 will be called whenever data is needed in the boundary for the grid function or group.
-\item ``Scheduled SYNC'' refers to the explicit SYNC declaration in the \texttt{schedule.ccl}.
-\end{itemize}
+\item[Scheduled SYNC] refers to the explicit SYNC declaration in the \texttt{schedule.ccl}.
+\end{description}
 \begin{table}[]
 \scriptsize
 \begin{tabular}{|l|l|l|l|l|l|l|l|}
