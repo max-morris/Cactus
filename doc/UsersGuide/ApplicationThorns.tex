@@ -1645,7 +1645,7 @@ should include at the top of the file the header
 // This second version of Arguments needs
 // to be present for the function-specific version
 // of the DECLARE_CCTK_ARGUMENTS, i.e.
-// DECLARE_CCTK_ARGUMENTS_<function name>
+// DECLARE_CCTK_ARGUMENTS_CHECKED(<function name>)
 // See text below.
 #include "cctk_Arguments_Checked.h"
 \end{verbatim}
@@ -1662,7 +1662,7 @@ to contain:
 \end{itemize}
 These variables must be declared at the start of the routine using
 the macro \texttt{DECLARE\_CCTK\_ARGUMENTS}. Alternatively, they can
-be declared with \texttt{DECLARE\_CCTK\_ARGUMENTS\_<function name>},
+be declared with \texttt{DECLARE\_CCTK\_ARGUMENTS\_CHECKED(<function name>}),
 where \texttt{<function name>} is the name of the function as declared
 in \texttt{schedule.ccl}. The function-name specific version of the macro
 will declare only those variables identified by READS/WRITES directives
@@ -1744,12 +1744,17 @@ as the standard Cactus variables. The source file should look like
 c     I'm very cautious, so I want to declare all variables
       implicit none
 
-      DECLARE_CCTK_ARGUMENTS_MyFRoutine
+      DECLARE_CCTK_ARGUMENTS_CHECKED(MyFRoutine)
 c Note: It is also possible to use
 c     DECLARE_CCTK_ARGUMENTS
 c However, this latter form will declare all variables
 c available to the thorn and not simply those listed
 c in the READS/WRITES clauses of the schedule.ccl declaration.
+c
+c Note: It is also possible to use all caps for the function
+c name when writing in Fortran. Thus, the following also works:
+c
+c     DECLARE_CCTK_ARGUMENTS_CHECKED(MYFROUTINE)
 
       integer flag
 
@@ -1763,7 +1768,7 @@ c in the READS/WRITES clauses of the schedule.ccl declaration.
 
       implicit none
 
-      DECLARE_CCTK_ARGUMENTS_MyNewRoutine
+      DECLARE_CCTK_ARGUMENTS_CHECKED(MyNewRoutine)
       DECLARE_CCTK_PARAMETERS
       integer flag
 
@@ -1898,7 +1903,7 @@ and uses Cactus parameters. The source file should look like
 
 void MyCRoutine(CCTK_ARGUMENTS)
 {
-  DECLARE_CCTK_ARGUMENTS_MyCRoutine
+  DECLARE_CCTK_ARGUMENTS_CHECKED(MyCRoutine)
   DECLARE_CCTK_PARAMETERS
 
   /* Here goes your code */
