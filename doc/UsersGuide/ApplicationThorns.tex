@@ -465,7 +465,6 @@ schedule <\var{name}> at <\var{time bin}> [\var{other options}]
   STORAGE:     [\var{group list with timelevels}]
   READS:       [\var{variable or group list with region specification}]
   WRITES:      [\var{variable or group list with region specification}]
-  INVALIDATES: [\var{variable or group list with region specification}]
   TRIGGERS:    [\var{group list}]
   SYNC:        [\var{group list}]
 \} "\var{A description}"
@@ -554,45 +553,47 @@ thorn, fully qualified parameter names of the form
 \var{timelevels} can be requested, which is equivalent to the {\tt STORAGE}
 statement being absent.
 
-\item[\texttt{READS/WRITES/INVALIDATES}] \texttt{READS/WRITES/INVALIDATES} are used to
+\item[\texttt{READS/WRITES}] \texttt{READS/WRITES} are used to
   declare which grid variables are read/written by the routine. This information is
   used e.g.\ to determine which variables need to be synchronized, copied between host
   and device for OpenCL or CUDA kernel, or poisoned as part of error checking. 
 
-  READS/WRITE/INVALIDATES directives can be applied to either a variable or a group of
+  READS/WRITE directives can be applied to either a variable or a group of
   variables and may also contain a region specification. The region specification can
   be EVERYWHERE, INTERIOR, or BOUNDARY. If a function needs to read a given grid function
   everywhere and only the interior is valid (i.e. has been written to), then a synchronization
   is required and will happen automatically if enabled with the Cactus parameter \texttt{psync\_mode}.
 
   When grid functions are updated in this way, not only ghost zones, but boundary zones
-  will be updated if a boundary function was registered using either
-  \texttt{Boundary\_RegisterPhysicalBC} or \texttt{Driver\_RegisterPhysicalBC}. The
-  arguments to both functions are the same:
+  will be updated by the drier.  Use either the function
+  \texttt{Driver\_SelectGroupForBC} or \texttt{Driver\_SelectVarForBC} to tell the driver how it should update a group or variable. The
+  arguments to both functions are the same as those found in the
+  Boundary thorn, but with the prefix \texttt{Boundary\_} instead of
+  \texttt{Driver\_}:
 
 \begin{verbatim}
-Driver_RegisterPhysicalBC(CCTK_POINTER cctkGH,
-                          phys_bc_fn_ptr function_pointer,
-                          CCTK_STRING bc_name)
+Driver_SelectGroupForBC(CCTK_ARGUMENTS,
+                        CCTK_INT faces,
+                        CCTK_INT width,
+                        CCTK_INT table_handle,
+                        CCTK_STRING group_name,
+                        CCTK_STRING bc_name)
+
+Driver_SelectVarForBC(CCTK_ARGUMENTS,
+                      CCTK_INT faces,
+                      CCTK_INT width,
+                      CCTK_INT table_handle,
+                      CCTK_STRING var_name,
+                      CCTK_STRING bc_name)
 \end{verbatim}
 
-The function pointer (\texttt{phys\_bc\_fn\_ptr}) takes the following arguments:
+Note that the above two functions, unlike their similarly named components in the Boundary thorn, only need to be called once. The information they provide will then be used each time the driver synchronizes the named grid function or group.
 
-\begin{verbatim}
-(CCTK_POINTER cctkGH, CCTK_INT num_vars, CCTK_INT *var_indices,  
- CCTK_INT *faces, CCTK_INT *widths, CCTK_INT *table_handles)
-\end{verbatim}
+It is possible, however, that the thorn you are creating does not know the correct READS/WRITES information at compile time. I/O thorns, for
+example, do not know which grid functions they will access until run time. Likewise, the Method of Lines thorn does not know which grid functions it is operating on until run time.
 
-\begin{itemize}
-\item \texttt{cctkGH}	pointer to the grid hierarchy
-\item \texttt{num\_vars}	number of entries passed in the following three arrays
-\item \texttt{var\_indices}	array of \texttt{num\_vars} variable indices selected for this boundary condition
-\item \texttt{faces}	array of \texttt{num\_vars} faces specifications (see section 2.4)
-\item \texttt{widths}	array of \texttt{num\_vars} boundary widths (see below)
-\item \texttt{table\_handles}	array of \texttt{num\_vars} table handles
-\end{itemize}
-
-The table handles hold extra arguments for each application of the boundary condition. The four arrays are sorted first on table handle, and then on variable index. This way variables which have precisely the same boundary condition are grouped together, and within this grouping variables are sorted by index, so that variable groups are stored together. In many cases this sorting will allow a more efficient implementation of the boundary condition. (At the moment it is not clear how face information should be considered in the sorting, so it is not.) A null pointer can be passed for \texttt{function\_pointer}, in which case no routine is executed when \texttt{Driver\_ApplyPhysicalBCs} is called.
+For situations like these, we have the following functions which can be used to check READS/WRITES data and perform synchronization at run time:
+\texttt{Driver\_RequireValidData}, \texttt{Driver\_NotifyDataModified}, \texttt{Driver\_GetValidRegion}, and \texttt{Driver\_GetValidRegion}. For details on these functions, please consult the appendix.
 
 \item[\texttt{TRIGGERS}] \texttt{TRIGGERS} is used when the routine is
 registered at \texttt{ANALYSIS}.  This is a special time bin; a routine
