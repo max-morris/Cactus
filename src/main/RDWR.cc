@@ -138,7 +138,7 @@ void parse(const char *str,rdwr_t rdwr,cFunctionData* func,std::set<RDWR_entry>&
             for(int vi=i0;vi<iN;vi++) {
                 add_entry(vi,tl,rdwr,wh,func,s);
             }
-        } else if(use_psync) {
+        } else if(!CCTK_EQUALS(presync_mode, "off")) {
             CCTK_VError(__LINE__, __FILE__, "Cactus",
                         "Invalid variable or group name '%s' in %s for routine %s::%s",
                         fullvar,rdwr_s,func->thorn,func->routine);
@@ -255,7 +255,10 @@ extern "C"
 int CCTK_HasAccess(const cGH *cctkGH, int var_index)
 {
   DECLARE_CCTK_PARAMETERS;
-  if(!psync_error)
+
+  static bool presync_only = CCTK_EQUALS(presync_mode, "presync-only");
+
+  if(!presync_only)
     return true;
 
   cFunctionData const * const current_function = CCTK_ScheduleQueryCurrentFunction(cctkGH);
