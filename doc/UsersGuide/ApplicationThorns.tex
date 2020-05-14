@@ -3563,11 +3563,13 @@ line in a config file is a backslash `\texttt{$\backslash$}', the
 following line is treated as a continuation of the current line.
 Options include test specific absolute and relative tolerances, thorn
 specific absolute and relative tolerances, the number of processors required
-to run, and file extensions. The configuration file has the form:
+to run, possible postprocessing required to correctly compare numbers,
+and file extensions. The configuration file has the form:
 
 \begin{alltt}
 ABSTOL  <\var{thorn_absolute_tolerance}> [\var{filename_pattern}]
 RELTOL  <\var{thorn_relative_tolerance}> [\var{filename_pattern}]
+POSTPROC <\var{util_program_name}> [\var{filename_pattern}]
 NPROCS  <\var{thorn_nprocs}>
 EXTENSIONS  <\var{extension_1} \var{extension_2} \var{extension_3}>
 
@@ -3575,6 +3577,7 @@ TEST <\var{test_example}>
 \{
   ABSTOL <\var{absolute_tol}> [\var{filename_pattern}]
   RELTOL <\var{relative_tol}> [\var{filename_pattern}]
+  POSTPROC <\var{util_program_name}> [\var{filename_pattern}]
   NPROCS <\var{nprocs}>
 \}
 \end{alltt}
@@ -3602,6 +3605,7 @@ RELTOL 1e-12 gxx
 More specific tolerances can be specified for all the tests of a thorn
 or just within a test's block. It is an error if a regular expression
 matches more than one filename.
+
 %%%
 The \texttt{NPROCS} option specifies the number of processors required to
 run a given testsuite \var{test\_example} or all testsuites of a thorn
@@ -3631,6 +3635,73 @@ RELTOL  \var{1e-12}
 would use an absolute tolerance of $10^{-5}$ and a relative tolerance of
 $10^{-12}$ when running \verb|test_rad| and an absolute tolerance of $10^{-8}$
 and a relative tolerance of $10^{-12}$ when running all other tests.
+
+In addition, postprocessing can be specified. By means of this mechanism,
+hdf5 files can be converted into text, or ascii files whose contents are re-ordered
+by running on multiple processes can be compared in a consistent manner.
+
+The postproc directive is followed by one or two parameters. The first is the
+name of the postproc command, which should be an executable Linux program stored
+in the thorn's util directory. The second is a regular expression which matches
+the files to be processed (if no regular expression is provided, the expressin ".*" will be used, which will match anything).
+
+The program should receive a single argument, a file name, and from it the program
+should produce columns of ascii formatted floating
+point numbers similar to what the IOASCII routines produce.
+The test system will run the postprocesser on both the files
+in the repo and the newly generated files and compare the output.
+
+For example:
+
+\begin{alltt}
+TEST \var{sol-wave-test}
+\{
+  POSTPROC \var{sort-txy.pl} \var{asc\$}
+\}
+\end{alltt}
+
+In the above example, files ending in ``asc'' are read using the sort-txy.pl
+program, and the output is streamed as text through the testing mechanism.
+
+In this example, sort-txy.pl sorts columns first by time, then x, then y
+value, removing (for 2D simulations) the problems with ordering of data
+that sometimes occurr in simulations with more than one processor. The code
+for this example follows:
+\begin{verbatim}
+#!/usr/bin/env perl
+use strict;
+open(FD, $ARGV[0]) or die;
+
+my $data = {};
+my %t = ();
+my %x = ();
+my %y = ();
+
+while(<FD>) {
+    # skip blank or comment lines 
+    next if(/^\s(#.*)$/);
+
+    # Remove trailing spaces
+    s/\s+$//;
+
+    my @cols = split(/\s+/);
+    if($#cols < 2) {
+        print;
+        next;
+    }
+    my ($t,$x,$y) = ($cols[0], $cols[1], $cols[2]);
+    $t{$t} = 1; $x{$x} = 1; $y{$y} = 1;
+    $data->{$t}->{$x}->{$y} = \@cols;
+}
+for my $t (sort keys %t) {
+    for my $x (sort keys %x) {
+        for my $y (sort keys %y) {
+            print join(" ",@{$data->{$t}->{$x}->{$y}}),"\n"
+                if(defined($data->{$t}->{$x}->{$y}));
+        }
+    }
+}
+\end{verbatim}
 
 For details on running the test suites, see Section~\ref{sec:testing}.
 

@@ -215,7 +215,7 @@ sub ParseParFile
 
 =item ParseTestConfigs($testdata, $config_data, $rundata)
  Parses the test.ccl files for absolute
- and relative tolerance and nprocs used. 
+ and relative tolerance, for postprocessers, and nprocs used. 
 
 =back
 
@@ -261,6 +261,16 @@ sub ParseTestConfigs
           }
           $rundata->{"$thorn ABSTOL"}{$varRegex}=$newtol;
         }
+        elsif ($line =~ m/^\s*POSTPROC\s*([\w\.:-]+)\s*(\S*)\s*$/i)
+        {
+          my $procfile=$1;
+          my $varRegex=$2;
+          if ( $varRegex =~ m/^$/i ) {
+             # No regular expression given, setting regex to ".*"
+             $varRegex=".*";
+          }
+          $rundata->{"$thorn POSTPROC"}{$varRegex} = $procfile;
+        }
         elsif ($line =~ m/^\s*RELTOL\s*(\S*)\s*(\S*)\s*$/i)
         {
           my $newtol=$1;
@@ -281,12 +291,14 @@ sub ParseTestConfigs
         }
         elsif ($line =~ m/^\s*TEST\s*(.*)/i)
         {
-          my ($test, $ABSTOL, $RELTOL, $NPROCS);
-          ($test, $ABSTOL, $RELTOL, $NPROCS, $line_number) =
+          my ($test, $ABSTOL, $RELTOL, $POSTPROC, $NPROCS);
+          ($test, $ABSTOL, $RELTOL, $POSTPROC, $NPROCS, $line_number);
+          ($test, $ABSTOL, $RELTOL, $POSTPROC, $NPROCS, $line_number) =
             &ParseTestBlock($line_number, $config_file, \@config);
           $rundata->{"$thorn $test ABSTOL"} = $ABSTOL;
           $rundata->{"$thorn $test RELTOL"} = $RELTOL;
           $rundata->{"$thorn $test NPROCS"} = $NPROCS;
+          $rundata->{"$thorn $test POSTPROC"} = $POSTPROC;
         }
         else
         {
@@ -305,7 +317,7 @@ sub ParseTestConfigs
 =over 
 
 =item ParseTestBlock($line_number, $data)
- This subroutine parses for ABSTOL, RELTOL, and NPROCS.
+ This subroutine parses for ABSTOL, RELTOL, POSTPROC, and NPROCS.
 
 =back
 
@@ -316,7 +328,7 @@ sub ParseTestBlock
 {
   my ($line_number, $file_name, $data) = @_;
   my ($Test, $NPROCS) = ();
-  my (%ABSTOL, %RELTOL) = (); 
+  my (%ABSTOL, %RELTOL, %POSTPROC) = (); 
 
   $data->[$line_number] =~ m/^\s*TEST\s+(.*)/i;
 
@@ -354,6 +366,17 @@ sub ParseTestBlock
         $RELTOL{$varRegex} = $newtol;
         next;
       }
+      elsif ($data->[$line_number] =~ m/^\s*POSTPROC\s*([\w\.:-]+)\s*(\S*)\s*$/i)
+      {
+        my $postproc=$1;
+        my $varRegex=$2;
+        if ( $varRegex =~ m/^$/i ) {
+           # No regular expression given, setting regex to ".*"
+           $varRegex=".*";
+        }
+        $POSTPROC{$varRegex} = $postproc;
+        next;
+      }
       elsif ($data->[$line_number] =~ m/^\s*NPROCS\s+(\d+)\s*$/i)
       {
         $NPROCS = $1;
@@ -373,7 +396,7 @@ sub ParseTestBlock
       print STDERR "Error parsing test config $file_name block $Test: unexpectedly reached end of file \n";
     }
   }
-  return ($Test, \%ABSTOL, \%RELTOL, $NPROCS, $line_number);
+  return ($Test, \%ABSTOL, \%RELTOL, \%POSTPROC, $NPROCS, $line_number);
 }
 
 ############################################################
@@ -1724,8 +1747,58 @@ sub CompareTestFiles
 
       if ( -s $newfile && -s $oldfile)
       {
-        open (INORIG, "<$oldfile") || print "Warning: Archive file $oldfile not found";
-        open (INNEW,  "<$newfile") || print "Warning: Test file $newfile not found";
+        # Compute the thorn directory relative
+        # to the parameter file.
+        my $thorndir = $oldfile;
+        for(my $i=0;$i<3;$i++) {
+            $thorndir =~ s{(.*)(/.*)}{$1};
+        }
+
+        my $postproc_cfg = $runconfig->{"$thorn $test POSTPROC"};
+        my $prog = undef;
+        if(defined($postproc_cfg)) {
+            for my $pat (keys %$postproc_cfg) {
+                if($newfile =~ /$pat/) {
+                    $prog = $postproc_cfg->{$pat}; 
+                    break;
+                }
+            }
+        }
+        my $postproc_file = "$thorndir/util/$prog";
+        # if the postprocessing file exsists, use it to read the file
+        my $read_old;
+        my $read_new;
+        if(defined($prog)) {
+            print("Using '$postproc_file' for '$newfile'\n");
+            my $fail = 0;
+            unless(-x $postproc_file) {
+                print "ERROR: The postproc file '$postproc_file' does not exist or is not executable.\n";
+                $fail++;
+            }
+            unless(-r $oldfile) {
+                print "ERROR: The file: '$oldfile' does not exist or is not readable.\n";
+                $fail++;
+            }
+            unless(-r $newfile) {
+                print "ERROR: The file: '$newfile' does not exist or is not readable.\n";
+                $fail++;
+            }
+            if($fail) {
+                # All strong failures require weak failures to be set,
+                # or they have no effect on the success of
+                # the test.
+                $rundata->{"$thorn $test NFAILSTRONG"} += $fail;
+                $rundata->{"$thorn $test NFAILWEAK"} += $fail;
+                next;
+            }
+            $read_old = "$postproc_file $oldfile |";
+            $read_new = "$postproc_file $newfile |";
+        } else {
+            $read_old = "<$oldfile";
+            $read_new = "<$newfile";
+        }
+        open(INORIG, $read_old) or warn "Warning: Failed opening '$read_old'";
+        open(INNEW, $read_new) or warn "Warning: Failed opening '$read_new'";
 
         while (my $oline = <INORIG>)
         {
@@ -1834,6 +1907,25 @@ sub CompareTestFiles
           $rundata->{"$thorn $test $file NFAILSTRONG"}++;
         }
 
+        # Read remaining input to avoid broken pipe errors
+        while($_ = <INORIG>) {}
+        # Close and check return code if this was a process
+        my $rc = close(INORIG);
+        unless($rc) {
+            warn "Warning: failure reported on close for '$read_old'";
+            $rundata->{"$thorn $test $file NFAILWEAK"}++;
+            $rundata->{"$thorn $test $file NFAILSTRONG"}++;
+        }
+
+        # Read remaining input to avoid broken pipe errors
+        while($_ = <INNEW>) {}
+        # Close and check return code if this was a process
+        $rc = close(INNEW);
+        unless($rc) {
+            warn "Warning: failure reported on close for '$read_new'";
+            $rundata->{"$thorn $test $file NFAILWEAK"}++;
+            $rundata->{"$thorn $test $file NFAILSTRONG"}++;
+        }
       }
       elsif (!-e $newfile && -s $oldfile)
       {
