@@ -3,9 +3,9 @@
 \renewcommand{\thepage}{\Alph{part}\arabic{page}}
 
 In this chapter all \code{Driver\_*} Cactus functions are described.
-These functions are callable from C thorns.
+These functions are callable from C or Fortran thorns.
 
-In the functions below, \texttt{where} refers to an integer whose values are defined in \texttt{cctk\_Schedule.h}. The basic values are \texttt{WH\_INTERIOR}, \texttt{WH\_BOUNDARY}, and \texttt{WH\_GHOSTS}. Other values are created by bitwise or: \texttt{WH\_EXTERIOR} = \texttt{WH\_INTERIOR} \textbar~\texttt{WH\_GHOSTS}, \texttt{WH\_EVERYWHERE} = \texttt{WH\_INTERIOR} \textbar~\texttt{WH\_EXTERIOR}.
+In the functions below, \texttt{where} refers to an integer whose values are defined in \texttt{cctk\_Constants.h}. The basic values are \texttt{WH\_INTERIOR}, \texttt{WH\_BOUNDARY}, and \texttt{WH\_GHOSTS}. Other values are created by bitwise or: \texttt{WH\_EXTERIOR} = \texttt{WH\_INTERIOR} \textbar~\texttt{WH\_GHOSTS}, \texttt{WH\_EVERYWHERE} = \texttt{WH\_INTERIOR} \textbar~\texttt{WH\_EXTERIOR}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
