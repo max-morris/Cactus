@@ -948,7 +948,7 @@ schedule [GROUP] <\var{function name}|\var{group name}> AT|IN <\var{time}> \verb
   variables and may also contain a region specification. The region specification can
   be EVERYWHERE, INTERIOR, or BOUNDARY. If a function needs to read a given grid function
   everywhere and only the interior is valid (i.e. has been written to), then a synchronization
-  is required and will happen automatically if enabled with the Cactus parameter \texttt{psync\_mode}.
+  is required and will happen automatically if enabled with the Cactus parameter \texttt{presync\_mode}.
 
   When grid functions are updated in this way, not only ghost zones, but boundary zones
   will be updated by the drier.  Use either the function
@@ -2015,25 +2015,25 @@ Final iteration number [{\tt 10}]
 \item [{\tt max\_runtime}]
 Terminate evolution loop after a certain elapsed runtime (in minutes); set to zero to disable this termination condition [{\tt 0}]
 
-\item [{\tt psync\_mode}]
-The \texttt{psync\_mode} parameter defines the behavior of the automatic pre-synchronization of grid functions. A summary of the different modes available is available in Table~\ref{tab:psync}.
+\item [{\tt presync\_mode}]
+The \texttt{presync\_mode} parameter defines the behavior of the automatic pre-synchronization of grid functions. A summary of the different modes available is available in Table~\ref{tab:presync}.
 
 The meaning of modes is as follows:
 \begin{description}
-\item[psync\_mode=off]: This is the default. Cactus behaves as it did prior to the inclusion of PreSync. READS and
+\item[off]: This is the default. Cactus behaves as it did prior to the inclusion of PreSync. READS and
 WRITES declarations in the schedule have no effect. Synchronization of ghost zones only happens when
 a SYNC statement is encountered in the schedule.
-\item[psync\_mode=warn-only] The same as \texttt{psync\_off}, except that now, if the Driver
+\item[warn-only] The same as \texttt{presync\_off}, except that now, if the Driver
 believes that a SYNC is required but not executed, it issues a warning.
-\item[psync\_mode=mixed-warn]
+\item[mixed-warn]
 In this mode, Cactus tries to honor both SYNC statements in
 the schedule as well as providing automatic synchronization based on the READS/WRITES declarations.
 It may, however, issue warnings about possible problems.
-\item[psync\_mode=mixed-error]
+\item[mixed-error]
 In this mode, Cactus tries to honor both SYNC statements in
 the schedule as well as providing automatic synchronization based on the READS/WRITES declarations.
 It may, however, issue errors when encountering possible problems.
-\item[psync\_mode=psync-only]
+\item[presync-only]
 In this mode, Cactus will only synchronize ghost zones based on READS/WRITES declarations and will
 ingore SYNC statements in the schedule.
 \end{description}
@@ -2058,15 +2058,15 @@ will be called whenever data is needed in the boundary for the grid function or 
 \scriptsize
 \begin{tabular}{|l|l|l|l|l|l|l|l|}
 \hline
-\textbf{psync\_mode} & \textbf{Synch triggered by} & \textbf{Can sync}                                                   & \textbf{Can't sync} & \textbf{IO Thorns}                                                               & \textbf{Old Macro} & \textbf{Driver BC} & \textbf{Scheduled SYNC} \\ \hline
+\textbf{presync\_mode} & \textbf{Synch triggered by} & \textbf{Can sync}                                                   & \textbf{Can't sync} & \textbf{IO Thorns}                                                               & \textbf{Old Macro} & \textbf{Driver BC} & \textbf{Scheduled SYNC} \\ \hline
 off & schedule only & nothing & nothing & nothing & allowed & ignored & honored \\ \hline
 warn-only & schedule only & warn & warn & nothing & allowed & ignored & honored \\ \hline
 mixed-warn & \begin{tabular}[c]{@{}l@{}}driver where possible,\\ schedule otherwise\end{tabular} & \begin{tabular}[c]{@{}l@{}}sync if driver,\\ warn otherwise\end{tabular} & warn & \begin{tabular}[c]{@{}l@{}}warn for driver bc,\\ nothing otherwise\end{tabular} & allowed & allowed & ignored for driver bc \\ \hline
 mixed-error          & \begin{tabular}[c]{@{}l@{}}driver where possible,\\ schedule otherwise\end{tabular}   & \begin{tabular}[c]{@{}l@{}}sync if driver,\\ error otherwise\end{tabular} & error                     & \begin{tabular}[c]{@{}l@{}}error for driver bc,\\ nothing otherwise\end{tabular} & allowed                           & allowed                           & ignored for driver bc  \\ \hline
-psync-only & driver only & driver only & error & error & error & required & ignored \\ \hline
+presync-only & driver only & driver only & error & error & error & required & ignored \\ \hline
 \end{tabular}
-\caption{Summary of modes and meanings for the \texttt{psync\_mode} parameter.}
-\label{tab:psync}
+\caption{Summary of modes and meanings for the \texttt{presync\_mode} parameter.}
+\label{tab:presync}
 \end{table}
 
 \item [{\tt terminate}]

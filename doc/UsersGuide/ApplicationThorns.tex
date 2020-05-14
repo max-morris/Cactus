@@ -562,7 +562,7 @@ statement being absent.
   variables and may also contain a region specification. The region specification can
   be EVERYWHERE, INTERIOR, or BOUNDARY. If a function needs to read a given grid function
   everywhere and only the interior is valid (i.e. has been written to), then a synchronization
-  is required and will happen automatically if enabled with the Cactus parameter \texttt{psync\_mode}.
+  is required and will happen automatically if enabled with the Cactus parameter \texttt{presync\_mode}.
 
   When grid functions are updated in this way, not only ghost zones, but boundary zones
   will be updated by the drier.  Use either the function
