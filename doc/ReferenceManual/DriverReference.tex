@@ -1,0 +1,236 @@
+\begin{cactuspart}{\code{Driver\_*} Functions Reference}{}{$Revision$}
+\label{part:DriverReference}
+\renewcommand{\thepage}{\Alph{part}\arabic{page}}
+
+In this chapter all \code{Driver\_*} Cactus functions are described.
+These functions are callable from C thorns.
+
+In the functions below, \texttt{where} refers to an integer whose values are defined in \texttt{cctk\_Schedule.h}. The basic values are \texttt{WH\_INTERIOR}, \texttt{WH\_BOUNDARY}, and \texttt{WH\_GHOSTS}. Other values are created by bitwise or: \texttt{WH\_EXTERIOR} = \texttt{WH\_INTERIOR} \textbar~\texttt{WH\_GHOSTS}, \texttt{WH\_EVERYWHERE} = \texttt{WH\_INTERIOR} \textbar~\texttt{WH\_EXTERIOR}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Functions Alphabetically}
+
+\begin{Lentry}
+
+\item[\code{Driver\_GetValidRegion}] [\pageref{Driver-GetValidRegion}]
+Gets the region where a grid function is valid.
+
+\item[\code{Driver\_NotifyDataModified}] [\pageref{Driver-NotifyDataModified}]
+Notify the driver as to which region of which grid function you have updated.
+
+\item[\code{Driver\_RequireValidData}] [\pageref{Driver-RequireValidData}]
+Ask the driver to provide valid data in the region you specify.
+
+\item[\code{Driver\_SelectGroupForBC}] [\pageref{Driver-SelectGroupForBC}]
+Tell the driver how to update the boundary conditions for the grid functions in a group.
+
+\item[\code{Driver\_SelectVarForBC}] [\pageref{Driver-SelectVarForBC}]
+Tell the driver how to update the boundary conditions for a grid functions.
+
+\item[\code{Driver\_SetValidRegion}] [\pageref{Driver-SetValidRegion}]
+Sets the region where a grid function is valid.
+
+\end{Lentry}
+
+\begin{FunctionDescription}{Driver\_GetValidRegion}
+\label{Driver-GetValidRegion}
+% yyy
+Gets the region where a grid function is valid.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int where = CCTK_GetValidRegion(int variable_index ,int time_level);
+
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{where}
+Region where the given grid variable is valid at the given time level.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{variable\_index}
+The index of a grid function.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{time\_level}
+The time level of a grid function.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{Driver\_SetValidRegion}{Driver-SetValidRegion}
+Sets the region where a grid function is valid.
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{Abort}
+Assertions may be triggered for invalid variables or time levels.
+\end{Error}
+\end{ErrorSection}
+% zzz
+\end{FunctionDescription}
+
+\begin{FunctionDescription}{Driver\_NotifyDataModified}
+\label{Driver-NotifyDataModified}
+Notify the driver as to which region of which grid function you have updated.
+% yyy
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int zero = CCTK_NotifyDataModified(const cGH *cctkGH,
+    int *variable_list,
+    int *time_level_list,
+    int num_variables,
+    int *where_list);
+
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{zero}
+Always returns zero.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{cctkGH}
+Pointer to CCTK grid hierarchy
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{variable\_list}
+An array of \texttt{num\_variables} grid function indexes.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{time\_level\_list}
+An array of \texttt{num\_variables} time levels.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{num\_variables}
+The number of variable index, time level, where tuples.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{where\_list}
+An array of \texttt{num\_variables} where specifications describing
+where valid data was modified for a given grid function and time level.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{Driver\_RequireValidData}{Driver-RequireValidData}
+Ask the driver to provide valid data in the region you specify.
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{Abort}
+Assertions may be triggered for invalid variables or time levels.
+\end{Error}
+\end{ErrorSection}
+% zzz
+\end{FunctionDescription}
+
+\begin{FunctionDescription}{Driver\_RequireValidData}
+\label{Driver-RequireValidData}
+% yyy
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int zero = CCTK_RequireValidData(const cGH *cctkGH,
+    int *variable_list,
+    int *time_level_list,
+    int num_variables,
+    int *where_list);
+
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{zero}
+Always returns zero.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{cctkGH}
+Pointer to CCTK grid hierarchy
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{variable\_list}
+An array of \texttt{num\_variables} grid function indexes.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{time\_level\_list}
+An array of \texttt{num\_variables} time levels.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{num\_variables}
+The number of variable index, time level, where tuples.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{where\_list}
+An array of \texttt{num\_variables} where specifications describing
+where valid data is needed for a given grid function and time level.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{Driver\_NotifyDataModified}{Driver-NotifyDataModified}
+Notify the driver as to which region of which grid function you have updated.
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{Abort}
+Assertions may be triggered for invalid variables or time levels.
+\end{Error}
+\end{ErrorSection}
+% zzz
+\end{FunctionDescription}
+
+\begin{FunctionDescription}{Driver\_SelectGroupForBC}
+\label{Driver-SelectGroupForBC}
+\end{FunctionDescription}
+
+\begin{FunctionDescription}{Driver\_SelectVarForBC}
+\label{Driver-SelectVarForBC}
+\end{FunctionDescription}
+
+\begin{FunctionDescription}{Driver\_SetValidRegion}
+\label{Driver-SetValidRegion}
+\end{FunctionDescription}
+
+\end{cactuspart}

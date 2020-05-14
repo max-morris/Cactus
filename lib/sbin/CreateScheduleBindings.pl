@@ -540,17 +540,17 @@ sub ScheduleBlock
                                         $rhschedule_db->{"\U$thorn\E BLOCK_$block AFTER"},
                                         $rhschedule_db);
 
-  @writes_list = &ScheduleSelectRoutines($thorn, $implementation,
-                                         $rhschedule_db->{"\U$thorn\E BLOCK_$block WRITES"},
-                                         $rhschedule_db);
+  @writes_list = &ScheduleSelectRDWR($thorn, $implementation, "Interior",
+                                     $rhschedule_db->{"\U$thorn\E BLOCK_$block WRITES"},
+                                     $rhinterface_db);
 
-  @reads_list = &ScheduleSelectRoutines($thorn, $implementation,
-                                        $rhschedule_db->{"\U$thorn\E BLOCK_$block READS"},
-                                        $rhschedule_db);
+  @reads_list = &ScheduleSelectRDWR($thorn, $implementation, "Everywhere",
+                                    $rhschedule_db->{"\U$thorn\E BLOCK_$block READS"},
+                                    $rhinterface_db);
 
-  @invalidates_list = &ScheduleSelectRoutines($thorn, $implementation,
-                                        $rhschedule_db->{"\U$thorn\E BLOCK_$block INVALIDATES"},
-                                        $rhschedule_db);
+  @invalidates_list = &ScheduleSelectRDWR($thorn, $implementation, "Everywhere",
+                                          $rhschedule_db->{"\U$thorn\E BLOCK_$block INVALIDATES"},
+                                          $rhinterface_db);
 
   @while_list = &ScheduleSelectVars($thorn, $implementation,
                                     $rhschedule_db->{"\U$thorn\E BLOCK_$block WHILE"},
@@ -762,6 +762,152 @@ sub ScheduleStatement
   return ($buffer, $prototype);
 }
 
+#/*@@
+#  @routine    ScheduleSelectRDWR
+#  @date       Fri May  1 19:40:53 CDT 2020
+#  @author     Roland Haas
+#  @desc
+#  Parses a list of variables and groups and selects valid ones.
+#  @enddesc
+#@@*/
+sub ScheduleSelectRDWR
+{
+  my($thorn, $implementation, $default_region, $group_or_var_list, $rhinterface_db) = @_;
+  my(@groups_or_vars);
+  my(@temp_list, $entry, $timelevels, $vecnum, $region);
+  my($group_or_var, $rdwr);
+  my($other_imp, $other_thorn, $other_group, $foundit, $block);
+
+  @temp_list = split(/,/, $group_or_var_list);
+
+  foreach $entry (@temp_list)
+  {
+    next if($entry =~ m:^\s*$:);
+
+    # Strip off extra miscellaneous info on group- i.e _p(region) bits
+    $entry =~ m/^(.*?)((?:_p)*)(?:\s*(\[[^\[\]]*\]))?(?:\s*\(([^()]*)\))?$/;
+
+    $group_or_var = $1; # main part of name
+
+    $timelevels = ($2 or "");
+
+    $vecnum = ($3 or "");
+
+    $region = ($4 or $default_region);
+
+    if($group_or_var =~ m/^(.+)::(.+)$/)
+    {
+      $other_imp=$1;
+      $group_or_var = $2;
+
+      if(($other_imp !~ m:^\s*$thorn\s*$:i) && ($other_imp !~ m:^\s*$implementation\s*$:i))
+      {
+        # The name has been given completely specified but it isn't this thorn.
+
+        if($rhinterface_db->{"IMPLEMENTATION \U$implementation\E ANCESTORS"} =~ m:\b$other_imp\b:i)
+        {
+          $block = "PUBLIC";
+        }
+        elsif($rhinterface_db->{"IMPLEMENTATION \U$implementation\E FRIENDS"} =~ m:\b$other_imp\b:i)
+        {
+          $block = "PROTECTED";
+        }
+        else
+        {
+          $mess = "Schedule error: Thorn $thorn - group $other_imp\:\:$group_or_var doesn't exist.";
+          $help = "Check thorn $thorn inherits from implementation $other_imp";
+          &CST_error(0,$mess,$help,__LINE__,__FILE__);
+          next;
+        }
+
+        $rhinterface_db->{"IMPLEMENTATION \U$other_imp\E THORNS"} =~ m:(\w+):;
+        $other_thorn = $1;
+
+        $foundit = 0;
+        if($rhinterface_db->{"\U$other_thorn\E $block GROUPS"} =~ m:\b$group_or_var\b:i)
+        {
+          push(@groups_or_vars, "$other_imp\::$group_or_var$timelevels$vecnum($region)");
+          $foundit = 1;
+        }
+        else
+        {
+          foreach $other_group (split(" ",$rhinterface_db->{"\U$other_thorn\E $block GROUPS"}))
+          {
+            if($rhinterface_db->{"\U$other_thorn GROUP $other_group\E"} =~ m:\b$group_or_var\b:i)
+            {
+              push(@groups_or_vars, "$other_imp\::$group_or_var$timelevels$vecnum($region)");
+              $foundit = 1;
+              break;
+            }
+          }
+        }
+        if(!$foundit)
+        {
+          $mess = "Schedule error: Thorn $thorn - group or variable $other_imp\:\:$group_or_var doesn't exist.\n";
+          &CST_error(0,$mess,"",__LINE__,__FILE__);
+        }
+        next;
+      }
+    }
+
+    $foundit = 0;
+    if($rhinterface_db->{"\U$thorn\E PRIVATE GROUPS"} =~ m:\b$group_or_var\b:i)
+    {
+      push(@groups_or_vars, "$thorn\::$group_or_var$timelevels$vecnum($region)");
+      $foundit = 1;
+    }
+    elsif($rhinterface_db->{"\U$thorn\E PROTECTED GROUPS"} =~ m:\b$group_or_var\b:i)
+    {
+      push(@groups_or_vars, "$implementation\::$group_or_var$timelevels$vecnum($region)");
+      $foundit = 1;
+    }
+    elsif($rhinterface_db->{"\U$thorn\E PUBLIC GROUPS"} =~ m:\b$group_or_var\b:i)
+    {
+      push(@groups_or_vars, "$implementation\::$group_or_var$timelevels$vecnum($region)");
+      $foundit = 1;
+    }
+    else
+    {
+      foreach $block ("PRIVATE", "PROTECTED", "PUBLIC")
+      {
+        foreach $group (split(" ",$rhinterface_db->{"\U$thorn\E $block GROUPS"}))
+        {
+          if($rhinterface_db->{"\U$thorn GROUP $group\E"} =~ m:\b$group_or_var\b:i)
+          {
+            if($block eq "PRIVATE")
+            {
+              push(@groups_or_vars, "$thorn\::$group_or_var$timelevels$vecnum($region)");
+              $foundit = 1;
+            }
+            elsif($block eq "PROTECTED")
+            {
+              push(@groups_or_vars, "$implementation\::$group_or_var$timelevels$vecnum($region)");
+              $foundit = 1;
+            }
+            elsif($block eq "PUBLIC")
+            {
+              push(@groups_or_vars, "$implementation\::$group_or_var$timelevels$vecnum($region)");
+              $foundit = 1;
+            }
+            else
+            {
+              die "Unexpected block type $block";
+            }
+          }
+          break if($foundit);
+        }
+        break if($foundit);
+      }
+      if(!$foundit)
+      {
+        $mess = "Schedule error: Thorn $thorn - group or variable $group_or_var doesn't exist.";
+        &CST_error(0,$mess,"",__LINE__,__FILE__);
+      }
+    }
+  }
+
+  return @groups_or_vars;
+}
 
 #/*@@
 #  @routine    ScheduleSelectGroups

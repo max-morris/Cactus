@@ -134,38 +134,21 @@ sub vname
   return $out;
 }
 
-# Name qualified by region
-sub qname
+# Process a parse tree element named "qrname"
+sub qrname
 {
-  my $qname = shift;
-  confess("not a qname ".$qname->dump()) unless($qname->is("qname"));
-  my $vname = $qname->group(0,"vname");
+  my $qrname = shift;
   my $out = "";
-  my $thorn_or_var = $vname->group(0,"name")->substring();
-  if($vname->groupCount() > 1) {
-    $main::thorn = $thorn_or_var;
-    $out = $main::thorn . "::" . $vname->group(1,"name")->substring();
-  } else {
-    $out = $main::thorn . "::" . $thorn_or_var;
-  }
-  my $iter = 1;
-  if($qname->has(1,"region")) {
-    $main::region = $qname->group(1,"region")->substring();
-    $iter++;
-  }
-  $out .= "(" . $main::region . ")";
-  while($qname->has($iter,"qrname")) {
-    my $qrname = $qname->has($iter,"qrname");
-    $out .="," . $main::thorn . "::" . $qrname->group(0,"name")->substring();
-    if($qrname->has(1,"region")) {
-        $main::region = $qrname->group(1,"region")->substring();
+  confess("not a qrname ".$qrname->dump()) unless($qrname->is("qrname"));
+  for my $v (@{$qrname->{children}}) {
+    if($v->is("vname")) {
+      $out .= vname($v);
+    } elsif($v->is("region")) {
+      $out .= "(" . $v->substring() . ")";
     }
-    $out .= "(" . $main::region . ")";
-    $iter++;
   }
   return $out;
 }
-###
 
 sub parse_schedule_statement
 {
@@ -271,33 +254,24 @@ sub parse_schedule_statement
                 }
               }
             } elsif($child->is("writes")) {
-              my $qthorn = "";
-              $main::thorn = $thorn;
-              $main::region = "Interior";
-              for my $qname (@{$child->{children}}) {
-                if($qname->is("qname")) {
+              for my $qrname (@{$child->{children}}) {
+                if($qrname->is("qrname")) {
                   $writes_list .= "," if(defined($writes_list));
-                  $writes_list .= qname($qname);
+                  $writes_list .= qrname($qrname);
                 }
               }
             } elsif($child->is("invalidates")) {
-              my $qthorn = "";
-              $main::thorn = $thorn;
-              $main::region = "Everywhere";
-              for my $qname (@{$child->{children}}) {
-                if($qname->is("qname")) {
-                  $invalidates_list .= "," if(defined($writes_list));
-                  $invalidates_list .= qname($qname);
+              for my $qrname (@{$child->{children}}) {
+                if($qrname->is("qrname")) {
+                  $invalidates_list .= "," if(defined($invalidates_list));
+                  $invalidates_list .= qrname($qrname);
                 }
               }
             } elsif($child->is("reads")) {
-              my $qthorn = "";
-              $main::thorn = $thorn;
-              $main::region = "Everywhere";
-              for my $qname (@{$child->{children}}) {
-                if($qname->is("qname")) {
+              for my $qrname (@{$child->{children}}) {
+                if($qrname->is("qrname")) {
                   $reads_list .= "," if(defined($reads_list));
-                  $reads_list .= qname($qname);
+                  $reads_list .= qrname($qrname);
                 }
               }
             } elsif($child->is("sync")) {

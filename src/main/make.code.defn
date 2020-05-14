@@ -31,11 +31,11 @@ Parameters.c\
 ProcessCommandLine.c\
 ProcessEnvironment.c\
 ProcessParameterDatabase.c\
+RDWR.cc\
 ScheduleInterface.c\
 SetParams.c\
 ShutdownCactus.c\
 Subsystems.c\
 Termination.c\
 Traverse.c\
-WarnLevel.c\
-RDWR.cc
+WarnLevel.c

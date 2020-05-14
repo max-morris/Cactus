@@ -79,6 +79,7 @@ int CCTKi_SetupMainFunctions(void)
 #define CCTKi_DummyShutdown         CactusDefaultShutdown
 #define CCTKi_DummyMainLoopIndex    CactusDefaultMainLoopIndex
 #define CCTKi_DummySetMainLoopIndex CactusDefaultSetMainLoopIndex
+#define CCTKi_DummyHasAccess        CactusDefaultHasAccess
 
 #include "MainOverloadables.h"
 
@@ -88,10 +89,9 @@ int CCTKi_SetupMainFunctions(void)
 #undef CCTKi_DummyShutdown   
 #undef CCTKi_DummyMainLoopIndex
 #undef CCTKi_DummySetMainLoopIndex
+#undef CCTKi_DummyHasAccess
 
 #undef OVERLOADABLE
 
   return 0;
 }
-
-

@@ -939,19 +939,47 @@ schedule [GROUP] <\var{function name}|\var{group name}> AT|IN <\var{time}> \verb
   case 0 (zero) \var{timelevels} can be requested, which is equivalent to
   the {\tt STORAGE} statement being absent.
 
-\item[\texttt{READS}] \texttt{READS} is used to declare which grid
-  variables are read by the routine. This information is used e.g.\ to
-  determine which variables need to be copied between host and device
-  for OpenCL or CUDA kernel. This information can also be used to
-  ensure that all variables that are read have previously been written
-  by another routine.
+\item[\texttt{READS/WRITES}] \texttt{READS/WRITES} are used to
+  declare which grid variables are read/written by the routine. This information is
+  used e.g.\ to determine which variables need to be synchronized, copied between host
+  and device for OpenCL or CUDA kernel, or poisoned as part of error checking. 
 
-\item[\texttt{WRITES}] \texttt{WRITES} is used to declare which grid
-  variables are written by the routine. This information is used e.g.\ to
-  determine which variables need to be copied between host and device
-  for OpenCL or CUDA kernel. This information can also be used to
-  ensure that all variables that are read have previously been written
-  by another routine.
+  READS/WRITE directives can be applied to either a variable or a group of
+  variables and may also contain a region specification. The region specification can
+  be EVERYWHERE, INTERIOR, or BOUNDARY. If a function needs to read a given grid function
+  everywhere and only the interior is valid (i.e. has been written to), then a synchronization
+  is required and will happen automatically if enabled with the Cactus parameter \texttt{presync\_mode}.
+
+  When grid functions are updated in this way, not only ghost zones, but boundary zones
+  will be updated by the drier.  Use either the function
+  \texttt{Driver\_SelectGroupForBC} or \texttt{Driver\_SelectVarForBC} to tell the driver how it should update a group or variable. The
+  arguments to both functions are the same as those found in the
+  Boundary thorn, but with the prefix \texttt{Boundary\_} instead of
+  \texttt{Driver\_}:
+
+\begin{verbatim}
+Driver_SelectGroupForBC(CCTK_ARGUMENTS,
+                        CCTK_INT faces,
+                        CCTK_INT width,
+                        CCTK_INT table_handle,
+                        CCTK_STRING group_name,
+                        CCTK_STRING bc_name)
+
+Driver_SelectVarForBC(CCTK_ARGUMENTS,
+                      CCTK_INT faces,
+                      CCTK_INT width,
+                      CCTK_INT table_handle,
+                      CCTK_STRING var_name,
+                      CCTK_STRING bc_name)
+\end{verbatim}
+
+Note that the above two functions, unlike their similarly named components in the Boundary thorn, only need to be called once. The information they provide will then be used each time the driver synchronizes the named grid function or group.
+
+It is possible, however, that the thorn you are creating does not know the correct READS/WRITES information at compile time. I/O thorns, for
+example, do not know which grid functions they will access until run time. Likewise, the Method of Lines thorn does not know which grid functions it is operating on until run time.
+
+For situations like these, we have the following functions which can be used to check READS/WRITES data and perform synchronization at run time:
+\texttt{Driver\_RequireValidData}, \texttt{Driver\_NotifyDataModified}, \texttt{Driver\_GetValidRegion}, and \texttt{Driver\_SetValidRegion}. For details on these functions, please consult the Reference Manual.
 
   \item[{\tt TRIGGER}] List of grid variables or groups to be used as
   triggers for causing an {\tt ANALYSIS} function or group to be
@@ -1973,6 +2001,60 @@ Final iteration number [{\tt 10}]
 
 \item [{\tt max\_runtime}]
 Terminate evolution loop after a certain elapsed runtime (in minutes); set to zero to disable this termination condition [{\tt 0}]
+
+\item [{\tt presync\_mode}]
+The \texttt{presync\_mode} parameter defines the behavior of the automatic pre-synchronization of grid functions. A summary of the different modes available is available in Table~\ref{tab:presync}.
+
+The meaning of modes is as follows:
+\begin{description}
+\item[off]: This is the default. Cactus behaves as it did prior to the inclusion of PreSync. READS and
+WRITES declarations in the schedule have no effect. Synchronization of ghost zones only happens when
+a SYNC statement is encountered in the schedule.
+\item[warn-only] The same as \texttt{presync\_off}, except that now, if the Driver
+believes that a SYNC is required but not executed, it issues a warning.
+\item[mixed-warn]
+In this mode, Cactus tries to honor both SYNC statements in
+the schedule as well as providing automatic synchronization based on the READS/WRITES declarations.
+It may, however, issue warnings about possible problems.
+\item[mixed-error]
+In this mode, Cactus tries to honor both SYNC statements in
+the schedule as well as providing automatic synchronization based on the READS/WRITES declarations.
+It may, however, issue errors when encountering possible problems.
+\item[presync-only]
+In this mode, Cactus will only synchronize ghost zones based on READS/WRITES declarations and will
+ingore SYNC statements in the schedule.
+\end{description}
+
+\begin{description}
+\item[Sync triggered by] describes what triggers the synchronization of ghost zones for a grid function. ``Schedule only,'' in this context, means an explicit declaration of \texttt{SYNC} in the schedule. ``Driver,'' in this context, means that a synchronization is triggered because the schedule requires the variable to be valid everywhere, but it is only valid in the interior.
+``sync if driver'' indicates that a physical boundary condition is registered for the grid function, and
+thus the driver can update the exterior of the grid function.
+\item[Can sync] describes the condition in which the interior of a grid function contains valid data, but the exterior does not. This will produce a warning in \texttt{warn-only} mode, as it indicates a possibly incorrect synchronization.
+\item[Can't sync] describes a situation where a read of the interior is needed (e.g. to perform a synchronization), but (as far as the driver knows) the interior of the grid function is not valid.
+\item[IO Thorns] describes what the various IO thorns should do if they are asked to write out a
+grid function if they find invalid data in the interior and/or exterior of a grid function.
+\item[Old Macro] refers to the familiar \texttt{DECLARE\_CCTK\_ARGUMENTS}, which declares
+all the grid functions visible to a thorn. The \texttt{DECLARE\_CCTK\_ARGUMENTS\_CHECKED(func\_name)} macros
+only declare arguments visible based on the READS/WRITES declarations.
+\item[Driver BC] refers to boundary condition update functions registered via
+\texttt{Driver\_SelectVarForBC} or \texttt{Driver\_SelectGroupForBC}. Once registered, this function
+will be called whenever data is needed in the boundary for the grid function or group.
+\item[Scheduled SYNC] refers to the explicit SYNC declaration in the \texttt{schedule.ccl}.
+\end{description}
+\begin{table}[h!]
+\scriptsize
+\begin{tabular}{|l|l|l|l|l|l|l|l|}
+\hline
+\textbf{presync\_mode} & \textbf{Synch triggered by} & \textbf{Can sync}                                                   & \textbf{Can't sync} & \textbf{IO Thorns}                                                               & \textbf{Old Macro} & \textbf{Driver BC} & \textbf{Scheduled SYNC} \\ \hline
+off & schedule only & nothing & nothing & nothing & allowed & ignored & honored \\ \hline
+warn-only & schedule only & warn & warn & nothing & allowed & ignored & honored \\ \hline
+mixed-warn & \begin{tabular}[c]{@{}l@{}}driver where possible,\\ schedule otherwise\end{tabular} & \begin{tabular}[c]{@{}l@{}}sync if driver,\\ warn otherwise\end{tabular} & warn & \begin{tabular}[c]{@{}l@{}}warn for driver bc,\\ nothing otherwise\end{tabular} & allowed & allowed & ignored for driver bc \\ \hline
+mixed-error          & \begin{tabular}[c]{@{}l@{}}driver where possible,\\ schedule otherwise\end{tabular}   & \begin{tabular}[c]{@{}l@{}}sync if driver,\\ error otherwise\end{tabular} & error                     & \begin{tabular}[c]{@{}l@{}}error for driver bc,\\ nothing otherwise\end{tabular} & allowed                           & allowed                           & ignored for driver bc  \\ \hline
+presync-only & driver only & driver only & error & error & error & required & ignored \\ \hline
+\end{tabular}
+\caption{Summary of modes and meanings for the \texttt{presync\_mode} parameter.}
+\label{tab:presync}
+\end{table}
 
 \item [{\tt terminate}]
 Condition on which to terminate evolution loop [{\tt iteration}] \{{\tt never, iteration, time, runtime, any, all}\}

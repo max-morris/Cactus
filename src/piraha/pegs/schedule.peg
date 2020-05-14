@@ -16,18 +16,14 @@ pararg = ({vname}|\( {vname}( ,? {vname} )* \))
 assign = {name} = {num}
 
 boolpar = \( {boolexpr} \)
-eqfun = (?i:CCTK_Equals)
-actfun = (?i:CCTK_IsThornActive)
-actifun = (?i:CCTK_IsImplementationActive)
-booleq  = {eqfun} \( {string} , {string} \)
-boolact = ({actfun}|{actifun}) \( {string} \)
+args = ({expr}( , {expr})*|)
+fun = {name} \( {args} \)
 boolstar = \* {name}
 boolneg = \! {boolexpr}
 boolterm = (?i:{boolneg}
-         | {boolpar}
-         | {booleq}
-         | {boolact}
          | {boolstar}
+         | {boolpar}
+         | {fun}
          | {name} )
          
 boolop = (&&|\|\|)
@@ -40,17 +36,16 @@ group = (?i:group)
 nogroup =
 prepositions = ({preposition} )*
 preposition = {par} {pararg}
-sync = (?i:sync) : {vname}( , {vname}|[ \t]{vname})*
-options = (?i:options?) : {vname}( , {vname}|[ \t]{vname})*
-storage = (?i:storage) : {vname}( , {vname}|[ \t]{vname})*
-triggers = (?i:triggers?) : {vname}( , {vname}|[ \t]{vname})*
-reads = (?i:reads) : {qname}
-writes = (?i:writes) : {qname}
-invalidates = (?i:invalidates) : {qname}
-qrname = {name} ( \( {region} \)|)
-qname = {vname} (\( {region} \)|)( , {qrname}|[ \t]+{qrname})*
+sync = (?i:sync) : {vname}( , {vname}|{-spacing}{vname})*
+spacing = ([ \t]|\\\r?\n)+
+options = (?i:options?) : {vname}( , {vname}|{-spacing}{vname})*
+triggers = (?i:triggers?) : {vname}( , {vname}|{-spacing}{vname})*
+reads = (?i:reads) : {qrname}( , {qrname}|{-spacing}{qrname})*
+writes = (?i:writes) : {qrname}( , {qrname}|{-spacing}{qrname})*
+invalidates = (?i:invalidates) : {qrname}( , {qrname}|{-spacing}{qrname})*
+qrname = {vname}( \( {region} \)|)
 region = (?i:everywhere|interiorwithboundary|interior|all|in|boundary|scalar)
-tags = (?i:tags) : {assign}( , {assign}|[ \t]{assign})*
+tags = (?i:tags) : {assign}( , {assign}|{-spacing}{assign})*
 schedule = (?i:
   schedule ({group}|{nogroup}) {name} {prepositions} \{
     ( {storage}
@@ -70,7 +65,7 @@ ifbody = {block} ({else} {if}|{else} {block}|)
 if = (?i:
   if \( {boolexpr} \) {ifbody}
   )
-storage = (?i:storage: {vname}( , {vname}|([ \t]|\\\r?\n)+{vname})* )
+storage = (?i:storage: {vname}( , {vname}|{-spacing}{vname})* )
 block = \{ (({statement}|{block}) )* \} | {statement}
 
 statement = ({schedule} |{if} |{storage} )

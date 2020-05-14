@@ -165,24 +165,26 @@ sub compileFile
   my $buffer = shift;
   # The rules to compile a Piraha rule file
   # stored as a Piraha parse tree.
-	my $grammar = fileparserGenerator();
-	my $m = new Matcher($grammar,"file",$buffer);
-	my $b = $m->matches();
+  my $grammar = fileparserGenerator();
+  my $m = new Matcher($grammar,"file",$buffer);
+  my $b = $m->matches();
   if(!$b) {
     confess("match failed ".$m->showError());
   }
 
-	for(my $i=0;$i<$m->groupCount();$i++) {
-		my $rule = $m->group($i);
+  for(my $i=0;$i<$m->groupCount();$i++) {
+    my $rule = $m->group($i);
     # Convert the parse tree for each Piraha rule
     # into the Piraha data structures used to parse
     # code.
-		my $ptmp = compile($rule->group(1), 0, $grammar);
+    my $ptmp = compile($rule->group(1), 0, $grammar);
     my $nm = $rule->group(0)->substring();
-		$g->{patterns}->{$nm} = $ptmp;
+    die "duplicate definition for '$nm'"
+      if(defined($g->{patterns}->{$nm}));
+    $g->{patterns}->{$nm} = $ptmp;
     # Set the default rule.
     $g->{default_rule} = $nm;
-	}
+  }
   return $g->{default_rule};
 }
 

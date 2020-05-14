@@ -107,7 +107,8 @@ sub do_interfaces
     my $vtype = $gr->has(0,"vtype")->substring();
     my $level = 0;
     my $vecval = "0";
-    my $dim = 0;
+    my $dim = 3; # this is the default value
+    my $size = undef;
     my $gname;
     my $gtype;
     my $cap_gname;
@@ -132,12 +133,22 @@ sub do_interfaces
         }
       } elsif($ch->is("gtype")) {
         $gtype = $ch->substring();
-      } elsif($ch->is("dim") and (uc $gtype) eq "ARRAY") {
+      } elsif($ch->is("dim")) {
         $dim = $ch->substring();
+      } elsif($ch->is("size")) {
+        $size = $ch;
       } elsif($ch->is("timelevels")) {
         $level = $ch->substring();
-        last;
       }
+    }
+    # Check that size and dim agree...
+    if(defined($size)) {
+       my @children = @{$size->{children}};
+       if($#children + 1 != $dim*1) {
+          my $sz = $size->substring();
+          CST_error(0, "Disagreement in 'SIZE=$sz' and 'DIM=$dim' for $gname",
+            "DIM or SIZE may be set incorrectly", $size->linenum(),$ccl_file);
+       }
     }
     if($level-1 < 0) {
       $hash->{$gname}->{level} = 0;
@@ -217,6 +228,59 @@ sub schedule_starter
   return $data;
 }
 
+
+#/*@@
+#  @routine lookup_thorn
+#  @date    Fri May 1 15:37 EST 2020
+#  @author  Steven R. Brandt
+#  @desc
+#           Determine what the declaring thorn
+#           is for a given variable or group.
+#  @enddesc
+#@@*/
+sub lookup_thorn
+{
+    my $hash = shift;
+    my $parsing_thorn = shift;
+    my $thorn_or_var = shift;
+    my $var = lc $thorn_or_var;
+    $var =~ s/(_p)+$//;
+
+    my $th_def = $main::arg_decls->{uc $parsing_thorn};
+
+    my $v_def = $th_def->{$var};
+    if(!defined($v_def)) {
+        my $thorns = {};
+        for my $k (keys %$th_def) {
+            my $ref = $th_def->{$k};
+            my $th = $ref->{impl};
+            if(!defined($thorns->{$th})) {
+                $thorns->{$th}=1;
+            }
+        }
+        # is thorn_or_var a group name?
+        outer: for my $th (keys %$thorns) {
+            if(defined($hash->{$th}->{group_list}->{$var})) {
+                for my $v (keys %{$hash->{$th}->{$var}->{grp_vars}}) {
+                    if(defined($th_def->{$v})) {
+                        $v_def = $th_def->{$v};
+                        last outer;
+                    }
+                }
+            }
+        }
+    }
+    unless(defined($v_def)) {
+        # In the event that we fail to find the variable,
+        # just ruturn the parsing thorn as the thorn. This
+        # will eventually generate a sensible CST error.
+        print Dumper($th_def);
+        die "$parsing_thorn / $var";
+        return $parsing_thorn;
+    }
+    return $v_def->{impl};
+}
+
 #/*@@
 #  @routine do_schedule
 #  @date    Mon Feb 24 16:10:38 EST 2020
@@ -258,54 +322,34 @@ sub do_schedules
       if($ch->is("reads") or $ch->is("writes")) {
         my $is_writes = $ch->is("writes");
         
-        # First we extract the thorn and variable name from the reads/writes clause
-        my $qname = $ch->has(0,"qname");
-        my $vname = $qname->has(0,"vname");
-        my $thorn_or_var = $vname->has(0,"name")->substring();
-        my $thorn = undef;
-        my $var = undef;
-        my $cap_thorn = undef;
-        my $cap_var = undef;
-        if($vname->has(1,"name")) {
-            $cap_thorn = $thorn_or_var;
-            $cap_var = $vname->has(1,"name")->substring();
-            $thorn = uc $cap_thorn;
-            $var = lc $cap_var;
-        } else {
-            $cap_thorn = $parsing_thorn;
-            $cap_var = $thorn_or_var;
-            $thorn = uc $cap_thorn;
-            $var = lc $cap_var;
-            my $base_var = $var;
-            $base_var =~ s/(_p)+$//;
-            if(!defined($hash->{$thorn}->{variable_list}->{$base_var})) {
-               my $impl = $hash->{find_impl}->{$thorn};
-               if(defined($hash->{$impl}->{variable_list}->{$base_var})) {
-                 $thorn = $impl;
-               } elsif(!defined($hash->{$thorn}->{group_list}->{$base_var})) {
-                 if(defined($hash->{$impl}->{group_list}->{$base_var})) {
-                   $thorn = $impl;
-                 }
-               }
-            }
-        }
+        # Process variable names in this definition.
+        my $i = 0;
+        while($ch->has($i,"qrname")) {
+          # First we extract the thorn and variable name from the reads/writes clause
+          my $qrname = $ch->has($i,"qrname");
+          my $vname = $qrname->has(0,"vname");
+          my $thorn_or_var = $vname->has(0,"name")->substring();
+          my $thorn = undef;
+          my $var = undef;
+          my $cap_thorn = undef;
+          my $cap_var = undef;
+          if($vname->has(1,"name")) {
+              $cap_thorn = $thorn_or_var;
+              $cap_var = $vname->has(1,"name")->substring();
+              $thorn = uc $cap_thorn;
+              $var = lc $cap_var;
+          } else {
+              $cap_thorn = lookup_thorn($hash, $parsing_thorn, $thorn_or_var);
+              $thorn = uc $cap_thorn;
+              $cap_var = $thorn_or_var;
+              $var = lc $cap_var;
+          }
 
-        # update informational data structures
-        $reads_writes->{$nm}->{$thorn}->{$var}->{rdwr} += $is_writes;
-        $reads_writes->{$nm}->{$thorn}->{$var}->{line} = $vname->linenum();
-        $reads_writes->{$nm}->{$thorn}->{$var}->{cap} = "${cap_thorn}::${cap_var}";
-        my $i = 1;
-
-        # we skip over the region, e.g. interior, boundary, etc.
-        # as that doesn't play a part in the generation of the macros.
-        $i++ if($qname->has($i,"region"));
-
-        # Process additional variable names in this definition.
-        while($qname->has($i,"qrname")) {
-          my $qrname = $qname->group($i);
-          $var = lc $qrname->has(0,"name")->substring();
+          # update informational data structures
           $reads_writes->{$nm}->{$thorn}->{$var}->{rdwr} += $is_writes;
           $reads_writes->{$nm}->{$thorn}->{$var}->{line} = $vname->linenum();
+          $reads_writes->{$nm}->{$thorn}->{$var}->{cap} = "${cap_thorn}::${cap_var}";
+
           $i++;
         }
 
@@ -355,6 +399,21 @@ sub create_macros
   push @$all_cctk_arguments, @$thorn_args;
   $$data .= "#ifndef CCTK_ARGUMENTS_CHECKED_H\n";
   $$data .= "#define CCTK_ARGUMENTS_CHECKED_H 1\n";
+  $$data .= "\n";
+  $$data .= "/* needed for CCTK_ANSI_FPP */\n";
+  $$data .= "#include \"cctk_Types.h\"\n";
+  $$data .= "\n";
+  $$data .= "#ifdef CCODE\n";
+  $$data .= "#define DECLARE_CCTK_ARGUMENTS_CHECKED(func) DECLARE_CCTK_ARGUMENTS_##func\n";
+  $$data .= "#endif\n";
+  $$data .= "#ifdef FCODE\n";
+  $$data .= "#if CCTK_ANSI_FPP\n";
+  $$data .= "#define DECLARE_CCTK_ARGUMENTS_CHECKED(func) DECLARE_CCTK_ARGUMENTS_##func\n";
+  $$data .= "#else\n";
+  $$data .= "#define DECLARE_CCTK_ARGUMENTS_CHECKED(func) DECLARE_CCTK_ARGUMENTS_/**/func\n";
+  $$data .= "#endif\n";
+  $$data .= "#endif\n";
+  $$data .= "\n";
   for my $namekey (sort keys %{$reads_writes}) {
     my %cctk_arguments = ();
 
@@ -375,6 +434,7 @@ sub create_macros
       } elsif ($lang->{$namekey} eq "FORTRAN") {
         $$data .= "#ifdef FCODE \n";
         $$data .= "#ifndef DECLARE_CCTK_ARGUMENTS_${nm} \n";
+        $$data .= "#define DECLARE_CCTK_ARGUMENTS_\U${nm}\E DECLARE_CCTK_ARGUMENTS_${nm}\n";
         $$data .= "#define DECLARE_CCTK_ARGUMENTS_${nm} \\\n";
         $$data .= "  _DECLARE_CCTK_FARGUMENTS; \\\n";
         for my $var (@$all_cctk_arguments) {
@@ -403,7 +463,6 @@ sub create_macros
         $$data .= "#ifndef DECLARE_CCTK_ARGUMENTS_${nm} \n";
         $$data .= "#define DECLARE_CCTK_ARGUMENTS_${nm} \\\n";
         $$data .= "  _DECLARE_CCTK_ARGUMENTS; \\\n";
-        $$data .= "  CCTK_Checked_called(); \\\n";
         for my $th (sort keys %{$reads_writes->{$namekey}}) {
           for my $full_var (sort keys %{$reads_writes->{$namekey}->{$th}}) {
             my $errline = $reads_writes->{$namekey}->{$th}->{$full_var}->{line};
@@ -439,7 +498,7 @@ sub create_macros
                 }
                 for my $v (keys %{$hash->{$th2}->{group_list}}) {
                   if($v eq lc $var) {
-                    $hints{" Did you mean ${th2}::$v? [ERR2]"}=1;
+                    $hints{" Did you mean ${th2}::$v? [ERR1]"}=1;
                   }
                 }
               }
@@ -454,7 +513,7 @@ sub create_macros
                     "correct implementation/thorn name and variable name.'";
               }
               &CST_error(1, "Error in read/write declaration of '${th}::$full_var' for '$nm' in schedule."
-                    ,$hint, , $errline, $ccl_file);
+                    ,$hint, $errline, $ccl_file);
               next;
             }
             my $vtype = "CCTK_".$var_group->{vtype};
@@ -464,7 +523,7 @@ sub create_macros
               my $hint = "Bad variable group name '$full_var' at $errline";
               &CST_error(1, "Error in read/write declaration $nm schedule. Check variable or group '$full_var'" .
                     ' and verify correct implementation/thorn name and variable name.'
-                    ,$hint, , $errline, $ccl_file);
+                    ,$hint, $errline, $ccl_file);
               next;
             }
 
@@ -493,9 +552,9 @@ sub create_macros
                 my $ivar = get_cap($hash, $th, $full_var);
                 if(!defined($decls->{$full_var})) {
                   my $line = $reads_writes->{$namekey}->{$th}->{$full_var}->{line};
-                  my $hint = "Check access of variable. Maybe dd an inherits clause to your interface.ccl";
+                  my $hint = "Check access of variable. Maybe add an inherits clause to your interface.ccl";
                   &CST_error(1, "No access to variable '${th}::$ivar'" 
-                    ,$hint, , $line, $ccl_file);
+                    ,$hint, $line, $ccl_file);
                 }
                 $$data .= qq(static int cctki_vi_$ivar = -100; if (cctki_vi_$ivar == -100) cctki_vi_$ivar = CCTK_VarIndex("$vname"); $vtype $const * restrict const $ivar __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, cctki_vi_$ivar));; /* group $group_register */\\\n);
               }
@@ -507,9 +566,9 @@ sub create_macros
               my $ivar = get_cap($hash, $th, $full_var);
               if(!defined($decls->{$full_var})) {
                 my $line = $reads_writes->{$namekey}->{$th}->{$full_var}->{line};
-                my $hint = "Check access of variable. Maybe dd an inherits clause to your interface.ccl";
+                my $hint = "Check access of variable. Maybe add an inherits clause to your interface.ccl";
                 &CST_error(1, "No access to variable '${th}::$ivar'" 
-                  ,$hint, , $line, $ccl_file);
+                  ,$hint, $line, $ccl_file);
               }
               $$data .= qq(static int cctki_vi_$ivar = -100; if (cctki_vi_$ivar == -100) cctki_vi_$ivar = CCTK_VarIndex("$vname"); $vtype $const * restrict const $ivar __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, cctki_vi_$ivar));; /* TL: $namekey --> $timelevel $group_register*/\\\n);
             }
@@ -519,6 +578,7 @@ sub create_macros
         my $vector_len = {};
         $$data .= "#ifdef FCODE \n";
         $$data .= "#ifndef DECLARE_CCTK_ARGUMENTS_${nm} \n";
+        $$data .= "#define DECLARE_CCTK_ARGUMENTS_\U${nm}\E DECLARE_CCTK_ARGUMENTS_${nm}\n";
         $$data .= "#define DECLARE_CCTK_ARGUMENTS_${nm} \\\n";
         $$data .= "  _DECLARE_CCTK_FARGUMENTS \\\n";
         for my $th (sort keys %{$reads_writes->{$namekey}}) {
@@ -564,12 +624,12 @@ sub create_macros
               for my $th2 (keys %$hash) {
                 for my $v (keys %{$hash->{$th2}->{variable_list}}) {
                   if($v eq lc $var) {
-                    $hints{" Did you mean ${th2}::$v? [ERR3]"}=1;
+                    $hints{" Did you mean ${th2}::$v? [ERR2]"}=1;
                   }
                 }
                 for my $v (keys %{$hash->{$th2}->{group_list}}) {
                   if($v eq lc $var) {
-                    $hints{" Did you mean ${th2}::$v? [ERR4]"}=1;
+                    $hints{" Did you mean ${th2}::$v? [ERR2]"}=1;
                   }
                 }
               }
@@ -580,7 +640,7 @@ sub create_macros
               ###
               &CST_error(0, "Error in $nm schedule. Check variable or group '${th}::$full_var'" .
                     ' and verify correct implementation/thorn name and variable name.'
-                    ,$hint, , $line, $ccl_file);
+                    ,$hint, $line, $ccl_file);
             }
             my $vtype = "CCTK_".$var_group->{vtype};
             $vtype .= ", iNteNt(iN)" if($reads_writes->{$namekey}->{$th}->{$full_var}->{rdwr}==0);
@@ -601,8 +661,10 @@ sub create_macros
                 $arrays = qq((cctk_ash1,cctk_ash2,cctk_ash3));
               }
             } elsif($var_group->{gtype} eq "ARRAY") {
+              # Is there a vector of arrays?
+              my $vector = 0;
               if($var_group->{vector} ne "0") {
-                croak("Not supported yet.");
+                $vector = 1;
               }
               my $glen = "x0".$group;
               if(!defined($vector_len->{$glen})) {
@@ -611,7 +673,7 @@ sub create_macros
                 $vector_len->{$glen} = 1;
               }
               for(my $i = 1; $i < $var_group->{array_dim}; $i++) {
-                my $temp_glen .= "x".$i.$group;
+                my $temp_glen = "x".$i.$group;
                 $glen .= ",".$temp_glen;
                 if(!defined($vector_len->{$temp_glen})) {
                   $cctk_arguments{$temp_glen}=1;
@@ -619,6 +681,14 @@ sub create_macros
                   $vector_len->{$temp_glen} = 1;
                 }
               }
+
+              if($vector) {
+                my $tmp_glen = $group."_length";
+                $glen .= ",$tmp_glen";
+                $cctk_arguments{$tmp_glen}=1;
+                $$data .= "  integer :: $tmp_glen &&\\\n";
+              }
+
               $arrays = qq(($glen));
             } elsif($var_group->{vector} ne "0") {
               my $glen = $group."_length";
@@ -696,15 +766,7 @@ sub GenerateArguments
     $ccl_file = $thorns{$key}."/schedule.ccl";
     my $gr=parse_ccl($S_grammar,$S_rule,$ccl_file,$sch_file);
     if($gr) {
-      my $data = "";
-      $data .= "#ifdef CCODE\n";
-      $data .= "extern\n";
-      $data .= "#ifdef __cplusplus\n";
-      $data .= "\"C\"\n";
-      $data .= "#endif\n";
-      $data .= "void CCTK_Checked_called();\n";
-      $data .= "#endif\n";
-      $data .= schedule_starter($key,$hash,$gr,$ccl_file);
+      my $data = schedule_starter($key,$hash,$gr,$ccl_file);
       WriteFile($ENV{TOP}."/bindings/include/$key/cctk_Arguments_Checked.h", \$data);
     }
   }
