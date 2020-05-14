@@ -223,14 +223,234 @@ Assertions may be triggered for invalid variables or time levels.
 
 \begin{FunctionDescription}{Driver\_SelectGroupForBC}
 \label{Driver-SelectGroupForBC}
+Tell the driver how to update the boundary conditions for the grid functions in a group.
+% yyy
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int err = Driver_SelectGroupForBC(
+    const cGH *cctkGH,
+    int faces,
+    int width,
+    int table handle,
+    const char *group_name,
+    const char *bc_name);
+
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{err}
+Returns -6 for an invalid group index, -2 for an invalid boundary condition name.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{cctkGH}
+Pointer to CCTK grid hierarchy
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{faces}
+The choice of which faces the boundary condition applies to.
+Normally, this will be \texttt{CCTK\_ALL\_FACES}. If a different
+specification is desired, consult the documentation on the
+Boundary thorn.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{width}
+The number of zones from the edge filled in by the boundary condition.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{table\_handle}
+The table handle holds extra arguments for the boundary condition, if such are needed. Use
+-1 (an invalid table handle) for boundary conditions which need no additional arguments.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{where\_list}
+An array of \texttt{num\_variables} where specifications describing
+where valid data is needed for a given grid function and time level.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{group\_name}
+The name of the group of grid functions to which this boundary condition applies.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{bc\_name}
+The name of the boundary condition registered physical boundary condition.
+See the documentation for \texttt{Boundary\_RegisterPhysicalBC} on the
+Boundary thorn.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{Driver\_SelectVarForBC}{Driver-SelectVarForBC}
+Tell the driver how to update the boundary conditions for a grid functions.
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{Abort}
+Assertions may be triggered for invalid variables or time levels.
+\end{Error}
+\end{ErrorSection}
+% zzz
 \end{FunctionDescription}
 
 \begin{FunctionDescription}{Driver\_SelectVarForBC}
 \label{Driver-SelectVarForBC}
+% yyy
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+int err = Driver_SelectVarForBC(
+    const cGH *cctkGH,
+    int faces,
+    int width,
+    int table handle,
+    const char *var_name,
+    const char *bc_name);
+
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{err}
+Returns -7 for an invalid variable index, -2 for an invalid boundary condition name.
+\end{Result}
+\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{cctkGH}
+Pointer to CCTK grid hierarchy
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{faces}
+The choice of which faces the boundary condition applies to.
+Normally, this will be \texttt{CCTK\_ALL\_FACES}. If a different
+specification is desired, consult the documentation on the
+Boundary thorn.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{width}
+The number of zones from the edge filled in by the boundary condition.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{table\_handle}
+The table handle holds extra arguments for the boundary condition, if such are needed. Use
+-1 (an invalid table handle) for boundary conditions which need no additional arguments.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{where\_list}
+An array of \texttt{num\_variables} where specifications describing
+where valid data is needed for a given grid function and time level.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{var\_name}
+The name of the grid function to which this boundary condition applies.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{bc\_name}
+The name of the boundary condition registered physical boundary condition.
+See the documentation for \texttt{Boundary\_RegisterPhysicalBC} on the
+Boundary thorn.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{Driver\_SelectVarForBC}{Driver-SelectGroupForBC}
+Tell the driver how to update the boundary conditions for the grid functions in a group.
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{Abort}
+Assertions may be triggered for invalid variables or time levels.
+\end{Error}
+\end{ErrorSection}
+% zzz
 \end{FunctionDescription}
 
 \begin{FunctionDescription}{Driver\_SetValidRegion}
 \label{Driver-SetValidRegion}
+% yyy
+Gets the region where a grid function is valid.
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}
+#include "cctk.h"
+
+CCTK_SetValidRegion(int variable_index ,int time_level,int where);
+
+\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+
+%\begin{ResultSection}
+%\begin{Result}{where}
+%Region where the given grid variable is valid at the given time level.
+%\end{Result}
+%\end{ResultSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{variable\_index}
+The index of a grid function.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{time\_level}
+The time level of a grid function.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{ParameterSection}
+\begin{Parameter}{where}
+The new where specification for the variable and time level.
+\end{Parameter}
+\end{ParameterSection}
+
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{Driver\_GetValidRegion}{Driver-GetValidRegion}
+Gets the region where a grid function is valid.
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{Abort}
+Assertions may be triggered for invalid variables or time levels.
+\end{Error}
+\end{ErrorSection}
+% zzz
 \end{FunctionDescription}
 
 \end{cactuspart}
