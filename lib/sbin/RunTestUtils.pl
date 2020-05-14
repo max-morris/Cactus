@@ -270,7 +270,6 @@ sub ParseTestConfigs
              $varRegex=".*";
           }
           $rundata->{"$thorn POSTPROC"}{$varRegex} = $procfile;
-          #$POSTPROC=$$rundata{"$thorn POSTPROC"};
         }
         elsif ($line =~ m/^\s*RELTOL\s*(\S*)\s*(\S*)\s*$/i)
         {
@@ -1912,13 +1911,21 @@ sub CompareTestFiles
         while($_ = <INORIG>) {}
         # Close and check return code if this was a process
         my $rc = close(INORIG);
-        warn "Warning: failure reported on close for '$read_old'" unless($rc);
+        unless($rc) {
+            warn "Warning: failure reported on close for '$read_old'";
+            $rundata->{"$thorn $test $file NFAILWEAK"}++;
+            $rundata->{"$thorn $test $file NFAILSTRONG"}++;
+        }
 
         # Read remaining input to avoid broken pipe errors
         while($_ = <INNEW>) {}
         # Close and check return code if this was a process
         $rc = close(INNEW);
-        warn "Warning: failure reported on close for '$read_new'" unless($rc);
+        unless($rc) {
+            warn "Warning: failure reported on close for '$read_new'";
+            $rundata->{"$thorn $test $file NFAILWEAK"}++;
+            $rundata->{"$thorn $test $file NFAILSTRONG"}++;
+        }
       }
       elsif (!-e $newfile && -s $oldfile)
       {
