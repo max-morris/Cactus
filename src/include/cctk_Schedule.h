@@ -13,6 +13,7 @@
 
 #include <stdio.h>
 #include "cctk_PreSync.h"
+#include "cctk_Constants.h"
 
 typedef enum {LangNone, LangC, LangFortran} cLanguage;
 
@@ -45,12 +46,17 @@ typedef enum {FunctionNoArgs, FunctionOneArg, FunctionStandard} cFunctionType;
 // updates B+G cells, it runs after synchronization.
 // If it doesn't update B+G cells, it runs before.
 
-#define WH_EVERYWHERE (WH_INTERIOR | WH_BOUNDARY | WH_GHOSTS)
-#define WH_EXTERIOR   (WH_INTERIOR | WH_BOUNDARY)
-#define WH_INTERIOR   0x4
-#define WH_BOUNDARY   0x2
-#define WH_GHOSTS     0x1
-#define WH_NOWHERE    0x0
+/* the allowed bit masks are defined in cctk_Constants.h for use in C and
+ * Fortran code
+
+#define WH_EVERYWHERE
+#define WH_EXTERIOR
+#define WH_INTERIOR
+#define WH_BOUNDARY
+#define WH_GHOSTS
+#define WH_NOWHERE
+
+*/
 
 typedef struct
 {
