@@ -3641,9 +3641,9 @@ hdf5 files can be converted into text, or ascii files whose contents are re-orde
 by running on multiple processes can be compared in a consistent manner.
 
 The postproc directive is followed by one or two parameters. The first is the
-name of the postproc command, which should be an executable linux program stored
+name of the postproc command, which should be an executable Linux program stored
 in the thorn's util directory. The second is a regular expression which matches
-the files to be processed.
+the files to be processed (if no regular expression is provided, the expressin ".*" will be used, which will match anything).
 
 The program should receive a single argument, a file name, and from it the program
 should produce columns of ascii formatted floating
