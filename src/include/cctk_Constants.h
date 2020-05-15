@@ -61,12 +61,12 @@
 #define CCTK_GROUP_OR_VAR 603
 
 /* regions for RDWR entries in cFunctionData */
-#define WH_EVERYWHERE 7
-#define WH_EXTERIOR   6
-#define WH_INTERIOR   4
-#define WH_BOUNDARY   2
-#define WH_GHOSTS     1
-#define WH_NOWHERE    0
+#define CCTK_VALID_EVERYWHERE 7
+#define CCTK_VALID_EXTERIOR   6
+#define CCTK_VALID_INTERIOR   4
+#define CCTK_VALID_BOUNDARY   2
+#define CCTK_VALID_GHOSTS     1
+#define CCTK_VALID_NOWHERE    0
 
 #endif /* _CCTK_CONSTANTS_ */
 

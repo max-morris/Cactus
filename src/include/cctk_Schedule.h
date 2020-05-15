@@ -49,12 +49,12 @@ typedef enum {FunctionNoArgs, FunctionOneArg, FunctionStandard} cFunctionType;
 /* the allowed bit masks are defined in cctk_Constants.h for use in C and
  * Fortran code
 
-#define WH_EVERYWHERE
-#define WH_EXTERIOR
-#define WH_INTERIOR
-#define WH_BOUNDARY
-#define WH_GHOSTS
-#define WH_NOWHERE
+#define CCTK_VALID_EVERYWHERE
+#define CCTK_VALID_EXTERIOR
+#define CCTK_VALID_INTERIOR
+#define CCTK_VALID_BOUNDARY
+#define CCTK_VALID_GHOSTS
+#define CCTK_VALID_NOWHERE
 
 */
 

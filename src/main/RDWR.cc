@@ -31,21 +31,21 @@ void add_entry(int vi,int tl,rdwr_t rdwr,int where,cFunctionData* func,std::set<
     entry.time_level = tl;
     auto iter = s.find(entry);
     if(iter == s.end()) {
-        entry.where_wr = WH_NOWHERE;
-        entry.where_rd = WH_NOWHERE;
-        entry.where_inv = WH_NOWHERE;
+        entry.where_wr = CCTK_VALID_NOWHERE;
+        entry.where_rd = CCTK_VALID_NOWHERE;
+        entry.where_inv = CCTK_VALID_NOWHERE;
     } else {
-        if(rdwr == writes_t && iter->where_wr != WH_NOWHERE) {
+        if(rdwr == writes_t && iter->where_wr != CCTK_VALID_NOWHERE) {
             CCTK_VError(__LINE__,__FILE__,"Cactus",
                         "Duplicate write specification for %s in function %s::%s",
                         CCTK_FullVarName(vi),func->thorn,func->routine);
         }
-        if(rdwr == reads_t && iter->where_rd != WH_NOWHERE) {
+        if(rdwr == reads_t && iter->where_rd != CCTK_VALID_NOWHERE) {
             CCTK_VError(__LINE__,__FILE__,"Cactus",
                         "Duplicate reads specification for %s in function %s::%s",
                         CCTK_FullVarName(vi),func->thorn,func->routine);
         }
-        if(rdwr == invalidates_t && iter->where_inv != WH_NOWHERE) {
+        if(rdwr == invalidates_t && iter->where_inv != CCTK_VALID_NOWHERE) {
             CCTK_VError(__LINE__,__FILE__,"Cactus",
                         "Duplicate invalidates specification for %s in function %s::%s",
                         CCTK_FullVarName(vi),func->thorn,func->routine);
@@ -113,13 +113,13 @@ void parse(const char *str,rdwr_t rdwr,cFunctionData* func,std::set<RDWR_entry>&
     // decode where
     int wh = -1;
     if(CCTK_EQUALS(where,"everywhere") || CCTK_EQUALS(where,"all"))
-        wh = WH_EVERYWHERE;
+        wh = CCTK_VALID_EVERYWHERE;
     else if(CCTK_EQUALS(where,"interior") || CCTK_EQUALS(where,"in"))
-        wh = WH_INTERIOR;
+        wh = CCTK_VALID_INTERIOR;
     else if(CCTK_EQUALS(where,"interiorwithboundary"))
-        wh = WH_INTERIOR | WH_BOUNDARY;
+        wh = CCTK_VALID_INTERIOR | CCTK_VALID_BOUNDARY;
     else if(CCTK_EQUALS(where,"boundary"))
-        wh = WH_BOUNDARY;
+        wh = CCTK_VALID_BOUNDARY;
     else {
         CCTK_VError(__LINE__, __FILE__, "Cactus",
                     "Invalid where specification '%s' while parsing %s statement  '%s' in schedule for %s::%s",
