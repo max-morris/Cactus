@@ -104,42 +104,9 @@ while ($choice !~ /^Q/i)
       # Reset/Initialise Test Statistics
       $rundata = &ResetTestStatistics($rundata,$testdata);
 
-      my $testno = 0;
-      my $parallel_size = defined($ENV{CCTK_TEST_SIZE}) ? 0+$ENV{CCTK_TEST_SIZE} : 1;
-      my $parallel_rank = defined($ENV{CCTK_TEST_RANK}) ? 0+$ENV{CCTK_TEST_RANK} : 1;
-
       # Run all parameter files
       foreach $thorn (sort split(" ",$testdata->{"RUNNABLETHORNS"}))
       {
-#        foreach $test (sort split(" ",$testdata->{"$thorn RUNNABLE"}))
-#        {
-#          $testno++;
-#          my $rank_to_run = ($testno % $parallel_size) + 1;
-#          
-#          print "------------------------------------------------------------------------\n\n";
-#          #print "test=$test testno=$testno rank_to_run=$rank_to_run parallel_size=$parallel_size parallel_rank=$parallel_rank\n";
-
-#          if ($rank_to_run != $parallel_rank) {
-#            print "SKIPPING $test SEE RANK $rank_to_run\n";
-#            next;
-#          }
-
-#          print "  Test $thorn: $test \n";
-#          print "    \"$testdata->{\"$thorn $test DESC\"}\"\n";
-
-#          if ($choice !~ /^O/i)
-#          {
-#            $testdata = &RunTest("log",$test,$thorn,$config_data,$testdata);
-#          }
-
-#          $rundata = &CompareTestFiles($test,$thorn,\%runconfig,$rundata,$config_data,$testdata);
-
-#          $rundata = &ReportOnTest($test,$thorn,$rundata,$testdata);
-#          if ($choice =~ /^I/i)
-#          {
-#            &ViewResults($test,$thorn,\%runconfig,$rundata,$testdata);
-#          }
-#        }
 	foreach $test (split(" ",$testdata->{"$thorn RUNNABLE"}))
 	{
 	  print "------------------------------------------------------------------------\n\n";
@@ -172,15 +139,6 @@ while ($choice !~ /^Q/i)
       ($ntests,@tests) = &ChooseTests($choice,$testdata);
       for ($i=0;$i<$ntests;$i++)
       {
-#        $test  = $tests[2*$i];
-#        $thorn = $tests[2*$i+1];
-#        print "------------------------------------------------------------------------\n\n";
-#        print "  Test $thorn: $test\n";
-#        print "    \"$testdata->{\"$thorn $test DESC\"}\"\n";
-#        $testdata = &RunTest("log",$tests[2*$i],$tests[2*$i+1],$config_data,$testdata);
-#        $rundata = &CompareTestFiles($tests[2*$i],$tests[2*$i+1],\%runconfig,$rundata,$config_data,$testdata);
-#        $rundata = &ReportOnTest($tests[2*$i],$tests[2*$i+1],$rundata,$testdata);
-#        &ViewResults($tests[2*$i],$tests[2*$i+1],\%runconfig,$rundata,$testdata);
 	$test  = $tests[2*$i];
 	$thorn = $tests[2*$i+1];
 	print "------------------------------------------------------------------------\n\n";
@@ -197,20 +155,6 @@ while ($choice !~ /^Q/i)
     {
       if ($thorn && $test)
       {
-#        print "------------------------------------------------------------------------\n\n";
-#        print "  Test $thorn: $test \n";
-#        print "    \"$testdata->{\"$thorn $test DESC\"}\"\n";
-#        if ($choice =~ /^S/i)
-#        {
-#          $testdata = &RunTest("log stdout",$test,$thorn,$config_data,$testdata);
-#        }
-#        else
-#        {
-#          $testdata = &RunTest("log",$test,$thorn,$config_data,$testdata);
-#        }
-#        $rundata = &CompareTestFiles($test,$thorn,\%runconfig,$rundata,$config_data,$testdata);
-#        $rundata = &ReportOnTest($test,$thorn,,$rundata,$testdata);
-#        &ViewResults($test,$thorn,\%runconfig,$rundata,$testdata);
 	print "------------------------------------------------------------------------\n\n";
 	print "  Test $thorn: $test \n";
 	print "    \"$testdata->{\"$thorn $test DESC\"}\"\n";
