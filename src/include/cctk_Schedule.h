@@ -109,6 +109,7 @@ typedef struct
   int n_InvalidatesClauses;
   const char **InvalidatesClauses;
 
+#define CACTUS_HAS_RDWR
   int n_RDWR;
   RDWR_entry *RDWR;
 
