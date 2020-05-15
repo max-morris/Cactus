@@ -220,9 +220,12 @@ void CCTKi_CreateRDWRData(cFunctionData *f)
 extern "C"
 void CCTKi_FreeRDWRData(cFunctionData *f)
 {
-    delete[] f->RDWR;
-    f->RDWR = nullptr;
-    f->n_RDWR = 0;
+    if(f)
+    {
+        delete[] f->RDWR;
+        f->RDWR = nullptr;
+        f->n_RDWR = 0;
+    }
 }
 
  /*@@
