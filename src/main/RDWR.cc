@@ -127,22 +127,45 @@ void parse(const char *str,rdwr_t rdwr,cFunctionData* func,std::set<RDWR_entry>&
     }
     assert(wh != -1);
 
-    const int vi = CCTK_VarIndex(fullvar);
+    int vi = CCTK_VarIndex(fullvar);
     if(vi >= 0) {
         add_entry(vi,tl,rdwr,wh,func,s);
-    } else {
-        const int gi = CCTK_GroupIndex(fullvar);
-        if(gi >= 0) {
-            int i0 = CCTK_FirstVarIndexI(gi);
-            int iN = i0+CCTK_NumVarsInGroupI(gi);
-            for(int vi=i0;vi<iN;vi++) {
-                add_entry(vi,tl,rdwr,wh,func,s);
-            }
-        } else if(!CCTK_EQUALS(presync_mode, "off")) {
-            CCTK_VError(__LINE__, __FILE__, "Cactus",
-                        "Invalid variable or group name '%s' in %s for routine %s::%s",
-                        fullvar,rdwr_s,func->thorn,func->routine);
+        return;
+    } 
+    int gi = CCTK_GroupIndex(fullvar);
+    if(gi >= 0) {
+        int i0 = CCTK_FirstVarIndexI(gi);
+        int iN = i0+CCTK_NumVarsInGroupI(gi);
+        for(int vi=i0;vi<iN;vi++) {
+            add_entry(vi,tl,rdwr,wh,func,s);
         }
+        return;
+    }
+
+    // Try adding a [0] to the name to see whether
+    // this helps us to find the variable.
+    // In this case, appending the [0] will
+    // stand for accessing any member of the array.
+    int n0 = strlen(fullvar);
+    int n  = n0;
+    fullvar[n++] = '[';
+    fullvar[n++] = '0';
+    fullvar[n++] = ']';
+    fullvar[n] = 0;
+
+    vi = CCTK_VarIndex(fullvar);
+    if(vi >= 0) {
+        add_entry(vi,tl,rdwr,wh,func,s);
+        return;
+    } 
+
+    // Take the [0] before producing a diagnostic message.
+    fullvar[n0] = 0;
+
+    if(!CCTK_EQUALS(presync_mode, "off")) {
+        CCTK_VError(__LINE__, __FILE__, "Cactus",
+                    "Invalid variable or group name '%s' in %s for routine %s::%s",
+                    fullvar,rdwr_s,func->thorn,func->routine);
     }
 }
 

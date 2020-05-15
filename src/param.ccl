@@ -135,4 +135,4 @@ KEYWORD presync_mode "behavior of the automatic pre-synchronization of grid fuct
   "mixed-warn"   :: "The driver honors both SYNC statements as well as auatomatic SYNCs triggered by READS, warning about inconsistent data"
   "mixed-error"  :: "Like mixed-warn but aborts the run if an inconststency is found"
   "presync-only" :: "The driver ignores SYNC statements and requires READS or WRITES for all variable access"
-} "off"
+} "warn-only"
