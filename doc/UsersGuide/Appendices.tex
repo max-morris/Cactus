@@ -843,8 +843,8 @@ schedule [GROUP] <\var{function name}|\var{group name}> AT|IN <\var{time}> \verb
   [OPTIONS:       <\var{option}>,<\var{option}>...]
   [TAGS:          <\var{keyword=value}>,<\var{keyword=value}>...]
   [STORAGE:       <\var{group}>[\var{timelevels}],<\var{group}>[\var{timelevels}]...]
-  [READS:         <\var{group}>,<\var{group}>...]
-  [WRITES:        <\var{group}>,<\var{group}>...]
+  [READS:         <\var{group-or-variable}>[(\var{region})],[<\var{group-or-variable}>[(\var{region})]]...]
+  [WRITES:        <\var{group-or-variable}>[(\var{region})],[<\var{group-or-variable}>[(\var{region})]]...]
   [TRIGGER:       <\var{group}>,<\var{group}>...]
   [SYNCHRONISE:   <\var{group}>,<\var{group}>...]
   [OPTIONS:       <\var{option}>,<\var{option}>...]
@@ -944,9 +944,11 @@ schedule [GROUP] <\var{function name}|\var{group name}> AT|IN <\var{time}> \verb
   used e.g.\ to determine which variables need to be synchronized, copied between host
   and device for OpenCL or CUDA kernel, or poisoned as part of error checking. 
 
-  READS/WRITE directives can be applied to either a variable or a group of
+  \texttt{READS/WRITE} directives can be applied to either a variable or a group of
   variables and may also contain a region specification. The region specification can
-  be EVERYWHERE, INTERIOR, or BOUNDARY. If a function needs to read a given grid function
+  be EVERYWHERE, or ALL, INTERIOR, or IN, INTERIOWITHBOUNDARY, or BOUNDARY. A
+  missing region defaults to EVERYWHERE for \texttt{READS} and INTERIOR for
+  \texttt{WRITES}. If a function needs to read a given grid function
   everywhere and only the interior is valid (i.e. has been written to), then a synchronization
   is required and will happen automatically if enabled with the Cactus parameter \texttt{presync\_mode}.
 
