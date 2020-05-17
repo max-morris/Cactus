@@ -190,7 +190,12 @@ void parse(const char *str,rdwr_t rdwr,cFunctionData* func,std::set<RDWR_entry>&
 extern "C"
 void CCTKi_CreateRDWRData(cFunctionData *f)
 {
+    DECLARE_CCTK_PARAMETERS;
+
     std::set<RDWR_entry> s;
+
+    if(CCTK_EQUALS(presync_mode, "off"))
+        return;
 
     for(int i=0;i<f->n_WritesClauses;i++) {
         parse(f->WritesClauses[i],writes_t,f,s);
