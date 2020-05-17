@@ -127,12 +127,14 @@ void parse(const char *str,rdwr_t rdwr,cFunctionData* func,std::set<RDWR_entry>&
     }
     assert(wh != -1);
 
-    int vi = CCTK_VarIndex(fullvar);
+    const int vi = CCTK_VarIndex(fullvar);
     if(vi >= 0) {
         add_entry(vi,tl,rdwr,wh,func,s);
         return;
     } 
-    int gi = CCTK_GroupIndex(fullvar);
+
+    // try a group (which could not have had a vector index)
+    const int gi = CCTK_GroupIndex(fullvar);
     if(gi >= 0) {
         int i0 = CCTK_FirstVarIndexI(gi);
         int iN = i0+CCTK_NumVarsInGroupI(gi);
@@ -142,25 +144,33 @@ void parse(const char *str,rdwr_t rdwr,cFunctionData* func,std::set<RDWR_entry>&
         return;
     }
 
-    // Try adding a [0] to the name to see whether
-    // this helps us to find the variable.
-    // In this case, appending the [0] will
-    // stand for accessing any member of the array.
-    int n0 = strlen(fullvar);
-    int n  = n0;
-    fullvar[n++] = '[';
-    fullvar[n++] = '0';
-    fullvar[n++] = ']';
-    fullvar[n] = 0;
-
-    vi = CCTK_VarIndex(fullvar);
-    if(vi >= 0) {
-        add_entry(vi,tl,rdwr,wh,func,s);
-        return;
-    } 
-
-    // Take the [0] before producing a diagnostic message.
-    fullvar[n0] = 0;
+    if(vecnum < 0) {
+        /* try if this is a single member of a group that is a vector of
+         * variables to be able to handle cases where the vector size is no
+         * known at compile time */
+        char fullvarvect[sizeof(fullvar) + 12]; // room for 10 digits and [];
+        size_t written = snprintf(fullvarvect, sizeof(fullvarvect), "%s[%d]", fullvar, 0);
+        assert(written < sizeof(fullvar));
+        const int vi = CCTK_VarIndex(fullvarvect);
+        // This will fail for 0-sized vectors of grid functions which do not
+        // show up anywhere in Cactus' data structures
+        if(vi >= 0) {
+            const int gi = CCTK_GroupIndexFromVarI(vi);
+            assert(gi >= 0);
+            cGroup group;
+            const int ierr = CCTK_GroupData(gi, &group);
+            assert(!ierr);
+            assert(group.vectorgroup);
+            const int firstvar = CCTK_FirstVarIndexI(gi);
+            assert(firstvar >= 0);
+            const int varstride = group.numvars/group.vectorlength;
+            assert(group.numvars % group.vectorlength == 0);
+            for(int var = 0 ; var < group.vectorlength ; var++) {
+                add_entry(firstvar+var*varstride,tl,rdwr,wh,func,s);
+            }
+            return;
+        }
+    }
 
     if(!CCTK_EQUALS(presync_mode, "off")) {
         CCTK_VError(__LINE__, __FILE__, "Cactus",
