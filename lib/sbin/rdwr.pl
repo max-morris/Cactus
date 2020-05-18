@@ -345,6 +345,21 @@ sub do_schedules
               $var = lc $cap_var;
           }
 
+          # Vectors of scalar variables may trigger errors if
+          # used directly in the schedule. Use the group name instead.
+          if(defined($hash->{$thorn}->{variable_list}->{$var})) {
+            my $gname = $hash->{$thorn}->{variable_list}->{$var};
+            if($gname ne $var) {
+              my $vector = $hash->{$thorn}->{$gname}->{vector};
+              my $linenum = $ch->linenum();
+              if("$vector" ne "0") {
+                my $hint = "Try using the group name instead: ${thorn}::$gname";
+                &CST_error(1, "Variable ${thorn}::${var}[0] may not exist at runtime."
+                    ,$hint, $linenum, $ccl_file);
+              }
+            }
+          }
+
           # update informational data structures
           $reads_writes->{$nm}->{$thorn}->{$var}->{rdwr} += $is_writes;
           $reads_writes->{$nm}->{$thorn}->{$var}->{line} = $vname->linenum();
