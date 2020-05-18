@@ -173,9 +173,15 @@ void parse(const char *str,rdwr_t rdwr,cFunctionData* func,std::set<RDWR_entry>&
     }
 
     if(!CCTK_EQUALS(presync_mode, "off")) {
-        CCTK_VError(__LINE__, __FILE__, "Cactus",
+        if(CCTK_EQUALS(presync_mode, "warn-only")) {
+            CCTK_VWarn(1,__LINE__, __FILE__, "Cactus",
                     "Invalid variable or group name '%s' in %s for routine %s::%s",
                     fullvar,rdwr_s,func->thorn,func->routine);
+        } else {
+            CCTK_VError(__LINE__, __FILE__, "Cactus",
+                    "Invalid variable or group name '%s' in %s for routine %s::%s",
+                    fullvar,rdwr_s,func->thorn,func->routine);
+        }
     }
 }
 
