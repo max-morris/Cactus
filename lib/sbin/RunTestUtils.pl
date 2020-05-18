@@ -1755,15 +1755,33 @@ sub CompareTestFiles
         }
 
         my $postproc_cfg = $runconfig->{"$thorn $test POSTPROC"};
-        my $prog = undef;
+
+        # Should we default to the global postprocessor?
+        if(!defined($postproc_cfg) or !%{$postproc_cfg}) {
+            if(defined($runconfig->{"$thorn POSTPROC"})) {
+                $postproc_cfg = $runconfig->{"$thorn POSTPROC"};
+            }
+        }
+
+        # Find out if there are multiple matches
+        my $progs = {};
         if(defined($postproc_cfg)) {
             for my $pat (keys %$postproc_cfg) {
                 if($newfile =~ /$pat/) {
-                    $prog = $postproc_cfg->{$pat}; 
-                    break;
+                    my $prog = $postproc_cfg->{$pat}; 
+                    $progs{$prog} = 1
                 }
             }
         }
+        my @progs = keys %progs;
+        my $prog = undef;
+        if($#progs == 0) {
+            $prog = $progs[0];
+        } elsif($#progs > 0) {
+            warn "ERROR: More than one postprocessing file is selected for $file of thorn $thorn. Programs: ".join(", ",@progs);
+            die  "ABORTING: Please adjust test.ccl of $thorn to avoid multiple matches for the postprocessor.\n"
+        }
+
         my $postproc_file = "$thorndir/util/$prog";
         # if the postprocessing file exsists, use it to read the file
         my $read_old;
