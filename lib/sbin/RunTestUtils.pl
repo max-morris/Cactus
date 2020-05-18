@@ -1754,17 +1754,10 @@ sub CompareTestFiles
             $thorndir =~ s{(.*)(/.*)}{$1};
         }
 
-        my $postproc_cfg = $runconfig->{"$thorn $test POSTPROC"};
-
-        # Should we default to the global postprocessor?
-        if(!defined($postproc_cfg) or !%{$postproc_cfg}) {
-            if(defined($runconfig->{"$thorn POSTPROC"})) {
-                $postproc_cfg = $runconfig->{"$thorn POSTPROC"};
-            }
-        }
-
-        # Find out if there are multiple matches
         my $progs = {};
+
+        # Find all matches from the individual test...
+        my $postproc_cfg = $runconfig->{"$thorn $test POSTPROC"};
         if(defined($postproc_cfg)) {
             for my $pat (keys %$postproc_cfg) {
                 if($newfile =~ /$pat/) {
@@ -1773,6 +1766,17 @@ sub CompareTestFiles
                 }
             }
         }
+        # Find all matches from the thorn...
+        $postproc_cfg = $runconfig->{"$thorn POSTPROC"};
+        if(defined($postproc_cfg)) {
+            for my $pat (keys %$postproc_cfg) {
+                if($newfile =~ /$pat/) {
+                    my $prog = $postproc_cfg->{$pat}; 
+                    $progs{$prog} = 1
+                }
+            }
+        }
+
         my @progs = keys %progs;
         my $prog = undef;
         if($#progs == 0) {
