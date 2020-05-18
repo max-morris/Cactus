@@ -844,7 +844,7 @@ sub ScheduleSelectRDWR
         if(!$foundit)
         {
           $mess = "Schedule error: Thorn $thorn - group or variable $other_imp\:\:$group_or_var doesn't exist.\n";
-          &CST_error(0,$mess,"",__LINE__,__FILE__);
+          &CST_error(1,$mess,"",__LINE__,__FILE__);
         }
         next;
       }
@@ -901,7 +901,7 @@ sub ScheduleSelectRDWR
       if(!$foundit)
       {
         $mess = "Schedule error: Thorn $thorn - group or variable $group_or_var doesn't exist.";
-        &CST_error(0,$mess,"",__LINE__,__FILE__);
+        &CST_error(1,$mess,"",__LINE__,__FILE__);
       }
     }
   }
