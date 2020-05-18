@@ -352,7 +352,7 @@ sub do_schedules
             if($gname ne $var) {
               my $vector = $hash->{$thorn}->{$gname}->{vector};
               my $linenum = $ch->linenum();
-              if("$vector" ne "0") {
+              if($vector !~ /^\d+$/) {
                 my $hint = "Try using the group name instead: ${thorn}::$gname";
                 &CST_error(1, "Variable ${thorn}::${var}[0] may not exist at runtime."
                     ,$hint, $linenum, $ccl_file);
