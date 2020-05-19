@@ -26,6 +26,8 @@ namespace cctki_RDWR {
 enum rdwr_t { reads_t, writes_t, invalidates_t };
 
 void add_entry(int vi,int tl,rdwr_t rdwr,int where,cFunctionData* func,std::set<RDWR_entry>& s) {
+    DECLARE_CCTK_PARAMETERS;
+
     RDWR_entry entry;
     entry.var_id = vi;
     entry.time_level = tl;
@@ -35,20 +37,28 @@ void add_entry(int vi,int tl,rdwr_t rdwr,int where,cFunctionData* func,std::set<
         entry.where_rd = CCTK_VALID_NOWHERE;
         entry.where_inv = CCTK_VALID_NOWHERE;
     } else {
-        if(rdwr == writes_t && iter->where_wr != CCTK_VALID_NOWHERE) {
-            CCTK_VError(__LINE__,__FILE__,"Cactus",
-                        "Duplicate write specification for %s in function %s::%s",
-                        CCTK_FullVarName(vi),func->thorn,func->routine);
-        }
-        if(rdwr == reads_t && iter->where_rd != CCTK_VALID_NOWHERE) {
-            CCTK_VError(__LINE__,__FILE__,"Cactus",
-                        "Duplicate reads specification for %s in function %s::%s",
-                        CCTK_FullVarName(vi),func->thorn,func->routine);
-        }
-        if(rdwr == invalidates_t && iter->where_inv != CCTK_VALID_NOWHERE) {
-            CCTK_VError(__LINE__,__FILE__,"Cactus",
-                        "Duplicate invalidates specification for %s in function %s::%s",
-                        CCTK_FullVarName(vi),func->thorn,func->routine);
+        if(!CCTK_EQUALS(presync_mode, "off")) {
+          if(rdwr == writes_t && iter->where_wr != CCTK_VALID_NOWHERE) {
+              const int level = CCTK_EQUALS(presync_mode, "warn-only") ?
+                                 CCTK_WARN_ALERT : CCTK_WARN_ABORT;
+              CCTK_VWarn(level,__LINE__,__FILE__,"Cactus",
+                          "Duplicate write specification for %s in function %s::%s",
+                          CCTK_FullVarName(vi),func->thorn,func->routine);
+          }
+          if(rdwr == reads_t && iter->where_rd != CCTK_VALID_NOWHERE) {
+              const int level = CCTK_EQUALS(presync_mode, "warn-only") ?
+                                 CCTK_WARN_ALERT : CCTK_WARN_ABORT;
+              CCTK_VWarn(level,__LINE__,__FILE__,"Cactus",
+                          "Duplicate reads specification for %s in function %s::%s",
+                          CCTK_FullVarName(vi),func->thorn,func->routine);
+          }
+          if(rdwr == invalidates_t && iter->where_inv != CCTK_VALID_NOWHERE) {
+              const int level = CCTK_EQUALS(presync_mode, "warn-only") ?
+                                 CCTK_WARN_ALERT : CCTK_WARN_ABORT;
+              CCTK_VWarn(level,__LINE__,__FILE__,"Cactus",
+                          "Duplicate invalidates specification for %s in function %s::%s",
+                          CCTK_FullVarName(vi),func->thorn,func->routine);
+          }
         }
         entry.where_wr = iter->where_wr;
         entry.where_rd = iter->where_rd;
@@ -174,7 +184,7 @@ void parse(const char *str,rdwr_t rdwr,cFunctionData* func,std::set<RDWR_entry>&
 
     if(!CCTK_EQUALS(presync_mode, "off")) {
         if(CCTK_EQUALS(presync_mode, "warn-only")) {
-            CCTK_VWarn(1,__LINE__, __FILE__, "Cactus",
+            CCTK_VWarn(CCTK_WARN_ALERT,__LINE__, __FILE__, "Cactus",
                     "Invalid variable or group name '%s' in %s for routine %s::%s",
                     fullvar,rdwr_s,func->thorn,func->routine);
         } else {
