@@ -183,7 +183,8 @@ void parse(const char *str,rdwr_t rdwr,cFunctionData* func,std::set<RDWR_entry>&
     }
 
     if(!CCTK_EQUALS(presync_mode, "off")) {
-        if(CCTK_EQUALS(presync_mode, "warn-only")) {
+        if(CCTK_EQUALS(presync_mode, "warn-only") ||
+           CCTK_EQUALS(presync_mode, "mixed-warn")) {
             CCTK_VWarn(CCTK_WARN_ALERT,__LINE__, __FILE__, "Cactus",
                     "Invalid variable or group name '%s' in %s for routine %s::%s",
                     fullvar,rdwr_s,func->thorn,func->routine);
