@@ -60,8 +60,8 @@ typedef enum {FunctionNoArgs, FunctionOneArg, FunctionStandard} cFunctionType;
 
 typedef struct
 {
-  int var_id;
-  int time_level;
+  int varindex;
+  int timelevel;
   int where_wr, where_rd, where_inv;
 } RDWR_entry;
 

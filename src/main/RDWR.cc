@@ -15,9 +15,9 @@
 // I do not want to make the operator visible globally either
 static
 bool operator<(const RDWR_entry v1,const RDWR_entry v2){
-    if(v1.var_id < v2.var_id) return true;
-    if(v1.var_id > v2.var_id) return false;
-    if(v1.time_level < v2.time_level) return true;
+    if(v1.varindex < v2.varindex) return true;
+    if(v1.varindex > v2.varindex) return false;
+    if(v1.timelevel < v2.timelevel) return true;
     return false;
 }
 
@@ -29,8 +29,8 @@ void add_entry(int vi,int tl,rdwr_t rdwr,int where,cFunctionData* func,std::set<
     DECLARE_CCTK_PARAMETERS;
 
     RDWR_entry entry;
-    entry.var_id = vi;
-    entry.time_level = tl;
+    entry.varindex = vi;
+    entry.timelevel = tl;
     auto iter = s.find(entry);
     if(iter == s.end()) {
         entry.where_wr = CCTK_VALID_NOWHERE;
@@ -247,9 +247,9 @@ void CCTKi_CreateRDWRData(cFunctionData *f)
         // be paronoid and check order just in case the container is ever
         // changed to something that sorts differently
         if(previous_vi != -1 and previous_tl != -1) {
-          assert(previous_vi < i->var_id or previous_tl < i->time_level);
-          previous_vi = i->var_id;
-          previous_tl = i->time_level;
+          assert(previous_vi < i->varindex or previous_tl < i->timelevel);
+          previous_vi = i->varindex;
+          previous_tl = i->timelevel;
         }
     }
 
@@ -307,7 +307,7 @@ bool hasAccess(cFunctionData const * const f,
                const int tl) {
   const RDWR_entry val{vi,-1,tl};
   const auto it = std::lower_bound(f->RDWR, f->RDWR + f->n_RDWR, val);
-  return it-f->RDWR < f->n_RDWR and it->var_id == vi and it->time_level == tl;
+  return it-f->RDWR < f->n_RDWR and it->varindex == vi and it->timelevel == tl;
 }
 extern "C"
 int CCTK_HasAccess(const cGH *cctkGH, int var_index)
