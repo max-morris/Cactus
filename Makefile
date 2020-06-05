@@ -49,6 +49,7 @@ endif
 # Make quietly unless told not to
 ifneq ($(shell echo $(strip $(VERBOSE)) | tr '[:upper:]' '[:lower:]'),yes)
 .SILENT:
+MAKEFLAGS += --silent
 endif
 
 # Stuff for parallel makes
