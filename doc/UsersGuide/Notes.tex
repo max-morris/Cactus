@@ -652,6 +652,44 @@ The location of include files, modules and Fortran module files is given via:
       built in copy is used.
 \end{Lentry}
 
+\subsection{Note on possible ExternalLibraries' location stripping}
+\label{sec:stripping}
+
+Each thorn which is compiled as one external library
+will automatically use the library version contained in the
+\texttt{<library>/dist} folder. In particular, the tarball in
+\texttt{<library>/dist} is only used if either \texttt{THORN\_DIR} is
+set to \texttt{BUILD} or is left empty and no precompiled copy of the
+library is found. If another location is specified via the
+\texttt{THORN\_DIR} variable in the configuration file at
+compilation, then the \texttt{lib/sbin/strip-incdirs.sh} script will
+automatically strip away (for safety reasons) the locations:
+\begin{Lentry}
+\item [\texttt{/include}]
+\item [\texttt{/usr/include}]
+\item [\texttt{/usr/local/include}]
+\end{Lentry}
+from \texttt{THORN\_INC\_DIRS} which default to
+\texttt{THORN\_DIR/include}. Therefore, if there is any need for using
+one already installed version of one external library, the
+aforementioned location should be avoided (e.g. indicating
+\texttt{/home} as the \texttt{THORN\_DIR} will work with no problems
+if the required library is installed there) or should be carefully
+checked, in order to avoid unwanted stripping. It is worth mentioning
+that the compiler normally automatically searches in \texttt{/usr} and
+\texttt{/usr/local} so stripping does not prevent it from being
+found (basically they are only found later in the search order of
+the compiler). The same stripping happens to \texttt{THORN\_LIB\_DIRS}
+in \texttt{lib/sbin/strip-libdirs.sh} with a larger list of directories:
+\begin{Lentry}
+\item [\texttt{/lib}]
+\item [\texttt{/usr/lib}]
+\item [\texttt{/usr/local/lib}]
+\item [\texttt{/lib64}]
+\item [\texttt{/usr/lib64}]
+\item [\texttt{/usr/local/lib64}]
+\end{Lentry}
+
 \section{File Layout}
 \label{file_layout}
 
