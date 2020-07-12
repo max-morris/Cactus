@@ -46,13 +46,18 @@ sub CheckImpParamConsistency
 #       print "Parameter is $parameter\n";
 
         my $realname = $parameter_database{"\U$thorn $parameter\E realname"};
+        my $type = $parameter_database{"\U$thorn $parameter\E type"};
 
         # Check if the parameter exists in the other thorn
         if($parameter_database{"\U$other_thorn $realname\E type"})
         {
+          my $othertype = $parameter_database{"\U$other_thorn $realname\E type"};
           # Check that the parameter is in the restricted block.
           if($parameter_database{"\U$other_thorn RESTRICTED\E variables"} =~ m:\b$realname\b:i)
           {
+            # Check that the parameter types agree
+            if($othertype =~ m/\b$type\b/i)
+            {
 
 #   This lot is done by C now, and SHOULD NOT BE DONE by the perl
 #           # Loop through all the added ranges.
@@ -69,6 +74,12 @@ sub CheckImpParamConsistency
               # Add in the range description
 #             $parameter_database{"\U$other_thorn $parameter\E range $parameter_database{\"\U$other_thorn $parameter\E ranges\"} description"} = $parameter_database{"\U$thorn $parameter\E range $range description"};
 #           }
+            }
+            else
+            {
+              $message = "Thorn \"$thorn\" attempted to EXTEND or USE parameter \"$realname\" from implementation \"$friend\" having type \"$othertype\" using incorrect type \"$type\"";
+              &CST_error(0,$message,"",__LINE__,__FILE__);
+            }
           }
           else
           {
