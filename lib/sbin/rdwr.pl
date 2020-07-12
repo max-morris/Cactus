@@ -564,28 +564,30 @@ sub create_macros
                 if ($var_group->{vector} ne "0") {
                   $vname .= "[0]";
                 }
-                my $ivar = get_cap($hash, $th, $full_var);
+                my $ifull_var = get_cap($hash, $th, $full_var);
+                my $ivar = get_cap($hash, $th, $var);
                 if(!defined($decls->{$full_var})) {
                   my $line = $reads_writes->{$namekey}->{$th}->{$full_var}->{line};
                   my $hint = "Check access of variable. Maybe add an inherits clause to your interface.ccl";
-                  &CST_error(1, "No access to variable '${th}::$ivar'" 
+                  &CST_error(1, "No access to variable '${th}::$ifull_var'"
                     ,$hint, $line, $ccl_file);
                 }
-                $$data .= qq(static int cctki_vi_$ivar = -100; if (cctki_vi_$ivar == -100) cctki_vi_$ivar = CCTK_VarIndex("$vname"); $vtype $const * restrict const $ivar __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, cctki_vi_$ivar));; /* group $group_register */\\\n);
+                $$data .= qq($vtype $const * restrict const $ifull_var __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, CCTK_JOIN_TOKENS(cctki_vi_, CCTK_THORN).$ivar));; /* group $group_register */\\\n);
               }
             } else {
               my $vname = "${th}::$var";
               if ($var_group->{vector} ne "0") {
                 $vname .= "[0]";
               }
-              my $ivar = get_cap($hash, $th, $full_var);
+              my $ifull_var = get_cap($hash, $th, $full_var);
+              my $ivar = get_cap($hash, $th, $var);
               if(!defined($decls->{$full_var})) {
                 my $line = $reads_writes->{$namekey}->{$th}->{$full_var}->{line};
                 my $hint = "Check access of variable. Maybe add an inherits clause to your interface.ccl";
-                &CST_error(1, "No access to variable '${th}::$ivar'" 
+                &CST_error(1, "No access to variable '${th}::$ifull_var'"
                   ,$hint, $line, $ccl_file);
               }
-              $$data .= qq(static int cctki_vi_$ivar = -100; if (cctki_vi_$ivar == -100) cctki_vi_$ivar = CCTK_VarIndex("$vname"); $vtype $const * restrict const $ivar __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, cctki_vi_$ivar));; /* TL: $namekey --> $timelevel $group_register*/\\\n);
+              $$data .= qq($vtype $const * restrict const $ifull_var __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, CCTK_JOIN_TOKENS(cctki_vi_, CCTK_THORN).$ivar));; /* TL: $namekey --> $timelevel $group_register*/\\\n);
             }
           } # loop over read/write variables
         } # loop over read/write thorns
