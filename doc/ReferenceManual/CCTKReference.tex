@@ -3363,8 +3363,8 @@ Fortran).%%%
 \footnote{%%%
          Some code calls this function directly.
          For reference, the function is:\\
-         \texttt{\hbox{}void CCTK\_Error(int line\_number, const char* file\_name, const char* thorn\_name,}\\
-         \texttt{\hbox{}~~~~~~~~~~~~~~const char* message)}
+         \texttt{\mbox{}void CCTK\_Error(int line\_number, const char* file\_name, const char* thorn\_name,}\\
+         \texttt{\mbox{}~~~~~~~~~~~~~~const char* message)}
          }%%%
 {}  The macro automatically includes details about the origin of the warning
 (the thorn name, the source code file name and the line number where the macro
@@ -7385,7 +7385,7 @@ A negative value is returned for invalid/unregistered interpolation operator nam
 %notyet in the Thorn Guide for thorn AEILocalInterp.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{operator\_handle ($\ge 0$)}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet Handle to the interpolation operator as returned by
 %notyet \code{CCTK\_InterpHandle}.
 %notyet \end{Parameter}
@@ -7402,46 +7402,46 @@ A negative value is returned for invalid/unregistered interpolation operator nam
 %notyet See the Thorn Guide for the AEILocalInterp thorn for other parameters.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{coord\_arrays\_type\_code}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet One of the \code{CCTK\_VARIABLE\_*} type codes, giving the data type of the
 %notyet 1-D coordinate arrays pointed to by \code{coord\_arrays[]}.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{coord\_array\_dims ($\ne$ NULL)}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet (Pointer to) an array of \code{N\_dims} integers giving the dimensions
 %notyet of the corresponding 1-D coordinate arrays.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{coord\_arrays ($\ne$ NULL)}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet (Pointer to) an array of \code{N\_dims} pointers to 1-D arrays giving the
 %notyet coordinates of the interpolation points.  See the ``Discussion'' section
 %notyet below for more on the semantics of this.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{N\_interp\_points ($\ge 0$)}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet The number of points at which interpolation is to be done.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{interp\_coords\_type\_code}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet One of the \code{CCTK\_VARIABLE\_*} type codes, giving the data type
 %notyet of the 1-D interpolation-point-coordinate arrays pointed to by
 %notyet \code{interp\_coords[]}.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{interp\_coords ($\ne$ NULL)}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet (Pointer to) an array of \code{N\_dims} pointers to 1-D arrays giving the
 %notyet coordinates of the interpolation points.  These coordinates are with
 %notyet respect to the coordinate system defined by \code{coord\_arrays[]}.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{N\_input\_arrays ($\ge 0$)}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet The number of input arrays to be interpolated.
 %notyet Note that if the parameter table entry \code{operand\_indices}
 %notyet is used to specify a 1-to-many mapping of input arrays to output arrays,
 %notyet only the unique set of input arrays should be given here.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{input\_array\_dims ($\ne$ NULL)}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet (Pointer to) an array of \code{N\_dims} integers giving the dimensions
 %notyet of the \code{N\_dims}-D input arrays.  By default all the input arrays
 %notyet are taken to have these dimensions, with \code{[0]} the most contiguous
@@ -7451,28 +7451,28 @@ A negative value is returned for invalid/unregistered interpolation operator nam
 %notyet in the parameter table) for details of how this can be overridden.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{input\_array\_type\_codes ($\ne$ NULL)}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet (Pointer to) an array of \code{N\_input\_arrays} \code{CCTK\_VARIABLE\_*}
 %notyet type codes giving the data types of the \code{N\_dims}-D input arrays
 %notyet pointed to by \code{input\_arrays[]}.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{input\_arrays ($\ne$ NULL)}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet (Pointer to) an array of \code{N\_input\_arrays} pointers to the
 %notyet \code{N\_dims}-D input arrays for the interpolation.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{N\_output\_arrays ($\ge 0$)}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet The number of output arrays to be returned from the interpolation.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{output\_array\_type\_codes ($\ne$ NULL)}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet (Pointer to) an array of \code{N\_output\_arrays} \code{CCTK\_VARIABLE\_*}
 %notyet type codes giving the data types of the 1-D output arrays pointed to by
 %notyet \code{output\_arrays[]}.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{output\_arrays ($\ne$ NULL)}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet (Pointer to) an array of \code{N\_output\_arrays} pointers to the
 %notyet (user-supplied) 1-D output arrays for the interpolation.
 %notyet \end{Parameter}
@@ -7523,7 +7523,7 @@ A negative value is returned for invalid/unregistered interpolation operator nam
 %notyet with uniformly spaced data points
 %notyet \end{SeeAlso}
 %notyet \begin{SeeAlso}{CCTK\_InterpRegisterOpLocalNonUniform()}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet Register a \code{CCTK\_InterpLocalNonUniform} interpolation operator.
 %notyet \end{SeeAlso}
 %notyet \end{SeeAlsoSection}
@@ -7715,7 +7715,7 @@ For details, see the section on ``Non-Contiguous Input Arrays''
 in the Thorn Guide for thorn AEILocalInterp.
 \end{Parameter}
 \begin{Parameter}{operator\_handle ($\ge 0$)}
-\hbox{}
+\mbox{}
 Handle to the interpolation operator as returned by
 \code{CCTK\_InterpHandle}.
 \end{Parameter}
@@ -7731,7 +7731,7 @@ specifying the order of the (presumably polynomial) interpolation
 See the Thorn Guide for the AEILocalInterp thorn for other parameters.
 \end{Parameter}
 \begin{Parameter}{coord\_origin ($\ne$ NULL)}
-\hbox{}
+\mbox{}
 (Pointer to) an array giving the coordinates of the data point with
 integer array subscripts 0, 0, \dots, 0, or more generally (if the actual
 array bounds don't include the all-zeros-subscript point) the coordinates
@@ -7739,38 +7739,38 @@ which this data point would have if it existed.  See the ``Discussion''
 section below for more on how \code{coord\_origin[]} is actually used.
 \end{Parameter}
 \begin{Parameter}{coord\_delta ($\ne$ NULL)}
-\hbox{}
+\mbox{}
 (Pointer to) an array giving the coordinate spacing of the data arrays.
 See the ``Discussion'' section below for more on how \code{coord\_delta[]}
 is actually used.
 \end{Parameter}
 \begin{Parameter}{N\_interp\_points ($\ge 0$)}
-\hbox{}
+\mbox{}
 The number of points at which interpolation is to be done.
 \end{Parameter}
 \begin{Parameter}{interp\_coords\_type\_code}
-\hbox{}
+\mbox{}
 One of the \code{CCTK\_VARIABLE\_*} type codes, giving the data type
 of the 1-D interpolation-point-coordinate arrays pointed to by
 \code{interp\_coords[]}.  (In practice, this data type will almost
 always be \code{CCTK\_REAL} or one of the \code{CCTK\_REAL*} types.)
 \end{Parameter}
 \begin{Parameter}{interp\_coords ($\ne$ NULL)}
-\hbox{}
+\mbox{}
 (Pointer to) an array of \code{N\_dims} pointers to 1-D arrays giving the
 coordinates of the interpolation points.  These coordinates are with
 respect to the coordinate system defined by \code{coord\_origin[]} and
 \code{coord\_delta[]}.
 \end{Parameter}
 \begin{Parameter}{N\_input\_arrays ($\ge 0$)}
-\hbox{}
+\mbox{}
 The number of input arrays to be interpolated.
 Note that if the parameter table entry \code{operand\_indices}
 is used to specify a 1-to-many mapping of input arrays to output arrays,
 only the unique set of input arrays should be given here.
 \end{Parameter}
 \begin{Parameter}{input\_array\_dims ($\ne$ NULL)}
-\hbox{}
+\mbox{}
 (Pointer to) an array of \code{N\_dims} integers giving the dimensions
 of the \code{N\_dims}-D input arrays.  By default all the input arrays
 are taken to have these dimensions, with \code{[0]} the most contiguous
@@ -7780,29 +7780,29 @@ discussion of the \code{input\_array\_strides} optional parameter (passed
 in the parameter table) for details of how this can be overridden.
 \end{Parameter}
 \begin{Parameter}{input\_array\_type\_codes ($\ne$ NULL)}
-\hbox{}
+\mbox{}
 (Pointer to) an array of \code{N\_input\_arrays} \code{CCTK\_VARIABLE\_*}
 type codes giving the data types of the \code{N\_dims}-D input arrays
 pointed to by \code{input\_arrays[]}.
 \end{Parameter}
 \begin{Parameter}{input\_arrays ($\ne$ NULL)}
-\hbox{}
+\mbox{}
 (Pointer to) an array of \code{N\_input\_arrays} pointers to the
 \code{N\_dims}-D input arrays for the interpolation.  If any
 \code{input\_arrays[in]} pointer is NULL, that interpolation is skipped.
 \end{Parameter}
 \begin{Parameter}{N\_output\_arrays ($\ge 0$)}
-\hbox{}
+\mbox{}
 The number of output arrays to be returned from the interpolation.
 \end{Parameter}
 \begin{Parameter}{output\_array\_type\_codes ($\ne$ NULL)}
-\hbox{}
+\mbox{}
 (Pointer to) an array of \code{N\_output\_arrays} \code{CCTK\_VARIABLE\_*}
 type codes giving the data types of the 1-D output arrays pointed to by
 \code{output\_arrays[]}.
 \end{Parameter}
 \begin{Parameter}{output\_arrays ($\ne$ NULL)}
-\hbox{}
+\mbox{}
 (Pointer to) an array of \code{N\_output\_arrays} pointers to the
 (user-supplied) 1-D output arrays for the interpolation.  If any
 \code{output\_arrays[out]} pointer is NULL, that interpolation is skipped.
@@ -7840,7 +7840,7 @@ Get the interpolator handle for a given character-string name.
 Interpolate a list of Cactus grid arrays
 \end{SeeAlso}
 \begin{SeeAlso}{CCTK\_InterpRegisterOpLocalUniform()}
-\hbox{}
+\mbox{}
 Register a \code{CCTK\_InterpLocalUniform} interpolation operator
 \end{SeeAlso}
 \begin{SeeAlso}{CCTK\_InterpLocalNonUniform()}
@@ -8028,7 +8028,7 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet in the Thorn Guide for thorn AEILocalInterp.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{operator\_handle ($\ge 0$)}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet Handle to the interpolation operator as returned by
 %notyet \code{CCTK\_InterpHandle}.
 %notyet \end{Parameter}
@@ -8045,12 +8045,12 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet See the Thorn Guide for the AEILocalInterp thorn for other parameters.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{coord\_arrays\_type\_code}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet One of the \code{CCTK\_VARIABLE\_*} type codes, giving the data type of the
 %notyet \code{N\_dims}-D coordinate arrays pointed to by \code{coord\_arrays[]}.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{coord\_array\_dims ($\ne$ NULL)}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet (Pointer to) an array of \code{N\_dims} integers giving the dimensions
 %notyet of the coordinate arrays.  All the coordinate arrays are taken to have
 %notyet these dimensions, with (by default) \code{[0]} the most contiguous axis
@@ -8060,36 +8060,36 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet in the parameter table) for details of how this can be overridden.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{coord\_arrays ($\ne$ NULL)}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet (Pointer to) an array of \code{N\_dims} pointers to \code{N\_dims}-D arrays
 %notyet giving the coordinates of the interpolation points.  See the ``Discussion''
 %notyet section below for more on the semantics of this.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{N\_interp\_points ($\ge 0$)}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet The number of points at which interpolation is to be done.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{interp\_coords\_type\_code}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet One of the \code{CCTK\_VARIABLE\_*} type codes, giving the data type
 %notyet of the 1-D interpolation-point-coordinate arrays pointed to by
 %notyet \code{interp\_coords[]}.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{interp\_coords ($\ne$ NULL)}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet (Pointer to) an array of \code{N\_dims} pointers to \code{N\_dims}-D arrays
 %notyet giving the coordinates of the interpolation points.  These coordinates are
 %notyet with respect to the coordinate system defined by \code{coord\_arrays[]}.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{N\_input\_arrays ($\ge 0$)}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet The number of input arrays to be interpolated.
 %notyet Note that if the parameter table entry \code{operand\_indices}
 %notyet is used to specify a 1-to-many mapping of input arrays to output arrays,
 %notyet only the unique set of input arrays should be given here.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{input\_array\_dims ($\ne$ NULL)}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet (Pointer to) an array of \code{N\_dims} integers giving the dimensions
 %notyet of the input arrays.  By default all the input arrays are taken to have
 %notyet these dimensions, with \code{[0]} the most contiguous axis and
@@ -8099,28 +8099,28 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet parameter table) for details of how this can be overridden.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{input\_array\_type\_codes ($\ne$ NULL)}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet (Pointer to) an array of \code{N\_input\_arrays} \code{CCTK\_VARIABLE\_*}
 %notyet type codes giving the data types of the \code{N\_dims}-D input arrays
 %notyet pointed to by \code{input\_arrays[]}.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{input\_arrays ($\ne$ NULL)}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet (Pointer to) an array of \code{N\_input\_arrays} pointers to the
 %notyet \code{N\_dims}-D input arrays for the interpolation.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{N\_output\_arrays ($\ge 0$)}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet The number of output arrays to be returned from the interpolation.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{output\_array\_type\_codes ($\ne$ NULL)}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet (Pointer to) an array of \code{N\_output\_arrays} \code{CCTK\_VARIABLE\_*}
 %notyet type codes giving the data types of the 1-D output arrays pointed to by
 %notyet \code{output\_arrays[]}.
 %notyet \end{Parameter}
 %notyet \begin{Parameter}{output\_arrays ($\ne$ NULL)}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet (Pointer to) an array of \code{N\_output\_arrays} pointers to the
 %notyet (user-supplied) 1-D output arrays for the interpolation.
 %notyet \end{Parameter}
@@ -8172,7 +8172,7 @@ if (CCTK_InterpLocalUniform(N_DIMS,
 %notyet with uniformly spaced data points
 %notyet \end{SeeAlso}
 %notyet \begin{SeeAlso}{CCTK\_InterpRegisterOpLocalWarped()}
-%notyet \hbox{}
+%notyet \mbox{}
 %notyet Register a \code{CCTK\_InterpLocalWarped} interpolation operator.
 %notyet \end{SeeAlso}
 %notyet \end{SeeAlsoSection}
@@ -8313,19 +8313,19 @@ under this operator name.
 
 \begin{ParameterSection}
 \begin{Parameter}{operator\_ptr ($\ne$ NULL)}
-\hbox{}
+\mbox{}
 Pointer to the \code{CCTK\_InterpLocalUniform} interpolation operator.
 This argument must be a C function pointer of the appropriate type;
 the typedef can be found in \code{src/include/cctk\_Interp.h} in the
 Cactus source code.
 \end{Parameter}
 \begin{Parameter}{operator\_name ($\ne$ NULL)}
-\hbox{}
+\mbox{}
 (Pointer to) a (C-style null-terminated) character string giving
 the name under which to register the operator.
 \end{Parameter}
 \begin{Parameter}{thorn\_name ($\ne$ NULL)}
-\hbox{}
+\mbox{}
 (Pointer to) a (C-style null-terminated) character string giving
 the name of the thorn which provides the interpolation operator.
 \end{Parameter}
@@ -14494,7 +14494,7 @@ Cactus's behavior when \code{CCTK\_VWARN} is called depends on the
 \end{itemize}
 
 Cactus guarantees that
-$\hbox{the \code{-W}~level} \ge \hbox{the \code{-E}~level} \ge 0$.
+$\mbox{the \code{-W}~level} \ge \mbox{the \code{-E}~level} \ge 0$.
 This implies that a message will always be printed for any warning that's
 severe enough to halt the Cactus run.  It also implies that a level~0
 warning is guaranteed (to be printed and) to halt the Cactus run.
@@ -14651,7 +14651,7 @@ Cactus's behavior when \code{CCTK\_VWarn} is called depends on the
 \end{itemize}
 
 Cactus guarantees that
-$\hbox{the \code{-W}~level} \ge \hbox{the \code{-E}~level} \ge 0$.
+$\mbox{the \code{-W}~level} \ge \mbox{the \code{-E}~level} \ge 0$.
 This implies that a message will always be printed for any warning that's
 severe enough to halt the Cactus run.  It also implies that a level~0
 warning is guaranteed (to be printed and) to halt the Cactus run.
@@ -14783,9 +14783,9 @@ variable-number-of-arguments feature (so it can be used from Fortran).%%%
 \footnote{%%%
          Some code calls this function directly.
          For reference, the function is:\\
-         \texttt{\hbox{}int CCTK\_Warn(int level,}\\
-         \texttt{\hbox{}~~~~~~~~~~~~~~int line\_number, const char* file\_name, const char* thorn\_name,}\\
-         \texttt{\hbox{}~~~~~~~~~~~~~~const char* message)}
+         \texttt{\mbox{}int CCTK\_Warn(int level,}\\
+         \texttt{\mbox{}~~~~~~~~~~~~~~int line\_number, const char* file\_name, const char* thorn\_name,}\\
+         \texttt{\mbox{}~~~~~~~~~~~~~~const char* message)}
          }%%%
 {}  The macro automatically includes details about the origin of the warning
 (the thorn name, the source code file name and the line number where the macro
