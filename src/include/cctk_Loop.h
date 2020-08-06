@@ -12,16 +12,22 @@
 #  include <cGH.h>
 #  include <assert.h>
 
-#  ifndef CCTK_DISABLE_OMP_COLLAPSE
-#    define CCTK_PRAGMA_OMP_FOR_COLLAPSE_1 _Pragma("omp for collapse(1)")
-#    define CCTK_PRAGMA_OMP_FOR_COLLAPSE_2 _Pragma("omp for collapse(2)")
-#    define CCTK_PRAGMA_OMP_FOR_COLLAPSE_3 _Pragma("omp for collapse(3)")
-#    define CCTK_PRAGMA_OMP_FOR_COLLAPSE_4 _Pragma("omp for collapse(4)")
+#  ifndef CCTK_LOOP_DISABLE_OMP
+#    define CCTK_PRAGMA_OMP(x) _Pragma(x)
 #  else
-#    define CCTK_PRAGMA_OMP_FOR_COLLAPSE_1 _Pragma("omp for")
-#    define CCTK_PRAGMA_OMP_FOR_COLLAPSE_2 _Pragma("omp for")
-#    define CCTK_PRAGMA_OMP_FOR_COLLAPSE_3 _Pragma("omp for")
-#    define CCTK_PRAGMA_OMP_FOR_COLLAPSE_4 _Pragma("omp for")
+#    define CCTK_PRAGMA_OMP(x)
+#  endif
+
+#  ifndef CCTK_DISABLE_OMP_COLLAPSE
+#    define CCTK_PRAGMA_OMP_FOR_COLLAPSE_1 CCTK_PRAGMA_OMP("omp for collapse(1)")
+#    define CCTK_PRAGMA_OMP_FOR_COLLAPSE_2 CCTK_PRAGMA_OMP("omp for collapse(2)")
+#    define CCTK_PRAGMA_OMP_FOR_COLLAPSE_3 CCTK_PRAGMA_OMP("omp for collapse(3)")
+#    define CCTK_PRAGMA_OMP_FOR_COLLAPSE_4 CCTK_PRAGMA_OMP("omp for collapse(4)")
+#  else
+#    define CCTK_PRAGMA_OMP_FOR_COLLAPSE_1 CCTK_PRAGMA_OMP("omp for")
+#    define CCTK_PRAGMA_OMP_FOR_COLLAPSE_2 CCTK_PRAGMA_OMP("omp for")
+#    define CCTK_PRAGMA_OMP_FOR_COLLAPSE_3 CCTK_PRAGMA_OMP("omp for")
+#    define CCTK_PRAGMA_OMP_FOR_COLLAPSE_4 CCTK_PRAGMA_OMP("omp for")
 #  endif
 #endif /* #ifdef CCODE */
 
@@ -100,7 +106,7 @@
      \
     const int cctki0_ioff1 = (cctki0_imin) + cctki0_ioff; \
     const int cctki0_ioff2 = cctki0_ioff1 % cctki0_istr; \
-    _Pragma("omp for") \
+    CCTK_PRAGMA_OMP("omp for") \
     for (int i=cctki0_imin-cctki0_ioff2; i<cctki0_imax; i+=cctki0_istr) { \
       const int ni CCTK_ATTRIBUTE_UNUSED = cctki0_idir<0 ? i+1 : cctki0_idir==0 ? 0 : cctki0_imax-i; \
       { \
@@ -478,7 +484,7 @@
     CCTK_INT cctki3_is_ghostbnd[2]; \
     CCTK_INT cctki3_is_symbnd  [2]; \
     CCTK_INT cctki3_is_physbnd [2]; \
-    _Pragma("omp single copyprivate(cctki3_bndsize)") \
+    CCTK_PRAGMA_OMP("omp single copyprivate(cctki3_bndsize)") \
     GetBoundarySizesAndTypes \
       (cctki3_cctkGH, 2, cctki3_bndsize, cctki3_is_ghostbnd, cctki3_is_symbnd, cctki3_is_physbnd); \
     CCTK_LOOP1STROFF_INTERIOR(name##_int, \
@@ -524,7 +530,7 @@
     CCTK_INT cctki3_is_ghostbnd[2]; \
     CCTK_INT cctki3_is_symbnd  [2]; \
     CCTK_INT cctki3_is_physbnd [2]; \
-    _Pragma("omp single copyprivate(cctki3_bndsize, cctki3_is_physbnd)") \
+    CCTK_PRAGMA_OMP("omp single copyprivate(cctki3_bndsize, cctki3_is_physbnd)") \
     GetBoundarySizesAndTypes \
       (cctki3_cctkGH, 2, cctki3_bndsize, cctki3_is_ghostbnd, cctki3_is_symbnd, cctki3_is_physbnd); \
     CCTK_LOOP1STROFF_BOUNDARIES(name##_bnd, \
@@ -573,7 +579,7 @@
     CCTK_INT cctki3_is_ghostbnd[2]; \
     CCTK_INT cctki3_is_symbnd  [2]; \
     CCTK_INT cctki3_is_physbnd [2]; \
-    _Pragma("omp single copyprivate(cctki3_bndsize, cctki3_is_physbnd)") \
+    CCTK_PRAGMA_OMP("omp single copyprivate(cctki3_bndsize, cctki3_is_physbnd)") \
     GetBoundarySizesAndTypes \
       (cctki3_cctkGH, 2, cctki3_bndsize, cctki3_is_ghostbnd, cctki3_is_symbnd, cctki3_is_physbnd); \
     CCTK_LOOP1STROFF_INTBOUNDARIES(name##_intbnd, \
@@ -1598,7 +1604,7 @@
     CCTK_INT cctki3_is_ghostbnd[4]; \
     CCTK_INT cctki3_is_symbnd  [4]; \
     CCTK_INT cctki3_is_physbnd [4]; \
-    _Pragma("omp single copyprivate(cctki3_bndsize)") \
+    CCTK_PRAGMA_OMP("omp single copyprivate(cctki3_bndsize)") \
     GetBoundarySizesAndTypes \
       (cctki3_cctkGH, 4, cctki3_bndsize, cctki3_is_ghostbnd, cctki3_is_symbnd, cctki3_is_physbnd); \
     CCTK_LOOP2STROFF_INTERIOR(name##_int, \
@@ -1644,7 +1650,7 @@
     CCTK_INT cctki3_is_ghostbnd[4]; \
     CCTK_INT cctki3_is_symbnd  [4]; \
     CCTK_INT cctki3_is_physbnd [4]; \
-    _Pragma("omp single copyprivate(cctki3_bndsize, cctki3_is_physbnd)") \
+    CCTK_PRAGMA_OMP("omp single copyprivate(cctki3_bndsize, cctki3_is_physbnd)") \
     GetBoundarySizesAndTypes \
       (cctki3_cctkGH, 4, cctki3_bndsize, cctki3_is_ghostbnd, cctki3_is_symbnd, cctki3_is_physbnd); \
     CCTK_LOOP2STROFF_BOUNDARIES(name##_bnd, \
@@ -1693,7 +1699,7 @@
     CCTK_INT cctki3_is_ghostbnd[4]; \
     CCTK_INT cctki3_is_symbnd  [4]; \
     CCTK_INT cctki3_is_physbnd [4]; \
-    _Pragma("omp single copyprivate(cctki3_bndsize, cctki3_is_physbnd)") \
+    CCTK_PRAGMA_OMP("omp single copyprivate(cctki3_bndsize, cctki3_is_physbnd)") \
     GetBoundarySizesAndTypes \
       (cctki3_cctkGH, 4, cctki3_bndsize, cctki3_is_ghostbnd, cctki3_is_symbnd, cctki3_is_physbnd); \
     CCTK_LOOP2STROFF_INTBOUNDARIES(name##_intbnd, \
@@ -2777,7 +2783,7 @@
     CCTK_INT cctki3_is_ghostbnd[6]; \
     CCTK_INT cctki3_is_symbnd  [6]; \
     CCTK_INT cctki3_is_physbnd [6]; \
-    _Pragma("omp single copyprivate(cctki3_bndsize)") \
+    CCTK_PRAGMA_OMP("omp single copyprivate(cctki3_bndsize)") \
     GetBoundarySizesAndTypes \
       (cctki3_cctkGH, 6, cctki3_bndsize, cctki3_is_ghostbnd, cctki3_is_symbnd, cctki3_is_physbnd); \
     CCTK_LOOP3STROFF_INTERIOR(name##_int, \
@@ -2823,7 +2829,7 @@
     CCTK_INT cctki3_is_ghostbnd[6]; \
     CCTK_INT cctki3_is_symbnd  [6]; \
     CCTK_INT cctki3_is_physbnd [6]; \
-    _Pragma("omp single copyprivate(cctki3_bndsize, cctki3_is_physbnd)") \
+    CCTK_PRAGMA_OMP("omp single copyprivate(cctki3_bndsize, cctki3_is_physbnd)") \
     GetBoundarySizesAndTypes \
       (cctki3_cctkGH, 6, cctki3_bndsize, cctki3_is_ghostbnd, cctki3_is_symbnd, cctki3_is_physbnd); \
     CCTK_LOOP3STROFF_BOUNDARIES(name##_bnd, \
@@ -2872,7 +2878,7 @@
     CCTK_INT cctki3_is_ghostbnd[6]; \
     CCTK_INT cctki3_is_symbnd  [6]; \
     CCTK_INT cctki3_is_physbnd [6]; \
-    _Pragma("omp single copyprivate(cctki3_bndsize, cctki3_is_physbnd)") \
+    CCTK_PRAGMA_OMP("omp single copyprivate(cctki3_bndsize, cctki3_is_physbnd)") \
     GetBoundarySizesAndTypes \
       (cctki3_cctkGH, 6, cctki3_bndsize, cctki3_is_ghostbnd, cctki3_is_symbnd, cctki3_is_physbnd); \
     CCTK_LOOP3STROFF_INTBOUNDARIES(name##_intbnd, \
@@ -4015,7 +4021,7 @@
     CCTK_INT cctki3_is_ghostbnd[8]; \
     CCTK_INT cctki3_is_symbnd  [8]; \
     CCTK_INT cctki3_is_physbnd [8]; \
-    _Pragma("omp single copyprivate(cctki3_bndsize)") \
+    CCTK_PRAGMA_OMP("omp single copyprivate(cctki3_bndsize)") \
     GetBoundarySizesAndTypes \
       (cctki3_cctkGH, 8, cctki3_bndsize, cctki3_is_ghostbnd, cctki3_is_symbnd, cctki3_is_physbnd); \
     CCTK_LOOP4STROFF_INTERIOR(name##_int, \
@@ -4061,7 +4067,7 @@
     CCTK_INT cctki3_is_ghostbnd[8]; \
     CCTK_INT cctki3_is_symbnd  [8]; \
     CCTK_INT cctki3_is_physbnd [8]; \
-    _Pragma("omp single copyprivate(cctki3_bndsize, cctki3_is_physbnd)") \
+    CCTK_PRAGMA_OMP("omp single copyprivate(cctki3_bndsize, cctki3_is_physbnd)") \
     GetBoundarySizesAndTypes \
       (cctki3_cctkGH, 8, cctki3_bndsize, cctki3_is_ghostbnd, cctki3_is_symbnd, cctki3_is_physbnd); \
     CCTK_LOOP4STROFF_BOUNDARIES(name##_bnd, \
@@ -4110,7 +4116,7 @@
     CCTK_INT cctki3_is_ghostbnd[8]; \
     CCTK_INT cctki3_is_symbnd  [8]; \
     CCTK_INT cctki3_is_physbnd [8]; \
-    _Pragma("omp single copyprivate(cctki3_bndsize, cctki3_is_physbnd)") \
+    CCTK_PRAGMA_OMP("omp single copyprivate(cctki3_bndsize, cctki3_is_physbnd)") \
     GetBoundarySizesAndTypes \
       (cctki3_cctkGH, 8, cctki3_bndsize, cctki3_is_ghostbnd, cctki3_is_symbnd, cctki3_is_physbnd); \
     CCTK_LOOP4STROFF_INTBOUNDARIES(name##_intbnd, \
