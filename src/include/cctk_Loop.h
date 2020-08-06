@@ -12,7 +12,7 @@
 #  include <cGH.h>
 #  include <assert.h>
 
-#  ifndef CCTK_LOOP_DISABLE_OMP
+#  ifndef CCTK_LOOP_DISABLE_PRAGMA_OMP
 #    define CCTK_PRAGMA_OMP(x) _Pragma(x)
 #  else
 #    define CCTK_PRAGMA_OMP(x)

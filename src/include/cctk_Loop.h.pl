@@ -199,7 +199,7 @@ push @lines, (
     (nl '#  include <cGH.h>'),
     (nl '#  include <assert.h>'),
     (nl ''),
-    (nl '#  ifndef CCTK_LOOP_DISABLE_OMP'),
+    (nl '#  ifndef CCTK_LOOP_DISABLE_PRAGMA_OMP'),
     (nl '#    define CCTK_PRAGMA_OMP(x) _Pragma(x)'),
     (nl '#  else'),
     (nl '#    define CCTK_PRAGMA_OMP(x)'),
