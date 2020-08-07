@@ -29,6 +29,11 @@ typedef struct _cGH
   int *cctk_lsh;
   int *cctk_lbnd;
   int *cctk_ubnd;
+#ifndef CCTK_HAVE_CGH_TILE
+#define CCTK_HAVE_CGH_TILE
+#endif
+  int *cctk_tile_min;
+  int *cctk_tile_max;
 
   /* Allocated shape */
   int *cctk_ash;

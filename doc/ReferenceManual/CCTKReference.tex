@@ -4836,6 +4836,10 @@ The members of this structure that are set are:
   grid. (These use zero based indexing.)
 \item{ubnd:} The largest index of the local grid as seen on the global
   grid. (These use zero based indexing.)
+\item{tile\_min:} The lowest index of the local grid that should be
+  written by this thread. (These use zero based indexing.)
+\item{tile\_max:} The largest index minus one of the local grid that
+  should be written by this thread. (These use zero based indexing.)
 \item{nghostzones:} The number of ghostzones for each dimension.
 \item{bbox:} Values indicating whether these are inter-process
   boundaries (0) or physical boundaries (1).

@@ -18,6 +18,11 @@ typedef struct GROUPDYNAMICDATA
   const int *lsh;
   const int *lbnd;
   const int *ubnd;
+#ifndef CCTK_HAVE_CGH_TILE
+#define CCTK_HAVE_CGH_TILE
+#endif
+  const int *tile_min;
+  const int *tile_max;
   const int *ash;
   int alignment;
   int alignment_offset;

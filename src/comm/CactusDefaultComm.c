@@ -172,6 +172,8 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
     thisGH->cctk_lsh          = malloc(cctk_dim*sizeof(int));
     thisGH->cctk_lbnd         = malloc(cctk_dim*sizeof(int));
     thisGH->cctk_ubnd         = malloc(cctk_dim*sizeof(int));
+    thisGH->cctk_tile_min     = malloc(cctk_dim*sizeof(int));
+    thisGH->cctk_tile_max     = malloc(cctk_dim*sizeof(int));
 
     thisGH->cctk_ash          = malloc(cctk_dim*sizeof(int));
     thisGH->cctk_to           = malloc(cctk_dim*sizeof(int));
@@ -223,6 +225,8 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
      thisGH->cctk_lsh &&
      thisGH->cctk_lbnd &&
      thisGH->cctk_ubnd &&
+     thisGH->cctk_tile_min &&
+     thisGH->cctk_tile_max &&
      thisGH->cctk_ash &&
      thisGH->cctk_from &&
      thisGH->cctk_to &&
