@@ -69,23 +69,6 @@ require "MakeUtils.pl";
 # GLOBAL VARIABLES #
 ####################
 
-# Find out which parser to use
-#
-$main::cctk_parser = "new";
-$main::cctk_parser = $ENV{CCTK_SELECT_PARSER}
-  if(defined($ENV{CCTK_SELECT_PARSER}));
-if($main::cctk_parser !~ /^(new|old|both)$/) {
-  &CST_error(0,"Bad setting for CCTK_SELECT_PARSER");
-  $main::cctk_parser = "new";
-}
-
-if($main::cctk_parser eq "old") {
-  print STDERR "***************************************\n";
-  print STDERR "* Warning: New CST parser disabled!!! *\n";
-  print STDERR "***************************************\n";
-  sleep 5;
-}
-
 ##################
 # INITIALIZATION #
 ##################
