@@ -243,10 +243,14 @@ endif
 $(foreach lib, $(CCTK_HOME)/src $(THORNS:%=$(PACKAGE_DIR)/%), $(lib)/param.ccl $(lib)/interface.ccl $(lib)/schedule.ccl) $(CCTK_HOME)/src/configuration.ccl $(CONFIG_THORNS:%=$(PACKAGE_DIR)/%/configuration.ccl):
 	@echo "Missing file $@"
 	@echo "Possibly from a thorn deleted from an arrangement"
-	@echo "Deleting make.thornlist"
-	rm  $(CONFIG)/make.thornlist
-	@echo "Please try building again"
-	exit 1
+        # removing make.thornlist (which we -include) make GNU make reevaluate
+        # the Makefile goals, rerunning CST to recreate it
+	@if rm  $(CONFIG)/make.thornlist ; then \
+	  echo "Deleting make.thornlist and trying again" ; \
+        else \
+	  echo "Please try building" ; \
+	  exit 1 ; \
+	fi
 
 
 # Phony targets.
