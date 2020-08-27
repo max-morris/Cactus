@@ -1,4 +1,4 @@
-#! /usr/bin/perl -s
+#! /usr/bin/perl
 #/*@@
 #  @file      CST
 #  @date      Sep 1998
@@ -9,26 +9,37 @@
 #  @version   $Header: /mnt/data2/cvs2svn/cvs-repositories/Cactus/lib/sbin/CST,v 1.81 2009-09-11 22:15:48 knarf Exp $
 #@@*/
 
+use strict;
+use warnings;
+
 use FindBin;
 use FileHandle;
 use Cwd;
+use Getopt::Long;
 
 # Global parameter to track the number of errors from the CST
 # The file make.thornlist is only created if the number of errors is zero.
 
-$CST_errors = 0;
-$error_string = '';
+my $CST_errors = 0;
+my $error_string = '';
 
-#$debug_configuration = 1;
-#$debug_interface     = 1;
-#$debug_parameters    = 1;
-#$debug_schedule      = 1;
+my $debug_configuration = 0;
+my $debug_interface     = 0;
+my $debug_parameters    = 0;
+my $debug_schedule      = 0;
 
 ##########################################################################
 # Parse the command line
 
-$thornlist = shift(@ARGV);
+our ($top, $config_dir, $cctk_home, $bindings_dir);
+BEGIN {
+  GetOptions("top=s"          => \$top,
+             "config_dir=s"   => \$config_dir,
+             "cctk_home=s"    => \$cctk_home,
+             "bindings_dir=s" => \$bindings_dir);
+}
 
+my $thornlist = shift(@ARGV);
 if (! $thornlist)
 {
   printf 'Usage: CST [-top=<TOP>] [-config_dir=<config directory>] [-cctk_home=<CCTK home dir>] -bindings_dir=<CCTK bindings directory> ThornList';
@@ -37,11 +48,13 @@ if (! $thornlist)
 
 $top = &getcwd() if (! $top);
 $config_dir = "$top/config-data" if (! $config_dir);
+my %system_database;
 $system_database{"CONFIG_DIR"} = $config_dir;
 
 # Set up the CCTK home directory (use in "use lib" so must be valid at compile
 # time)
 
+my $sbin_dir;
 BEGIN {
   if(! $cctk_home)
   {
@@ -60,7 +73,7 @@ $system_database{'BINDINGS_DIR'} = $bindings_dir;
 # Stop the make process if there were any errors
 sub CheckCSTErrors
 {
-  my $comment1, $comment2;
+  my ($comment1, $comment2);
   if ($CST_errors)
   {
     if ($CST_errors == 1)
@@ -119,37 +132,38 @@ require "rdwr.pl";
 ######################################################################
 
 # cache location for piraha
-$piraha_cache_dir = "$top/piraha";
+my $piraha_cache_dir = "$top/piraha";
 
 # Find out which thorns we have and the location of the ccl files.
 print "Reading ThornList...\n";
-%thorns = &CreateThornList($cctk_home, $thornlist);
+my %thorns = &CreateThornList($cctk_home, $thornlist);
 
 # Parse the configuration.ccl files
 print "Parsing configuration files...\n";
-$configuration_database = &CreateConfigurationDatabase($config_dir, %thorns);
+my $configuration_database = &CreateConfigurationDatabase($config_dir, %thorns);
 
 &print_database("configuration", $configuration_database) if($debug_configuration);
 &save_database("configuration", $configuration_database) if($debug_configuration);
 
 # Restrict the rest of this to thorns with source
 
+my (%source_thorns, %nosource_thorns);
 &SplitThorns($configuration_database, \%thorns, \%source_thorns, \%nosource_thorns);
 
 # Parse the interface.ccl files
 print "Parsing interface files...\n";
-%interface_database = &create_interface_database(scalar(keys %system_database), %system_database, %source_thorns);
+my %interface_database = &create_interface_database(scalar(keys %system_database), %system_database, %source_thorns);
 
 &print_database("interface", \%interface_database) if($debug_interface);
 &save_database("interface", \%interface_database) if($debug_interface);
 
 # Parse the parameter.ccl files
 print "Parsing parameter files...\n";
-%parameter_database = &create_parameter_database(%source_thorns);
+my %parameter_database = &create_parameter_database(%source_thorns);
 
 # Parse the schedule.ccl files
 print "Parsing schedule files...\n";
-%schedule_database = &create_schedule_database(%source_thorns);
+my %schedule_database = &create_schedule_database(%source_thorns);
 
 &CheckCSTErrors();
 
@@ -163,7 +177,7 @@ print "Checking consistency...\n";
 
 %parameter_database = &CheckImpParamConsistency(scalar(keys %interface_database), %interface_database, %parameter_database);
 
-$err_msg = &CheckCrossConsistency(\%interface_database,\%parameter_database);
+my $err_msg = &CheckCrossConsistency(\%interface_database,\%parameter_database);
 
 &print_database("interface", \%interface_database) if($debug_interface);
 
@@ -181,7 +195,7 @@ print "Creating Thorn-Flesh bindings...\n";
 &CreateConfigurationBindings($bindings_dir, $configuration_database,\%thorns);
 
 # Create header files of compiled thorns for the code
-($thornsheader, $definethornsheader, $definethisthornheader) =
+my ($thornsheader, $definethornsheader, $definethisthornheader) =
 &CreateThornsHeaders(%source_thorns);
 &WriteFile("$bindings_dir/include/thornlist.h", \$thornsheader);
 &WriteFile("$bindings_dir/include/cctk_DefineThorn.h", \$definethornsheader);
@@ -204,7 +218,7 @@ print "Generating arguments...\n";
 &CheckCSTErrors();
 
 # Finally (must be last), create the make.thornlist file.
-$make_thornlist = &CreateMakeThornlist(\%thorns, \%interface_database, $configuration_database);
+my $make_thornlist = &CreateMakeThornlist(\%thorns, \%interface_database, $configuration_database);
 
 &WriteFile("$config_dir/make.thornlist", \$make_thornlist);
 
@@ -588,7 +602,7 @@ sub CreateBindings
   &CreateFunctionBindings($bindings_dir, $rhinterface_db);
 
   # Place an appropriate make.code.defn in the bindings directory.
-  $data = 'SUBDIRS = Functions Implementations Parameters Variables Schedule';
+  my $data = 'SUBDIRS = Functions Implementations Parameters Variables Schedule';
   &WriteFile("$bindings_dir/make.code.defn", \$data);
 }
 
@@ -611,13 +625,15 @@ sub TopoSort
     my %children;            # set of thorns that a thorn requires
 
     # Inheritance
-    foreach my $thorn (keys %thorns) {
-        foreach $ancestor_impl (split ' ',
-                                $interface->{"\U$thorn INHERITS\E"}) {
-            my $ancestor_thorns =
-                $interface->{"IMPLEMENTATION \U$ancestor_impl\E THORNS"};
-            foreach my $thorn2 (split ' ', $ancestor_thorns) {
-                ${$children{$thorn}}{$thorn2} = 1 if $thorn2 ne $thorn;
+    if ( $interface ) {
+        foreach my $thorn (keys %thorns) {
+            foreach my $ancestor_impl (split ' ',
+                                       $interface->{"\U$thorn INHERITS\E"}) {
+                my $ancestor_thorns =
+                    $interface->{"IMPLEMENTATION \U$ancestor_impl\E THORNS"};
+                foreach my $thorn2 (split ' ', $ancestor_thorns) {
+                    ${$children{$thorn}}{$thorn2} = 1 if $thorn2 ne $thorn;
+                }
             }
         }
     }
@@ -686,7 +702,7 @@ sub TopoSort
 sub  CheckCrossConsistency
 {
   my($interfaceDB, $parameterDB) = @_;
-  my($implementation, $thorn, $flag, $restricted, $temp);
+  my($implementation, $thorn, $flag, $thorn0, $restricted, $temp);
 
   foreach $implementation  (split(' ', $interfaceDB->{'IMPLEMENTATIONS'}))
   {
@@ -707,9 +723,9 @@ sub  CheckCrossConsistency
         {
           CST_error (0, "Thorns: " . $interfaceDB->{"IMPLEMENTATION \U$implementation\E THORNS"} . "provide the same implementation but have different restricted parameters" );          
         }
-        $vflag = 0;
-        $variables = "";
-        foreach $variable (split(' ', $restricted))
+        my $vflag = 0;
+        my $variables = "";
+        foreach my $variable (split(' ', $restricted))
         {
           if ( !&CompareValues($parameterDB, $thorn0, $thorn, $variable) )
           {
@@ -747,8 +763,8 @@ sub  CompareValues
 
   if ( $retval )
   {
-    $default1 = $parameter_db->{"\U$thorn1 $variable\E default"};
-    $default2 = $parameter_db->{"\U$thorn2 $variable\E default"};
+    my $default1 = $parameter_db->{"\U$thorn1 $variable\E default"};
+    my $default2 = $parameter_db->{"\U$thorn2 $variable\E default"};
 
     # canonicalize default values
     if ($parameter_db->{"\U$thorn1 $variable\E type"} =~ /BOOLEAN/)

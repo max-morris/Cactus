@@ -24,7 +24,7 @@ sub CreateConfigurationBindings
 {
   my($bindings_dir, $cfg, $thorns)=@_;
   my($field, $providedcap, $thorn, $temp,$defs,$incs,$deps);
-  my(%linker_thorns, %linker_cfg, $linker_list, $linkerdirs, $linkerlibs);
+  my(%linker_thorns, $linker_list, $linkerdirs, $linkerlibs);
 
   if(! $build_dir)
   {
@@ -146,13 +146,11 @@ sub CreateConfigurationBindings
               if ($cfg->{"\U$thorn $providedcap\E LIBRARY"})
               {
                   $linker_thorns{"$thorn"} = $thorn;
-                  #$linker_cfg{"\U$thorn\E USES"} = $cfg->{"\U$thorn\E USES THORNS"};
               }
               
               if ($cfg->{"\U$thorn $providedcap\E LIBRARY_DIRECTORY"})
               {
                   $linker_thorns{"$thorn"} = $thorn;
-                  #$linker_cfg{"\U$thorn\E USES"} = $cfg->{"\U$thorn\E USES THORNS"};
               }
           }
       }
@@ -204,7 +202,7 @@ sub CreateConfigurationBindings
   $linkerdirs = 'LIBDIRS +=';
   $linkerlibs = 'LIBS +=';
 
-  $linker_list = &TopoSort(\%linker_thorns, \%linker_cfg, $cfg);
+  $linker_list = &TopoSort(\%linker_thorns, undef, $cfg);
   foreach $thorn (split (' ', $linker_list))
   {
     foreach $providedcap (sort split (' ', $cfg->{"\U$thorn\E PROVIDES"}))

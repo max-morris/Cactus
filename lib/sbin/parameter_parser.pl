@@ -131,12 +131,13 @@ sub parse_param_ccl
 
 
   $parameter_db{"\U$thorn PRIVATE\E variables"} = '';
+  $parameter_db{"\U$thorn RESTRICTED\E variables"} = '';
+  $parameter_db{"\U$thorn GLOBAL\E variables"} = '';
 
   for my $gr (@{$group->{children}}) {
     if($gr->{name} eq "access") {
       if($gr->has(0,"access_spec")) {
         $block = uc($gr->group(0)->substring());
-        $parameter_db{"\U$thorn $block\E variables"} .= "";
       }
       if($gr->{children}->[0]->{name} eq "share") {
         $share = uc $gr->group(0,"share")->group(0,"name")->substring();

@@ -35,9 +35,8 @@ sub CreateConfigurationDatabase
   foreach my $thorn (sort keys %thorns)
   {
     $ccl_file = "$thorns{$thorn}/configuration.ccl";
-    next if (! -r $ccl_file);
 
-    # Get the configuration data from it
+    # Get the configuration data from it if it exisits
     &ParseConfigurationCCL($config_dir, $thorn, \%cfg, \%thorns, $ccl_file, $grammar, $rule, $peg_file);
 
     $cfg{"\U$thorn\E USES THORNS"} = '';
@@ -330,11 +329,14 @@ sub ParseConfigurationCCL
 
   $cfg->{"\U$thorn\E PROVIDES"} = '';
   $cfg->{"\U$thorn\E REQUIRES"} = '';
+  $cfg->{"\U$thorn\E USES THORNS"} = '';
   $cfg->{"\U$thorn\E REQUIRES THORNS"} = '';
   $cfg->{"\U$thorn\E OPTIONAL"} = '';
   $cfg->{"\U$thorn\E OPTIONAL_IFACTIVE"} = '';
   $cfg->{"\U$thorn\E ACTIVATES"} = '';
   $cfg->{"\U$thorn\E OPTIONS"}  = '';
+
+  return if not -r $ccl_file;
 
   my $gr = parse_ccl($grammar,$rule,$ccl_file,$peg_file);
 
