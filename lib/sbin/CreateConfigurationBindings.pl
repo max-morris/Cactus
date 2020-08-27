@@ -8,9 +8,13 @@
 #  @version   $Header$
 #@@*/
 
+use strict;
+use warnings;
+
 use FindBin;
-use lib "$sbin_dir";
+use lib "$FindBin::Bin";
 require "CSTUtils.pl";
+use Cwd;
 
 #/*@@
 #  @routine    CreateConfigurationBindings
@@ -26,17 +30,12 @@ sub CreateConfigurationBindings
   my($field, $providedcap, $thorn, $temp,$defs,$incs,$deps);
   my(%linker_thorns, $linker_list, $linkerdirs, $linkerlibs);
 
-  if(! $build_dir)
-  {
-    $build_dir = "$bindings_dir/build";
-  }
-
   if(! -d $bindings_dir)
   {
     mkdir("$bindings_dir", 0755) || die "Unable to create $bindings_dir";
   }
 
-  $start_dir = `pwd`;
+  my $start_dir = &getcwd();
 
   chdir $bindings_dir;
 
@@ -62,7 +61,7 @@ sub CreateConfigurationBindings
   }
 
   # Put all the provided capabilities where they belong
-  foreach my $thorn (sort keys %thorns)
+  foreach my $thorn (sort keys %$thorns)
   {
       # We know that all the requirements have been satisfied, so all
       # we need to do is put the provides where they belong.
@@ -157,7 +156,7 @@ sub CreateConfigurationBindings
   }
 
   # here we add the files to the thorns that require capabilities
-  foreach $thorn (sort keys %thorns)
+  foreach $thorn (sort keys %$thorns)
   {
     # we know that all the requirements have been satisfied
     # so all we need to do is make references to the capabilities
@@ -170,7 +169,7 @@ sub CreateConfigurationBindings
 
     if ($cfg->{"\U$thorn\E REQUIRES"})
     {
-      foreach $requiredcap (sort split (' ', $cfg->{"\U$thorn\E REQUIRES"}))
+      foreach my $requiredcap (sort split (' ', $cfg->{"\U$thorn\E REQUIRES"}))
       {
         # put reference to provided capability
         $defs .= "include $bindings_dir/Configuration/Capabilities/make.\U$requiredcap\E.defn\n";
@@ -207,8 +206,8 @@ sub CreateConfigurationBindings
   {
     foreach $providedcap (sort split (' ', $cfg->{"\U$thorn\E PROVIDES"}))
     {
-      $linkerdirs .= ' ' . $cfg->{"\U$thorn $providedcap\E LIBRARY_DIRECTORY"};
-      $linkerlibs .= ' ' . $cfg->{"\U$thorn $providedcap\E LIBRARY"};
+      $linkerdirs .= ' ' . ($cfg->{"\U$thorn $providedcap\E LIBRARY_DIRECTORY"} or "");
+      $linkerlibs .= ' ' . ($cfg->{"\U$thorn $providedcap\E LIBRARY"} or "");
     }
   }
   $temp = $linkerdirs . "\n" . $linkerlibs . "\n";
@@ -216,7 +215,7 @@ sub CreateConfigurationBindings
 
   # write cctk_Capabilities.h file to bindings/include
   # this file adds the if_i_am_thorn stuff
-  foreach $thorn (sort keys %thorns)
+  foreach $thorn (sort keys %$thorns)
   {
     $temp = '';
     if ($cfg->{"\U$thorn\E REQUIRES"})
@@ -226,7 +225,7 @@ sub CreateConfigurationBindings
     &WriteFile("../include/$thorn/cctk_Capabilities.h",\$temp);
   }
   &WriteFile("../include/CactusBindings/cctk_Capabilities.h",
-             "#include \"../Configuration/Thorns/cctki_Cactus.h\"\n");
+             \"#include \"../Configuration/Thorns/cctki_Cactus.h\"\n");
 }
 
 return 1;

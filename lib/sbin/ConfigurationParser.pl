@@ -1,5 +1,6 @@
-#! /usr/bin/perl -w
+#! /usr/bin/perl
 use strict;
+use warnings;
 
 #/*@@
 #  @file     ConfigurationParser.pl
@@ -464,7 +465,7 @@ sub ParseProvidesBlock
         {
           print STDERR "Error in version specification '"+$version+"'. "+
                        "Only alphanumeric characters and . + - : are allowed, "+
-                       "and a version has to start with a digit."
+                       "and a version has to start with a digit.";
           &CST_error (0, 'Unrecognised version');
         }
         next;

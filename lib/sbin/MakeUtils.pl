@@ -8,6 +8,8 @@
 #  @version $Header$
 #@@*/
 
+use strict;
+use warnings;
 use Cwd;
 
 
@@ -50,10 +52,11 @@ sub buildthorns
   closedir $ARRANGEMENTS or
     die "Cannot close arrangements directory '$arrangement_dir': $!";
 
+  my @total_list;
   if ($choice =~ "thorns")
   {
 
-    foreach $arrangement (@arrangements)
+    foreach my $arrangement (@arrangements)
     {
       opendir(my $THORNLIST, "$arrangement_dir/$arrangement") or
         die "Cannot open arrangement directory '$arrangement_dir/$arrangement': $!";
@@ -88,7 +91,7 @@ sub buildthorns
 
   if($choice =~ "thorns")
   {
-    foreach $thorn (@total_list)
+    foreach my $thorn (@total_list)
     {
       # don't check for {interface,param}.ccl files
       # when compiling a list of thorns to be updated
@@ -107,7 +110,7 @@ sub buildthorns
   }
   else
   {
-    foreach $arrangement (@total_list)
+    foreach my $arrangement (@total_list)
     {
       $info{$arrangement} = 1;
     }

@@ -8,6 +8,8 @@
 #  @version $Header$ 
 #@@*/
 
+use strict;
+use warnings;
 use Carp;
 use File::stat;
 use File::Path qw{ mkpath };
@@ -29,6 +31,7 @@ sub CST_error
 {
     my($level,$mess,$help,$line,$file) = @_;
     my($error);
+    our($CST_errors, $error_string);
 
     my $full_warnings = 1 if(defined($line) or defined($file));
 
@@ -86,6 +89,7 @@ sub CST_error
 
 sub CST_PrintErrors
 {
+  our ($error_string);
   if($error_string)
   {
     print "\n\n------------------------------------------------------\n";
@@ -137,7 +141,7 @@ sub read_file
     }
       
     # Remove comments.
-    $line = &RemoveComments($line);
+    $line = &RemoveComments($line, $file);
     
     # Ignore empty lines.
     if($line !~ m/^\s*$/)
@@ -179,8 +183,8 @@ sub WriteFile
   my ($data_in);
 
 # Strip any matching quotes from filename
-  $filename =~ s/^\s*\"(.*)\"\s*$/\1/;
-  $filename =~ s/^\s*\'(.*)\'\s*$/\1/;
+  $filename =~ s/^\s*\"(.*)\"\s*$/$1/;
+  $filename =~ s/^\s*\'(.*)\'\s*$/$1/;
 
 # Set this to an illegal value,
 # so that the comparison later is guaranteed to fail if this is not changed
@@ -225,8 +229,8 @@ sub WriteFile
 
 sub TestName
 {
-  local($thorn,$name) = @_;
-  local($valid);
+  my($thorn,$name) = @_;
+  my($valid);
 
   $valid = 1;
 
@@ -300,7 +304,7 @@ sub SplitWithStrings
   # First split the string into string tokens and split tokens we are
   # allowed to split.
 
-  for $i (split(//,$expression))
+  for my $i (split(//,$expression))
   {
     if($i eq '\\')
     {
@@ -437,14 +441,16 @@ sub trim_quotes
 #@@*/
 sub RemoveComments
 {
-  my ($line) = @_;
+  my ($line, $filename) = @_;
   my $nocomment = $line;
   my $insstring = 0;
   my $indstring = 0;
   my $escaping = 0;
   my $token="";
 
-  for $i (split(//,$line))
+  die "Incorrect number of parameters : " . scalar @_ if scalar @_ != 2;
+
+  for my $i (split(//,$line))
   {
 
     if($i eq '\\')
@@ -492,7 +498,7 @@ sub RemoveComments
 
   if($insstring || $indstring)
   {
-    print "Error: Unterminated string while parsing ccl file for thorn : $thorn\n";
+    print "Error: Unterminated string while parsing file : $filename\n";
     print $nocomment;
   }
 
@@ -810,19 +816,18 @@ sub GetOptionsFromEnv
 sub find_dep_cycles
 {
   my(%thorns) = @_;
-  my(%visited) = {};
+  my(%visited);
   my($stack,$keyu,$returned);
   my $debug = 0;
 
-  foreach $key (sort keys %thorns)
+  foreach my $key (sort keys %thorns)
   {
-    $key = uc ($key);
     #next if($visted{$key} && 1 == $visted{$key});
-    next if(1 == $visited{$key});
+    next if $visited{$key};
     print "testing $key for deps\n" if (1 == $debug);
-    $stack = $key." ";
+    $stack = uc $key." ";
     $returned = &recurse_deps($key, \%thorns, $stack, \%visited);
-    $visited{$key} = 1;
+    $visited{uc $key} = 1;
     if("" ne $returned)
     {
       print "Found cycle while testing $key for deps.[$returned]\n" if (1 == $debug);
@@ -846,33 +851,33 @@ sub recurse_deps
   my($key, $thornsTemp,$stack, $visitedTemp) = @_;
   my %thorns = %$thornsTemp;
   my %visited = %$visitedTemp;
-  my($depThorni,$loop,$returned,$temp); 
+  my($depThorn,$loop,$returned,$temp); 
   my (@arr)=();
   my $debug = 0;
+
+  return "" if not $thorns{$key};
         
   # Iterates over all thorns this one depends on, and checks to see if any
   # form a cycle.
-  foreach $depThorn (split(" ", uc($thorns{"\U$key\E"})))
+  foreach $depThorn (split(" ", $thorns{$key}))
   {
-    $depThorn = uc($depThorn);
-             
     if($stack =~ /\b$depThorn\b/i)
     {
       $stack =~ /.*\b($depThorn\b.*)$/i;
-      $loop = $1.$depThorn;
+      $loop = uc($1.$depThorn);
       return $loop;
     }
     else
     {
       # We don't have a cycle yet, so let's recurse on this thorn's deps.
-      $stack = $stack.$depThorn. ' ';
+      $stack = $stack.uc($depThorn). ' ';
       print "Recursing into $depThorn.  Stack is [$stack]\n" if (1 == $debug);
       $returned = &recurse_deps($depThorn, \%thorns, $stack, \%visited);
       if("" ne $returned)
       {
         return $returned;
       }
-      $visited{$depThorn} = 1;
+      $visited{uc $depThorn} = 1;
       $temp = $";
       $" = " ";
       $stack =~ s/^(.*)\s*$/$1/;
@@ -883,7 +888,7 @@ sub recurse_deps
       $" = $temp;
     }
   }
-  $visited{$key} = 1;
+  $visited{uc $key} = 1;
   return "";
 }
 

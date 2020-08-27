@@ -9,6 +9,9 @@
 #  @version $Id$
 #@@*/
 
+use strict;
+use warnings;
+
 
 #/*@@
 #  @routine    CreateParameterBindingFile
@@ -38,7 +41,7 @@ sub CreateParameterBindingFile
   push(@data, 'struct');
   push(@data, '{');
 
-  foreach $parameter (&order_params($rhparameters,$rhparameter_db))
+  foreach my $parameter (&order_params($rhparameters,$rhparameter_db))
   {
     my $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
     my $type_string = &get_c_type_string($type,$parameter);
@@ -161,9 +164,9 @@ sub GetThornParameterList
   my($thorn, $block, $rhparameter_db) = @_;
   my(%parameter_list);
 
-  $params = $rhparameter_db->{"\U$thorn $block\E variables"};
+  my $params = $rhparameter_db->{"\U$thorn $block\E variables"};
 
-  foreach $parameter (split(' ', $params))
+  foreach my $parameter (split(' ', $params))
   {
     if($parameter =~ m:[^ ]:)
     {
@@ -198,7 +201,7 @@ sub CreateCStructureParameterHeader
   push(@data, 'extern struct');
   push(@data, '{');
 
-  foreach $parameter (&order_params($rhparameters, $rhparameter_db))
+  foreach my $parameter (&order_params($rhparameters, $rhparameter_db))
   {
     my $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
     my $type_string = &get_c_type_string($type);
@@ -256,9 +259,9 @@ sub order_params
   my(@int_params)   = ();
   my(@string_params)= ();
 
-  foreach $parameter (sort(keys %$rhparameters))
+  foreach my $parameter (sort(keys %$rhparameters))
   {
-    $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
+    my $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
 
     if($type eq 'KEYWORD' ||
        $type eq 'STRING'  ||
@@ -277,7 +280,7 @@ sub order_params
     }
     else
     {
-      $message = "Unknown parameter type '$type'";
+      my $message = "Unknown parameter type '$type'";
       &CST_error(0,$message,__LINE__,__FILE__);
     }
   }

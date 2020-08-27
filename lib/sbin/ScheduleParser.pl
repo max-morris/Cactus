@@ -9,6 +9,7 @@
 #  @version   $Header$
 #@@*/
 use strict;
+use warnings;
 
 # The known schedule bins
 our @schedule_bins = (
@@ -179,12 +180,12 @@ sub parse_schedule_statement
             my $prep_name = lc($prep->group(0,"par")->substring());
             if($prep_name eq "after") {
               for my $item (@{$prep->group(1)->{children}}) {
-                $after_list .= "," unless($after_list eq "");
+                $after_list .= "," if(defined($after_list));
                 $after_list .= vname($item);
               }
             } elsif($prep_name eq "before") {
               for my $item (@{$prep->group(1)->{children}}) {
-                $before_list .= "," unless($before_list eq "");
+                $before_list .= "," if(defined($before_list));
                 $before_list .= vname($item);
               }
             } elsif($prep_name eq "at") {
@@ -237,12 +238,12 @@ sub parse_schedule_statement
               $language = $child->group(0,"name")->substring();
             } elsif($child->is("options")) {
               for my $opt (@{$child->{children}}) {
-                $options .= "," unless($options eq "");
+                $options .= "," if(defined($options));
                 $options .= $opt->substring();
               }
             } elsif($child->is("tags")) {
               for my $tag (@{$child->{children}}) {
-                $tags .= "," unless($tags eq "");
+                $tags .= "," if(defined($tags));
                 $tags .= $tag->substring();
               }
             } elsif($child->is("storage")) {
@@ -299,7 +300,7 @@ sub parse_schedule_statement
           my $groups = "";
           for my $vname (@{$schedule->{children}}) {
             if($vname->is("vname")) {
-              $groups .= " " unless($groups eq "");
+              $groups .= " " if(defined($groups));
               $groups .= vname($vname);
             }
           }
@@ -863,7 +864,8 @@ sub check_schedule_database
     # Process each schedule block
     for(my $block = 0 ; $block < $rhschedule_db->{"\U$thorn\E N_BLOCKS"}; $block++)
     {
-      if(!defined($allgroups{$rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"}}))
+      my $group = $rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"};
+      if($group and !defined($allgroups{$group}))
       {
         my $name  = $rhschedule_db->{"\U$thorn\E BLOCK_$block NAME"};
         my $where = $rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"};

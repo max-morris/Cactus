@@ -7,11 +7,16 @@
 #  @enddesc
 #@@*/
 
+use strict;
+use warnings;
+
 sub CreateImplementationBindings
 {
   my($bindings_dir, $rhparameter_db, $rhinterface_db, $configuration_db) = @_;
   my($i, $start_dir, $thorn);
   my(@data, @thorns, @ancestors, @friends, @requires_thorns, @activates_thorns);
+  my($dataout);
+  our($build_dir);
 
   if(! $build_dir)
   {
@@ -82,7 +87,7 @@ sub CreateImplementationBindings
       mkdir("$thorn", 0755) || die "Unable to create $build_dir/$thorn";
     }
 
-    $myimp = $rhinterface_db->{"\U$thorn\E IMPLEMENTS"};
+    my $myimp = $rhinterface_db->{"\U$thorn\E IMPLEMENTS"};
     @ancestors = map { "    \"$_\"," } split (' ', $rhinterface_db->{"IMPLEMENTATION \U$myimp\E ANCESTORS"});
     @friends = map { "    \"$_\"," } split (' ', $rhinterface_db->{"\U$thorn\E FRIEND"});
     @requires_thorns = map { "    \"$_\"," } split (' ', $configuration_db->{"\U$thorn\E REQUIRES THORNS"});

@@ -13,6 +13,7 @@
 
 #%parameter_database = create_parameter_database(%implementations);
 use strict;
+use warnings;
 use FindBin;
 use Carp;
 use Piraha;

@@ -9,6 +9,7 @@
 #  @version $Id$
 #@@*/
 use strict;
+use warnings;
 
 $main::arg_defs = {};
 
@@ -1129,13 +1130,13 @@ sub CreateThornGroupInitialisers
           . '",';
     push(@data, $line);
     $line = '                         "'
-          . $rhinterface_db->{"\U$thorn GROUP $group\E SIZE"}
+          . ($rhinterface_db->{"\U$thorn GROUP $group\E SIZE"} or "")
           . '", "'
-          . $rhinterface_db->{"\U$thorn GROUP $group\E GHOSTSIZE"}
+          . ($rhinterface_db->{"\U$thorn GROUP $group\E GHOSTSIZE"} or "")
           . '",';
     push(@data, $line);
     $line = '                         "'
-          . $rhinterface_db->{"\U$thorn GROUP $group\E TAGS"}
+          . ($rhinterface_db->{"\U$thorn GROUP $group\E TAGS"} or "")
           . '",';
     push(@data, $line);
 

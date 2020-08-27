@@ -10,7 +10,10 @@
 #   @enddesc
 #   @version $Id$
 # @@*/
-#
+
+use strict;
+use warnings;
+
 # The structure of function aliasing is described by this piece of
 # ASCII art.
 #
@@ -537,11 +540,11 @@ sub ParseArgumentsList
   if ($Arguments =~ s/CCTK_FPOINTER//g)
   {
     &debug_print("$Thorn:$Function:$Arguments\n");
-    while ($Arguments =~ s/(.*?)\s*(\(.*?\))(.*)/\1FPTRARGS\3/)
+    while ($Arguments =~ s/(.*?)\s*(\(.*?\))(.*)/$1FPTRARGS$3/)
     {
       &debug_print("$Thorn:$Function:$Arguments\n");
       my $tempargs = $2;
-      $tempargs =~ s/\((.*)\)/\1/;
+      $tempargs =~ s/\((.*)\)/$1/;
       push(@fptrargs,$tempargs);
       $nfptrs++; # QUERY: This is set but never used.
     }
@@ -566,7 +569,7 @@ sub ParseArgumentsList
       push(@ArgList,$Arg);
       if ($Arg->{"Name"} =~ /FPTRARGS/)
       {
-        $Arg->{"Name"} =~ s/(.*)FPTRARGS/\1/;
+        $Arg->{"Name"} =~ s/(.*)FPTRARGS/$1/;
         my $Name = $Arg->{"Name"};
         $Arg->{"Name"} = {"Name"=>$Name,
                           "Provided"=>0,
@@ -662,7 +665,7 @@ sub ParseArgument
     $Argument->{"Is Array"} = 0;
   }
 
-#   if ($type =~ s/\s*(.*):ARRAY\s*/\1/)
+#   if ($type =~ s/\s*(.*):ARRAY\s*/$1/)
 #   {
 #     $Argument->{"Is Array"} = 1;
 #   }
@@ -1083,7 +1086,7 @@ sub AliasedFunctions
   push(@data, '#include "cctk_FortranString.h"');
   push(@data, "");
 
-  my %AliasedFunctionList = {};
+  my %AliasedFunctionList;
 
   foreach my $thornFunctionKey (sort keys %FunctionDatabase)
   {

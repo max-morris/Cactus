@@ -7,6 +7,9 @@
 #  @enddesc 
 #@@*/
 
+use strict;
+use warnings;
+
 sub CheckImpParamConsistency
 {
   my($n_interface_data, @indata) = @_;
@@ -41,7 +44,7 @@ sub CheckImpParamConsistency
 
 #      print "Other thorn is $other_thorn\n";
 
-      foreach $parameter (split(" ", $parameter_database{"\U$thorn SHARES $friend\E variables"}))
+      foreach my $parameter (split(" ", $parameter_database{"\U$thorn SHARES $friend\E variables"}))
       {
 #       print "Parameter is $parameter\n";
 
@@ -77,19 +80,19 @@ sub CheckImpParamConsistency
             }
             else
             {
-              $message = "Thorn \"$thorn\" attempted to EXTEND or USE parameter \"$realname\" from implementation \"$friend\" having type \"$othertype\" using incorrect type \"$type\"";
+              my $message = "Thorn \"$thorn\" attempted to EXTEND or USE parameter \"$realname\" from implementation \"$friend\" having type \"$othertype\" using incorrect type \"$type\"";
               &CST_error(0,$message,"",__LINE__,__FILE__);
             }
           }
           else
           {
-              $message = "Thorn \"$thorn\" attempted to EXTEND or USE non-restricted parameter \"$realname\" from implementation \"$friend\"";
+              my $message = "Thorn \"$thorn\" attempted to EXTEND or USE non-restricted parameter \"$realname\" from implementation \"$friend\"";
               &CST_error(0,$message,"",__LINE__,__FILE__);
           }
         }
         else
         {
-          $message = "Thorn \"$thorn\" attempted to EXTEND or USE non-existent parameter \"$realname\" from implementation \"$friend\"";
+          my $message = "Thorn \"$thorn\" attempted to EXTEND or USE non-existent parameter \"$realname\" from implementation \"$friend\"";
           &CST_error(0,$message,"",__LINE__,__FILE__);
         }
       }

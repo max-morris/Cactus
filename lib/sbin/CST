@@ -20,8 +20,8 @@ use Getopt::Long;
 # Global parameter to track the number of errors from the CST
 # The file make.thornlist is only created if the number of errors is zero.
 
-my $CST_errors = 0;
-my $error_string = '';
+our $CST_errors = 0;
+our $error_string = '';
 
 my $debug_configuration = 0;
 my $debug_interface     = 0;
@@ -31,12 +31,13 @@ my $debug_schedule      = 0;
 ##########################################################################
 # Parse the command line
 
-our ($top, $config_dir, $cctk_home, $bindings_dir);
+our ($top, $config_dir, $cctk_home, $bindings_dir, $build_dir);
 BEGIN {
   GetOptions("top=s"          => \$top,
              "config_dir=s"   => \$config_dir,
              "cctk_home=s"    => \$cctk_home,
-             "bindings_dir=s" => \$bindings_dir);
+             "bindings_dir=s" => \$bindings_dir,
+             "build_dir=s"    => \$build_dir);
 }
 
 my $thornlist = shift(@ARGV);

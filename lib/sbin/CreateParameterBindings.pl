@@ -8,8 +8,11 @@
 #  @version   $Header$
 #@@*/
 
+use strict;
+use warnings;
+
 use FindBin;
-$sbin_dir = $FindBin::Bin;
+my $sbin_dir = $FindBin::Bin;
 
 #/*@@
 #  @routine    CreateParameterBindings
@@ -31,6 +34,8 @@ sub CreateParameterBindings
   my(%routines);
   my($structure, %structures);
   my(%header_files);
+  my($dataout);
+  our($top);
 
   if(! -d $bindings_dir)
   {
@@ -122,8 +127,8 @@ sub CreateParameterBindings
   }
 
 
-  @thorns = split(' ',$rhinterface_db->{'THORNS'});
-  @data = ();
+  my @thorns = split(' ',$rhinterface_db->{'THORNS'});
+  my @data = ();
   push(@data, map ('extern int CCTKi_BindingsCreate' . $_ . 'Parameters(void);', @thorns));
   push(@data, '');
   push(@data, map ('extern int CCTKi_Bindings' . $_ . 'ParameterExtensions(void);', @thorns));
@@ -146,7 +151,7 @@ sub CreateParameterBindings
   $dataout = join ("\n", @data);
   &WriteFile('Parameters/BindingsParameters.c',\$dataout);
 
-  $newfilelist = NewParamStuff($rhparameter_db, $rhinterface_db);
+  my $newfilelist = NewParamStuff($rhparameter_db, $rhinterface_db);
 
   $dataout = "SRCS = BindingsParameters.c $files $newfilelist";
   &WriteFile('Parameters/make.code.defn',\$dataout);
@@ -190,7 +195,7 @@ sub CreateParameterBindings
     push(@data, "#include \"" . $header_files{"\U$thorn\E PRIVATE"} . "\"")
       if($header_files{"\U$thorn\E PRIVATE"});
 
-    foreach $friend (split(' ',$rhparameter_db->{"\U$thorn\E SHARES implementations"}))
+    foreach my $friend (split(' ',$rhparameter_db->{"\U$thorn\E SHARES implementations"}))
     {
       push(@data, "#include \"ParameterCRestricted\U$friend\E.h\"");
     }
@@ -207,18 +212,18 @@ sub CreateParameterBindings
     # double this loop, add #defines for RESTRICTED_STRUCT.$realname, set these via #ifdef, use these #defines
 
     my @data2;
-    foreach $friend (split(' ',$rhparameter_db->{"\U$thorn\E SHARES implementations"}))
+    foreach my $friend (split(' ',$rhparameter_db->{"\U$thorn\E SHARES implementations"}))
     {
       $rhinterface_db->{"IMPLEMENTATION \U$friend\E THORNS"} =~ m:([^ ]*):;
-      $friend_thorn = $1;
+      my $friend_thorn = $1;
 
-      foreach $parameter (split(' ',$rhparameter_db->{"\U$thorn SHARES $friend\E variables"}))
+      foreach my $parameter (split(' ',$rhparameter_db->{"\U$thorn SHARES $friend\E variables"}))
       {
         my $realname = $rhparameter_db->{"\U$thorn $parameter\E realname"};
 
-        $type = $rhparameter_db->{"\U$friend_thorn $realname\E type"};
-        $array_size = $rhparameter_db->{"\U$friend_thorn $realname\E array_size"};
-        $type_string = &get_c_type_string($type,$realname);
+        my $type = $rhparameter_db->{"\U$friend_thorn $realname\E type"};
+        my $array_size = $rhparameter_db->{"\U$friend_thorn $realname\E array_size"};
+        my $type_string = &get_c_type_string($type,$realname);
 
         my $varprefix = '';
 
@@ -265,7 +270,7 @@ sub CreateParameterBindings
 
   &WriteFile('include/CParameterStructNames.h',\$dataout);
 
-  foreach $thorn (split(' ',$rhinterface_db->{'THORNS'}))
+  foreach my $thorn (split(' ',$rhinterface_db->{'THORNS'}))
   {
     @data = ();
     push(@data, '/* get the CCTK datatype definitions */');
@@ -306,7 +311,7 @@ sub NewParamStuff
 
   foreach $thorn (split(' ',$rhinterface_db->{'THORNS'}))
   {
-    $imp = $rhinterface_db->{"\U$thorn\E IMPLEMENTS"};
+    my $imp = $rhinterface_db->{"\U$thorn\E IMPLEMENTS"};
 
     push(@data, '/*@@');
     push(@data, "   \@file    ${thorn}_Parameters.c");
@@ -398,7 +403,7 @@ sub NewParamStuff
     push(@data, '}');
     push(@data, "\n");  # workaround for perl 5.004_04 to add a trailing newline
 
-    $dataout = join ("\n", @data);
+    my $dataout = join ("\n", @data);
     &WriteFile("Parameters/${thorn}_Parameters.c",\$dataout);
 
     @data=();
@@ -440,7 +445,7 @@ sub CreateParameterRegistrationStuff
 #  print "Thorn is $thorn\n";
 #  print "Structure is $structure\n";
 
-  foreach $parameter (sort keys %these_parameters)
+  foreach my $parameter (sort keys %these_parameters)
   {
 
 #    print "This param is $parameter\n";
@@ -459,7 +464,8 @@ sub CreateParameterRegistrationStuff
 
     # Set steerable details
     my $steerable = $rhparameter_db->{"\U$thorn $parameter\E steerable"};
-    if ($steerable =~ /^never$/i || $steerable =~/^$/)
+    my $steerable_type;
+    if (!defined($steerable) || $steerable =~ /^never$/i)
     {
       $steerable_type = 'CCTK_STEERABLE_NEVER';
     }
@@ -473,7 +479,7 @@ sub CreateParameterRegistrationStuff
     }
     else
     {
-      $message = "Illegal steerable type ($steerable) for parameter $parameter in $thorn";
+      my $message = "Illegal steerable type ($steerable) for parameter $parameter in $thorn";
       &CST_error(0,$message,'',__LINE__,__FILE__);
     }
 
@@ -520,10 +526,10 @@ sub CreateParameterRegistrationStuff
 #          "                        $accumulator_base,\n" .
           "                        $n_ranges";
 
-    for($range=1; $range <= $n_ranges; $range++)
+    for(my $range=1; $range <= $n_ranges; $range++)
     {
-      $quoted_range = $rhparameter_db->{"\U$thorn $parameter\E range $range range"};
-      $range_description = $rhparameter_db->{"\U$thorn $parameter\E range $range description"};
+      my $quoted_range = $rhparameter_db->{"\U$thorn $parameter\E range $range range"};
+      my $range_description = $rhparameter_db->{"\U$thorn $parameter\E range $range description"};
 
       if($range_description !~ m:\":)
       {
@@ -562,7 +568,7 @@ sub CreateParameterExtensionStuff
 
 #  print "Extending $block from $thorn\n";
 
-  foreach $parameter (split(' ',$rhparameter_db->{"\U$thorn\E SHARES \U$block\E variables"}))
+  foreach my $parameter (split(' ',$rhparameter_db->{"\U$thorn\E SHARES \U$block\E variables"}))
   {
     my $realname = $rhparameter_db->{"\U$thorn $parameter\E realname"};
 
@@ -604,7 +610,7 @@ sub CreateParameterAccumulationStuff
 
   @data = ();
 
-  foreach $parameter (sort keys %these_parameters)
+  foreach my $parameter (sort keys %these_parameters)
   {
     my $accumulator_base = $rhparameter_db->{"\U$thorn $parameter\E accumulator-base"};
 

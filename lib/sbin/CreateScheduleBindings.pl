@@ -8,6 +8,9 @@
 #  @version   $Header$
 #@@*/
 
+use strict;
+use warnings;
+
 #/*@@
 #  @routine    CreateScheduleBindings
 #  @date       Fri Sep 17 14:16:23 1999
@@ -67,7 +70,7 @@ sub CreateScheduleBindings
   &WriteFile("BindingsParameterRecovery.c", \$rsbuffer);
   $file_list .= " BindingsParameterRecovery.c";
 
-  $line = "SRCS = $file_list\n";
+  my $line = "SRCS = $file_list\n";
   &WriteFile("make.code.defn", \$line);
 
   chdir "$start_dir";
@@ -130,7 +133,7 @@ sub ScheduleCreateInterfaceFile
           # Find one outermost enclosing group iteratively (there may
           # be serveral outermost enclosing groups)
           my %been_there;       # avoid cycles
-          while (! $been_there{$where} && defined $group_block{$where})
+          while ($where && ! $been_there{$where} && defined $group_block{$where})
           {
               $been_there{$where} = defined;
               my $block1 = $group_block{$where};
@@ -139,7 +142,7 @@ sub ScheduleCreateInterfaceFile
           my $is_special =
               $where eq 'CCTK_STARTUP' ||
               $where eq 'CCTK_RECOVER_PARAMETERS' ||
-              $where eq 'CCTK_SHUTDOWN';
+              $where eq 'CCTK_SHUTDOWN' if $where;
           
           push (@data, '');
           if ($language eq 'C')
@@ -235,11 +238,13 @@ sub ScheduleCreateFile
   $implementation = $rhinterface_db->{"\U$thorn\E IMPLEMENTS"};
 
   $buffer = $recovery_buffer = $rhschedule_db->{"\U$thorn\E FILE"};
+  $prototypes = "";
 
   # Process each schedule block
   for($block = 0 ; $block < $rhschedule_db->{"\U$thorn\E N_BLOCKS"}; $block++)
   {
-    if ($rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"} !~ /RECOVER_PARAMETERS/)
+    my $where = $rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"};
+    if (not $where or $where !~ /RECOVER_PARAMETERS/)
     {
       ($block_buffer, $block_prototype) = &ScheduleBlock($thorn, $implementation, $block,
                                                          $rhinterface_db, $rhschedule_db);
@@ -250,7 +255,8 @@ sub ScheduleCreateFile
     else
     {
       $block_buffer = $rhschedule_db->{"\U$thorn\E BLOCK_$block NAME"};
-      if($rhschedule_db->{"\U$thorn\E BLOCK_$block LANG"} !~ m:^\s*C\s*$:i )
+      my $lang = $rhschedule_db->{"\U$thorn\E BLOCK_$block LANG"};
+      if($lang and $lang !~ m:^\s*C\s*$:i )
       {
         $block_buffer = "CCTK_FNAME ($block_buffer)";
       }
@@ -305,7 +311,7 @@ sub ScheduleCreateFile
   push(@data, '  DECLARE_CCTK_PARAMETERS');
 
   # filter out empty lines
-  foreach $line (split ("\n", $buffer))
+  foreach my $line (split ("\n", $buffer))
   {
     push(@data, $line) if ($line);
   }
@@ -336,7 +342,7 @@ sub ScheduleCreateFile
     push(@data, '');
 
     # filter out empty lines
-    foreach $line (split ("\n", $recovery_buffer))
+    foreach my $line (split ("\n", $recovery_buffer))
     {
       push(@data, $line) if ($line);
     }
@@ -384,7 +390,7 @@ sub ScheduleCreateBindings
   push(@data, '');
 
   push(@data, '/* Prototypes for functions to be registered. */');
-  foreach $thorn (sort split(' ', $rhinterface_db->{"THORNS"}))
+  foreach my $thorn (sort split(' ', $rhinterface_db->{"THORNS"}))
   {
     push(@data, "void CCTKi_BindingsSchedule_$thorn(void);");
   }
@@ -393,7 +399,7 @@ sub ScheduleCreateBindings
   push(@data, 'int CCTKi_BindingsScheduleInitialise(void);');
   push(@data, 'int CCTKi_BindingsScheduleInitialise(void)');
   push(@data, '{');
-  foreach $thorn (sort split(' ', $rhinterface_db->{"THORNS"}))
+  foreach my $thorn (sort split(' ', $rhinterface_db->{"THORNS"}))
   {
     push(@data, "  if(CCTK_IsThornActive(\"$thorn\"))");
     push(@data, '  {');
@@ -436,7 +442,7 @@ sub ParameterRecoveryCreateBindings
   push(@data, '');
   push(@data, '/* Prototypes for functions to be registered. */');
 
-  foreach $thorn (sort split(' ', $rhinterface_db->{"THORNS"}))
+  foreach my $thorn (sort split(' ', $rhinterface_db->{"THORNS"}))
   {
     push(@data, "int CCTKi_BindingsParameterRecovery_$thorn(void);");
   }
@@ -450,7 +456,7 @@ sub ParameterRecoveryCreateBindings
   push(@data, '');
   push(@data, '  do');
   push(@data, '  {');
-  foreach $thorn (sort split(' ', $rhinterface_db->{"THORNS"}))
+  foreach my $thorn (sort split(' ', $rhinterface_db->{"THORNS"}))
   {
     push(@data, "    if(CCTK_IsThornActive(\"$thorn\"))");
     push(@data, '    {');
@@ -528,7 +534,8 @@ sub ScheduleBlock
                                          $rhschedule_db->{"\U$thorn\E BLOCK_$block SYNC"},
                                          $rhinterface_db);
 
-  @options = split(/,/, $rhschedule_db->{"\U$thorn\E BLOCK_$block OPTIONS"});
+  my $options = $rhschedule_db->{"\U$thorn\E BLOCK_$block OPTIONS"};
+  @options = split(/,/, $options) if $options;
   $tags = $rhschedule_db->{"\U$thorn\E BLOCK_$block TAGS"};
   $tags = '' if ! defined $tags;
 
@@ -567,7 +574,7 @@ sub ScheduleBlock
   # Create the timelevel array
   $buffer .= '    int cctkschedulei_tlevelarray[] = {';
 
-  foreach $i (@$tlist)
+  foreach my $i (@$tlist)
   {
     $buffer .= "$i,";
   }
@@ -578,7 +585,7 @@ sub ScheduleBlock
   $buffer .= "0};\n";
 
   # add check on number of timelevels in case we were using a parameter
-  for($i=0; $i < @$tlist; $i++)
+  for(my $i=0; $i < @$tlist; $i++)
   {
     $buffer .= "    if(!($$tlist[$i] >= 0 && $$tlist[$i] <= CCTK_DeclaredTimeLevels(\"$$mem_groups[$i]\")))\n";
     $buffer .= "        CCTK_VWarn(0, __LINE__, __FILE__, CCTK_THORNSTRING,\n";
@@ -612,13 +619,13 @@ sub ScheduleBlock
     {
       if (!$rhschedule_db->{"\U$thorn\E BLOCK_$block LANG"})
       {
-        $mess = "Language not specified in schedule block: " .$rhschedule_db->{"\U$thorn\E BLOCK_$block NAME"} ." in thorn: $thorn";
+        my $mess = "Language not specified in schedule block: " .$rhschedule_db->{"\U$thorn\E BLOCK_$block NAME"} ." in thorn: $thorn";
         &CST_error(0,$mess,'',__LINE__,__FILE__);
         return ('', '');
       }
       else
       { 
-        $mess = 'Unknown language ' .$rhschedule_db->{"\U$thorn\E BLOCK_$block LANG"} ." in schedule block: ".$rhschedule_db->{"\U$thorn\E BLOCK_$block NAME"} ." in thorn: $thorn";
+        my $mess = 'Unknown language ' .$rhschedule_db->{"\U$thorn\E BLOCK_$block LANG"} ." in schedule block: ".$rhschedule_db->{"\U$thorn\E BLOCK_$block NAME"} ." in thorn: $thorn";
         &CST_error(0,$mess,'',__LINE__,__FILE__);
         return ('', '');
       }
@@ -630,7 +637,7 @@ sub ScheduleBlock
   }
   else
   {
-    $mess = 'Internal error: Unknown schedule block type ' . $rhschedule_db->{"\U$thorn\E BLOCK_$block TYPE"};
+    my $mess = 'Internal error: Unknown schedule block type ' . $rhschedule_db->{"\U$thorn\E BLOCK_$block TYPE"};
     &CST_error(0,$mess,'',__LINE__,__FILE__);
     return ('', '');
   }
@@ -639,7 +646,7 @@ sub ScheduleBlock
   $buffer .= "$indent\"$thorn\",\n";
   $buffer .= "$indent\"$implementation\",\n";
   $buffer .= "$indent\"" . $rhschedule_db->{"\U$thorn\E BLOCK_$block DESCRIPTION"} . "\",\n";
-  $buffer .= "$indent\"" . $rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"} . "\",\n";
+  $buffer .= "$indent\"" . ($rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"} or "") . "\",\n";
   if($language ne '')
   {
     $buffer .= "$indent\"$language\",\n";
@@ -670,10 +677,10 @@ sub ScheduleBlock
   $buffer .= $indent . scalar(@if_list)       . ", /* Number of IF       variables */\n";
   $buffer .= $indent . "cctkschedulei_tlevelarray  /* Array of timelevel data for storage groups */";
 
-  foreach $item ("/*==mem==*/", @$mem_groups, "/*==comm==*/", @$comm_groups,
-                 "/*==trigger==*/", @$trigger_groups, "/*==sync==*/", @$sync_groups,
-                 "/*==writes==*/", @writes_list, "/*==reads==*/", @reads_list,
-                 "/*==inval==*/",@invalidates_list, "/*==opts==*/", @options)
+  foreach my $item ("/*==mem==*/", @$mem_groups, "/*==comm==*/", @$comm_groups,
+                    "/*==trigger==*/", @$trigger_groups, "/*==sync==*/", @$sync_groups,
+                    "/*==writes==*/", @writes_list, "/*==reads==*/", @reads_list,
+                    "/*==inval==*/",@invalidates_list, "/*==opts==*/", @options)
   {
     if($item =~ m{^\s*/\*.*\*/\s*$}) {
         $buffer .= "\n$indent$item";
@@ -684,7 +691,7 @@ sub ScheduleBlock
 
   $buffer .= ",\n$indent\"$tags\"";
 
-  foreach $item (@before_list, @after_list, @while_list, @if_list)
+  foreach my $item (@before_list, @after_list, @while_list, @if_list)
   {
     $buffer .= ",\n$indent\"$item\"";
   }
@@ -718,17 +725,14 @@ sub ScheduleStatement
                                           $rhschedule_db->{"\U$thorn\E STATEMENT_$statement GROUPS"},
                                           $rhinterface_db);
 
-
+  $prototype = "";
   if($rhschedule_db->{"\U$thorn\E STATEMENT_$statement TYPE"} eq "STOR")
   {
     &ScheduleValidateTimeLevels($thorn, $implementation, $groups,$misc, $rhinterface_db);
-    $function = "CCTKi_ScheduleGroupStorage(";
-    $prototype = "";
-
-    my $i;
+    my $function = "CCTKi_ScheduleGroupStorage(";
 
     # add check on number of timelevels in case we were using a parameter
-    for($i=0; $i < @$groups; $i++)
+    for(my $i=0; $i < @$groups; $i++)
     {
       $buffer .= "  if(!($$misc[$i] >= 0 && $$misc[$i]  <= CCTK_DeclaredTimeLevels(\"$$groups[$i]\")))\n";
       $buffer .= "      CCTK_VWarn(0, __LINE__, __FILE__, CCTK_THORNSTRING,\n";
@@ -738,7 +742,7 @@ sub ScheduleStatement
       $buffer .= "\n";
     }
 
-    for($i=0; $i < @$groups; $i++)
+    for(my $i=0; $i < @$groups; $i++)
     {
       my $group     = $$groups[$i];
       my $timelevel = $$misc[$i];
@@ -754,7 +758,7 @@ sub ScheduleStatement
   else
   {
 
-    $mess = "Unknown statement type '" .$rhschedule_db->{"\U$thorn\E STATEMENT_$statement TYPE"};
+    my $mess = "Unknown statement type '" .$rhschedule_db->{"\U$thorn\E STATEMENT_$statement TYPE"};
     &CST_error(0,$mess,"",__LINE__,__FILE__);
     return ("", "");
   }
@@ -778,7 +782,7 @@ sub ScheduleSelectRDWR
   my($group_or_var, $rdwr);
   my($other_imp, $other_thorn, $other_group, $foundit, $block);
 
-  @temp_list = split(/,/, $group_or_var_list);
+  @temp_list = split(/,/, $group_or_var_list) if $group_or_var_list;
 
   foreach $entry (@temp_list)
   {
@@ -814,8 +818,8 @@ sub ScheduleSelectRDWR
         }
         else
         {
-          $mess = "Schedule error: Thorn $thorn - group $other_imp\:\:$group_or_var doesn't exist.";
-          $help = "Check thorn $thorn inherits from implementation $other_imp";
+          my $mess = "Schedule error: Thorn $thorn - group $other_imp\:\:$group_or_var doesn't exist.";
+          my $help = "Check thorn $thorn inherits from implementation $other_imp";
           &CST_error(0,$mess,$help,__LINE__,__FILE__);
           next;
         }
@@ -843,7 +847,7 @@ sub ScheduleSelectRDWR
         }
         if(!$foundit)
         {
-          $mess = "Schedule error: Thorn $thorn - group or variable $other_imp\:\:$group_or_var doesn't exist.\n";
+          my $mess = "Schedule error: Thorn $thorn - group or variable $other_imp\:\:$group_or_var doesn't exist.\n";
           &CST_error(1,$mess,"",__LINE__,__FILE__);
         }
         next;
@@ -870,7 +874,7 @@ sub ScheduleSelectRDWR
     {
       foreach $block ("PRIVATE", "PROTECTED", "PUBLIC")
       {
-        foreach $group (split(" ",$rhinterface_db->{"\U$thorn\E $block GROUPS"}))
+        foreach my $group (split(" ",$rhinterface_db->{"\U$thorn\E $block GROUPS"}))
         {
           if($rhinterface_db->{"\U$thorn GROUP $group\E"} =~ m:\b$group_or_var\b:i)
           {
@@ -900,7 +904,7 @@ sub ScheduleSelectRDWR
       }
       if(!$foundit)
       {
-        $mess = "Schedule error: Thorn $thorn - group or variable $group_or_var doesn't exist.";
+        my $mess = "Schedule error: Thorn $thorn - group or variable $group_or_var doesn't exist.";
         &CST_error(1,$mess,"",__LINE__,__FILE__);
       }
     }
@@ -926,7 +930,7 @@ sub ScheduleSelectGroups
   my($other_imp, $other_thorn, $foundit, $block);
   my($misc,@misc_list);
 
-  @temp_list = split(/[,\s\n]+/, $group_list);
+  @temp_list = split(/[,\s\n]+/, $group_list) if $group_list;
 
   foreach $group (@temp_list)
   {
@@ -971,8 +975,8 @@ sub ScheduleSelectGroups
         }
         else
         {
-          $mess = "Schedule error: Thorn $thorn - group $other_imp\:\:$group doesn't exist.";
-          $help = "Check thorn $thorn inherits from implementation $other_imp";
+          my $mess = "Schedule error: Thorn $thorn - group $other_imp\:\:$group doesn't exist.";
+          my $help = "Check thorn $thorn inherits from implementation $other_imp";
           &CST_error(0,$mess,$help,__LINE__,__FILE__);
           next;
         }
@@ -988,7 +992,7 @@ sub ScheduleSelectGroups
         }
         else
         {
-          $mess = "Schedule error: Thorn $thorn - group $other_imp\:\:$group doesn't exist.\n";
+          my $mess = "Schedule error: Thorn $thorn - group $other_imp\:\:$group doesn't exist.\n";
           &CST_error(0,$mess,"",__LINE__,__FILE__);
           next;
         }
@@ -1045,8 +1049,8 @@ sub ScheduleSelectGroups
       }
       if(! $foundit)
       {
-        $mess = "Schedule error: Thorn $thorn - group $group doesn't exist.";
-        $help = "Check $group really is in thorn $thorn. Groups from other thorns ";
+        my $mess = "Schedule error: Thorn $thorn - group $group doesn't exist.";
+        my $help = "Check $group really is in thorn $thorn. Groups from other thorns ";
         $help .= "need to be specified using <implementation>\:\:$group and ";
         $help .= "<implementation> must be inherited by your thorn.";
         &CST_error(0,$mess,$help,__LINE__,__FILE__);
@@ -1055,7 +1059,7 @@ sub ScheduleSelectGroups
     }
     else
     {
-      $mess = "Schedule error: Thorn $thorn - group $group doesn't exist.";
+      my $mess = "Schedule error: Thorn $thorn - group $group doesn't exist.";
       &CST_error(0,$mess,"",__LINE__,__FILE__);
 
     }
@@ -1080,7 +1084,7 @@ sub ScheduleSelectRoutines
   my(@temp_list);
   my($routine);
 
-  @temp_list = split(/[,\s\n]+/, $routine_list);
+  @temp_list = split(/[,\s\n]+/, $routine_list) if $routine_list;
 
   foreach $routine (@temp_list)
   {
@@ -1109,7 +1113,7 @@ sub ScheduleSelectVars
   my(@temp_list);
   my($var);
 
-  @temp_list = split(/[,\s\n]+/, $var_list);
+  @temp_list = split(/[,\s\n]+/, $var_list) if $var_list;
 
   foreach $var (@temp_list)
   {
@@ -1166,7 +1170,7 @@ sub ScheduleValidateTimeLevels
     }
     else
     {
-      @thornlist = split(" ",$rhinterface_db->{"IMPLEMENTATION \U$imp\E THORNS"});
+      my @thornlist = split(" ",$rhinterface_db->{"IMPLEMENTATION \U$imp\E THORNS"});
 
       $allowed_timelevels =  $rhinterface_db->{"\U$thornlist[0] GROUP $groupname TIMELEVELS\E"};
     }

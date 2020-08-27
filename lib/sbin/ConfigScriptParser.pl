@@ -1,4 +1,8 @@
-#! /usr/bin/perl -s
+#! /usr/bin/perl
+
+use strict;
+use warnings;
+
 #/*@@
 #  @file      ConfigScriptParser
 #  @date      Thu Mar 25 14:25:13 2004
@@ -39,7 +43,7 @@ sub ParseConfigScript
         # Parse the line
         if ($line =~ m/^\s*BEGIN\s+(DEFINE|INCLUDE|ERROR|MESSAGE|MAKE_DEFINITION|MAKE_DEPENDENCY)\s*/i) {
             my $terminal = "\U$1";
-            while(($line = <$lines>) && ($line !~ m/^\s*END\s+${terminal}\s*/i)) {
+            while(defined($line = <$lines>) && ($line !~ m/^\s*END\s+${terminal}\s*/i)) {
                 chomp $line; ++$line_number;
                 $cfg->{"\U$thorn $provides\E ${terminal}"} .= "$line\n";
                 if($terminal eq "MESSAGE") {
@@ -67,8 +71,8 @@ sub ParseConfigScript
     my $dumped_core = $? & 128;
     
     my $error_msg = $cfg->{"\U$thorn $provides\E ERROR"};
-    chomp $error_msg;
     if ($error_msg) {
+        chomp $error_msg;
         $error_msg = "     Error message: '$error_msg'";
     } else {
         $error_msg = '     (no error message)';

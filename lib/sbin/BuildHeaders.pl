@@ -1,4 +1,7 @@
- #! /usr/bin/perl -s
+#! /usr/bin/perl
+
+use strict;
+use warnings;
 
 #/*@@
 #  @routine BuildHeaders
@@ -18,24 +21,26 @@
 use FindBin;
 use lib "$FindBin::Bin";
 require "CSTUtils.pl";
+use Cwd;
 
 sub BuildHeaders
 {
-  my($cctk_home,$bindings_dir,%database) = @_;
+  my($cctk_home,$bindings_dir,%interface_database) = @_;
   my($start_dir,$thorn,$inc_file,$inc_file1,$inc_file2,$tmpline);
+  my(%data);
 
-  $start_dir = `pwd`;
+  $start_dir = &getcwd();
   chdir $bindings_dir;
   chdir "include";
 
 # First set all data strings 
   foreach $thorn (split(" ",$interface_database{"THORNS"}))
   {
-    foreach $inc_file (split(" ",$interface_database{"\U$thorn USES HEADER"}))
+    foreach $inc_file (split(" ",($interface_database{"\U$thorn USES HEADER"} or "")))
     {
       $data{"$inc_file"} = "/* Include header file $inc_file */\n\n";
     }
-    foreach $inc_file (split(" ",$interface_database{"\U$thorn USES SOURCE"}))
+    foreach $inc_file (split(" ",($interface_database{"\U$thorn USES SOURCE"} or "")))
     {
       $data{"$inc_file"} = "/* Include source file $inc_file */\n\n";
     }
@@ -43,13 +48,14 @@ sub BuildHeaders
 
 
   # Check consistency
-  foreach $addingthorn (split(" ",$interface_database{"THORNS"}))
+  foreach my $addingthorn (split(" ",$interface_database{"THORNS"}))
   {
-    foreach $inc_file1 (split(" ",$interface_database{"\U$addingthorn ADD HEADER"}))
+    foreach $inc_file1 (split(" ",($interface_database{"\U$addingthorn ADD HEADER"} or "")))
     {
-      foreach $usingthorn (split(" ",$interface_database{"THORNS"}))
+      foreach my $usingthorn (split(" ",$interface_database{"THORNS"}))
       {
-	if ($interface_database{"\U$usingthorn USES SOURCE"} =~ $interface_database{"\U$addingthorn ADD HEADER $inc_file1 TO"})
+        my $uses_source = $interface_database{"\U$usingthorn USES SOURCE"};
+	if ($uses_source and $uses_source =~ $interface_database{"\U$addingthorn ADD HEADER $inc_file1 TO"})
 	{
 	  &CST_error(1,"$inc_file1 was added in $addingthorn as a header include but is being used as $interface_database{\"\U$addingthorn ADD HEADER $inc_file1 TO\"}  in $usingthorn as a source code include",'',__LINE__,__FILE__);
 	}
@@ -61,9 +67,9 @@ sub BuildHeaders
 # Add the headers from thorns
   foreach $thorn (split(" ",$interface_database{"THORNS"}))
   {
-    $arrangement = $interface_database{"\U$thorn ARRANGEMENT"};
+    my $arrangement = $interface_database{"\U$thorn ARRANGEMENT"};
 
-    foreach $inc_file1 (split(" ",$interface_database{"\U$thorn ADD HEADER"}))
+    foreach $inc_file1 (split(" ", ($interface_database{"\U$thorn ADD HEADER"} or "")))
     {
       if ($inc_file1 !~ /^\s*$/)
       {
@@ -84,14 +90,14 @@ sub BuildHeaders
         }
         else
         {
-          $message = "Include file $inc_file1 not found in $arrangement/$thorn\n";
+          my $message = "Include file $inc_file1 not found in $arrangement/$thorn\n";
           &CST_error(0,$message,"",__LINE__,__FILE__);
         }
         $data{"$inc_file2"} .= "/* End of include header file $inc_file1 from $thorn */\n";
       }
     }
 
-    foreach $inc_file1 (split(" ",$interface_database{"\U$thorn ADD SOURCE"}))
+    foreach $inc_file1 (split(" ",($interface_database{"\U$thorn ADD SOURCE"} or "")))
     {
       if ($inc_file1 !~ /^\s*$/)
       {
@@ -112,7 +118,7 @@ sub BuildHeaders
         }
         else
         {
-          $message = "Include file $inc_file1 not found in $arrangement/$thorn\n";
+          my $message = "Include file $inc_file1 not found in $arrangement/$thorn\n";
           &CST_error(0,$message,"",__LINE__,__FILE__);
         }
          
@@ -140,7 +146,7 @@ sub BuildHeaders
     {
       &WriteFile($inc_file1,\$data{"$inc_file1"});
     }
-    foreach $inc_file1 (split(" ",$interface_database{"\U$thorn USES SOURCE"}))
+    foreach $inc_file1 (split(" ",($interface_database{"\U$thorn USES SOURCE"} or "")))
     {
       &WriteFile($inc_file1,\$data{"$inc_file1"});
     }

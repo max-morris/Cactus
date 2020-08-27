@@ -9,6 +9,9 @@
 #version $Header$
 #@@*/
 
+use strict;
+use warnings;
+
 sub CreateFortranThornParameterBindings
 {
   my($thorn, $rhparameter_db, $rhinterface_db) = @_;
@@ -68,24 +71,24 @@ sub CreateFortranThornParameterBindings
   # This number can be local to each thorn - it doesn't matter if
   # members of a common block get different names in different
   # thorns, especially if the variable isn't being used !
-  $num_aliases = 0;
+  my $num_aliases = 0;
 
 #  print "DEBUG ********************************************\n";
 #  print "DEBUG thorn is $thorn\n";
-  foreach $friend (split(' ',$rhparameter_db->{"\U$thorn\E SHARES implementations"}))
+  foreach my $friend (split(' ',$rhparameter_db->{"\U$thorn\E SHARES implementations"}))
   {
 #    print "DEBUG friend is $friend\n";
 
     # Determine which thorn provides this friend implementation
     $rhinterface_db->{"IMPLEMENTATION \U$friend\E THORNS"} =~ m:([^ ]*):;
 
-    $friend_thorn = $1;
+    my $friend_thorn = $1;
 
     %these_parameters = &GetThornParameterList($friend_thorn, 'RESTRICTED', $rhparameter_db);
 
     %alias_names = ();
 
-    foreach $parameter (sort keys %these_parameters)
+    foreach my $parameter (sort keys %these_parameters)
     {
 #      print "DEBUG parameter is $parameter\n";
       my $foundit = 0;
@@ -150,9 +153,9 @@ sub CreateFortranCommonDeclaration
 
   $definition = "COMMON /$common_block/";
 
-  $sepchar = '';
+  my $sepchar = '';
 
-  foreach $parameter (&order_params($rhparameters,$rhparameter_db))
+  foreach my $parameter (&order_params($rhparameters,$rhparameter_db))
   {
     my $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
 
@@ -215,7 +218,7 @@ sub get_fortran_type_string
   }
   else
   {
-    $message = "Unknown parameter type '$type'";
+    my $message = "Unknown parameter type '$type'";
     &CST_error(0,$message,'',__LINE__,__FILE__);
   }
 

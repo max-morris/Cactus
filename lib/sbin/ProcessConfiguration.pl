@@ -7,6 +7,9 @@
 #  @enddesc 
 #@@*/
 
+use strict;
+use warnings;
+
 #/*@@
 #  @routine    SplitThorns
 #  @date       Mon May  8 16:04:59 2000
@@ -25,7 +28,7 @@ sub SplitThorns
 {
   my ($configuration_database, $thorns, $source_thorns, $nosource_thorns) = @_;
 
-  foreach $thorn (sort keys %$thorns)
+  foreach my $thorn (sort keys %$thorns)
   {
     if($configuration_database->{"\U$thorn OPTIONS\E"} =~ m/NO_SOURCE/i)
     {
@@ -63,7 +66,7 @@ sub ProcessConfiguration
   my @allowed_opts;
 
   # Find the master list of allowed options
-  foreach $thorn (sort keys %thorns)
+  foreach $thorn (sort keys %$thorns)
   {
 #    print "DEBUG: Thorn $thorn\n";
 
@@ -109,7 +112,7 @@ sub ProcessConfiguration
   }
 
   # Now setup the environment
-  foreach $option (@allowed_opts)
+  foreach my $option (@allowed_opts)
   {
     if (defined($configinfo->{$option}))
     {
@@ -120,7 +123,7 @@ sub ProcessConfiguration
   # Ok, can now run the configuration scripts.
 
   my %thorns_todo = ();
-  map { $thorns_todo{"\U$_\E"} = 1; } keys %thorns;
+  map { $thorns_todo{"\U$_\E"} = 1; } keys %$thorns;
   my %requirements_done = ();
 
   my $made_progress = 1;
@@ -162,7 +165,7 @@ sub ProcessConfiguration
         # Add make definitions to the environment, so that they are
         # available to the following scripts
         my $config = $config_database->{"\U$thorn $provides\E MAKE_DEFINITION"};
-        my %options = $config =~ /^\s*(\w+)\s*=(.*)$/mg;
+        my %options = $config =~ /^\s*(\w+)\s*=(.*)$/mg if $config;
         foreach my $option (sort keys %options)
         {
           my $value = $options{$option};
