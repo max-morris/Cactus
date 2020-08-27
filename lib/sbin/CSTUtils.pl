@@ -822,7 +822,7 @@ sub find_dep_cycles
     print "testing $key for deps\n" if (1 == $debug);
     $stack = $key." ";
     $returned = &recurse_deps($key, \%thorns, $stack, \%visited);
-    $visted{$key} = 1;
+    $visited{$key} = 1;
     if("" ne $returned)
     {
       print "Found cycle while testing $key for deps.[$returned]\n" if (1 == $debug);
