@@ -373,9 +373,9 @@ sub PrintParameterStatistics
   my($block);
   my($sep);
 
-  if($parameter_database{"\U$thorn SHARES implementations"} ne "")
+  if($parameter_database{"\U$thorn SHARES\E implementations"} ne "")
   {
-    print "           Shares: " . $parameter_database{"\U$thorn SHARES implementations"} . "\n";
+    print "           Shares: " . $parameter_database{"\U$thorn SHARES\E implementations"} . "\n";
   }
 
   $sep = "          ";
