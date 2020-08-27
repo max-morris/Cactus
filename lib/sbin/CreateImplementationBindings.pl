@@ -45,9 +45,8 @@ sub CreateImplementationBindings
   {
     mkdir('include/CactusBindings', 0755) || die 'Unable to create include/CactusBindings directory';
   }
-  my $thorn;
-  foreach $thorn (@thorns) {
-    if(! -d "include/$thorns") {
+  foreach my $thorn (@thorns) {
+    if(! -d "include/$thorn") {
       mkdir("include/$thorn",0755) || die "Unable to create include/$thorn directory";
     }
   }
