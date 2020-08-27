@@ -636,10 +636,10 @@ sub TopoSort
         }
     }
 
-    # Direct requres and uses declarations
+    # Direct requires and uses declarations
     foreach my $thorn (keys %thorns) {
-        foreach my $thorn2 (split ' ', $cfg->{"\U$thorn\E REQURES THORNS"}) {
-            push @{$requires{$thorn}}, $thorn2;
+        foreach my $thorn2 (split ' ', $cfg->{"\U$thorn\E REQUIRES THORNS"}) {
+            ${$children{$thorn}}{$thorn2} = 1 if $thorn2 ne $thorn;
         }
         foreach my $thorn2 (split ' ', $cfg->{"\U$thorn\E USES THORNS"}) {
             ${$children{$thorn}}{$thorn2} = 1 if $thorn2 ne $thorn;
