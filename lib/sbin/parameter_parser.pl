@@ -124,7 +124,7 @@ sub parse_param_ccl
   my($use_or_extend, $use_clause, $skip_range_block);
   my($message);
   my($share);
-  my(%shares_implementations)=();
+  my(%shares_implementations);
 
   #   The default block is private.
   $block = 'PRIVATE';
@@ -141,7 +141,7 @@ sub parse_param_ccl
       if($gr->{children}->[0]->{name} eq "share") {
         $share = uc $gr->group(0,"share")->group(0,"name")->substring();
         $parameter_db{"\U$thorn SHARES\E $share variables"} .= "";
-        $shares_implementations{$share}++;
+        $shares_implementations{$share} = 1;
       }
     } else {
       my $uses_or_extends = "";
