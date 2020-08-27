@@ -743,7 +743,7 @@ sub  CompareValues
 
   # we check that types and values aggree between the thorns
   # this assumes that the values are valid for their type
-  $retval = $parameter_db->{"\U$thorn1 $variable\E type"} == $parameter_db->{"\U$thorn2 $variable\E type"};
+  $retval = $parameter_db->{"\U$thorn1 $variable\E type"} eq $parameter_db->{"\U$thorn2 $variable\E type"};
 
   if ( $retval )
   {
@@ -781,7 +781,7 @@ sub  CompareValues
       &CST_error(0, "Unknown parameter type " . $parameter_db->{"\U$thorn1 $variable\E type"} . " in thorn $thorn1");
     }
     
-    $retval = $default1 == $default2;
+    $retval = $default1 eq $default2;
   }
 
   return $retval;
