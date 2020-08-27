@@ -11,6 +11,7 @@
 
 use FindBin;
 use FileHandle;
+use Cwd;
 
 # Global parameter to track the number of errors from the CST
 # The file make.thornlist is only created if the number of errors is zero.
@@ -34,7 +35,7 @@ if (! $thornlist)
   exit;
 }
 
-$top = `pwd` if (! $top);
+$top = &getcwd() if (! $top);
 $config_dir = "$top/config-data" if (! $config_dir);
 $system_database{"CONFIG_DIR"} = $config_dir;
 
