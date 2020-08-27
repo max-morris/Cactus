@@ -10,13 +10,6 @@ use Data::Dumper;
 use Piraha;
 use File::stat;
 
-sub trim_quotes
-{
-  my $str = shift;
-  $str =~ s/^(["'])(.*)\1$/$2/s;
-  return $str;
-}
-
 # This function turns an expression to a string. It functions
 # similar to mkstring() documented at the top of Piraha.pm,
 # however, it needs some special code for parenthetical groups
