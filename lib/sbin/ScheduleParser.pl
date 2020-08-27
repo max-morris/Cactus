@@ -90,13 +90,12 @@ sub create_schedule_database
   {
     print "   $thorn\n";
     #       Read the data
-    @indata = &read_file("$thorns{$thorn}/schedule.ccl");
     $ccl_file = "$thorns{$thorn}/schedule.ccl";
     my $gr = parse_ccl($grammar,$rule,$ccl_file,$peg_file);
 
 
     #       Get the schedule stuff from it
-    @new_schedule_data = &parse_schedule_ccl($thorn, $gr, @indata);
+    @new_schedule_data = &parse_schedule_ccl($thorn, $gr);
 
     &PrintScheduleStatistics($thorn, @new_schedule_data);
 
@@ -374,7 +373,7 @@ sub parse_schedule_statement
 #@@*/
 sub parse_schedule_ccl
 {
-  my($thorn, $group, @data) = @_;
+  my($thorn, $group) = @_;
   my($line_number);
   my(%schedule_db);
   my($buffer);

@@ -84,11 +84,10 @@ sub create_interface_database
 
     #       Read the data
     $ccl_file = "$thorns{$thorn}/interface.ccl";
-    my @indata = &read_file($ccl_file);
     my $gr = parse_ccl($grammar,$rule,$ccl_file,$peg_file);
 
     #       Get the interface data from it
-    &parse_interface_ccl($arrangement, $thorn, \@indata, $gr, \%interface_data);
+    &parse_interface_ccl($arrangement, $thorn, $gr, \%interface_data);
 
     &PrintInterfaceStatistics($thorn, \%interface_data);
   }
@@ -745,7 +744,7 @@ sub print_args
 
 sub parse_interface_ccl
 {
-  my($arrangement, $thorn, $data_ref, $group, $interface_data_ref) = @_;
+  my($arrangement, $thorn, $group, $interface_data_ref) = @_;
   my($line_number, $line, $block, $type, $variable, $description);
   my($data);
   my($implementation);

@@ -43,11 +43,10 @@ sub create_parameter_database
     print "   $thorn\n";
     #       Read the data
     $ccl_file = "$thorns{$thorn}/param.ccl";
-    my @indata = &read_file($ccl_file);
     my $gr = parse_ccl($grammar,$rule,$ccl_file,$peg_file);
 
     # Get the parameters from it
-    @new_parameter_data = &parse_param_ccl($thorn, $gr, @indata);
+    @new_parameter_data = &parse_param_ccl($thorn, $gr);
 
     &PrintParameterStatistics($thorn, @new_parameter_data);
 
@@ -115,10 +114,10 @@ sub cross_index_parameters
 
 sub parse_param_ccl
 {
-  my($thorn, $group, @data) = @_;
+  my($thorn, $group) = @_;
   my($line_number, $line, $block, $type, $variable, $description);
   my($current_friend, $new_ranges, $new_desc);
-  my($data, %parameter_db);
+  my(%parameter_db);
   my(%friends);
   my(%defined_parameters);
   my($use_or_extend, $use_clause, $skip_range_block);
