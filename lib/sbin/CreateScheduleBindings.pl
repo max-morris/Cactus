@@ -754,7 +754,7 @@ sub ScheduleStatement
   else
   {
 
-    $mess = "Unknown statement type '" .$rhschedule_db{"\U$thorn\E STATEMENT_$statement TYPE"};
+    $mess = "Unknown statement type '" .$rhschedule_db->{"\U$thorn\E STATEMENT_$statement TYPE"};
     &CST_error(0,$mess,"",__LINE__,__FILE__);
     return ("", "");
   }
