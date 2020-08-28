@@ -837,7 +837,7 @@ sub ScheduleSelectRDWR
             {
               push(@groups_or_vars, "$other_imp\::$group_or_var$timelevels$vecnum($region)");
               $foundit = 1;
-              break;
+              last;
             }
           }
         }
@@ -894,9 +894,9 @@ sub ScheduleSelectRDWR
               die "Unexpected block type $block";
             }
           }
-          break if($foundit);
+          last if($foundit);
         }
-        break if($foundit);
+        last if($foundit);
       }
       if(!$foundit)
       {
