@@ -400,15 +400,18 @@ cross_compiling=$ac_cv_prog_f90_cross
 ])
 
 AC_DEFUN(CCTK_HAVE_TYPE_STAR,
-[AC_CACHE_CHECK([whether the Fortran compiler ($F77 $F77FLAGS $LDFLAGS) supports TYPE(*)], cctk_cv_have_f_type_star,
+[AC_CACHE_CHECK([whether the Fortran compiler ($F77 $F77FLAGS $LDFLAGS) supports TYPE(*) for CCTK_PointerTo], cctk_cv_have_f_type_star,
 [cctk_cv_have_f_type_star=no
 AC_LANG_SAVE
 AC_LANG_FORTRAN77
 CCTK_TRY_COMPILE(
 [
       subroutine foo(a)
+        use iso_c_binding, only: c_loc,c_intptr_t
         implicit none
         type(*),dimension(..),target :: a
+        integer(kind=kind(c_intptr_t)) :: b
+        b = transfer(c_loc(a), b)
       end subroutine
 ],[], cctk_cv_have_f_type_star=yes, cctk_cv_have_f_type_star=no)
 AC_LANG_RESTORE
