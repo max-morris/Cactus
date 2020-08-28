@@ -27,6 +27,10 @@ static const char *rcsid = "$Header$";
 
 CCTK_FILEVERSION(comm_Reduction_c);
 
+/* offset grid and local array reduction operator handles returned by
+ * CCTK_ReductionHandle and CCTK_ReductionArrayHandle */
+#define ARRAY_OPERATOR_HANDLE_OFFSET 1024
+
 /********************************************************************
  ********************    External Routines   ************************
  ********************************************************************/
@@ -533,9 +537,13 @@ int CCTK_RegisterReductionArrayOperator
 
     /* Get a handle for it. */
     handle = Util_NewHandle(&ReductionArrayOperators, name, data);
+    if(handle >= 0)
+    {
+      handle += ARRAY_OPERATOR_HANDLE_OFFSET;
 
-    /* Remember how many reduction operators there are */
-    num_reductions_array++;
+      /* Remember how many reduction operators there are */
+      num_reductions_array++;
+    }
 
   }
   else
@@ -576,6 +584,10 @@ int CCTK_ReductionArrayHandle(const char *reduction)
                 "CCTK_ReductionArrayHandle: "
                 "No handle found for array reduction operator '%s'",
                 reduction);
+  }
+  else
+  {
+    handle += ARRAY_OPERATOR_HANDLE_OFFSET;
   }
 
   return handle;
@@ -681,7 +693,7 @@ int CCTK_ReduceArray(const cGH *GH,
     return (-1);
   }
 
-  data = Util_GetHandledData(ReductionArrayOperators,operation_handle);
+  data = Util_GetHandledData(ReductionArrayOperators,operation_handle - ARRAY_OPERATOR_HANDLE_OFFSET);
   if (! data)
   {
     CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
@@ -752,7 +764,8 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceArray)
     return;
   }
 
-  data = Util_GetHandledData (ReductionArrayOperators, *operation_handle);
+  data = Util_GetHandledData (ReductionArrayOperators,
+                              *operation_handle - ARRAY_OPERATOR_HANDLE_OFFSET);
   if (! data)
   {
     CCTK_Warn (3,__LINE__,__FILE__,"Cactus",
