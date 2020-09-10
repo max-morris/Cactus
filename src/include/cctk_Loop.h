@@ -66,37 +66,6 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
 
 #ifdef CCODE
 
-CCTK_ATTRIBUTE_UNUSED static void
-cctk_loop_get_bndsize1(const cGH* cctkGH,
-                       const CCTK_INT* restrict* bndsizep,
-                       const CCTK_INT* restrict* is_ghostbndp,
-                       const CCTK_INT* restrict* is_symbndp,
-                       const CCTK_INT* restrict* is_physbndp) {
-  static int atomic_have_bndsize = 0;
-  static CCTK_INT bndsize    [2];
-  static CCTK_INT is_ghostbnd[2];
-  static CCTK_INT is_symbnd  [2];
-  static CCTK_INT is_physbnd [2];
-  int have_bndsize;
-  _Pragma("omp atomic read")
-  have_bndsize = atomic_have_bndsize;
-  if (!have_bndsize) {
-    CCTK_PRAGMA_OMP("omp single")
-    {
-      GetBoundarySizesAndTypes
-        (cctkGH, 2, bndsize, is_ghostbnd, is_symbnd, is_physbnd);
-    }
-    _Pragma("omp atomic write")
-    atomic_have_bndsize = 1;
-  }
-  *bndsizep     = bndsize;
-  *is_ghostbndp = is_ghostbnd;
-  *is_symbndp   = is_symbnd;
-  *is_physbndp  = is_physbnd;
-}
-
-
-
 /* LOOP */
 
 #define CCTK_LOOP1_NORMAL(name, \
@@ -548,15 +517,17 @@ cctk_loop_get_bndsize1(const cGH* cctkGH,
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP1_INT can only be used in 1 dimensions"); \
     } \
-    const CCTK_INT* restrict cctki3_bndsize; \
-    const CCTK_INT* restrict cctki3_is_ghostbnd; \
-    const CCTK_INT* restrict cctki3_is_symbnd; \
-    const CCTK_INT* restrict cctki3_is_physbnd; \
-    cctk_loop_get_bndsize1(cctki3_cctkGH, \
-                           &cctki3_bndsize, \
-                           &cctki3_is_ghostbnd, \
-                           &cctki3_is_symbnd, \
-                           &cctki3_is_physbnd); \
+    CCTK_INT cctki3_bndsize[2]; \
+    CCTK_INT cctki3_is_ghostbnd[2]; \
+    CCTK_INT cctki3_is_symbnd[2]; \
+    CCTK_INT cctki3_is_physbnd[2]; \
+    CCTK_PRAGMA_OMP("omp single") \
+      GetBoundarySizesAndTypes(cctki3_cctkGH, \
+                               2, \
+                               cctki3_bndsize, \
+                               cctki3_is_ghostbnd, \
+                               cctki3_is_symbnd, \
+                               cctki3_is_physbnd); \
     CCTK_LOOP1STROFF_INTERIOR(name##_int, \
                               cctki3_cctkGH, \
                               i, \
@@ -596,15 +567,17 @@ cctk_loop_get_bndsize1(const cGH* cctkGH,
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP1_BND can only be used in 1 dimensions"); \
     } \
-    const CCTK_INT* restrict cctki3_bndsize; \
-    const CCTK_INT* restrict cctki3_is_ghostbnd; \
-    const CCTK_INT* restrict cctki3_is_symbnd; \
-    const CCTK_INT* restrict cctki3_is_physbnd; \
-    cctk_loop_get_bndsize1(cctki3_cctkGH, \
-                           &cctki3_bndsize, \
-                           &cctki3_is_ghostbnd, \
-                           &cctki3_is_symbnd, \
-                           &cctki3_is_physbnd); \
+    CCTK_INT cctki3_bndsize[2]; \
+    CCTK_INT cctki3_is_ghostbnd[2]; \
+    CCTK_INT cctki3_is_symbnd[2]; \
+    CCTK_INT cctki3_is_physbnd[2]; \
+    CCTK_PRAGMA_OMP("omp single") \
+      GetBoundarySizesAndTypes(cctki3_cctkGH, \
+                               2, \
+                               cctki3_bndsize, \
+                               cctki3_is_ghostbnd, \
+                               cctki3_is_symbnd, \
+                               cctki3_is_physbnd); \
     CCTK_LOOP1STROFF_BOUNDARIES(name##_bnd, \
                                 cctki3_cctkGH, \
                                 i, \
@@ -647,15 +620,17 @@ cctk_loop_get_bndsize1(const cGH* cctkGH,
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP1_INTBND can only be used in 1 dimensions"); \
     } \
-    const CCTK_INT* restrict cctki3_bndsize; \
-    const CCTK_INT* restrict cctki3_is_ghostbnd; \
-    const CCTK_INT* restrict cctki3_is_symbnd; \
-    const CCTK_INT* restrict cctki3_is_physbnd; \
-    cctk_loop_get_bndsize1(cctki3_cctkGH, \
-                           &cctki3_bndsize, \
-                           &cctki3_is_ghostbnd, \
-                           &cctki3_is_symbnd, \
-                           &cctki3_is_physbnd); \
+    CCTK_INT cctki3_bndsize[2]; \
+    CCTK_INT cctki3_is_ghostbnd[2]; \
+    CCTK_INT cctki3_is_symbnd[2]; \
+    CCTK_INT cctki3_is_physbnd[2]; \
+    CCTK_PRAGMA_OMP("omp single") \
+      GetBoundarySizesAndTypes(cctki3_cctkGH, \
+                               2, \
+                               cctki3_bndsize, \
+                               cctki3_is_ghostbnd, \
+                               cctki3_is_symbnd, \
+                               cctki3_is_physbnd); \
     CCTK_LOOP1STROFF_INTBOUNDARIES(name##_intbnd, \
                                    cctki3_cctkGH, \
                                    i, \
@@ -1207,37 +1182,6 @@ cctk_loop_get_bndsize1(const cGH* cctkGH,
 
 #ifdef CCODE
 
-CCTK_ATTRIBUTE_UNUSED static void
-cctk_loop_get_bndsize2(const cGH* cctkGH,
-                       const CCTK_INT* restrict* bndsizep,
-                       const CCTK_INT* restrict* is_ghostbndp,
-                       const CCTK_INT* restrict* is_symbndp,
-                       const CCTK_INT* restrict* is_physbndp) {
-  static int atomic_have_bndsize = 0;
-  static CCTK_INT bndsize    [4];
-  static CCTK_INT is_ghostbnd[4];
-  static CCTK_INT is_symbnd  [4];
-  static CCTK_INT is_physbnd [4];
-  int have_bndsize;
-  _Pragma("omp atomic read")
-  have_bndsize = atomic_have_bndsize;
-  if (!have_bndsize) {
-    CCTK_PRAGMA_OMP("omp single")
-    {
-      GetBoundarySizesAndTypes
-        (cctkGH, 4, bndsize, is_ghostbnd, is_symbnd, is_physbnd);
-    }
-    _Pragma("omp atomic write")
-    atomic_have_bndsize = 1;
-  }
-  *bndsizep     = bndsize;
-  *is_ghostbndp = is_ghostbnd;
-  *is_symbndp   = is_symbnd;
-  *is_physbndp  = is_physbnd;
-}
-
-
-
 /* LOOP */
 
 #define CCTK_LOOP2_NORMAL(name, \
@@ -1715,15 +1659,17 @@ cctk_loop_get_bndsize2(const cGH* cctkGH,
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP2_INT can only be used in 2 dimensions"); \
     } \
-    const CCTK_INT* restrict cctki3_bndsize; \
-    const CCTK_INT* restrict cctki3_is_ghostbnd; \
-    const CCTK_INT* restrict cctki3_is_symbnd; \
-    const CCTK_INT* restrict cctki3_is_physbnd; \
-    cctk_loop_get_bndsize2(cctki3_cctkGH, \
-                           &cctki3_bndsize, \
-                           &cctki3_is_ghostbnd, \
-                           &cctki3_is_symbnd, \
-                           &cctki3_is_physbnd); \
+    CCTK_INT cctki3_bndsize[4]; \
+    CCTK_INT cctki3_is_ghostbnd[4]; \
+    CCTK_INT cctki3_is_symbnd[4]; \
+    CCTK_INT cctki3_is_physbnd[4]; \
+    CCTK_PRAGMA_OMP("omp single") \
+      GetBoundarySizesAndTypes(cctki3_cctkGH, \
+                               4, \
+                               cctki3_bndsize, \
+                               cctki3_is_ghostbnd, \
+                               cctki3_is_symbnd, \
+                               cctki3_is_physbnd); \
     CCTK_LOOP2STROFF_INTERIOR(name##_int, \
                               cctki3_cctkGH, \
                               i,j, \
@@ -1763,15 +1709,17 @@ cctk_loop_get_bndsize2(const cGH* cctkGH,
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP2_BND can only be used in 2 dimensions"); \
     } \
-    const CCTK_INT* restrict cctki3_bndsize; \
-    const CCTK_INT* restrict cctki3_is_ghostbnd; \
-    const CCTK_INT* restrict cctki3_is_symbnd; \
-    const CCTK_INT* restrict cctki3_is_physbnd; \
-    cctk_loop_get_bndsize2(cctki3_cctkGH, \
-                           &cctki3_bndsize, \
-                           &cctki3_is_ghostbnd, \
-                           &cctki3_is_symbnd, \
-                           &cctki3_is_physbnd); \
+    CCTK_INT cctki3_bndsize[4]; \
+    CCTK_INT cctki3_is_ghostbnd[4]; \
+    CCTK_INT cctki3_is_symbnd[4]; \
+    CCTK_INT cctki3_is_physbnd[4]; \
+    CCTK_PRAGMA_OMP("omp single") \
+      GetBoundarySizesAndTypes(cctki3_cctkGH, \
+                               4, \
+                               cctki3_bndsize, \
+                               cctki3_is_ghostbnd, \
+                               cctki3_is_symbnd, \
+                               cctki3_is_physbnd); \
     CCTK_LOOP2STROFF_BOUNDARIES(name##_bnd, \
                                 cctki3_cctkGH, \
                                 i,j, \
@@ -1814,15 +1762,17 @@ cctk_loop_get_bndsize2(const cGH* cctkGH,
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP2_INTBND can only be used in 2 dimensions"); \
     } \
-    const CCTK_INT* restrict cctki3_bndsize; \
-    const CCTK_INT* restrict cctki3_is_ghostbnd; \
-    const CCTK_INT* restrict cctki3_is_symbnd; \
-    const CCTK_INT* restrict cctki3_is_physbnd; \
-    cctk_loop_get_bndsize2(cctki3_cctkGH, \
-                           &cctki3_bndsize, \
-                           &cctki3_is_ghostbnd, \
-                           &cctki3_is_symbnd, \
-                           &cctki3_is_physbnd); \
+    CCTK_INT cctki3_bndsize[4]; \
+    CCTK_INT cctki3_is_ghostbnd[4]; \
+    CCTK_INT cctki3_is_symbnd[4]; \
+    CCTK_INT cctki3_is_physbnd[4]; \
+    CCTK_PRAGMA_OMP("omp single") \
+      GetBoundarySizesAndTypes(cctki3_cctkGH, \
+                               4, \
+                               cctki3_bndsize, \
+                               cctki3_is_ghostbnd, \
+                               cctki3_is_symbnd, \
+                               cctki3_is_physbnd); \
     CCTK_LOOP2STROFF_INTBOUNDARIES(name##_intbnd, \
                                    cctki3_cctkGH, \
                                    i,j, \
@@ -2409,37 +2359,6 @@ cctk_loop_get_bndsize2(const cGH* cctkGH,
 
 #ifdef CCODE
 
-CCTK_ATTRIBUTE_UNUSED static void
-cctk_loop_get_bndsize3(const cGH* cctkGH,
-                       const CCTK_INT* restrict* bndsizep,
-                       const CCTK_INT* restrict* is_ghostbndp,
-                       const CCTK_INT* restrict* is_symbndp,
-                       const CCTK_INT* restrict* is_physbndp) {
-  static int atomic_have_bndsize = 0;
-  static CCTK_INT bndsize    [6];
-  static CCTK_INT is_ghostbnd[6];
-  static CCTK_INT is_symbnd  [6];
-  static CCTK_INT is_physbnd [6];
-  int have_bndsize;
-  _Pragma("omp atomic read")
-  have_bndsize = atomic_have_bndsize;
-  if (!have_bndsize) {
-    CCTK_PRAGMA_OMP("omp single")
-    {
-      GetBoundarySizesAndTypes
-        (cctkGH, 6, bndsize, is_ghostbnd, is_symbnd, is_physbnd);
-    }
-    _Pragma("omp atomic write")
-    atomic_have_bndsize = 1;
-  }
-  *bndsizep     = bndsize;
-  *is_ghostbndp = is_ghostbnd;
-  *is_symbndp   = is_symbnd;
-  *is_physbndp  = is_physbnd;
-}
-
-
-
 /* LOOP */
 
 #define CCTK_LOOP3_NORMAL(name, \
@@ -2943,15 +2862,17 @@ cctk_loop_get_bndsize3(const cGH* cctkGH,
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP3_INT can only be used in 3 dimensions"); \
     } \
-    const CCTK_INT* restrict cctki3_bndsize; \
-    const CCTK_INT* restrict cctki3_is_ghostbnd; \
-    const CCTK_INT* restrict cctki3_is_symbnd; \
-    const CCTK_INT* restrict cctki3_is_physbnd; \
-    cctk_loop_get_bndsize3(cctki3_cctkGH, \
-                           &cctki3_bndsize, \
-                           &cctki3_is_ghostbnd, \
-                           &cctki3_is_symbnd, \
-                           &cctki3_is_physbnd); \
+    CCTK_INT cctki3_bndsize[6]; \
+    CCTK_INT cctki3_is_ghostbnd[6]; \
+    CCTK_INT cctki3_is_symbnd[6]; \
+    CCTK_INT cctki3_is_physbnd[6]; \
+    CCTK_PRAGMA_OMP("omp single") \
+      GetBoundarySizesAndTypes(cctki3_cctkGH, \
+                               6, \
+                               cctki3_bndsize, \
+                               cctki3_is_ghostbnd, \
+                               cctki3_is_symbnd, \
+                               cctki3_is_physbnd); \
     CCTK_LOOP3STROFF_INTERIOR(name##_int, \
                               cctki3_cctkGH, \
                               i,j,k, \
@@ -2991,15 +2912,17 @@ cctk_loop_get_bndsize3(const cGH* cctkGH,
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP3_BND can only be used in 3 dimensions"); \
     } \
-    const CCTK_INT* restrict cctki3_bndsize; \
-    const CCTK_INT* restrict cctki3_is_ghostbnd; \
-    const CCTK_INT* restrict cctki3_is_symbnd; \
-    const CCTK_INT* restrict cctki3_is_physbnd; \
-    cctk_loop_get_bndsize3(cctki3_cctkGH, \
-                           &cctki3_bndsize, \
-                           &cctki3_is_ghostbnd, \
-                           &cctki3_is_symbnd, \
-                           &cctki3_is_physbnd); \
+    CCTK_INT cctki3_bndsize[6]; \
+    CCTK_INT cctki3_is_ghostbnd[6]; \
+    CCTK_INT cctki3_is_symbnd[6]; \
+    CCTK_INT cctki3_is_physbnd[6]; \
+    CCTK_PRAGMA_OMP("omp single") \
+      GetBoundarySizesAndTypes(cctki3_cctkGH, \
+                               6, \
+                               cctki3_bndsize, \
+                               cctki3_is_ghostbnd, \
+                               cctki3_is_symbnd, \
+                               cctki3_is_physbnd); \
     CCTK_LOOP3STROFF_BOUNDARIES(name##_bnd, \
                                 cctki3_cctkGH, \
                                 i,j,k, \
@@ -3042,15 +2965,17 @@ cctk_loop_get_bndsize3(const cGH* cctkGH,
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP3_INTBND can only be used in 3 dimensions"); \
     } \
-    const CCTK_INT* restrict cctki3_bndsize; \
-    const CCTK_INT* restrict cctki3_is_ghostbnd; \
-    const CCTK_INT* restrict cctki3_is_symbnd; \
-    const CCTK_INT* restrict cctki3_is_physbnd; \
-    cctk_loop_get_bndsize3(cctki3_cctkGH, \
-                           &cctki3_bndsize, \
-                           &cctki3_is_ghostbnd, \
-                           &cctki3_is_symbnd, \
-                           &cctki3_is_physbnd); \
+    CCTK_INT cctki3_bndsize[6]; \
+    CCTK_INT cctki3_is_ghostbnd[6]; \
+    CCTK_INT cctki3_is_symbnd[6]; \
+    CCTK_INT cctki3_is_physbnd[6]; \
+    CCTK_PRAGMA_OMP("omp single") \
+      GetBoundarySizesAndTypes(cctki3_cctkGH, \
+                               6, \
+                               cctki3_bndsize, \
+                               cctki3_is_ghostbnd, \
+                               cctki3_is_symbnd, \
+                               cctki3_is_physbnd); \
     CCTK_LOOP3STROFF_INTBOUNDARIES(name##_intbnd, \
                                    cctki3_cctkGH, \
                                    i,j,k, \
@@ -3672,37 +3597,6 @@ cctk_loop_get_bndsize3(const cGH* cctkGH,
 
 #ifdef CCODE
 
-CCTK_ATTRIBUTE_UNUSED static void
-cctk_loop_get_bndsize4(const cGH* cctkGH,
-                       const CCTK_INT* restrict* bndsizep,
-                       const CCTK_INT* restrict* is_ghostbndp,
-                       const CCTK_INT* restrict* is_symbndp,
-                       const CCTK_INT* restrict* is_physbndp) {
-  static int atomic_have_bndsize = 0;
-  static CCTK_INT bndsize    [8];
-  static CCTK_INT is_ghostbnd[8];
-  static CCTK_INT is_symbnd  [8];
-  static CCTK_INT is_physbnd [8];
-  int have_bndsize;
-  _Pragma("omp atomic read")
-  have_bndsize = atomic_have_bndsize;
-  if (!have_bndsize) {
-    CCTK_PRAGMA_OMP("omp single")
-    {
-      GetBoundarySizesAndTypes
-        (cctkGH, 8, bndsize, is_ghostbnd, is_symbnd, is_physbnd);
-    }
-    _Pragma("omp atomic write")
-    atomic_have_bndsize = 1;
-  }
-  *bndsizep     = bndsize;
-  *is_ghostbndp = is_ghostbnd;
-  *is_symbndp   = is_symbnd;
-  *is_physbndp  = is_physbnd;
-}
-
-
-
 /* LOOP */
 
 #define CCTK_LOOP4_NORMAL(name, \
@@ -4232,15 +4126,17 @@ cctk_loop_get_bndsize4(const cGH* cctkGH,
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP4_INT can only be used in 4 dimensions"); \
     } \
-    const CCTK_INT* restrict cctki3_bndsize; \
-    const CCTK_INT* restrict cctki3_is_ghostbnd; \
-    const CCTK_INT* restrict cctki3_is_symbnd; \
-    const CCTK_INT* restrict cctki3_is_physbnd; \
-    cctk_loop_get_bndsize4(cctki3_cctkGH, \
-                           &cctki3_bndsize, \
-                           &cctki3_is_ghostbnd, \
-                           &cctki3_is_symbnd, \
-                           &cctki3_is_physbnd); \
+    CCTK_INT cctki3_bndsize[8]; \
+    CCTK_INT cctki3_is_ghostbnd[8]; \
+    CCTK_INT cctki3_is_symbnd[8]; \
+    CCTK_INT cctki3_is_physbnd[8]; \
+    CCTK_PRAGMA_OMP("omp single") \
+      GetBoundarySizesAndTypes(cctki3_cctkGH, \
+                               8, \
+                               cctki3_bndsize, \
+                               cctki3_is_ghostbnd, \
+                               cctki3_is_symbnd, \
+                               cctki3_is_physbnd); \
     CCTK_LOOP4STROFF_INTERIOR(name##_int, \
                               cctki3_cctkGH, \
                               i,j,k,l, \
@@ -4280,15 +4176,17 @@ cctk_loop_get_bndsize4(const cGH* cctkGH,
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP4_BND can only be used in 4 dimensions"); \
     } \
-    const CCTK_INT* restrict cctki3_bndsize; \
-    const CCTK_INT* restrict cctki3_is_ghostbnd; \
-    const CCTK_INT* restrict cctki3_is_symbnd; \
-    const CCTK_INT* restrict cctki3_is_physbnd; \
-    cctk_loop_get_bndsize4(cctki3_cctkGH, \
-                           &cctki3_bndsize, \
-                           &cctki3_is_ghostbnd, \
-                           &cctki3_is_symbnd, \
-                           &cctki3_is_physbnd); \
+    CCTK_INT cctki3_bndsize[8]; \
+    CCTK_INT cctki3_is_ghostbnd[8]; \
+    CCTK_INT cctki3_is_symbnd[8]; \
+    CCTK_INT cctki3_is_physbnd[8]; \
+    CCTK_PRAGMA_OMP("omp single") \
+      GetBoundarySizesAndTypes(cctki3_cctkGH, \
+                               8, \
+                               cctki3_bndsize, \
+                               cctki3_is_ghostbnd, \
+                               cctki3_is_symbnd, \
+                               cctki3_is_physbnd); \
     CCTK_LOOP4STROFF_BOUNDARIES(name##_bnd, \
                                 cctki3_cctkGH, \
                                 i,j,k,l, \
@@ -4331,15 +4229,17 @@ cctk_loop_get_bndsize4(const cGH* cctkGH,
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP4_INTBND can only be used in 4 dimensions"); \
     } \
-    const CCTK_INT* restrict cctki3_bndsize; \
-    const CCTK_INT* restrict cctki3_is_ghostbnd; \
-    const CCTK_INT* restrict cctki3_is_symbnd; \
-    const CCTK_INT* restrict cctki3_is_physbnd; \
-    cctk_loop_get_bndsize4(cctki3_cctkGH, \
-                           &cctki3_bndsize, \
-                           &cctki3_is_ghostbnd, \
-                           &cctki3_is_symbnd, \
-                           &cctki3_is_physbnd); \
+    CCTK_INT cctki3_bndsize[8]; \
+    CCTK_INT cctki3_is_ghostbnd[8]; \
+    CCTK_INT cctki3_is_symbnd[8]; \
+    CCTK_INT cctki3_is_physbnd[8]; \
+    CCTK_PRAGMA_OMP("omp single") \
+      GetBoundarySizesAndTypes(cctki3_cctkGH, \
+                               8, \
+                               cctki3_bndsize, \
+                               cctki3_is_ghostbnd, \
+                               cctki3_is_symbnd, \
+                               cctki3_is_physbnd); \
     CCTK_LOOP4STROFF_INTBOUNDARIES(name##_intbnd, \
                                    cctki3_cctkGH, \
                                    i,j,k,l, \
