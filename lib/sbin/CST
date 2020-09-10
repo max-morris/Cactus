@@ -117,23 +117,6 @@ require "rdwr.pl";
 #
 ######################################################################
 
-# Find out which parser to use
-#
-$main::cctk_parser = "new";
-$main::cctk_parser = $ENV{CCTK_SELECT_PARSER}
-  if(defined($ENV{CCTK_SELECT_PARSER}));
-if($main::cctk_parser !~ /^(new|old|both)$/) {
-  &CST_error(0,"Bad setting for CCTK_SELECT_PARSER");
-  $main::cctk_parser = "new";
-}
-
-if($main::cctk_parser eq "old") {
-  print STDERR "***************************************\n";
-  print STDERR "* Warning: New CST parser disabled!!! *\n";
-  print STDERR "***************************************\n";
-  sleep 5;
-}
-
 # cache location for piraha
 $piraha_cache_dir = "$top/piraha";
 
@@ -841,45 +824,3 @@ sub canonicalize_key
   return $v;
 }
 
-#/*@@
-#  @routine    parser_compare
-#  @date       Wed May 24 18:48:23 UTC 2017
-#  @author     Steven R. Brandt
-#  @desc
-#  Each of the four CCL parsers produces a
-#  massive hashtable. This routine compares
-#  the key value pairs, on a file by file basis.
-#  @enddesc
-#@@*/
-sub parser_compare
-{
-  my $ccl_file = shift;
-  my $table1 = shift;
-  my $table2 = shift;
-  $ccl_file =~ s{.*/(.*)/(.*)/(.*)$}{$1/$2/$3};
-  my $first = "Difference between old and new parser while parsing $ccl_file:";
-  my $help = "Try disabling the old parser";
-  my $errs = 0;
-  for my $k (sort keys %$table2) {
-    my $v1 = $table1->{$k};
-    next if($v1 eq "");
-    unless(defined($v1)) {
-      CST_error(0,"$first Missing key ($k)=($v1)",$help,__LINE__,__FILE__);
-      $errs++;
-    }
-    my $v2 = $table2->{$k};
-    $v1 = canonicalize_key($v1);
-    $v2 = canonicalize_key($v2);
-    if($v1 ne $v2) {
-      CST_error(0,"$first Value for key ($k) is different: new=($v1) old=($v2)",$help,__LINE__,__FILE__);
-      $errs++;
-    }
-  }
-  for my $k (keys %$table1) {
-    if(!defined($table2->{$k})) {
-      CST_error(0,"$first Extra key: ($k) value: ($table1->{$k})",$help,__LINE__,__FILE__);
-      $errs++;
-    }
-  }
-  exit 2 if($errs > 0);
-}

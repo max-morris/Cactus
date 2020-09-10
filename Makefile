@@ -196,7 +196,7 @@ NEWTHORN = lib/make/new_thorn.pl
 BUILD_ACTIVETHORNS = lib/sbin/BuildActiveThorns.pl
 
 HTLATEX = htlatex
-HTLATEXFLAGS = "xhtml,mathml,charset=utf-8" " -cunihtf -utf8" "" -interaction=nonstopmode
+HTLATEXFLAGS = "xhtml,mathml,mathjax,charset=utf-8" " -cunihtf -utf8" "" -interaction=nonstopmode
 
 # Dividers to make the screen output slightly nicer
 DIVEL   =  __________________
