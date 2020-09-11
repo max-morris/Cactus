@@ -1,10 +1,15 @@
-#include "cctk.h"
+#include "cctk_Flesh.h"
+#include "cctk_Groups.h"
+#include "cctk_Misc.h"
+#include "cctk_WarnLevel.h"
+
 #include "cctk_Schedule.h"
 #include "cctk_Parameters.h"
 
 #include "cctki_PreSync.h"
 
 #include <algorithm>
+#include <cassert>
 #include <cstdio>
 #include <cstring>
 #include <set>
@@ -37,23 +42,23 @@ void add_entry(int vi,int tl,rdwr_t rdwr,int where,cFunctionData* func,std::set<
         entry.where_rd = CCTK_VALID_NOWHERE;
         entry.where_inv = CCTK_VALID_NOWHERE;
     } else {
-        if(!CCTK_EQUALS(presync_mode, "off")) {
+        if(!CCTK_Equals(presync_mode, "off")) {
           if(rdwr == writes_t && iter->where_wr != CCTK_VALID_NOWHERE) {
-              const int level = CCTK_EQUALS(presync_mode, "warn-only") ?
+              const int level = CCTK_Equals(presync_mode, "warn-only") ?
                                  CCTK_WARN_ALERT : CCTK_WARN_ABORT;
               CCTK_VWarn(level,__LINE__,__FILE__,"Cactus",
                           "Duplicate write specification for %s in function %s::%s",
                           CCTK_FullVarName(vi),func->thorn,func->routine);
           }
           if(rdwr == reads_t && iter->where_rd != CCTK_VALID_NOWHERE) {
-              const int level = CCTK_EQUALS(presync_mode, "warn-only") ?
+              const int level = CCTK_Equals(presync_mode, "warn-only") ?
                                  CCTK_WARN_ALERT : CCTK_WARN_ABORT;
               CCTK_VWarn(level,__LINE__,__FILE__,"Cactus",
                           "Duplicate reads specification for %s in function %s::%s",
                           CCTK_FullVarName(vi),func->thorn,func->routine);
           }
           if(rdwr == invalidates_t && iter->where_inv != CCTK_VALID_NOWHERE) {
-              const int level = CCTK_EQUALS(presync_mode, "warn-only") ?
+              const int level = CCTK_Equals(presync_mode, "warn-only") ?
                                  CCTK_WARN_ALERT : CCTK_WARN_ABORT;
               CCTK_VWarn(level,__LINE__,__FILE__,"Cactus",
                           "Duplicate invalidates specification for %s in function %s::%s",
@@ -122,13 +127,13 @@ void parse(const char *str,rdwr_t rdwr,cFunctionData* func,std::set<RDWR_entry>&
 
     // decode where
     int wh = -1;
-    if(CCTK_EQUALS(where,"everywhere") || CCTK_EQUALS(where,"all"))
+    if(CCTK_Equals(where,"everywhere") || CCTK_Equals(where,"all"))
         wh = CCTK_VALID_EVERYWHERE;
-    else if(CCTK_EQUALS(where,"interior") || CCTK_EQUALS(where,"in"))
+    else if(CCTK_Equals(where,"interior") || CCTK_Equals(where,"in"))
         wh = CCTK_VALID_INTERIOR;
-    else if(CCTK_EQUALS(where,"interiorwithboundary"))
+    else if(CCTK_Equals(where,"interiorwithboundary"))
         wh = CCTK_VALID_INTERIOR | CCTK_VALID_BOUNDARY;
-    else if(CCTK_EQUALS(where,"boundary"))
+    else if(CCTK_Equals(where,"boundary"))
         wh = CCTK_VALID_BOUNDARY;
     else {
         CCTK_VError(__LINE__, __FILE__, "Cactus",
@@ -182,9 +187,9 @@ void parse(const char *str,rdwr_t rdwr,cFunctionData* func,std::set<RDWR_entry>&
         }
     }
 
-    if(!CCTK_EQUALS(presync_mode, "off")) {
-        if(CCTK_EQUALS(presync_mode, "warn-only") ||
-           CCTK_EQUALS(presync_mode, "mixed-warn")) {
+    if(!CCTK_Equals(presync_mode, "off")) {
+        if(CCTK_Equals(presync_mode, "warn-only") ||
+           CCTK_Equals(presync_mode, "mixed-warn")) {
             CCTK_VWarn(CCTK_WARN_ALERT,__LINE__, __FILE__, "Cactus",
                     "Invalid variable or group name '%s' in %s for routine %s::%s",
                     fullvar,rdwr_s,func->thorn,func->routine);
@@ -221,7 +226,7 @@ void CCTKi_CreateRDWRData(cFunctionData *f)
 
     std::set<RDWR_entry> s;
 
-    if(CCTK_EQUALS(presync_mode, "off"))
+    if(CCTK_Equals(presync_mode, "off"))
         return;
 
     for(int i=0;i<f->n_WritesClauses;i++) {
@@ -314,7 +319,7 @@ int CCTK_HasAccess(const cGH *cctkGH, int var_index)
 {
   DECLARE_CCTK_PARAMETERS;
 
-  static bool presync_only = CCTK_EQUALS(presync_mode, "presync-only");
+  static bool presync_only = CCTK_Equals(presync_mode, "presync-only");
 
   if(!presync_only)
     return true;

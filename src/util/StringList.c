@@ -12,7 +12,7 @@
 #include <string.h>
 
 #ifndef TEST_STRINGLIST
-#include "cctk.h"
+#include "cctk_Flesh.h"
 #endif
 
 #include "util_String.h"

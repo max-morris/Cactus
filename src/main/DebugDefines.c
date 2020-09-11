@@ -12,7 +12,6 @@
 #include "cctk_Flesh.h"
 #include "cctk_DebugDefines.h"
 #include "cctk_WarnLevel.h"
-#include "definethisthorn.h"
 
 static const char *rcsid = "$Header$";
 

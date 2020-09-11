@@ -8,8 +8,6 @@
    @version   $Id$
  @@*/             
 
-#include "cctk.h"
-
 #include <assert.h>
 #include <errno.h>
 #include <stdio.h>
@@ -18,6 +16,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include "cctk_Flesh.h"
 #include "cctk_WarnLevel.h"
 #include "cctk_FortranString.h"
 

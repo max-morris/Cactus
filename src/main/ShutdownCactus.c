@@ -8,8 +8,6 @@
    @version   $Id$
  @@*/
 
-#include "definethisthorn.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 

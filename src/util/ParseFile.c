@@ -19,10 +19,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <cctk.h>
-
-#include "cctk_Flesh.h"
 #include "cctk_CommandLine.h"
+#include "cctk_Flesh.h"
+#include "cctk_WarnLevel.h"
+
 #include "util_String.h"
 
 static const char *rcsid = "$Header$";
@@ -458,7 +458,7 @@ static char *ParseDefines(char *buffer, long *buffersize)
           value = getenv(define+5);
           if (!value)
           {
-            CCTK_VWarn(CCTK_WARN_ALERT, __LINE__, __FILE__, CCTK_THORNSTRING,
+            CCTK_VWarn(CCTK_WARN_ALERT, __LINE__, __FILE__, "Cactus",
                        "No environment variable %s found\n", define+5);
             /* TODO: Should we abort here? (return NULL) */
           }
@@ -498,13 +498,15 @@ static char *ParseDefines(char *buffer, long *buffersize)
           new_size = *buffersize - strlen(define) + strlen(value) + 1;
           if (new_size < def_start)
           {
-            CCTK_WARN(0, "Something is wrong with me, HELP!");
+            CCTK_VWarn(0, __LINE__, __FILE__, "Cactus",
+                       "Something is wrong with me, HELP!");
             return buffer;
           }
           new_buffer = (char *)malloc(new_size);
           if (!new_buffer)
           {
-            CCTK_WARN(0, "I am out of memory and give up parsing for defines.");
+            CCTK_VWarn(0, __LINE__, __FILE__, "Cactus",
+                       "I am out of memory and give up parsing for defines.");
             return buffer;
           }
           new_buffer[0]='\0';
@@ -531,7 +533,7 @@ static char *ParseDefines(char *buffer, long *buffersize)
          * It might not be a define after all but a valid, long parameter
          * value containing a '$'.*/
         define[1023] = '\0';
-        CCTK_VWarn(CCTK_WARN_PICKY, __LINE__, __FILE__, CCTK_THORNSTRING,
+        CCTK_VWarn(CCTK_WARN_PICKY, __LINE__, __FILE__, "Cactus",
                    "Possible define too long: %s", define);
         indef = 0;
         defpos = 0;

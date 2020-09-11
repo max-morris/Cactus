@@ -8,7 +8,8 @@
    @version $Header$
  @@*/
 
-#include "cctk.h"
+#include "cctk_Flesh.h"
+#include "cctk_WarnLevel.h"
 #include "util_Network.h"
 
 #include <string.h>
@@ -123,11 +124,13 @@ void Util_GetHostName (char *returned_name, int length)
   
   if (! returned_name)
   {
-    CCTK_WARN (CCTK_WARN_ABORT, "Argument \"name\" to Util_GetHostName is NULL");
+    CCTK_VWarn (CCTK_WARN_ABORT, __LINE__, __FILE__, "Cactus",
+                "Argument \"name\" to Util_GetHostName is NULL");
   }
   if (length < 1)
   {
-    CCTK_WARN (CCTK_WARN_ABORT, "Argument \"length\" to Util_GetHostName is too small");
+    CCTK_VWarn (CCTK_WARN_ABORT, __LINE__, __FILE__, "Cactus",
+                "Argument \"length\" to Util_GetHostName is too small");
   }
   
   strncpy (returned_name, name, length - 1);

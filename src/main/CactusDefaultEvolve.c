@@ -13,8 +13,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "definethisthorn.h"
-
 #include "cctk_Flesh.h"
 #include "cctk_Parameters.h"
 #include "cctk_Groups.h"

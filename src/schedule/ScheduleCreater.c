@@ -12,10 +12,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cctk.h"
 #include "cctk_WarnLevel.h"
-#include "cctk_Parameters.h"
 #include "cctk_Flesh.h"
+#include "cctk_Misc.h"
+#include "cctk_Parameters.h"
 
 #include "util_String.h"
 
