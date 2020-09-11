@@ -256,6 +256,10 @@ int SimpleScheduleTraverseGH(cGH *GH, const char *where)
                               == extension->nsize[idir]-1;
     GH->cctk_lbnd[idir]        = extension->lb[extension->myproc][idir];
     GH->cctk_ubnd[idir]        = extension->ub[extension->myproc][idir];
+#ifdef CCTK_HAVE_CGH_TILE
+    GH->cctk_tile_min[idir]    = extension->tmin[extension->myproc][idir];
+    GH->cctk_tile_max[idir]    = extension->tmax[extension->myproc][idir];
+#endif
 
   }
 

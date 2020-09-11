@@ -29,6 +29,14 @@
 #    define CCTK_PRAGMA_OMP_FOR_COLLAPSE_3 CCTK_PRAGMA_OMP("omp for")
 #    define CCTK_PRAGMA_OMP_FOR_COLLAPSE_4 CCTK_PRAGMA_OMP("omp for")
 #  endif
+
+CCTK_ATTRIBUTE_UNUSED static int cctk_loop_min(int i, int j) {
+  return i <= j ? i : j;
+}
+CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
+  return i > j ? i : j;
+}
+
 #endif /* #ifdef CCODE */
 
 
@@ -218,10 +226,18 @@
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP1_INTERIOR can only be used in 1 dimensions"); \
     } \
+    const int cctki2_blo[] = { (int)(cctki2_iblo_) }; \
+    const int cctki2_bhi[] = { (int)(cctki2_ibhi_) }; \
+    const int cctki2_imin[] = { \
+      cctk_loop_max(cctki2_cctkGH->cctk_tile_min[0], cctki2_blo[0]), \
+    }; \
+    const int cctki2_imax[] = { \
+      cctk_loop_min(cctki2_cctkGH->cctk_tile_max[0], cctki2_cctkGH->cctk_lsh[0] - cctki2_bhi[0]), \
+    }; \
     CCTK_LOOP1STROFF(name##_interior, \
                      i, \
-                     (cctki2_iblo_), \
-                     cctki2_cctkGH->cctk_lsh[0]-(cctki2_ibhi_), \
+                     cctki2_imin[0], \
+                     cctki2_imax[0], \
                      cctki2_cctkGH->cctk_ash[0], \
                      (cctki2_ialn_),(cctki2_ioff_), \
                      imin,imax, (cctki2_istr_)) { \
@@ -303,10 +319,10 @@
         (cctki2_idir<0 ? cctki2_bbox[0] : 0) || (cctki2_idir>0 ? cctki2_bbox[1] : 0); \
       if (cctki2_any_bbox) { \
         const int cctki2_bmin[] = { \
-          (int)(cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0]), \
+          cctk_loop_max(cctki2_cctkGH->cctk_tile_min[0], (int)(cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0])), \
         }; \
         const int cctki2_bmax[] = { \
-          (int)(cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0]), \
+          cctk_loop_min(cctki2_cctkGH->cctk_tile_max[0], (int)(cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0])), \
         }; \
         CCTK_LOOP1STROFF_NORMAL(name##_boundaries, \
                                 i, \
@@ -399,10 +415,10 @@
         (cctki2_idir<0 ? cctki2_bbox[0] : 1) && (cctki2_idir>0 ? cctki2_bbox[1] : 1); \
       if (cctki2_all_bbox && cctki2_any_bbox) { \
         const int cctki2_bmin[] = { \
-          (int)(cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0]), \
+          cctk_loop_max(cctki2_cctkGH->cctk_tile_min[0], (int)(cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0])), \
         }; \
         const int cctki2_bmax[] = { \
-          (int)(cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0]), \
+          cctk_loop_min(cctki2_cctkGH->cctk_tile_max[0], (int)(cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0])), \
         }; \
         CCTK_LOOP1STROFF_NORMAL(name##_intboundaries, \
                                 i, \
@@ -446,8 +462,8 @@
     } \
     CCTK_LOOP1STROFF(name##_all, \
                      i, \
-                     0, \
-                     cctki3_cctkGH->cctk_lsh[0], \
+                     cctki3_cctkGH->cctk_tile_min[0], \
+                     cctki3_cctkGH->cctk_tile_max[0], \
                      cctki3_cctkGH->cctk_ash[0], \
                      cctki3_cctkGH->cctk_alignment,cctki3_cctkGH->cctk_alignment_offset, \
                      imin,imax, (cctki3_istr_)) { \
@@ -480,13 +496,16 @@
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP1_INT can only be used in 1 dimensions"); \
     } \
-    CCTK_INT cctki3_bndsize    [2]; \
+    CCTK_INT cctki3_bndsize[2]; \
     CCTK_INT cctki3_is_ghostbnd[2]; \
-    CCTK_INT cctki3_is_symbnd  [2]; \
-    CCTK_INT cctki3_is_physbnd [2]; \
-    CCTK_PRAGMA_OMP("omp single copyprivate(cctki3_bndsize)") \
-    GetBoundarySizesAndTypes \
-      (cctki3_cctkGH, 2, cctki3_bndsize, cctki3_is_ghostbnd, cctki3_is_symbnd, cctki3_is_physbnd); \
+    CCTK_INT cctki3_is_symbnd[2]; \
+    CCTK_INT cctki3_is_physbnd[2]; \
+    GetBoundarySizesAndTypes(cctki3_cctkGH, \
+                             2, \
+                             cctki3_bndsize, \
+                             cctki3_is_ghostbnd, \
+                             cctki3_is_symbnd, \
+                             cctki3_is_physbnd); \
     CCTK_LOOP1STROFF_INTERIOR(name##_int, \
                               cctki3_cctkGH, \
                               i, \
@@ -526,13 +545,16 @@
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP1_BND can only be used in 1 dimensions"); \
     } \
-    CCTK_INT cctki3_bndsize    [2]; \
+    CCTK_INT cctki3_bndsize[2]; \
     CCTK_INT cctki3_is_ghostbnd[2]; \
-    CCTK_INT cctki3_is_symbnd  [2]; \
-    CCTK_INT cctki3_is_physbnd [2]; \
-    CCTK_PRAGMA_OMP("omp single copyprivate(cctki3_bndsize, cctki3_is_physbnd)") \
-    GetBoundarySizesAndTypes \
-      (cctki3_cctkGH, 2, cctki3_bndsize, cctki3_is_ghostbnd, cctki3_is_symbnd, cctki3_is_physbnd); \
+    CCTK_INT cctki3_is_symbnd[2]; \
+    CCTK_INT cctki3_is_physbnd[2]; \
+    GetBoundarySizesAndTypes(cctki3_cctkGH, \
+                             2, \
+                             cctki3_bndsize, \
+                             cctki3_is_ghostbnd, \
+                             cctki3_is_symbnd, \
+                             cctki3_is_physbnd); \
     CCTK_LOOP1STROFF_BOUNDARIES(name##_bnd, \
                                 cctki3_cctkGH, \
                                 i, \
@@ -575,13 +597,16 @@
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP1_INTBND can only be used in 1 dimensions"); \
     } \
-    CCTK_INT cctki3_bndsize    [2]; \
+    CCTK_INT cctki3_bndsize[2]; \
     CCTK_INT cctki3_is_ghostbnd[2]; \
-    CCTK_INT cctki3_is_symbnd  [2]; \
-    CCTK_INT cctki3_is_physbnd [2]; \
-    CCTK_PRAGMA_OMP("omp single copyprivate(cctki3_bndsize, cctki3_is_physbnd)") \
-    GetBoundarySizesAndTypes \
-      (cctki3_cctkGH, 2, cctki3_bndsize, cctki3_is_ghostbnd, cctki3_is_symbnd, cctki3_is_physbnd); \
+    CCTK_INT cctki3_is_symbnd[2]; \
+    CCTK_INT cctki3_is_physbnd[2]; \
+    GetBoundarySizesAndTypes(cctki3_cctkGH, \
+                             2, \
+                             cctki3_bndsize, \
+                             cctki3_is_ghostbnd, \
+                             cctki3_is_symbnd, \
+                             cctki3_is_physbnd); \
     CCTK_LOOP1STROFF_INTBOUNDARIES(name##_intbnd, \
                                    cctki3_cctkGH, \
                                    i, \
@@ -753,8 +778,8 @@
                                imin,imax, cctki2_istr) \
    CCTK_LOOP1STR(name/**/_interior, \
                  i, \
-                 (cctki2_iblo)+1, \
-                 cctk_lsh(1)-(cctki2_ibhi), \
+                 max(cctk_tile_min(1)+1, (cctki2_iblo)+1), \
+                 min(cctk_tile_max(1), cctk_lsh(1)-(cctki2_ibhi)), \
                  cctk_ash(1), \
                  imin,imax, cctki2_istr) \
 
@@ -832,8 +857,8 @@
                                  i, \
                                  ni, \
                                  name/**/2_idir, \
-                                 name/**/2_bmin(1), \
-                                 name/**/2_bmax(1), \
+                                 max(cctk_tile_min(1)+1, name/**/2_bmin(1)), \
+                                 min(cctk_tile_max(1), name/**/2_bmax(1)), \
                                  cctk_ash(1), \
                                  imin,imax, name/**/2_istr) \
 
@@ -917,8 +942,8 @@
                                  i, \
                                  ni, \
                                  name/**/2_idir, \
-                                 name/**/2_bmin(1), \
-                                 name/**/2_bmax(1), \
+                                 max(cctk_tile_min(1)+1, name/**/2_bmin(1)), \
+                                 min(cctk_Tile_max(1), name/**/2_bmax(1)), \
                                  cctk_ash(1), \
                                  imin,imax, name/**/2_istr) \
 
@@ -1321,11 +1346,20 @@
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP2_INTERIOR can only be used in 2 dimensions"); \
     } \
+    const int cctki2_blo[] = { (int)(cctki2_iblo_), (int)(cctki2_jblo_) }; \
+    const int cctki2_bhi[] = { (int)(cctki2_ibhi_), (int)(cctki2_jbhi_) }; \
+    const int cctki2_imin[] = { \
+      cctk_loop_max(cctki2_cctkGH->cctk_tile_min[0], cctki2_blo[0]), \
+      cctk_loop_max(cctki2_cctkGH->cctk_tile_min[1], cctki2_blo[1]), \
+    }; \
+    const int cctki2_imax[] = { \
+      cctk_loop_min(cctki2_cctkGH->cctk_tile_max[0], cctki2_cctkGH->cctk_lsh[0] - cctki2_bhi[0]), \
+      cctk_loop_min(cctki2_cctkGH->cctk_tile_max[1], cctki2_cctkGH->cctk_lsh[1] - cctki2_bhi[1]), \
+    }; \
     CCTK_LOOP2STROFF(name##_interior, \
                      i,j, \
-                     (cctki2_iblo_),(cctki2_jblo_), \
-                     cctki2_cctkGH->cctk_lsh[0]-(cctki2_ibhi_), \
-                     cctki2_cctkGH->cctk_lsh[1]-(cctki2_jbhi_), \
+                     cctki2_imin[0],cctki2_imin[1], \
+                     cctki2_imax[0],cctki2_imax[1], \
                      cctki2_cctkGH->cctk_ash[0], \
                      cctki2_cctkGH->cctk_ash[1], \
                      (cctki2_ialn_),(cctki2_ioff_), \
@@ -1410,12 +1444,12 @@
         (cctki2_jdir<0 ? cctki2_bbox[2] : 0) || (cctki2_jdir>0 ? cctki2_bbox[3] : 0); \
       if (cctki2_any_bbox) { \
         const int cctki2_bmin[] = { \
-          (int)(cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0]), \
-          (int)(cctki2_jdir<0 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1]), \
+          cctk_loop_max(cctki2_cctkGH->cctk_tile_min[0], (int)(cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0])), \
+          cctk_loop_max(cctki2_cctkGH->cctk_tile_min[1], (int)(cctki2_jdir<0 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1])), \
         }; \
         const int cctki2_bmax[] = { \
-          (int)(cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0]), \
-          (int)(cctki2_jdir<0 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1]), \
+          cctk_loop_min(cctki2_cctkGH->cctk_tile_max[0], (int)(cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0])), \
+          cctk_loop_min(cctki2_cctkGH->cctk_tile_max[1], (int)(cctki2_jdir<0 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1])), \
         }; \
         CCTK_LOOP2STROFF_NORMAL(name##_boundaries, \
                                 i,j, \
@@ -1513,12 +1547,12 @@
         (cctki2_jdir<0 ? cctki2_bbox[2] : 1) && (cctki2_jdir>0 ? cctki2_bbox[3] : 1); \
       if (cctki2_all_bbox && cctki2_any_bbox) { \
         const int cctki2_bmin[] = { \
-          (int)(cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0]), \
-          (int)(cctki2_jdir<0 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1]), \
+          cctk_loop_max(cctki2_cctkGH->cctk_tile_min[0], (int)(cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0])), \
+          cctk_loop_max(cctki2_cctkGH->cctk_tile_min[1], (int)(cctki2_jdir<0 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1])), \
         }; \
         const int cctki2_bmax[] = { \
-          (int)(cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0]), \
-          (int)(cctki2_jdir<0 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1]), \
+          cctk_loop_min(cctki2_cctkGH->cctk_tile_max[0], (int)(cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0])), \
+          cctk_loop_min(cctki2_cctkGH->cctk_tile_max[1], (int)(cctki2_jdir<0 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1])), \
         }; \
         CCTK_LOOP2STROFF_NORMAL(name##_intboundaries, \
                                 i,j, \
@@ -1564,9 +1598,10 @@
     } \
     CCTK_LOOP2STROFF(name##_all, \
                      i,j, \
-                     0,0, \
-                     cctki3_cctkGH->cctk_lsh[0], \
-                     cctki3_cctkGH->cctk_lsh[1], \
+                     cctki3_cctkGH->cctk_tile_min[0], \
+                     cctki3_cctkGH->cctk_tile_min[1], \
+                     cctki3_cctkGH->cctk_tile_max[0], \
+                     cctki3_cctkGH->cctk_tile_max[1], \
                      cctki3_cctkGH->cctk_ash[0], \
                      cctki3_cctkGH->cctk_ash[1], \
                      cctki3_cctkGH->cctk_alignment,cctki3_cctkGH->cctk_alignment_offset, \
@@ -1600,13 +1635,16 @@
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP2_INT can only be used in 2 dimensions"); \
     } \
-    CCTK_INT cctki3_bndsize    [4]; \
+    CCTK_INT cctki3_bndsize[4]; \
     CCTK_INT cctki3_is_ghostbnd[4]; \
-    CCTK_INT cctki3_is_symbnd  [4]; \
-    CCTK_INT cctki3_is_physbnd [4]; \
-    CCTK_PRAGMA_OMP("omp single copyprivate(cctki3_bndsize)") \
-    GetBoundarySizesAndTypes \
-      (cctki3_cctkGH, 4, cctki3_bndsize, cctki3_is_ghostbnd, cctki3_is_symbnd, cctki3_is_physbnd); \
+    CCTK_INT cctki3_is_symbnd[4]; \
+    CCTK_INT cctki3_is_physbnd[4]; \
+    GetBoundarySizesAndTypes(cctki3_cctkGH, \
+                             4, \
+                             cctki3_bndsize, \
+                             cctki3_is_ghostbnd, \
+                             cctki3_is_symbnd, \
+                             cctki3_is_physbnd); \
     CCTK_LOOP2STROFF_INTERIOR(name##_int, \
                               cctki3_cctkGH, \
                               i,j, \
@@ -1646,13 +1684,16 @@
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP2_BND can only be used in 2 dimensions"); \
     } \
-    CCTK_INT cctki3_bndsize    [4]; \
+    CCTK_INT cctki3_bndsize[4]; \
     CCTK_INT cctki3_is_ghostbnd[4]; \
-    CCTK_INT cctki3_is_symbnd  [4]; \
-    CCTK_INT cctki3_is_physbnd [4]; \
-    CCTK_PRAGMA_OMP("omp single copyprivate(cctki3_bndsize, cctki3_is_physbnd)") \
-    GetBoundarySizesAndTypes \
-      (cctki3_cctkGH, 4, cctki3_bndsize, cctki3_is_ghostbnd, cctki3_is_symbnd, cctki3_is_physbnd); \
+    CCTK_INT cctki3_is_symbnd[4]; \
+    CCTK_INT cctki3_is_physbnd[4]; \
+    GetBoundarySizesAndTypes(cctki3_cctkGH, \
+                             4, \
+                             cctki3_bndsize, \
+                             cctki3_is_ghostbnd, \
+                             cctki3_is_symbnd, \
+                             cctki3_is_physbnd); \
     CCTK_LOOP2STROFF_BOUNDARIES(name##_bnd, \
                                 cctki3_cctkGH, \
                                 i,j, \
@@ -1695,13 +1736,16 @@
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP2_INTBND can only be used in 2 dimensions"); \
     } \
-    CCTK_INT cctki3_bndsize    [4]; \
+    CCTK_INT cctki3_bndsize[4]; \
     CCTK_INT cctki3_is_ghostbnd[4]; \
-    CCTK_INT cctki3_is_symbnd  [4]; \
-    CCTK_INT cctki3_is_physbnd [4]; \
-    CCTK_PRAGMA_OMP("omp single copyprivate(cctki3_bndsize, cctki3_is_physbnd)") \
-    GetBoundarySizesAndTypes \
-      (cctki3_cctkGH, 4, cctki3_bndsize, cctki3_is_ghostbnd, cctki3_is_symbnd, cctki3_is_physbnd); \
+    CCTK_INT cctki3_is_symbnd[4]; \
+    CCTK_INT cctki3_is_physbnd[4]; \
+    GetBoundarySizesAndTypes(cctki3_cctkGH, \
+                             4, \
+                             cctki3_bndsize, \
+                             cctki3_is_ghostbnd, \
+                             cctki3_is_symbnd, \
+                             cctki3_is_physbnd); \
     CCTK_LOOP2STROFF_INTBOUNDARIES(name##_intbnd, \
                                    cctki3_cctkGH, \
                                    i,j, \
@@ -1882,10 +1926,10 @@
                                imin,imax, cctki2_istr) \
    CCTK_LOOP2STR(name/**/_interior, \
                  i,j, \
-                 (cctki2_iblo)+1, \
-                 (cctki2_jblo)+1, \
-                 cctk_lsh(1)-(cctki2_ibhi), \
-                 cctk_lsh(2)-(cctki2_jbhi), \
+                 max(cctk_tile_min(1)+1, (cctki2_iblo)+1), \
+                 max(cctk_tile_min(2)+1, (cctki2_jblo)+1), \
+                 min(cctk_tile_max(1), cctk_lsh(1)-(cctki2_ibhi)), \
+                 min(cctk_tile_max(2), cctk_lsh(2)-(cctki2_jbhi)), \
                  cctk_ash(1),cctk_ash(2), \
                  imin,imax, cctki2_istr) \
 
@@ -1973,8 +2017,8 @@
                                  i,j, \
                                  ni,nj, \
                                  name/**/2_idir,name/**/2_jdir, \
-                                 name/**/2_bmin(1),name/**/2_bmin(2), \
-                                 name/**/2_bmax(1),name/**/2_bmax(2), \
+                                 max(cctk_tile_min(1)+1, name/**/2_bmin(1)),max(cctk_tile_min(2)+1, name/**/2_bmin(2)), \
+                                 min(cctk_tile_max(1), name/**/2_bmax(1)),min(cctk_tile_max(2), name/**/2_bmax(2)), \
                                  cctk_ash(1),cctk_ash(2), \
                                  imin,imax, name/**/2_istr) \
 
@@ -2071,8 +2115,8 @@
                                  i,j, \
                                  ni,nj, \
                                  name/**/2_idir,name/**/2_jdir, \
-                                 name/**/2_bmin(1),name/**/2_bmin(2), \
-                                 name/**/2_bmax(1),name/**/2_bmax(2), \
+                                 max(cctk_tile_min(1)+1, name/**/2_bmin(1)),max(cctk_tile_min(2)+1, name/**/2_bmin(2)), \
+                                 min(cctk_Tile_max(1), name/**/2_bmax(1)),min(cctk_Tile_max(2), name/**/2_bmax(2)), \
                                  cctk_ash(1),cctk_ash(2), \
                                  imin,imax, name/**/2_istr) \
 
@@ -2483,12 +2527,22 @@
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP3_INTERIOR can only be used in 3 dimensions"); \
     } \
+    const int cctki2_blo[] = { (int)(cctki2_iblo_), (int)(cctki2_jblo_), (int)(cctki2_kblo_) }; \
+    const int cctki2_bhi[] = { (int)(cctki2_ibhi_), (int)(cctki2_jbhi_), (int)(cctki2_kbhi_) }; \
+    const int cctki2_imin[] = { \
+      cctk_loop_max(cctki2_cctkGH->cctk_tile_min[0], cctki2_blo[0]), \
+      cctk_loop_max(cctki2_cctkGH->cctk_tile_min[1], cctki2_blo[1]), \
+      cctk_loop_max(cctki2_cctkGH->cctk_tile_min[2], cctki2_blo[2]), \
+    }; \
+    const int cctki2_imax[] = { \
+      cctk_loop_min(cctki2_cctkGH->cctk_tile_max[0], cctki2_cctkGH->cctk_lsh[0] - cctki2_bhi[0]), \
+      cctk_loop_min(cctki2_cctkGH->cctk_tile_max[1], cctki2_cctkGH->cctk_lsh[1] - cctki2_bhi[1]), \
+      cctk_loop_min(cctki2_cctkGH->cctk_tile_max[2], cctki2_cctkGH->cctk_lsh[2] - cctki2_bhi[2]), \
+    }; \
     CCTK_LOOP3STROFF(name##_interior, \
                      i,j,k, \
-                     (cctki2_iblo_),(cctki2_jblo_),(cctki2_kblo_), \
-                     cctki2_cctkGH->cctk_lsh[0]-(cctki2_ibhi_), \
-                     cctki2_cctkGH->cctk_lsh[1]-(cctki2_jbhi_), \
-                     cctki2_cctkGH->cctk_lsh[2]-(cctki2_kbhi_), \
+                     cctki2_imin[0],cctki2_imin[1],cctki2_imin[2], \
+                     cctki2_imax[0],cctki2_imax[1],cctki2_imax[2], \
                      cctki2_cctkGH->cctk_ash[0], \
                      cctki2_cctkGH->cctk_ash[1], \
                      cctki2_cctkGH->cctk_ash[2], \
@@ -2576,14 +2630,14 @@
         (cctki2_kdir<0 ? cctki2_bbox[4] : 0) || (cctki2_kdir>0 ? cctki2_bbox[5] : 0); \
       if (cctki2_any_bbox) { \
         const int cctki2_bmin[] = { \
-          (int)(cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0]), \
-          (int)(cctki2_jdir<0 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1]), \
-          (int)(cctki2_kdir<0 ? 0 : cctki2_kdir==0 ? cctki2_blo[2] : cctki2_lsh[2] - cctki2_bhi[2]), \
+          cctk_loop_max(cctki2_cctkGH->cctk_tile_min[0], (int)(cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0])), \
+          cctk_loop_max(cctki2_cctkGH->cctk_tile_min[1], (int)(cctki2_jdir<0 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1])), \
+          cctk_loop_max(cctki2_cctkGH->cctk_tile_min[2], (int)(cctki2_kdir<0 ? 0 : cctki2_kdir==0 ? cctki2_blo[2] : cctki2_lsh[2] - cctki2_bhi[2])), \
         }; \
         const int cctki2_bmax[] = { \
-          (int)(cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0]), \
-          (int)(cctki2_jdir<0 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1]), \
-          (int)(cctki2_kdir<0 ? cctki2_blo[2] : cctki2_kdir==0 ? cctki2_lsh[2] - cctki2_bhi[2] : cctki2_lsh[2]), \
+          cctk_loop_min(cctki2_cctkGH->cctk_tile_max[0], (int)(cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0])), \
+          cctk_loop_min(cctki2_cctkGH->cctk_tile_max[1], (int)(cctki2_jdir<0 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1])), \
+          cctk_loop_min(cctki2_cctkGH->cctk_tile_max[2], (int)(cctki2_kdir<0 ? cctki2_blo[2] : cctki2_kdir==0 ? cctki2_lsh[2] - cctki2_bhi[2] : cctki2_lsh[2])), \
         }; \
         CCTK_LOOP3STROFF_NORMAL(name##_boundaries, \
                                 i,j,k, \
@@ -2686,14 +2740,14 @@
         (cctki2_kdir<0 ? cctki2_bbox[4] : 1) && (cctki2_kdir>0 ? cctki2_bbox[5] : 1); \
       if (cctki2_all_bbox && cctki2_any_bbox) { \
         const int cctki2_bmin[] = { \
-          (int)(cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0]), \
-          (int)(cctki2_jdir<0 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1]), \
-          (int)(cctki2_kdir<0 ? 0 : cctki2_kdir==0 ? cctki2_blo[2] : cctki2_lsh[2] - cctki2_bhi[2]), \
+          cctk_loop_max(cctki2_cctkGH->cctk_tile_min[0], (int)(cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0])), \
+          cctk_loop_max(cctki2_cctkGH->cctk_tile_min[1], (int)(cctki2_jdir<0 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1])), \
+          cctk_loop_max(cctki2_cctkGH->cctk_tile_min[2], (int)(cctki2_kdir<0 ? 0 : cctki2_kdir==0 ? cctki2_blo[2] : cctki2_lsh[2] - cctki2_bhi[2])), \
         }; \
         const int cctki2_bmax[] = { \
-          (int)(cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0]), \
-          (int)(cctki2_jdir<0 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1]), \
-          (int)(cctki2_kdir<0 ? cctki2_blo[2] : cctki2_kdir==0 ? cctki2_lsh[2] - cctki2_bhi[2] : cctki2_lsh[2]), \
+          cctk_loop_min(cctki2_cctkGH->cctk_tile_max[0], (int)(cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0])), \
+          cctk_loop_min(cctki2_cctkGH->cctk_tile_max[1], (int)(cctki2_jdir<0 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1])), \
+          cctk_loop_min(cctki2_cctkGH->cctk_tile_max[2], (int)(cctki2_kdir<0 ? cctki2_blo[2] : cctki2_kdir==0 ? cctki2_lsh[2] - cctki2_bhi[2] : cctki2_lsh[2])), \
         }; \
         CCTK_LOOP3STROFF_NORMAL(name##_intboundaries, \
                                 i,j,k, \
@@ -2741,10 +2795,12 @@
     } \
     CCTK_LOOP3STROFF(name##_all, \
                      i,j,k, \
-                     0,0,0, \
-                     cctki3_cctkGH->cctk_lsh[0], \
-                     cctki3_cctkGH->cctk_lsh[1], \
-                     cctki3_cctkGH->cctk_lsh[2], \
+                     cctki3_cctkGH->cctk_tile_min[0], \
+                     cctki3_cctkGH->cctk_tile_min[1], \
+                     cctki3_cctkGH->cctk_tile_min[2], \
+                     cctki3_cctkGH->cctk_tile_max[0], \
+                     cctki3_cctkGH->cctk_tile_max[1], \
+                     cctki3_cctkGH->cctk_tile_max[2], \
                      cctki3_cctkGH->cctk_ash[0], \
                      cctki3_cctkGH->cctk_ash[1], \
                      cctki3_cctkGH->cctk_ash[2], \
@@ -2779,13 +2835,16 @@
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP3_INT can only be used in 3 dimensions"); \
     } \
-    CCTK_INT cctki3_bndsize    [6]; \
+    CCTK_INT cctki3_bndsize[6]; \
     CCTK_INT cctki3_is_ghostbnd[6]; \
-    CCTK_INT cctki3_is_symbnd  [6]; \
-    CCTK_INT cctki3_is_physbnd [6]; \
-    CCTK_PRAGMA_OMP("omp single copyprivate(cctki3_bndsize)") \
-    GetBoundarySizesAndTypes \
-      (cctki3_cctkGH, 6, cctki3_bndsize, cctki3_is_ghostbnd, cctki3_is_symbnd, cctki3_is_physbnd); \
+    CCTK_INT cctki3_is_symbnd[6]; \
+    CCTK_INT cctki3_is_physbnd[6]; \
+    GetBoundarySizesAndTypes(cctki3_cctkGH, \
+                             6, \
+                             cctki3_bndsize, \
+                             cctki3_is_ghostbnd, \
+                             cctki3_is_symbnd, \
+                             cctki3_is_physbnd); \
     CCTK_LOOP3STROFF_INTERIOR(name##_int, \
                               cctki3_cctkGH, \
                               i,j,k, \
@@ -2825,13 +2884,16 @@
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP3_BND can only be used in 3 dimensions"); \
     } \
-    CCTK_INT cctki3_bndsize    [6]; \
+    CCTK_INT cctki3_bndsize[6]; \
     CCTK_INT cctki3_is_ghostbnd[6]; \
-    CCTK_INT cctki3_is_symbnd  [6]; \
-    CCTK_INT cctki3_is_physbnd [6]; \
-    CCTK_PRAGMA_OMP("omp single copyprivate(cctki3_bndsize, cctki3_is_physbnd)") \
-    GetBoundarySizesAndTypes \
-      (cctki3_cctkGH, 6, cctki3_bndsize, cctki3_is_ghostbnd, cctki3_is_symbnd, cctki3_is_physbnd); \
+    CCTK_INT cctki3_is_symbnd[6]; \
+    CCTK_INT cctki3_is_physbnd[6]; \
+    GetBoundarySizesAndTypes(cctki3_cctkGH, \
+                             6, \
+                             cctki3_bndsize, \
+                             cctki3_is_ghostbnd, \
+                             cctki3_is_symbnd, \
+                             cctki3_is_physbnd); \
     CCTK_LOOP3STROFF_BOUNDARIES(name##_bnd, \
                                 cctki3_cctkGH, \
                                 i,j,k, \
@@ -2874,13 +2936,16 @@
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP3_INTBND can only be used in 3 dimensions"); \
     } \
-    CCTK_INT cctki3_bndsize    [6]; \
+    CCTK_INT cctki3_bndsize[6]; \
     CCTK_INT cctki3_is_ghostbnd[6]; \
-    CCTK_INT cctki3_is_symbnd  [6]; \
-    CCTK_INT cctki3_is_physbnd [6]; \
-    CCTK_PRAGMA_OMP("omp single copyprivate(cctki3_bndsize, cctki3_is_physbnd)") \
-    GetBoundarySizesAndTypes \
-      (cctki3_cctkGH, 6, cctki3_bndsize, cctki3_is_ghostbnd, cctki3_is_symbnd, cctki3_is_physbnd); \
+    CCTK_INT cctki3_is_symbnd[6]; \
+    CCTK_INT cctki3_is_physbnd[6]; \
+    GetBoundarySizesAndTypes(cctki3_cctkGH, \
+                             6, \
+                             cctki3_bndsize, \
+                             cctki3_is_ghostbnd, \
+                             cctki3_is_symbnd, \
+                             cctki3_is_physbnd); \
     CCTK_LOOP3STROFF_INTBOUNDARIES(name##_intbnd, \
                                    cctki3_cctkGH, \
                                    i,j,k, \
@@ -3070,12 +3135,12 @@
                                imin,imax, cctki2_istr) \
    CCTK_LOOP3STR(name/**/_interior, \
                  i,j,k, \
-                 (cctki2_iblo)+1, \
-                 (cctki2_jblo)+1, \
-                 (cctki2_kblo)+1, \
-                 cctk_lsh(1)-(cctki2_ibhi), \
-                 cctk_lsh(2)-(cctki2_jbhi), \
-                 cctk_lsh(3)-(cctki2_kbhi), \
+                 max(cctk_tile_min(1)+1, (cctki2_iblo)+1), \
+                 max(cctk_tile_min(2)+1, (cctki2_jblo)+1), \
+                 max(cctk_tile_min(3)+1, (cctki2_kblo)+1), \
+                 min(cctk_tile_max(1), cctk_lsh(1)-(cctki2_ibhi)), \
+                 min(cctk_tile_max(2), cctk_lsh(2)-(cctki2_jbhi)), \
+                 min(cctk_tile_max(3), cctk_lsh(3)-(cctki2_kbhi)), \
                  cctk_ash(1),cctk_ash(2),cctk_ash(3), \
                  imin,imax, cctki2_istr) \
 
@@ -3173,8 +3238,8 @@
                                  i,j,k, \
                                  ni,nj,nk, \
                                  name/**/2_idir,name/**/2_jdir,name/**/2_kdir, \
-                                 name/**/2_bmin(1),name/**/2_bmin(2),name/**/2_bmin(3), \
-                                 name/**/2_bmax(1),name/**/2_bmax(2),name/**/2_bmax(3), \
+                                 max(cctk_tile_min(1)+1, name/**/2_bmin(1)),max(cctk_tile_min(2)+1, name/**/2_bmin(2)),max(cctk_tile_min(3)+1, name/**/2_bmin(3)), \
+                                 min(cctk_tile_max(1), name/**/2_bmax(1)),min(cctk_tile_max(2), name/**/2_bmax(2)),min(cctk_tile_max(3), name/**/2_bmax(3)), \
                                  cctk_ash(1),cctk_ash(2),cctk_ash(3), \
                                  imin,imax, name/**/2_istr) \
 
@@ -3284,8 +3349,8 @@
                                  i,j,k, \
                                  ni,nj,nk, \
                                  name/**/2_idir,name/**/2_jdir,name/**/2_kdir, \
-                                 name/**/2_bmin(1),name/**/2_bmin(2),name/**/2_bmin(3), \
-                                 name/**/2_bmax(1),name/**/2_bmax(2),name/**/2_bmax(3), \
+                                 max(cctk_tile_min(1)+1, name/**/2_bmin(1)),max(cctk_tile_min(2)+1, name/**/2_bmin(2)),max(cctk_tile_min(3)+1, name/**/2_bmin(3)), \
+                                 min(cctk_Tile_max(1), name/**/2_bmax(1)),min(cctk_Tile_max(2), name/**/2_bmax(2)),min(cctk_Tile_max(3), name/**/2_bmax(3)), \
                                  cctk_ash(1),cctk_ash(2),cctk_ash(3), \
                                  imin,imax, name/**/2_istr) \
 
@@ -3704,13 +3769,24 @@
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP4_INTERIOR can only be used in 4 dimensions"); \
     } \
+    const int cctki2_blo[] = { (int)(cctki2_iblo_), (int)(cctki2_jblo_), (int)(cctki2_kblo_), (int)(cctki2_lblo_) }; \
+    const int cctki2_bhi[] = { (int)(cctki2_ibhi_), (int)(cctki2_jbhi_), (int)(cctki2_kbhi_), (int)(cctki2_lbhi_) }; \
+    const int cctki2_imin[] = { \
+      cctk_loop_max(cctki2_cctkGH->cctk_tile_min[0], cctki2_blo[0]), \
+      cctk_loop_max(cctki2_cctkGH->cctk_tile_min[1], cctki2_blo[1]), \
+      cctk_loop_max(cctki2_cctkGH->cctk_tile_min[2], cctki2_blo[2]), \
+      cctk_loop_max(cctki2_cctkGH->cctk_tile_min[3], cctki2_blo[3]), \
+    }; \
+    const int cctki2_imax[] = { \
+      cctk_loop_min(cctki2_cctkGH->cctk_tile_max[0], cctki2_cctkGH->cctk_lsh[0] - cctki2_bhi[0]), \
+      cctk_loop_min(cctki2_cctkGH->cctk_tile_max[1], cctki2_cctkGH->cctk_lsh[1] - cctki2_bhi[1]), \
+      cctk_loop_min(cctki2_cctkGH->cctk_tile_max[2], cctki2_cctkGH->cctk_lsh[2] - cctki2_bhi[2]), \
+      cctk_loop_min(cctki2_cctkGH->cctk_tile_max[3], cctki2_cctkGH->cctk_lsh[3] - cctki2_bhi[3]), \
+    }; \
     CCTK_LOOP4STROFF(name##_interior, \
                      i,j,k,l, \
-                     (cctki2_iblo_),(cctki2_jblo_),(cctki2_kblo_),(cctki2_lblo_), \
-                     cctki2_cctkGH->cctk_lsh[0]-(cctki2_ibhi_), \
-                     cctki2_cctkGH->cctk_lsh[1]-(cctki2_jbhi_), \
-                     cctki2_cctkGH->cctk_lsh[2]-(cctki2_kbhi_), \
-                     cctki2_cctkGH->cctk_lsh[3]-(cctki2_lbhi_), \
+                     cctki2_imin[0],cctki2_imin[1],cctki2_imin[2],cctki2_imin[3], \
+                     cctki2_imax[0],cctki2_imax[1],cctki2_imax[2],cctki2_imax[3], \
                      cctki2_cctkGH->cctk_ash[0], \
                      cctki2_cctkGH->cctk_ash[1], \
                      cctki2_cctkGH->cctk_ash[2], \
@@ -3801,16 +3877,16 @@
         (cctki2_ldir<0 ? cctki2_bbox[6] : 0) || (cctki2_ldir>0 ? cctki2_bbox[7] : 0); \
       if (cctki2_any_bbox) { \
         const int cctki2_bmin[] = { \
-          (int)(cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0]), \
-          (int)(cctki2_jdir<0 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1]), \
-          (int)(cctki2_kdir<0 ? 0 : cctki2_kdir==0 ? cctki2_blo[2] : cctki2_lsh[2] - cctki2_bhi[2]), \
-          (int)(cctki2_ldir<0 ? 0 : cctki2_ldir==0 ? cctki2_blo[3] : cctki2_lsh[3] - cctki2_bhi[3]), \
+          cctk_loop_max(cctki2_cctkGH->cctk_tile_min[0], (int)(cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0])), \
+          cctk_loop_max(cctki2_cctkGH->cctk_tile_min[1], (int)(cctki2_jdir<0 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1])), \
+          cctk_loop_max(cctki2_cctkGH->cctk_tile_min[2], (int)(cctki2_kdir<0 ? 0 : cctki2_kdir==0 ? cctki2_blo[2] : cctki2_lsh[2] - cctki2_bhi[2])), \
+          cctk_loop_max(cctki2_cctkGH->cctk_tile_min[3], (int)(cctki2_ldir<0 ? 0 : cctki2_ldir==0 ? cctki2_blo[3] : cctki2_lsh[3] - cctki2_bhi[3])), \
         }; \
         const int cctki2_bmax[] = { \
-          (int)(cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0]), \
-          (int)(cctki2_jdir<0 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1]), \
-          (int)(cctki2_kdir<0 ? cctki2_blo[2] : cctki2_kdir==0 ? cctki2_lsh[2] - cctki2_bhi[2] : cctki2_lsh[2]), \
-          (int)(cctki2_ldir<0 ? cctki2_blo[3] : cctki2_ldir==0 ? cctki2_lsh[3] - cctki2_bhi[3] : cctki2_lsh[3]), \
+          cctk_loop_min(cctki2_cctkGH->cctk_tile_max[0], (int)(cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0])), \
+          cctk_loop_min(cctki2_cctkGH->cctk_tile_max[1], (int)(cctki2_jdir<0 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1])), \
+          cctk_loop_min(cctki2_cctkGH->cctk_tile_max[2], (int)(cctki2_kdir<0 ? cctki2_blo[2] : cctki2_kdir==0 ? cctki2_lsh[2] - cctki2_bhi[2] : cctki2_lsh[2])), \
+          cctk_loop_min(cctki2_cctkGH->cctk_tile_max[3], (int)(cctki2_ldir<0 ? cctki2_blo[3] : cctki2_ldir==0 ? cctki2_lsh[3] - cctki2_bhi[3] : cctki2_lsh[3])), \
         }; \
         CCTK_LOOP4STROFF_NORMAL(name##_boundaries, \
                                 i,j,k,l, \
@@ -3918,16 +3994,16 @@
         (cctki2_ldir<0 ? cctki2_bbox[6] : 1) && (cctki2_ldir>0 ? cctki2_bbox[7] : 1); \
       if (cctki2_all_bbox && cctki2_any_bbox) { \
         const int cctki2_bmin[] = { \
-          (int)(cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0]), \
-          (int)(cctki2_jdir<0 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1]), \
-          (int)(cctki2_kdir<0 ? 0 : cctki2_kdir==0 ? cctki2_blo[2] : cctki2_lsh[2] - cctki2_bhi[2]), \
-          (int)(cctki2_ldir<0 ? 0 : cctki2_ldir==0 ? cctki2_blo[3] : cctki2_lsh[3] - cctki2_bhi[3]), \
+          cctk_loop_max(cctki2_cctkGH->cctk_tile_min[0], (int)(cctki2_idir<0 ? 0 : cctki2_idir==0 ? cctki2_blo[0] : cctki2_lsh[0] - cctki2_bhi[0])), \
+          cctk_loop_max(cctki2_cctkGH->cctk_tile_min[1], (int)(cctki2_jdir<0 ? 0 : cctki2_jdir==0 ? cctki2_blo[1] : cctki2_lsh[1] - cctki2_bhi[1])), \
+          cctk_loop_max(cctki2_cctkGH->cctk_tile_min[2], (int)(cctki2_kdir<0 ? 0 : cctki2_kdir==0 ? cctki2_blo[2] : cctki2_lsh[2] - cctki2_bhi[2])), \
+          cctk_loop_max(cctki2_cctkGH->cctk_tile_min[3], (int)(cctki2_ldir<0 ? 0 : cctki2_ldir==0 ? cctki2_blo[3] : cctki2_lsh[3] - cctki2_bhi[3])), \
         }; \
         const int cctki2_bmax[] = { \
-          (int)(cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0]), \
-          (int)(cctki2_jdir<0 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1]), \
-          (int)(cctki2_kdir<0 ? cctki2_blo[2] : cctki2_kdir==0 ? cctki2_lsh[2] - cctki2_bhi[2] : cctki2_lsh[2]), \
-          (int)(cctki2_ldir<0 ? cctki2_blo[3] : cctki2_ldir==0 ? cctki2_lsh[3] - cctki2_bhi[3] : cctki2_lsh[3]), \
+          cctk_loop_min(cctki2_cctkGH->cctk_tile_max[0], (int)(cctki2_idir<0 ? cctki2_blo[0] : cctki2_idir==0 ? cctki2_lsh[0] - cctki2_bhi[0] : cctki2_lsh[0])), \
+          cctk_loop_min(cctki2_cctkGH->cctk_tile_max[1], (int)(cctki2_jdir<0 ? cctki2_blo[1] : cctki2_jdir==0 ? cctki2_lsh[1] - cctki2_bhi[1] : cctki2_lsh[1])), \
+          cctk_loop_min(cctki2_cctkGH->cctk_tile_max[2], (int)(cctki2_kdir<0 ? cctki2_blo[2] : cctki2_kdir==0 ? cctki2_lsh[2] - cctki2_bhi[2] : cctki2_lsh[2])), \
+          cctk_loop_min(cctki2_cctkGH->cctk_tile_max[3], (int)(cctki2_ldir<0 ? cctki2_blo[3] : cctki2_ldir==0 ? cctki2_lsh[3] - cctki2_bhi[3] : cctki2_lsh[3])), \
         }; \
         CCTK_LOOP4STROFF_NORMAL(name##_intboundaries, \
                                 i,j,k,l, \
@@ -3977,11 +4053,14 @@
     } \
     CCTK_LOOP4STROFF(name##_all, \
                      i,j,k,l, \
-                     0,0,0,0, \
-                     cctki3_cctkGH->cctk_lsh[0], \
-                     cctki3_cctkGH->cctk_lsh[1], \
-                     cctki3_cctkGH->cctk_lsh[2], \
-                     cctki3_cctkGH->cctk_lsh[3], \
+                     cctki3_cctkGH->cctk_tile_min[0], \
+                     cctki3_cctkGH->cctk_tile_min[1], \
+                     cctki3_cctkGH->cctk_tile_min[2], \
+                     cctki3_cctkGH->cctk_tile_min[3], \
+                     cctki3_cctkGH->cctk_tile_max[0], \
+                     cctki3_cctkGH->cctk_tile_max[1], \
+                     cctki3_cctkGH->cctk_tile_max[2], \
+                     cctki3_cctkGH->cctk_tile_max[3], \
                      cctki3_cctkGH->cctk_ash[0], \
                      cctki3_cctkGH->cctk_ash[1], \
                      cctki3_cctkGH->cctk_ash[2], \
@@ -4017,13 +4096,16 @@
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP4_INT can only be used in 4 dimensions"); \
     } \
-    CCTK_INT cctki3_bndsize    [8]; \
+    CCTK_INT cctki3_bndsize[8]; \
     CCTK_INT cctki3_is_ghostbnd[8]; \
-    CCTK_INT cctki3_is_symbnd  [8]; \
-    CCTK_INT cctki3_is_physbnd [8]; \
-    CCTK_PRAGMA_OMP("omp single copyprivate(cctki3_bndsize)") \
-    GetBoundarySizesAndTypes \
-      (cctki3_cctkGH, 8, cctki3_bndsize, cctki3_is_ghostbnd, cctki3_is_symbnd, cctki3_is_physbnd); \
+    CCTK_INT cctki3_is_symbnd[8]; \
+    CCTK_INT cctki3_is_physbnd[8]; \
+    GetBoundarySizesAndTypes(cctki3_cctkGH, \
+                             8, \
+                             cctki3_bndsize, \
+                             cctki3_is_ghostbnd, \
+                             cctki3_is_symbnd, \
+                             cctki3_is_physbnd); \
     CCTK_LOOP4STROFF_INTERIOR(name##_int, \
                               cctki3_cctkGH, \
                               i,j,k,l, \
@@ -4063,13 +4145,16 @@
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP4_BND can only be used in 4 dimensions"); \
     } \
-    CCTK_INT cctki3_bndsize    [8]; \
+    CCTK_INT cctki3_bndsize[8]; \
     CCTK_INT cctki3_is_ghostbnd[8]; \
-    CCTK_INT cctki3_is_symbnd  [8]; \
-    CCTK_INT cctki3_is_physbnd [8]; \
-    CCTK_PRAGMA_OMP("omp single copyprivate(cctki3_bndsize, cctki3_is_physbnd)") \
-    GetBoundarySizesAndTypes \
-      (cctki3_cctkGH, 8, cctki3_bndsize, cctki3_is_ghostbnd, cctki3_is_symbnd, cctki3_is_physbnd); \
+    CCTK_INT cctki3_is_symbnd[8]; \
+    CCTK_INT cctki3_is_physbnd[8]; \
+    GetBoundarySizesAndTypes(cctki3_cctkGH, \
+                             8, \
+                             cctki3_bndsize, \
+                             cctki3_is_ghostbnd, \
+                             cctki3_is_symbnd, \
+                             cctki3_is_physbnd); \
     CCTK_LOOP4STROFF_BOUNDARIES(name##_bnd, \
                                 cctki3_cctkGH, \
                                 i,j,k,l, \
@@ -4112,13 +4197,16 @@
       _Pragma("omp critical") \
       CCTK_ERROR("The macro CCTK_LOOP4_INTBND can only be used in 4 dimensions"); \
     } \
-    CCTK_INT cctki3_bndsize    [8]; \
+    CCTK_INT cctki3_bndsize[8]; \
     CCTK_INT cctki3_is_ghostbnd[8]; \
-    CCTK_INT cctki3_is_symbnd  [8]; \
-    CCTK_INT cctki3_is_physbnd [8]; \
-    CCTK_PRAGMA_OMP("omp single copyprivate(cctki3_bndsize, cctki3_is_physbnd)") \
-    GetBoundarySizesAndTypes \
-      (cctki3_cctkGH, 8, cctki3_bndsize, cctki3_is_ghostbnd, cctki3_is_symbnd, cctki3_is_physbnd); \
+    CCTK_INT cctki3_is_symbnd[8]; \
+    CCTK_INT cctki3_is_physbnd[8]; \
+    GetBoundarySizesAndTypes(cctki3_cctkGH, \
+                             8, \
+                             cctki3_bndsize, \
+                             cctki3_is_ghostbnd, \
+                             cctki3_is_symbnd, \
+                             cctki3_is_physbnd); \
     CCTK_LOOP4STROFF_INTBOUNDARIES(name##_intbnd, \
                                    cctki3_cctkGH, \
                                    i,j,k,l, \
@@ -4317,14 +4405,14 @@
                                imin,imax, cctki2_istr) \
    CCTK_LOOP4STR(name/**/_interior, \
                  i,j,k,l, \
-                 (cctki2_iblo)+1, \
-                 (cctki2_jblo)+1, \
-                 (cctki2_kblo)+1, \
-                 (cctki2_lblo)+1, \
-                 cctk_lsh(1)-(cctki2_ibhi), \
-                 cctk_lsh(2)-(cctki2_jbhi), \
-                 cctk_lsh(3)-(cctki2_kbhi), \
-                 cctk_lsh(4)-(cctki2_lbhi), \
+                 max(cctk_tile_min(1)+1, (cctki2_iblo)+1), \
+                 max(cctk_tile_min(2)+1, (cctki2_jblo)+1), \
+                 max(cctk_tile_min(3)+1, (cctki2_kblo)+1), \
+                 max(cctk_tile_min(4)+1, (cctki2_lblo)+1), \
+                 min(cctk_tile_max(1), cctk_lsh(1)-(cctki2_ibhi)), \
+                 min(cctk_tile_max(2), cctk_lsh(2)-(cctki2_jbhi)), \
+                 min(cctk_tile_max(3), cctk_lsh(3)-(cctki2_kbhi)), \
+                 min(cctk_tile_max(4), cctk_lsh(4)-(cctki2_lbhi)), \
                  cctk_ash(1),cctk_ash(2),cctk_ash(3),cctk_ash(4), \
                  imin,imax, cctki2_istr) \
 
@@ -4432,8 +4520,8 @@
                                  i,j,k,l, \
                                  ni,nj,nk,nl, \
                                  name/**/2_idir,name/**/2_jdir,name/**/2_kdir,name/**/2_ldir, \
-                                 name/**/2_bmin(1),name/**/2_bmin(2),name/**/2_bmin(3),name/**/2_bmin(4), \
-                                 name/**/2_bmax(1),name/**/2_bmax(2),name/**/2_bmax(3),name/**/2_bmax(4), \
+                                 max(cctk_tile_min(1)+1, name/**/2_bmin(1)),max(cctk_tile_min(2)+1, name/**/2_bmin(2)),max(cctk_tile_min(3)+1, name/**/2_bmin(3)),max(cctk_tile_min(4)+1, name/**/2_bmin(4)), \
+                                 min(cctk_tile_max(1), name/**/2_bmax(1)),min(cctk_tile_max(2), name/**/2_bmax(2)),min(cctk_tile_max(3), name/**/2_bmax(3)),min(cctk_tile_max(4), name/**/2_bmax(4)), \
                                  cctk_ash(1),cctk_ash(2),cctk_ash(3),cctk_ash(4), \
                                  imin,imax, name/**/2_istr) \
 
@@ -4556,8 +4644,8 @@
                                  i,j,k,l, \
                                  ni,nj,nk,nl, \
                                  name/**/2_idir,name/**/2_jdir,name/**/2_kdir,name/**/2_ldir, \
-                                 name/**/2_bmin(1),name/**/2_bmin(2),name/**/2_bmin(3),name/**/2_bmin(4), \
-                                 name/**/2_bmax(1),name/**/2_bmax(2),name/**/2_bmax(3),name/**/2_bmax(4), \
+                                 max(cctk_tile_min(1)+1, name/**/2_bmin(1)),max(cctk_tile_min(2)+1, name/**/2_bmin(2)),max(cctk_tile_min(3)+1, name/**/2_bmin(3)),max(cctk_tile_min(4)+1, name/**/2_bmin(4)), \
+                                 min(cctk_Tile_max(1), name/**/2_bmax(1)),min(cctk_Tile_max(2), name/**/2_bmax(2)),min(cctk_Tile_max(3), name/**/2_bmax(3)),min(cctk_Tile_max(4), name/**/2_bmax(4)), \
                                  cctk_ash(1),cctk_ash(2),cctk_ash(3),cctk_ash(4), \
                                  imin,imax, name/**/2_istr) \
 
