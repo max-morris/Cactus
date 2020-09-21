@@ -1071,16 +1071,26 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
     //std::clock_t en = std::clock();
     //std::cout << "PARSE TIME = " << ((en-st)/CLOCKS_PER_SEC) << std::endl;
     if(b) {
+        std::ostringstream active_buf;
         int line = -1;
         for(int i=0;i<m2->groupCount();i++) {
             smart_ptr<Group> gr = m2->group(i);
             if(gr->group(0)->getPatternName() == "active") {
                 smart_ptr<Value> smv = meval(gr->group(1),0);
-                std::string val = smv->copy();
-                active += val;
-                active += ' ';
+                if(active_buf.tellp() > 0)
+                  active_buf << ' ';
+                active_buf << smv->copy();
                 line = gr->line();
             }
+        }
+        for(std::istringstream is(active_buf.str()) ; !is.eof() ; ) {
+          std::string thorn;
+          is >> thorn;
+          if(!thorn.empty()) {
+            if(!active.empty())
+              active += " ";
+            active += thorn;
+          }
         }
         set_function("ActiveThorns",active.c_str(),line);
         std::string parf = get_parfile();
