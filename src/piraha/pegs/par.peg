@@ -4,9 +4,10 @@ skipper = ([ \t\r\n]|\#.*)*
 # comment
 skipeol = ([ \t\r]|\#.*)*($|\n)
 any = [^]
-stringfirstline = .
+stringeol = \n
+stringchar = .
 stringcomment = #.*
-stringparser = ^({var}|{name}|{stringfirstline})*(\n({stringcomment}|{var}|{name}|{any})*)?$
+stringparser = ^({var}|{stringchar})*({stringeol}({stringcomment}|{var}|{any})*)?$
 # Note that / occurs in some par files. It is my
 # feeling that this should require quote marks.
 name = [a-zA-Z][a-zA-Z0-9_]*
