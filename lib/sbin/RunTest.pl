@@ -176,17 +176,20 @@ while ($choice !~ /^Q/i)
           my $TESTOUT = $STDOUT_CAPTURE->[1] .= &$slurp($STDOUT_CAPTURE->[0]);
           my $TESTERR = $STDERR_CAPTURE->[1] .= &$slurp($STDERR_CAPTURE->[0]);
           my $TESTRESULTS = $RESULTS_CAPTURE->[1] .= &$slurp($RESULTS_CAPTURE->[0]);
-          # inject testdata values into global data structure
-          my %testvalues = %{eval $TESTRESULTS};
-          $testdata->{"NFAILED"} += $testvalues{"NFAILED"};
-          $testdata->{"$thorn failed"} .= " ".$testvalues{"$thorn FAILED"};
-          if($retcode != 0) { # subprocess exited with an error
-            $testdata->{"NFAILED"} += 1;
-            $testdata->{"$thorn failed"} .= " ".$test;
-          }
-          foreach my $key (keys %testvalues) {
-            if ($key =~ /^$thorn $test /) {
-              $testdata->{$key} = $testvalues{$key};
+          if ($choice !~ /^O/i)
+          {
+            # inject testdata values into global data structure
+            my %testvalues = %{eval $TESTRESULTS};
+            $testdata->{"NFAILED"} += $testvalues{"NFAILED"};
+            $testdata->{"$thorn failed"} .= " ".$testvalues{"$thorn FAILED"};
+            if($retcode != 0) { # subprocess exited with an error
+              $testdata->{"NFAILED"} += 1;
+              $testdata->{"$thorn failed"} .= " ".$test;
+            }
+            foreach my $key (keys %testvalues) {
+              if ($key =~ /^$thorn $test /) {
+                $testdata->{$key} = $testvalues{$key};
+              }
             }
           }
 
@@ -213,49 +216,53 @@ while ($choice !~ /^Q/i)
               &$wait_for_test();
             }
 
-            print "  Starting test $thorn: $test \n" unless $nparallel == 1;
-            if ($choice !~ /^O/i)
-            {
-              pipe(my $STDOUT_RD, my $STDOUT_WR) or die "Could not open pipe: $!";
-              pipe(my $STDERR_RD, my $STDERR_WR) or die "Could not open pipe: $!";
-              pipe(my $RESULTS_RD, my $RESULTS_WR) or die "Could not open pipe: $!";
-              my $pid = fork(); # start a sub-process
-              if(not $pid) {
-                # the child process
-                open(STDOUT, '>&', $STDOUT_WR) or die "Could not dup STDOUT: $!";
-                open(STDERR, '>&', $STDERR_WR) or die "Could not dup STDERR $!";;
-                foreach my $FH ($STDOUT_RD, $STDOUT_WR, $STDERR_RD, $STDERR_WR, $RESULTS_RD) {
-                  close $FH or die "Failed to close file: $!";
-                }
-
-                # these are globals updated by RunTest so I initialize them to a
-                # known value that I can accumulate over
-                $testdata->{"NFAILED"} = 0;
-                $testdata->{"$thorn failed"} = "";
-
-                my $retcode = &RunTest("log",$test,$thorn,$config_data,$testdata,\%runconfig);
-
-                # get all values that need to be returned to our caller
-                my %retvalues;
-                foreach my $key (keys %$testdata) {
-                  if ($key =~ /^$thorn $test /) {
-                    $retvalues{$key} = $testdata->{$key};
-                  }
-                }
-                $retvalues{"$thorn FAILED"} = $testdata->{"$thorn FAILED"};
-                $retvalues{"NFAILED"} = $testdata->{"NFAILED"};
-                $Data::Dumper::Terse = 1;
-                print $RESULTS_WR Dumper(\%retvalues) or die "Could not write results: $!";
-                close($RESULTS_WR) or die "Could not write results: $!";
-
-                exit $retcode;
-              } else {
-                # the parent process
-                foreach my $FH ($STDOUT_WR, $STDERR_WR, $RESULTS_WR) {
-                  close $FH or die "Failed to close file: $!";
-                }
-                $running_tests{$pid} = [$thorn,$test,[$STDOUT_RD,""],[$STDERR_RD,""],[$RESULTS_RD,""]];
+            pipe(my $STDOUT_RD, my $STDOUT_WR) or die "Could not open pipe: $!";
+            pipe(my $STDERR_RD, my $STDERR_WR) or die "Could not open pipe: $!";
+            pipe(my $RESULTS_RD, my $RESULTS_WR) or die "Could not open pipe: $!";
+            my $pid = fork(); # start a sub-process
+            if(not $pid) {
+              # the child process
+              open(STDOUT, '>&', $STDOUT_WR) or die "Could not dup STDOUT: $!";
+              open(STDERR, '>&', $STDERR_WR) or die "Could not dup STDERR $!";;
+              foreach my $FH ($STDOUT_RD, $STDOUT_WR, $STDERR_RD, $STDERR_WR, $RESULTS_RD) {
+                close $FH or die "Failed to close file: $!";
               }
+
+              # these are globals updated by RunTest so I initialize them to a
+              # known value that I can accumulate over
+              $testdata->{"NFAILED"} = 0;
+              $testdata->{"$thorn failed"} = "";
+
+              my $retcode = 0;
+              if ($choice !~ /^O/i)
+              {
+                $retcode = &RunTest("log",$test,$thorn,$config_data,$testdata,\%runconfig);
+              }
+
+              # get all values that need to be returned to our caller
+              my %retvalues;
+              foreach my $key (keys %$testdata) {
+                if ($key =~ /^$thorn $test /) {
+                  $retvalues{$key} = $testdata->{$key};
+                }
+              }
+              $retvalues{"$thorn FAILED"} = $testdata->{"$thorn FAILED"};
+              $retvalues{"NFAILED"} = $testdata->{"NFAILED"};
+              $Data::Dumper::Terse = 1;
+              print $RESULTS_WR Dumper(\%retvalues) or die "Could not write results: $!";
+              close($RESULTS_WR) or die "Could not write results: $!";
+
+              exit $retcode;
+            } else {
+              # the parent process
+              foreach my $FH ($STDOUT_WR, $STDERR_WR, $RESULTS_WR) {
+                close $FH or die "Failed to close file: $!";
+              }
+              if ($choice !~ /^O/i)
+              {
+                print "  Started test $thorn: $test \n";
+              }
+              $running_tests{$pid} = [$thorn,$test,[$STDOUT_RD,""],[$STDERR_RD,""],[$RESULTS_RD,""]];
             }
 
           }
