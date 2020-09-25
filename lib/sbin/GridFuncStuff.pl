@@ -1129,15 +1129,24 @@ sub CreateThornGroupInitialisers
           . $rhinterface_db->{"\U$thorn GROUP $group\E DISTRIB"}
           . '",';
     push(@data, $line);
-    $line = '                         "'
-          . ($rhinterface_db->{"\U$thorn GROUP $group\E SIZE"} or "")
-          . '", "'
-          . ($rhinterface_db->{"\U$thorn GROUP $group\E GHOSTSIZE"} or "")
-          . '",';
+    $line = '                         "';
+    if(defined($rhinterface_db->{"\U$thorn GROUP $group\E SIZE"}))
+    {
+      $line .= $rhinterface_db->{"\U$thorn GROUP $group\E SIZE"};
+    }
+    $line .= '", "';
+    if(defined($rhinterface_db->{"\U$thorn GROUP $group\E GHOSTSIZE"}))
+    {
+      $line .= $rhinterface_db->{"\U$thorn GROUP $group\E GHOSTSIZE"};
+    }
+    $line .= '",';
     push(@data, $line);
-    $line = '                         "'
-          . ($rhinterface_db->{"\U$thorn GROUP $group\E TAGS"} or "")
-          . '",';
+    $line = '                         "';
+    if(defined($rhinterface_db->{"\U$thorn GROUP $group\E TAGS"}))
+    {
+      $line .= $rhinterface_db->{"\U$thorn GROUP $group\E TAGS"};
+    }
+    $line .= '",';
     push(@data, $line);
 
     # Is it a vector group ?

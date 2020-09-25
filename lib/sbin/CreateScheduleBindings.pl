@@ -646,7 +646,12 @@ sub ScheduleBlock
   $buffer .= "$indent\"$thorn\",\n";
   $buffer .= "$indent\"$implementation\",\n";
   $buffer .= "$indent\"" . $rhschedule_db->{"\U$thorn\E BLOCK_$block DESCRIPTION"} . "\",\n";
-  $buffer .= "$indent\"" . ($rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"} or "") . "\",\n";
+  $buffer .= "$indent\"";
+  if(defined($rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"}))
+  {
+    $buffer .= $rhschedule_db->{"\U$thorn\E BLOCK_$block WHERE"};
+  }
+  $buffer .= "\",\n";
   if($language ne '')
   {
     $buffer .= "$indent\"$language\",\n";
@@ -793,11 +798,11 @@ sub ScheduleSelectRDWR
 
     $group_or_var = $1; # main part of name
 
-    $timelevels = ($2 or "");
+    $timelevels = defined($2) ? $2 : "";
 
-    $vecnum = ($3 or "");
+    $vecnum = defined($3) ? $3 : "";
 
-    $region = ($4 or $default_region);
+    $region = defined($4) ? $4 : $default_region;
 
     if($group_or_var =~ m/^(.+)::(.+)$/)
     {
