@@ -392,7 +392,8 @@ sub check_implementation_consistency
     # Check the consistency of the inheritance
     foreach $thing (sort keys %inherits)
     {
-      if(split(' ', $inherits{$thing}) != $n_thorns)
+      my @inherits_from = split(/ /, $inherits{$thing});
+      if(scalar @inherits_from != $n_thorns)
       {
         &CST_error(0,
                    "Inconsistent implementation of '$implementation' " .
@@ -405,7 +406,8 @@ sub check_implementation_consistency
     # Check the consistency of the friendships
     foreach $thing (sort keys %friend)
     {
-      if(split(" ", $friend{$thing}) != $n_thorns)
+      my @friends_with = split(/ /, $friend{$thing});
+      if(scalar @friends_with != $n_thorns)
       {
         my $message  = "Inconsistent implementations of $implementation\n";
         $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
@@ -418,7 +420,8 @@ sub check_implementation_consistency
     # Check the consistency of the public groups
     foreach $thing (sort keys %public_groups)
     {
-      if(split(" ", $public_groups{$thing}) != $n_thorns)
+      my @my_public_groups = split(/ /, $public_groups{$thing});
+      if(scalar @my_public_groups != $n_thorns)
       {
           my $message  = "Inconsistent implementations of $implementation\n";
           $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
@@ -431,7 +434,8 @@ sub check_implementation_consistency
     # Check the consistency of the protected groups
     foreach $thing (sort keys %protected_groups)
     {
-      if(split(" ", $protected_groups{$thing}) != $n_thorns)
+      my @my_protected_groups = split(/ /, $protected_groups{$thing});
+      if(scalar @my_protected_groups != $n_thorns)
       {
         my $message  = "Inconsistent implementations of $implementation\n";
         $message .= "Implemented by thorns " . join(" ", @thorns) . "\n";
@@ -959,7 +963,8 @@ sub PrintInterfaceStatistics
   $sep = "           ";
   foreach $block ("Public", "Protected", "Private")
   {
-    print $sep . scalar(split(" ", $interface_database_ref->{"\U$thorn $block\E GROUPS"})) . " $block";
+    my @groups = split(/ /, $interface_database_ref->{"\U$thorn $block\E GROUPS"});
+    print $sep . scalar @groups . " $block";
     $sep = ", ";
   }
 

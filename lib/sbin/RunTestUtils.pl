@@ -449,7 +449,8 @@ sub FindTestArchiveFiles
     }
   }
   ($testdata->{"$thorn $test UNKNOWNFILES"},$testdata->{"$thorn $test DATAFILES"}) = &FindFiles($dir,$testdata);
-  $testdata->{"$thorn $test NDATAFILES"} = scalar(split(" ",$testdata->{"$thorn $test DATAFILES"}));
+  my @datafiles = split(/ /,$testdata->{"$thorn $test DATAFILES"});
+  $testdata->{"$thorn $test NDATAFILES"} = scalar(@datafiles);
   return $testdata;
 }
 
@@ -1318,7 +1319,8 @@ sub WriteFullResults
   $nottested = "";
   foreach $thorn (sort split(" ",$testdata->{"THORNS"}))
   {
-    $num = scalar(split(" ",$testdata->{"$thorn RUNNABLE"}));
+    my @runnable = split(/ /,$testdata->{"$thorn RUNNABLE"});
+    $num = scalar(@runnable);
     if ($num > 0)
     {
       push (@summary, "    $thorn [$num]");
@@ -1334,7 +1336,8 @@ sub WriteFullResults
   push (@summary, "  Details:\n");
   foreach $thorn (sort split(" ",$testdata->{"THORNS"}))
   {
-    $num = scalar(split(" ",$testdata->{"$thorn RUNNABLE"}));
+    my @runnable = split(/ /,$testdata->{"$thorn RUNNABLE"});
+    $num = scalar(@runnable);
     if ($num > 0)
     {
       push (@summary, "    $thorn:");
@@ -1411,6 +1414,7 @@ sub WriteFullResults
 
   my $date     = `date`;     chomp($date);
   my $hostname = `hostname`; chomp($hostname);
+  my @thorns = split(/ /,$testdata->{'THORNS'}); # this avoids warnings in Perl 5.10
 
   push (@summary, "    Time                     -> $date");
   push (@summary, "    Host                     -> $hostname");
@@ -1421,7 +1425,7 @@ sub WriteFullResults
   push (@summary, "    Total available tests    -> $total");
   push (@summary, "    Unrunnable tests         -> $testdata->{'NUNRUNNABLE'}");
   push (@summary, "    Runnable tests           -> $testdata->{'NRUNNABLE'}");
-  push (@summary, '    Total number of thorns   -> '.scalar(split(' ',$testdata->{'THORNS'})));
+  push (@summary, '    Total number of thorns   -> '.scalar(@thorns));
   push (@summary, "    Number of tested thorns  -> $tested");
 
   push (@summary, "    Number of tests passed   -> $rundata->{'NPASSED'}");
@@ -1703,8 +1707,10 @@ sub CompareTestFiles
 
   # Add new output files to database
   ($rundata->{"$thorn $test UNKNOWNFILES"},$rundata->{"$thorn $test TESTFILES"}) = &FindFiles("$test_dir",$testdata);
-  $rundata->{"$thorn $test NUNKNOWNFILES"} = scalar(split(" ",$rundata->{"$thorn $test UNKNOWNFILES"}));
-  $rundata->{"$thorn $test NTESTFILES"} = scalar(split(" ",$rundata->{"$thorn $test TESTFILES"}));
+  my @unknownfiles = split(/ /,$rundata->{"$thorn $test UNKNOWNFILES"});
+  $rundata->{"$thorn $test NUNKNOWNFILES"} = scalar(@unknownfiles);
+  my @testfiles = split(/ /,$rundata->{"$thorn $test TESTFILES"});
+  $rundata->{"$thorn $test NTESTFILES"} = scalar(@testfiles);
 
   $rundata->{"$thorn $test NFAILWEAK"}=0;
   $rundata->{"$thorn $test NFAILSTRONG"}=0;

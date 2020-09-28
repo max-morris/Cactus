@@ -382,7 +382,8 @@ sub PrintParameterStatistics
   $sep = "          ";
   foreach $block ("Global", "Restricted", "Private")
   {
-    print $sep . scalar(split(" ", $parameter_database{"\U$thorn $block\E variables"})) . " $block";
+    my @vars = split(/ /, $parameter_database{"\U$thorn $block\E variables"});
+    print $sep . scalar(@vars) . " $block";
     $sep = ", ";
   }
 

@@ -1070,7 +1070,8 @@ sub CreateThornGroupInitialisers
       my $size = $rhinterface_db->{"\U$thorn GROUP $group\E SIZE"};
       CheckArraySizes($size,$thorn,$rhparameter_db,$rhinterface_db,$group);
       my $dim = $rhinterface_db->{"\U$thorn GROUP $group\E DIM"};
-      my $numsize = split (',', $size);
+      my @sizes = split (/,/, $size);
+      my $numsize = scalar @sizes;
       if ($dim != $numsize)
       {
         if ($numsize == 0)
@@ -1090,7 +1091,8 @@ sub CreateThornGroupInitialisers
       if ($ghostsize)
       {
         CheckArraySizes($ghostsize,$thorn,$rhparameter_db,$rhinterface_db,$group);
-        my $numghostsize = split (',', $ghostsize);
+        my @sizes = split (/,/, $ghostsize);
+        my $numghostsize = scalar @sizes;
         if ($dim != $numghostsize)
         {
           if ($numghostsize == 0)
