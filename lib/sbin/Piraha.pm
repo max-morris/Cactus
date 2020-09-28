@@ -850,7 +850,7 @@ sub load_tree
   my $end = <$fd>;
   close($fd);
   $end =~ s/\s//g;
-  if($end eq "<end>") {
+  if(defined($g) and $end eq "<end>") {
     return $g;
   } else {
     unlink($file);
@@ -874,7 +874,7 @@ sub r_load_tree
     }
     return $g;
   }
-  die "Nothing";
+  return undef;
 }
 
 # Store a parse tree to disk
