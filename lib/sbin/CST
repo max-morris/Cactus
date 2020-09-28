@@ -133,7 +133,7 @@ require "rdwr.pl";
 ######################################################################
 
 # cache location for piraha
-my $piraha_cache_dir = "$top/piraha";
+our $piraha_cache_dir = "$top/piraha";
 
 # Find out which thorns we have and the location of the ccl files.
 print "Reading ThornList...\n";
