@@ -635,8 +635,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP1STR_NORMAL_DECLARE(name) \
    && integer :: name/**/0_dummy_imin, name/**/0_dummy_imax \
 
-#define CCTK_LOOP1_NORMAL_OMP_PRIVATE(name) \
-   CCTK_LOOP1STR_NORMAL_OMP_PRIVATE(name) \
+#define CCTK_LOOP1_NORMAL_OMP_PRIVATE(name, \
+                                      i, \
+                                      ni) \
+   CCTK_LOOP1STR_NORMAL_OMP_PRIVATE(name, \
+                                    i, \
+                                    ni) \
    & && !$omp private(name/**/0_dummy_imin, name/**/0_dummy_imax) \
 
 #define CCTK_LOOP1_NORMAL(name, \
@@ -665,8 +669,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && integer :: name/**/0_iash \
    && integer :: name/**/0_istr \
 
-#define CCTK_LOOP1STR_NORMAL_OMP_PRIVATE(name) \
+#define CCTK_LOOP1STR_NORMAL_OMP_PRIVATE(name, \
+                                         i, \
+                                         ni) \
   private(name/**/0_idir) \
+  & && !$omp private(i) \
+  & && !$omp private(ni) \
   & && !$omp private(name/**/0_imin) \
   & && !$omp private(name/**/0_imax) \
   & && !$omp private(name/**/0_iash) \
@@ -702,8 +710,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP1STR_DECLARE(name) \
    && integer :: name/**/1_dummy_imin, name/**/1_dummy_imax \
 
-#define CCTK_LOOP1_OMP_PRIVATE(name) \
-   CCTK_LOOP1STR_OMP_PRIVATE(name) \
+#define CCTK_LOOP1_OMP_PRIVATE(name, \
+                               i) \
+   CCTK_LOOP1STR_OMP_PRIVATE(name, \
+                             i) \
    & && !$omp private(name/**/1_dummy_imin, name/**/1_dummy_imax) \
 
 #define CCTK_LOOP1(name, \
@@ -725,9 +735,11 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP1STR_NORMAL_DECLARE(name) \
    && integer :: name/**/1_ni \
 
-#define CCTK_LOOP1STR_OMP_PRIVATE(name) \
-   CCTK_LOOP1STR_NORMAL_OMP_PRIVATE(name) \
-   & && !$omp private(name/**/1_ni) \
+#define CCTK_LOOP1STR_OMP_PRIVATE(name, \
+                                  i) \
+   CCTK_LOOP1STR_NORMAL_OMP_PRIVATE(name, \
+                                    i, \
+                                    name/**/1_ni) \
 
 #define CCTK_LOOP1STR(name, \
                       i, \
@@ -755,8 +767,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP1STR_INTERIOR_DECLARE(name) \
    && integer :: name/**/2_dummy_imin, name/**/2_dummy_imax \
 
-#define CCTK_LOOP1_INTERIOR_OMP_PRIVATE(name) \
-   CCTK_LOOP1STR_INTERIOR_OMP_PRIVATE(name) \
+#define CCTK_LOOP1_INTERIOR_OMP_PRIVATE(name, \
+                                        i) \
+   CCTK_LOOP1STR_INTERIOR_OMP_PRIVATE(name, \
+                                      i) \
    & && !$omp private(name/**/2_dummy_imin, name/**/2_dummy_imax) \
 
 #define CCTK_LOOP1_INTERIOR(name, \
@@ -775,8 +789,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
 #define CCTK_LOOP1STR_INTERIOR_DECLARE(name) \
    CCTK_LOOP1STR_DECLARE(name/**/_interior) \
 
-#define CCTK_LOOP1STR_INTERIOR_OMP_PRIVATE(name) \
-   CCTK_LOOP1STR_OMP_PRIVATE(name/**/_interior) \
+#define CCTK_LOOP1STR_INTERIOR_OMP_PRIVATE(name, \
+                                           i) \
+   CCTK_LOOP1STR_OMP_PRIVATE(name/**/_interior, \
+                             i) \
 
 #define CCTK_LOOP1STR_INTERIOR(name, \
                                i, \
@@ -801,8 +817,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP1STR_BOUNDARIES_DECLARE(name) \
    && integer :: name/**/2_dummy_imin, name/**/2_dummy_imax \
 
-#define CCTK_LOOP1_BOUNDARIES_OMP_PRIVATE(name) \
-   CCTK_LOOP1STR_BOUNDARIES_OMP_PRIVATE(name) \
+#define CCTK_LOOP1_BOUNDARIES_OMP_PRIVATE(name, \
+                                          i, \
+                                          ni) \
+   CCTK_LOOP1STR_BOUNDARIES_OMP_PRIVATE(name, \
+                                        i, \
+                                        ni) \
    & && !$omp private(name/**/2_dummy_imin, name/**/2_dummy_imax) \
 
 #define CCTK_LOOP1_BOUNDARIES(name, \
@@ -833,8 +853,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && logical :: name/**/2_any_bbox \
    && integer :: name/**/2_bmin(1), name/**/2_bmax(1) \
 
-#define CCTK_LOOP1STR_BOUNDARIES_OMP_PRIVATE(name) \
-   CCTK_LOOP1STR_NORMAL_OMP_PRIVATE(name/**/_boundaries) \
+#define CCTK_LOOP1STR_BOUNDARIES_OMP_PRIVATE(name, \
+                                             i, \
+                                             ni) \
+   CCTK_LOOP1STR_NORMAL_OMP_PRIVATE(name/**/_boundaries, \
+                                    i, \
+                                    ni) \
    & && !$omp private(name/**/2_blo, name/**/2_bhi) \
    & && !$omp private(name/**/2_bboxlo, name/**/2_bboxhi) \
    & && !$omp private(name/**/2_istr) \
@@ -888,8 +912,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP1STR_INTBOUNDARIES_DECLARE(name) \
    && integer :: name/**/2_dummy_imin, name/**/2_dummy_imax \
 
-#define CCTK_LOOP1_INTBOUNDARIES_OMP_PRIVATE(name) \
-   CCTK_LOOP1STR_INTBOUNDARIES_OMP_PRIVATE(name) \
+#define CCTK_LOOP1_INTBOUNDARIES_OMP_PRIVATE(name, \
+                                             i, \
+                                             ni) \
+   CCTK_LOOP1STR_INTBOUNDARIES_OMP_PRIVATE(name, \
+                                           i, \
+                                           ni) \
    & && !$omp private(name/**/2_dummy_imin, name/**/2_dummy_imax) \
 
 #define CCTK_LOOP1_INTBOUNDARIES(name, \
@@ -920,8 +948,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && logical :: name/**/2_any_bbox, name/**/2_all_bbox \
    && integer :: name/**/2_bmin(1), name/**/2_bmax(1) \
 
-#define CCTK_LOOP1STR_INTBOUNDARIES_OMP_PRIVATE(name) \
-   CCTK_LOOP1STR_NORMAL_OMP_PRIVATE(name/**/_intboundaries) \
+#define CCTK_LOOP1STR_INTBOUNDARIES_OMP_PRIVATE(name, \
+                                                i, \
+                                                ni) \
+   CCTK_LOOP1STR_NORMAL_OMP_PRIVATE(name/**/_intboundaries, \
+                                    i, \
+                                    ni) \
    & && !$omp private(name/**/2_blo, name/**/2_bhi) \
    & && !$omp private(name/**/2_bboxlo, name/**/2_bboxhi) \
    & && !$omp private(name/**/2_istr) \
@@ -978,8 +1010,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP1STR_ALL_DECLARE(name) \
    && integer :: name/**/3_dummy_imin, name/**/3_dummy_imax \
 
-#define CCTK_LOOP1_ALL_OMP_PRIVATE(name) \
-   CCTK_LOOP1STR_ALL_OMP_PRIVATE(name) \
+#define CCTK_LOOP1_ALL_OMP_PRIVATE(name, \
+                                   i) \
+   CCTK_LOOP1STR_ALL_OMP_PRIVATE(name, \
+                                 i) \
    & && !$omp private(name/**/3_dummy_imin, name/**/3_dummy_imax) \
 
 #define CCTK_LOOP1_ALL(name, \
@@ -994,8 +1028,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
 #define CCTK_LOOP1STR_ALL_DECLARE(name) \
    CCTK_LOOP1STR_DECLARE(name/**/_all) \
 
-#define CCTK_LOOP1STR_ALL_OMP_PRIVATE(name) \
-   CCTK_LOOP1STR_OMP_PRIVATE(name/**/_all) \
+#define CCTK_LOOP1STR_ALL_OMP_PRIVATE(name, \
+                                      i) \
+   CCTK_LOOP1STR_OMP_PRIVATE(name/**/_all, \
+                             i) \
 
 #define CCTK_LOOP1STR_ALL(name, \
                           i, \
@@ -1018,8 +1054,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP1STR_INT_DECLARE(name) \
    && integer :: name/**/3_dummy_imin, name/**/3_dummy_imax \
 
-#define CCTK_LOOP1_INT_OMP_PRIVATE(name) \
-   CCTK_LOOP1STR_INT_OMP_PRIVATE(name) \
+#define CCTK_LOOP1_INT_OMP_PRIVATE(name, \
+                                   i) \
+   CCTK_LOOP1STR_INT_OMP_PRIVATE(name, \
+                                 i) \
    & && !$omp private(name/**/3_dummy_imin, name/**/3_dummy_imax) \
 
 #define CCTK_LOOP1_INT(name, \
@@ -1040,8 +1078,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && CCTK_INT :: name/**/3_is_physbnd (2) \
    && CCTK_INT :: name/**/3_ierr \
 
-#define CCTK_LOOP1STR_INT_OMP_PRIVATE(name) \
-   CCTK_LOOP1STR_INTERIOR_OMP_PRIVATE(name/**/_int) \
+#define CCTK_LOOP1STR_INT_OMP_PRIVATE(name, \
+                                      i) \
+   CCTK_LOOP1STR_INTERIOR_OMP_PRIVATE(name/**/_int, \
+                                      i) \
    & && !$omp private(name/**/3_bndsize) \
    & && !$omp private(name/**/3_is_ghostbnd) \
    & && !$omp private(name/**/3_is_symbnd) \
@@ -1072,8 +1112,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP1STR_BND_DECLARE(name) \
    && integer :: name/**/3_dummy_imin, name/**/3_dummy_imax \
 
-#define CCTK_LOOP1_BND_OMP_PRIVATE(name) \
-   CCTK_LOOP1STR_BND_OMP_PRIVATE(name) \
+#define CCTK_LOOP1_BND_OMP_PRIVATE(name, \
+                                   i, \
+                                   ni) \
+   CCTK_LOOP1STR_BND_OMP_PRIVATE(name, \
+                                 i, \
+                                 ni) \
    & && !$omp private(name/**/3_dummy_imin, name/**/3_dummy_imax) \
 
 #define CCTK_LOOP1_BND(name, \
@@ -1096,8 +1140,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && CCTK_INT :: name/**/3_is_physbnd (2) \
    && CCTK_INT :: name/**/3_ierr \
 
-#define CCTK_LOOP1STR_BND_OMP_PRIVATE(name) \
-   CCTK_LOOP1STR_BOUNDARIES_OMP_PRIVATE(name/**/_bnd) \
+#define CCTK_LOOP1STR_BND_OMP_PRIVATE(name, \
+                                      i, \
+                                      ni) \
+   CCTK_LOOP1STR_BOUNDARIES_OMP_PRIVATE(name/**/_bnd, \
+                                        i, \
+                                        ni) \
    & && !$omp private(name/**/3_bndsize) \
    & && !$omp private(name/**/3_is_ghostbnd) \
    & && !$omp private(name/**/3_is_symbnd) \
@@ -1135,8 +1183,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP1STR_INTBND_DECLARE(name) \
    && integer :: name/**/3_dummy_imin, name/**/3_dummy_imax \
 
-#define CCTK_LOOP1_INTBND_OMP_PRIVATE(name) \
-   CCTK_LOOP1STR_INTBND_OMP_PRIVATE(name) \
+#define CCTK_LOOP1_INTBND_OMP_PRIVATE(name, \
+                                      i, \
+                                      ni) \
+   CCTK_LOOP1STR_INTBND_OMP_PRIVATE(name, \
+                                    i, \
+                                    ni) \
    & && !$omp private(name/**/3_dummy_imin, name/**/3_dummy_imax) \
 
 #define CCTK_LOOP1_INTBND(name, \
@@ -1159,8 +1211,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && CCTK_INT :: name/**/3_is_physbnd (2) \
    && CCTK_INT :: name/**/3_ierr \
 
-#define CCTK_LOOP1STR_INTBND_OMP_PRIVATE(name) \
-   CCTK_LOOP1STR_INTBOUNDARIES_OMP_PRIVATE(name/**/_bnd) \
+#define CCTK_LOOP1STR_INTBND_OMP_PRIVATE(name, \
+                                         i, \
+                                         ni) \
+   CCTK_LOOP1STR_INTBOUNDARIES_OMP_PRIVATE(name/**/_bnd, \
+                                           i, \
+                                           ni) \
    & && !$omp private(name/**/3_bndsize) \
    & && !$omp private(name/**/3_is_ghostbnd) \
    & && !$omp private(name/**/3_is_symbnd) \
@@ -1811,8 +1867,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP2STR_NORMAL_DECLARE(name) \
    && integer :: name/**/0_dummy_imin, name/**/0_dummy_imax \
 
-#define CCTK_LOOP2_NORMAL_OMP_PRIVATE(name) \
-   CCTK_LOOP2STR_NORMAL_OMP_PRIVATE(name) \
+#define CCTK_LOOP2_NORMAL_OMP_PRIVATE(name, \
+                                      i,j, \
+                                      ni,nj) \
+   CCTK_LOOP2STR_NORMAL_OMP_PRIVATE(name, \
+                                    i,j, \
+                                    ni,nj) \
    & && !$omp private(name/**/0_dummy_imin, name/**/0_dummy_imax) \
 
 #define CCTK_LOOP2_NORMAL(name, \
@@ -1841,8 +1901,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && integer :: name/**/0_iash,name/**/0_jash \
    && integer :: name/**/0_istr \
 
-#define CCTK_LOOP2STR_NORMAL_OMP_PRIVATE(name) \
+#define CCTK_LOOP2STR_NORMAL_OMP_PRIVATE(name, \
+                                         i,j, \
+                                         ni,nj) \
   private(name/**/0_idir,name/**/0_jdir) \
+  & && !$omp private(i,j) \
+  & && !$omp private(ni,nj) \
   & && !$omp private(name/**/0_imin,name/**/0_jmin) \
   & && !$omp private(name/**/0_imax,name/**/0_jmax) \
   & && !$omp private(name/**/0_iash,name/**/0_jash) \
@@ -1887,8 +1951,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP2STR_DECLARE(name) \
    && integer :: name/**/1_dummy_imin, name/**/1_dummy_imax \
 
-#define CCTK_LOOP2_OMP_PRIVATE(name) \
-   CCTK_LOOP2STR_OMP_PRIVATE(name) \
+#define CCTK_LOOP2_OMP_PRIVATE(name, \
+                               i,j) \
+   CCTK_LOOP2STR_OMP_PRIVATE(name, \
+                             i,j) \
    & && !$omp private(name/**/1_dummy_imin, name/**/1_dummy_imax) \
 
 #define CCTK_LOOP2(name, \
@@ -1910,9 +1976,11 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP2STR_NORMAL_DECLARE(name) \
    && integer :: name/**/1_ni,name/**/1_nj \
 
-#define CCTK_LOOP2STR_OMP_PRIVATE(name) \
-   CCTK_LOOP2STR_NORMAL_OMP_PRIVATE(name) \
-   & && !$omp private(name/**/1_ni,name/**/1_nj) \
+#define CCTK_LOOP2STR_OMP_PRIVATE(name, \
+                                  i,j) \
+   CCTK_LOOP2STR_NORMAL_OMP_PRIVATE(name, \
+                                    i,j, \
+                                    name/**/1_ni,name/**/1_nj) \
 
 #define CCTK_LOOP2STR(name, \
                       i,j, \
@@ -1940,8 +2008,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP2STR_INTERIOR_DECLARE(name) \
    && integer :: name/**/2_dummy_imin, name/**/2_dummy_imax \
 
-#define CCTK_LOOP2_INTERIOR_OMP_PRIVATE(name) \
-   CCTK_LOOP2STR_INTERIOR_OMP_PRIVATE(name) \
+#define CCTK_LOOP2_INTERIOR_OMP_PRIVATE(name, \
+                                        i,j) \
+   CCTK_LOOP2STR_INTERIOR_OMP_PRIVATE(name, \
+                                      i,j) \
    & && !$omp private(name/**/2_dummy_imin, name/**/2_dummy_imax) \
 
 #define CCTK_LOOP2_INTERIOR(name, \
@@ -1960,8 +2030,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
 #define CCTK_LOOP2STR_INTERIOR_DECLARE(name) \
    CCTK_LOOP2STR_DECLARE(name/**/_interior) \
 
-#define CCTK_LOOP2STR_INTERIOR_OMP_PRIVATE(name) \
-   CCTK_LOOP2STR_OMP_PRIVATE(name/**/_interior) \
+#define CCTK_LOOP2STR_INTERIOR_OMP_PRIVATE(name, \
+                                           i,j) \
+   CCTK_LOOP2STR_OMP_PRIVATE(name/**/_interior, \
+                             i,j) \
 
 #define CCTK_LOOP2STR_INTERIOR(name, \
                                i,j, \
@@ -1988,8 +2060,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP2STR_BOUNDARIES_DECLARE(name) \
    && integer :: name/**/2_dummy_imin, name/**/2_dummy_imax \
 
-#define CCTK_LOOP2_BOUNDARIES_OMP_PRIVATE(name) \
-   CCTK_LOOP2STR_BOUNDARIES_OMP_PRIVATE(name) \
+#define CCTK_LOOP2_BOUNDARIES_OMP_PRIVATE(name, \
+                                          i,j, \
+                                          ni,nj) \
+   CCTK_LOOP2STR_BOUNDARIES_OMP_PRIVATE(name, \
+                                        i,j, \
+                                        ni,nj) \
    & && !$omp private(name/**/2_dummy_imin, name/**/2_dummy_imax) \
 
 #define CCTK_LOOP2_BOUNDARIES(name, \
@@ -2020,8 +2096,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && logical :: name/**/2_any_bbox \
    && integer :: name/**/2_bmin(2), name/**/2_bmax(2) \
 
-#define CCTK_LOOP2STR_BOUNDARIES_OMP_PRIVATE(name) \
-   CCTK_LOOP2STR_NORMAL_OMP_PRIVATE(name/**/_boundaries) \
+#define CCTK_LOOP2STR_BOUNDARIES_OMP_PRIVATE(name, \
+                                             i,j, \
+                                             ni,nj) \
+   CCTK_LOOP2STR_NORMAL_OMP_PRIVATE(name/**/_boundaries, \
+                                    i,j, \
+                                    ni,nj) \
    & && !$omp private(name/**/2_blo, name/**/2_bhi) \
    & && !$omp private(name/**/2_bboxlo, name/**/2_bboxhi) \
    & && !$omp private(name/**/2_istr) \
@@ -2085,8 +2165,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP2STR_INTBOUNDARIES_DECLARE(name) \
    && integer :: name/**/2_dummy_imin, name/**/2_dummy_imax \
 
-#define CCTK_LOOP2_INTBOUNDARIES_OMP_PRIVATE(name) \
-   CCTK_LOOP2STR_INTBOUNDARIES_OMP_PRIVATE(name) \
+#define CCTK_LOOP2_INTBOUNDARIES_OMP_PRIVATE(name, \
+                                             i,j, \
+                                             ni,nj) \
+   CCTK_LOOP2STR_INTBOUNDARIES_OMP_PRIVATE(name, \
+                                           i,j, \
+                                           ni,nj) \
    & && !$omp private(name/**/2_dummy_imin, name/**/2_dummy_imax) \
 
 #define CCTK_LOOP2_INTBOUNDARIES(name, \
@@ -2117,8 +2201,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && logical :: name/**/2_any_bbox, name/**/2_all_bbox \
    && integer :: name/**/2_bmin(2), name/**/2_bmax(2) \
 
-#define CCTK_LOOP2STR_INTBOUNDARIES_OMP_PRIVATE(name) \
-   CCTK_LOOP2STR_NORMAL_OMP_PRIVATE(name/**/_intboundaries) \
+#define CCTK_LOOP2STR_INTBOUNDARIES_OMP_PRIVATE(name, \
+                                                i,j, \
+                                                ni,nj) \
+   CCTK_LOOP2STR_NORMAL_OMP_PRIVATE(name/**/_intboundaries, \
+                                    i,j, \
+                                    ni,nj) \
    & && !$omp private(name/**/2_blo, name/**/2_bhi) \
    & && !$omp private(name/**/2_bboxlo, name/**/2_bboxhi) \
    & && !$omp private(name/**/2_istr) \
@@ -2187,8 +2275,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP2STR_ALL_DECLARE(name) \
    && integer :: name/**/3_dummy_imin, name/**/3_dummy_imax \
 
-#define CCTK_LOOP2_ALL_OMP_PRIVATE(name) \
-   CCTK_LOOP2STR_ALL_OMP_PRIVATE(name) \
+#define CCTK_LOOP2_ALL_OMP_PRIVATE(name, \
+                                   i,j) \
+   CCTK_LOOP2STR_ALL_OMP_PRIVATE(name, \
+                                 i,j) \
    & && !$omp private(name/**/3_dummy_imin, name/**/3_dummy_imax) \
 
 #define CCTK_LOOP2_ALL(name, \
@@ -2203,8 +2293,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
 #define CCTK_LOOP2STR_ALL_DECLARE(name) \
    CCTK_LOOP2STR_DECLARE(name/**/_all) \
 
-#define CCTK_LOOP2STR_ALL_OMP_PRIVATE(name) \
-   CCTK_LOOP2STR_OMP_PRIVATE(name/**/_all) \
+#define CCTK_LOOP2STR_ALL_OMP_PRIVATE(name, \
+                                      i,j) \
+   CCTK_LOOP2STR_OMP_PRIVATE(name/**/_all, \
+                             i,j) \
 
 #define CCTK_LOOP2STR_ALL(name, \
                           i,j, \
@@ -2227,8 +2319,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP2STR_INT_DECLARE(name) \
    && integer :: name/**/3_dummy_imin, name/**/3_dummy_imax \
 
-#define CCTK_LOOP2_INT_OMP_PRIVATE(name) \
-   CCTK_LOOP2STR_INT_OMP_PRIVATE(name) \
+#define CCTK_LOOP2_INT_OMP_PRIVATE(name, \
+                                   i,j) \
+   CCTK_LOOP2STR_INT_OMP_PRIVATE(name, \
+                                 i,j) \
    & && !$omp private(name/**/3_dummy_imin, name/**/3_dummy_imax) \
 
 #define CCTK_LOOP2_INT(name, \
@@ -2249,8 +2343,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && CCTK_INT :: name/**/3_is_physbnd (4) \
    && CCTK_INT :: name/**/3_ierr \
 
-#define CCTK_LOOP2STR_INT_OMP_PRIVATE(name) \
-   CCTK_LOOP2STR_INTERIOR_OMP_PRIVATE(name/**/_int) \
+#define CCTK_LOOP2STR_INT_OMP_PRIVATE(name, \
+                                      i,j) \
+   CCTK_LOOP2STR_INTERIOR_OMP_PRIVATE(name/**/_int, \
+                                      i,j) \
    & && !$omp private(name/**/3_bndsize) \
    & && !$omp private(name/**/3_is_ghostbnd) \
    & && !$omp private(name/**/3_is_symbnd) \
@@ -2281,8 +2377,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP2STR_BND_DECLARE(name) \
    && integer :: name/**/3_dummy_imin, name/**/3_dummy_imax \
 
-#define CCTK_LOOP2_BND_OMP_PRIVATE(name) \
-   CCTK_LOOP2STR_BND_OMP_PRIVATE(name) \
+#define CCTK_LOOP2_BND_OMP_PRIVATE(name, \
+                                   i,j, \
+                                   ni,nj) \
+   CCTK_LOOP2STR_BND_OMP_PRIVATE(name, \
+                                 i,j, \
+                                 ni,nj) \
    & && !$omp private(name/**/3_dummy_imin, name/**/3_dummy_imax) \
 
 #define CCTK_LOOP2_BND(name, \
@@ -2305,8 +2405,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && CCTK_INT :: name/**/3_is_physbnd (4) \
    && CCTK_INT :: name/**/3_ierr \
 
-#define CCTK_LOOP2STR_BND_OMP_PRIVATE(name) \
-   CCTK_LOOP2STR_BOUNDARIES_OMP_PRIVATE(name/**/_bnd) \
+#define CCTK_LOOP2STR_BND_OMP_PRIVATE(name, \
+                                      i,j, \
+                                      ni,nj) \
+   CCTK_LOOP2STR_BOUNDARIES_OMP_PRIVATE(name/**/_bnd, \
+                                        i,j, \
+                                        ni,nj) \
    & && !$omp private(name/**/3_bndsize) \
    & && !$omp private(name/**/3_is_ghostbnd) \
    & && !$omp private(name/**/3_is_symbnd) \
@@ -2344,8 +2448,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP2STR_INTBND_DECLARE(name) \
    && integer :: name/**/3_dummy_imin, name/**/3_dummy_imax \
 
-#define CCTK_LOOP2_INTBND_OMP_PRIVATE(name) \
-   CCTK_LOOP2STR_INTBND_OMP_PRIVATE(name) \
+#define CCTK_LOOP2_INTBND_OMP_PRIVATE(name, \
+                                      i,j, \
+                                      ni,nj) \
+   CCTK_LOOP2STR_INTBND_OMP_PRIVATE(name, \
+                                    i,j, \
+                                    ni,nj) \
    & && !$omp private(name/**/3_dummy_imin, name/**/3_dummy_imax) \
 
 #define CCTK_LOOP2_INTBND(name, \
@@ -2368,8 +2476,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && CCTK_INT :: name/**/3_is_physbnd (4) \
    && CCTK_INT :: name/**/3_ierr \
 
-#define CCTK_LOOP2STR_INTBND_OMP_PRIVATE(name) \
-   CCTK_LOOP2STR_INTBOUNDARIES_OMP_PRIVATE(name/**/_bnd) \
+#define CCTK_LOOP2STR_INTBND_OMP_PRIVATE(name, \
+                                         i,j, \
+                                         ni,nj) \
+   CCTK_LOOP2STR_INTBOUNDARIES_OMP_PRIVATE(name/**/_bnd, \
+                                           i,j, \
+                                           ni,nj) \
    & && !$omp private(name/**/3_bndsize) \
    & && !$omp private(name/**/3_is_ghostbnd) \
    & && !$omp private(name/**/3_is_symbnd) \
@@ -3046,8 +3158,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP3STR_NORMAL_DECLARE(name) \
    && integer :: name/**/0_dummy_imin, name/**/0_dummy_imax \
 
-#define CCTK_LOOP3_NORMAL_OMP_PRIVATE(name) \
-   CCTK_LOOP3STR_NORMAL_OMP_PRIVATE(name) \
+#define CCTK_LOOP3_NORMAL_OMP_PRIVATE(name, \
+                                      i,j,k, \
+                                      ni,nj,nk) \
+   CCTK_LOOP3STR_NORMAL_OMP_PRIVATE(name, \
+                                    i,j,k, \
+                                    ni,nj,nk) \
    & && !$omp private(name/**/0_dummy_imin, name/**/0_dummy_imax) \
 
 #define CCTK_LOOP3_NORMAL(name, \
@@ -3076,8 +3192,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && integer :: name/**/0_iash,name/**/0_jash,name/**/0_kash \
    && integer :: name/**/0_istr \
 
-#define CCTK_LOOP3STR_NORMAL_OMP_PRIVATE(name) \
+#define CCTK_LOOP3STR_NORMAL_OMP_PRIVATE(name, \
+                                         i,j,k, \
+                                         ni,nj,nk) \
   private(name/**/0_idir,name/**/0_jdir,name/**/0_kdir) \
+  & && !$omp private(i,j,k) \
+  & && !$omp private(ni,nj,nk) \
   & && !$omp private(name/**/0_imin,name/**/0_jmin,name/**/0_kmin) \
   & && !$omp private(name/**/0_imax,name/**/0_jmax,name/**/0_kmax) \
   & && !$omp private(name/**/0_iash,name/**/0_jash,name/**/0_kash) \
@@ -3131,8 +3251,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP3STR_DECLARE(name) \
    && integer :: name/**/1_dummy_imin, name/**/1_dummy_imax \
 
-#define CCTK_LOOP3_OMP_PRIVATE(name) \
-   CCTK_LOOP3STR_OMP_PRIVATE(name) \
+#define CCTK_LOOP3_OMP_PRIVATE(name, \
+                               i,j,k) \
+   CCTK_LOOP3STR_OMP_PRIVATE(name, \
+                             i,j,k) \
    & && !$omp private(name/**/1_dummy_imin, name/**/1_dummy_imax) \
 
 #define CCTK_LOOP3(name, \
@@ -3154,9 +3276,11 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP3STR_NORMAL_DECLARE(name) \
    && integer :: name/**/1_ni,name/**/1_nj,name/**/1_nk \
 
-#define CCTK_LOOP3STR_OMP_PRIVATE(name) \
-   CCTK_LOOP3STR_NORMAL_OMP_PRIVATE(name) \
-   & && !$omp private(name/**/1_ni,name/**/1_nj,name/**/1_nk) \
+#define CCTK_LOOP3STR_OMP_PRIVATE(name, \
+                                  i,j,k) \
+   CCTK_LOOP3STR_NORMAL_OMP_PRIVATE(name, \
+                                    i,j,k, \
+                                    name/**/1_ni,name/**/1_nj,name/**/1_nk) \
 
 #define CCTK_LOOP3STR(name, \
                       i,j,k, \
@@ -3184,8 +3308,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP3STR_INTERIOR_DECLARE(name) \
    && integer :: name/**/2_dummy_imin, name/**/2_dummy_imax \
 
-#define CCTK_LOOP3_INTERIOR_OMP_PRIVATE(name) \
-   CCTK_LOOP3STR_INTERIOR_OMP_PRIVATE(name) \
+#define CCTK_LOOP3_INTERIOR_OMP_PRIVATE(name, \
+                                        i,j,k) \
+   CCTK_LOOP3STR_INTERIOR_OMP_PRIVATE(name, \
+                                      i,j,k) \
    & && !$omp private(name/**/2_dummy_imin, name/**/2_dummy_imax) \
 
 #define CCTK_LOOP3_INTERIOR(name, \
@@ -3204,8 +3330,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
 #define CCTK_LOOP3STR_INTERIOR_DECLARE(name) \
    CCTK_LOOP3STR_DECLARE(name/**/_interior) \
 
-#define CCTK_LOOP3STR_INTERIOR_OMP_PRIVATE(name) \
-   CCTK_LOOP3STR_OMP_PRIVATE(name/**/_interior) \
+#define CCTK_LOOP3STR_INTERIOR_OMP_PRIVATE(name, \
+                                           i,j,k) \
+   CCTK_LOOP3STR_OMP_PRIVATE(name/**/_interior, \
+                             i,j,k) \
 
 #define CCTK_LOOP3STR_INTERIOR(name, \
                                i,j,k, \
@@ -3234,8 +3362,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP3STR_BOUNDARIES_DECLARE(name) \
    && integer :: name/**/2_dummy_imin, name/**/2_dummy_imax \
 
-#define CCTK_LOOP3_BOUNDARIES_OMP_PRIVATE(name) \
-   CCTK_LOOP3STR_BOUNDARIES_OMP_PRIVATE(name) \
+#define CCTK_LOOP3_BOUNDARIES_OMP_PRIVATE(name, \
+                                          i,j,k, \
+                                          ni,nj,nk) \
+   CCTK_LOOP3STR_BOUNDARIES_OMP_PRIVATE(name, \
+                                        i,j,k, \
+                                        ni,nj,nk) \
    & && !$omp private(name/**/2_dummy_imin, name/**/2_dummy_imax) \
 
 #define CCTK_LOOP3_BOUNDARIES(name, \
@@ -3266,8 +3398,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && logical :: name/**/2_any_bbox \
    && integer :: name/**/2_bmin(3), name/**/2_bmax(3) \
 
-#define CCTK_LOOP3STR_BOUNDARIES_OMP_PRIVATE(name) \
-   CCTK_LOOP3STR_NORMAL_OMP_PRIVATE(name/**/_boundaries) \
+#define CCTK_LOOP3STR_BOUNDARIES_OMP_PRIVATE(name, \
+                                             i,j,k, \
+                                             ni,nj,nk) \
+   CCTK_LOOP3STR_NORMAL_OMP_PRIVATE(name/**/_boundaries, \
+                                    i,j,k, \
+                                    ni,nj,nk) \
    & && !$omp private(name/**/2_blo, name/**/2_bhi) \
    & && !$omp private(name/**/2_bboxlo, name/**/2_bboxhi) \
    & && !$omp private(name/**/2_istr) \
@@ -3341,8 +3477,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP3STR_INTBOUNDARIES_DECLARE(name) \
    && integer :: name/**/2_dummy_imin, name/**/2_dummy_imax \
 
-#define CCTK_LOOP3_INTBOUNDARIES_OMP_PRIVATE(name) \
-   CCTK_LOOP3STR_INTBOUNDARIES_OMP_PRIVATE(name) \
+#define CCTK_LOOP3_INTBOUNDARIES_OMP_PRIVATE(name, \
+                                             i,j,k, \
+                                             ni,nj,nk) \
+   CCTK_LOOP3STR_INTBOUNDARIES_OMP_PRIVATE(name, \
+                                           i,j,k, \
+                                           ni,nj,nk) \
    & && !$omp private(name/**/2_dummy_imin, name/**/2_dummy_imax) \
 
 #define CCTK_LOOP3_INTBOUNDARIES(name, \
@@ -3373,8 +3513,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && logical :: name/**/2_any_bbox, name/**/2_all_bbox \
    && integer :: name/**/2_bmin(3), name/**/2_bmax(3) \
 
-#define CCTK_LOOP3STR_INTBOUNDARIES_OMP_PRIVATE(name) \
-   CCTK_LOOP3STR_NORMAL_OMP_PRIVATE(name/**/_intboundaries) \
+#define CCTK_LOOP3STR_INTBOUNDARIES_OMP_PRIVATE(name, \
+                                                i,j,k, \
+                                                ni,nj,nk) \
+   CCTK_LOOP3STR_NORMAL_OMP_PRIVATE(name/**/_intboundaries, \
+                                    i,j,k, \
+                                    ni,nj,nk) \
    & && !$omp private(name/**/2_blo, name/**/2_bhi) \
    & && !$omp private(name/**/2_bboxlo, name/**/2_bboxhi) \
    & && !$omp private(name/**/2_istr) \
@@ -3455,8 +3599,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP3STR_ALL_DECLARE(name) \
    && integer :: name/**/3_dummy_imin, name/**/3_dummy_imax \
 
-#define CCTK_LOOP3_ALL_OMP_PRIVATE(name) \
-   CCTK_LOOP3STR_ALL_OMP_PRIVATE(name) \
+#define CCTK_LOOP3_ALL_OMP_PRIVATE(name, \
+                                   i,j,k) \
+   CCTK_LOOP3STR_ALL_OMP_PRIVATE(name, \
+                                 i,j,k) \
    & && !$omp private(name/**/3_dummy_imin, name/**/3_dummy_imax) \
 
 #define CCTK_LOOP3_ALL(name, \
@@ -3471,8 +3617,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
 #define CCTK_LOOP3STR_ALL_DECLARE(name) \
    CCTK_LOOP3STR_DECLARE(name/**/_all) \
 
-#define CCTK_LOOP3STR_ALL_OMP_PRIVATE(name) \
-   CCTK_LOOP3STR_OMP_PRIVATE(name/**/_all) \
+#define CCTK_LOOP3STR_ALL_OMP_PRIVATE(name, \
+                                      i,j,k) \
+   CCTK_LOOP3STR_OMP_PRIVATE(name/**/_all, \
+                             i,j,k) \
 
 #define CCTK_LOOP3STR_ALL(name, \
                           i,j,k, \
@@ -3495,8 +3643,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP3STR_INT_DECLARE(name) \
    && integer :: name/**/3_dummy_imin, name/**/3_dummy_imax \
 
-#define CCTK_LOOP3_INT_OMP_PRIVATE(name) \
-   CCTK_LOOP3STR_INT_OMP_PRIVATE(name) \
+#define CCTK_LOOP3_INT_OMP_PRIVATE(name, \
+                                   i,j,k) \
+   CCTK_LOOP3STR_INT_OMP_PRIVATE(name, \
+                                 i,j,k) \
    & && !$omp private(name/**/3_dummy_imin, name/**/3_dummy_imax) \
 
 #define CCTK_LOOP3_INT(name, \
@@ -3517,8 +3667,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && CCTK_INT :: name/**/3_is_physbnd (6) \
    && CCTK_INT :: name/**/3_ierr \
 
-#define CCTK_LOOP3STR_INT_OMP_PRIVATE(name) \
-   CCTK_LOOP3STR_INTERIOR_OMP_PRIVATE(name/**/_int) \
+#define CCTK_LOOP3STR_INT_OMP_PRIVATE(name, \
+                                      i,j,k) \
+   CCTK_LOOP3STR_INTERIOR_OMP_PRIVATE(name/**/_int, \
+                                      i,j,k) \
    & && !$omp private(name/**/3_bndsize) \
    & && !$omp private(name/**/3_is_ghostbnd) \
    & && !$omp private(name/**/3_is_symbnd) \
@@ -3549,8 +3701,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP3STR_BND_DECLARE(name) \
    && integer :: name/**/3_dummy_imin, name/**/3_dummy_imax \
 
-#define CCTK_LOOP3_BND_OMP_PRIVATE(name) \
-   CCTK_LOOP3STR_BND_OMP_PRIVATE(name) \
+#define CCTK_LOOP3_BND_OMP_PRIVATE(name, \
+                                   i,j,k, \
+                                   ni,nj,nk) \
+   CCTK_LOOP3STR_BND_OMP_PRIVATE(name, \
+                                 i,j,k, \
+                                 ni,nj,nk) \
    & && !$omp private(name/**/3_dummy_imin, name/**/3_dummy_imax) \
 
 #define CCTK_LOOP3_BND(name, \
@@ -3573,8 +3729,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && CCTK_INT :: name/**/3_is_physbnd (6) \
    && CCTK_INT :: name/**/3_ierr \
 
-#define CCTK_LOOP3STR_BND_OMP_PRIVATE(name) \
-   CCTK_LOOP3STR_BOUNDARIES_OMP_PRIVATE(name/**/_bnd) \
+#define CCTK_LOOP3STR_BND_OMP_PRIVATE(name, \
+                                      i,j,k, \
+                                      ni,nj,nk) \
+   CCTK_LOOP3STR_BOUNDARIES_OMP_PRIVATE(name/**/_bnd, \
+                                        i,j,k, \
+                                        ni,nj,nk) \
    & && !$omp private(name/**/3_bndsize) \
    & && !$omp private(name/**/3_is_ghostbnd) \
    & && !$omp private(name/**/3_is_symbnd) \
@@ -3612,8 +3772,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP3STR_INTBND_DECLARE(name) \
    && integer :: name/**/3_dummy_imin, name/**/3_dummy_imax \
 
-#define CCTK_LOOP3_INTBND_OMP_PRIVATE(name) \
-   CCTK_LOOP3STR_INTBND_OMP_PRIVATE(name) \
+#define CCTK_LOOP3_INTBND_OMP_PRIVATE(name, \
+                                      i,j,k, \
+                                      ni,nj,nk) \
+   CCTK_LOOP3STR_INTBND_OMP_PRIVATE(name, \
+                                    i,j,k, \
+                                    ni,nj,nk) \
    & && !$omp private(name/**/3_dummy_imin, name/**/3_dummy_imax) \
 
 #define CCTK_LOOP3_INTBND(name, \
@@ -3636,8 +3800,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && CCTK_INT :: name/**/3_is_physbnd (6) \
    && CCTK_INT :: name/**/3_ierr \
 
-#define CCTK_LOOP3STR_INTBND_OMP_PRIVATE(name) \
-   CCTK_LOOP3STR_INTBOUNDARIES_OMP_PRIVATE(name/**/_bnd) \
+#define CCTK_LOOP3STR_INTBND_OMP_PRIVATE(name, \
+                                         i,j,k, \
+                                         ni,nj,nk) \
+   CCTK_LOOP3STR_INTBOUNDARIES_OMP_PRIVATE(name/**/_bnd, \
+                                           i,j,k, \
+                                           ni,nj,nk) \
    & && !$omp private(name/**/3_bndsize) \
    & && !$omp private(name/**/3_is_ghostbnd) \
    & && !$omp private(name/**/3_is_symbnd) \
@@ -4340,8 +4508,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP4STR_NORMAL_DECLARE(name) \
    && integer :: name/**/0_dummy_imin, name/**/0_dummy_imax \
 
-#define CCTK_LOOP4_NORMAL_OMP_PRIVATE(name) \
-   CCTK_LOOP4STR_NORMAL_OMP_PRIVATE(name) \
+#define CCTK_LOOP4_NORMAL_OMP_PRIVATE(name, \
+                                      i,j,k,l, \
+                                      ni,nj,nk,nl) \
+   CCTK_LOOP4STR_NORMAL_OMP_PRIVATE(name, \
+                                    i,j,k,l, \
+                                    ni,nj,nk,nl) \
    & && !$omp private(name/**/0_dummy_imin, name/**/0_dummy_imax) \
 
 #define CCTK_LOOP4_NORMAL(name, \
@@ -4370,8 +4542,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && integer :: name/**/0_iash,name/**/0_jash,name/**/0_kash,name/**/0_lash \
    && integer :: name/**/0_istr \
 
-#define CCTK_LOOP4STR_NORMAL_OMP_PRIVATE(name) \
+#define CCTK_LOOP4STR_NORMAL_OMP_PRIVATE(name, \
+                                         i,j,k,l, \
+                                         ni,nj,nk,nl) \
   private(name/**/0_idir,name/**/0_jdir,name/**/0_kdir,name/**/0_ldir) \
+  & && !$omp private(i,j,k,l) \
+  & && !$omp private(ni,nj,nk,nl) \
   & && !$omp private(name/**/0_imin,name/**/0_jmin,name/**/0_kmin,name/**/0_lmin) \
   & && !$omp private(name/**/0_imax,name/**/0_jmax,name/**/0_kmax,name/**/0_lmax) \
   & && !$omp private(name/**/0_iash,name/**/0_jash,name/**/0_kash,name/**/0_lash) \
@@ -4434,8 +4610,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP4STR_DECLARE(name) \
    && integer :: name/**/1_dummy_imin, name/**/1_dummy_imax \
 
-#define CCTK_LOOP4_OMP_PRIVATE(name) \
-   CCTK_LOOP4STR_OMP_PRIVATE(name) \
+#define CCTK_LOOP4_OMP_PRIVATE(name, \
+                               i,j,k,l) \
+   CCTK_LOOP4STR_OMP_PRIVATE(name, \
+                             i,j,k,l) \
    & && !$omp private(name/**/1_dummy_imin, name/**/1_dummy_imax) \
 
 #define CCTK_LOOP4(name, \
@@ -4457,9 +4635,11 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP4STR_NORMAL_DECLARE(name) \
    && integer :: name/**/1_ni,name/**/1_nj,name/**/1_nk,name/**/1_nl \
 
-#define CCTK_LOOP4STR_OMP_PRIVATE(name) \
-   CCTK_LOOP4STR_NORMAL_OMP_PRIVATE(name) \
-   & && !$omp private(name/**/1_ni,name/**/1_nj,name/**/1_nk,name/**/1_nl) \
+#define CCTK_LOOP4STR_OMP_PRIVATE(name, \
+                                  i,j,k,l) \
+   CCTK_LOOP4STR_NORMAL_OMP_PRIVATE(name, \
+                                    i,j,k,l, \
+                                    name/**/1_ni,name/**/1_nj,name/**/1_nk,name/**/1_nl) \
 
 #define CCTK_LOOP4STR(name, \
                       i,j,k,l, \
@@ -4487,8 +4667,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP4STR_INTERIOR_DECLARE(name) \
    && integer :: name/**/2_dummy_imin, name/**/2_dummy_imax \
 
-#define CCTK_LOOP4_INTERIOR_OMP_PRIVATE(name) \
-   CCTK_LOOP4STR_INTERIOR_OMP_PRIVATE(name) \
+#define CCTK_LOOP4_INTERIOR_OMP_PRIVATE(name, \
+                                        i,j,k,l) \
+   CCTK_LOOP4STR_INTERIOR_OMP_PRIVATE(name, \
+                                      i,j,k,l) \
    & && !$omp private(name/**/2_dummy_imin, name/**/2_dummy_imax) \
 
 #define CCTK_LOOP4_INTERIOR(name, \
@@ -4507,8 +4689,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
 #define CCTK_LOOP4STR_INTERIOR_DECLARE(name) \
    CCTK_LOOP4STR_DECLARE(name/**/_interior) \
 
-#define CCTK_LOOP4STR_INTERIOR_OMP_PRIVATE(name) \
-   CCTK_LOOP4STR_OMP_PRIVATE(name/**/_interior) \
+#define CCTK_LOOP4STR_INTERIOR_OMP_PRIVATE(name, \
+                                           i,j,k,l) \
+   CCTK_LOOP4STR_OMP_PRIVATE(name/**/_interior, \
+                             i,j,k,l) \
 
 #define CCTK_LOOP4STR_INTERIOR(name, \
                                i,j,k,l, \
@@ -4539,8 +4723,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP4STR_BOUNDARIES_DECLARE(name) \
    && integer :: name/**/2_dummy_imin, name/**/2_dummy_imax \
 
-#define CCTK_LOOP4_BOUNDARIES_OMP_PRIVATE(name) \
-   CCTK_LOOP4STR_BOUNDARIES_OMP_PRIVATE(name) \
+#define CCTK_LOOP4_BOUNDARIES_OMP_PRIVATE(name, \
+                                          i,j,k,l, \
+                                          ni,nj,nk,nl) \
+   CCTK_LOOP4STR_BOUNDARIES_OMP_PRIVATE(name, \
+                                        i,j,k,l, \
+                                        ni,nj,nk,nl) \
    & && !$omp private(name/**/2_dummy_imin, name/**/2_dummy_imax) \
 
 #define CCTK_LOOP4_BOUNDARIES(name, \
@@ -4571,8 +4759,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && logical :: name/**/2_any_bbox \
    && integer :: name/**/2_bmin(4), name/**/2_bmax(4) \
 
-#define CCTK_LOOP4STR_BOUNDARIES_OMP_PRIVATE(name) \
-   CCTK_LOOP4STR_NORMAL_OMP_PRIVATE(name/**/_boundaries) \
+#define CCTK_LOOP4STR_BOUNDARIES_OMP_PRIVATE(name, \
+                                             i,j,k,l, \
+                                             ni,nj,nk,nl) \
+   CCTK_LOOP4STR_NORMAL_OMP_PRIVATE(name/**/_boundaries, \
+                                    i,j,k,l, \
+                                    ni,nj,nk,nl) \
    & && !$omp private(name/**/2_blo, name/**/2_bhi) \
    & && !$omp private(name/**/2_bboxlo, name/**/2_bboxhi) \
    & && !$omp private(name/**/2_istr) \
@@ -4656,8 +4848,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP4STR_INTBOUNDARIES_DECLARE(name) \
    && integer :: name/**/2_dummy_imin, name/**/2_dummy_imax \
 
-#define CCTK_LOOP4_INTBOUNDARIES_OMP_PRIVATE(name) \
-   CCTK_LOOP4STR_INTBOUNDARIES_OMP_PRIVATE(name) \
+#define CCTK_LOOP4_INTBOUNDARIES_OMP_PRIVATE(name, \
+                                             i,j,k,l, \
+                                             ni,nj,nk,nl) \
+   CCTK_LOOP4STR_INTBOUNDARIES_OMP_PRIVATE(name, \
+                                           i,j,k,l, \
+                                           ni,nj,nk,nl) \
    & && !$omp private(name/**/2_dummy_imin, name/**/2_dummy_imax) \
 
 #define CCTK_LOOP4_INTBOUNDARIES(name, \
@@ -4688,8 +4884,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && logical :: name/**/2_any_bbox, name/**/2_all_bbox \
    && integer :: name/**/2_bmin(4), name/**/2_bmax(4) \
 
-#define CCTK_LOOP4STR_INTBOUNDARIES_OMP_PRIVATE(name) \
-   CCTK_LOOP4STR_NORMAL_OMP_PRIVATE(name/**/_intboundaries) \
+#define CCTK_LOOP4STR_INTBOUNDARIES_OMP_PRIVATE(name, \
+                                                i,j,k,l, \
+                                                ni,nj,nk,nl) \
+   CCTK_LOOP4STR_NORMAL_OMP_PRIVATE(name/**/_intboundaries, \
+                                    i,j,k,l, \
+                                    ni,nj,nk,nl) \
    & && !$omp private(name/**/2_blo, name/**/2_bhi) \
    & && !$omp private(name/**/2_bboxlo, name/**/2_bboxhi) \
    & && !$omp private(name/**/2_istr) \
@@ -4782,8 +4982,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP4STR_ALL_DECLARE(name) \
    && integer :: name/**/3_dummy_imin, name/**/3_dummy_imax \
 
-#define CCTK_LOOP4_ALL_OMP_PRIVATE(name) \
-   CCTK_LOOP4STR_ALL_OMP_PRIVATE(name) \
+#define CCTK_LOOP4_ALL_OMP_PRIVATE(name, \
+                                   i,j,k,l) \
+   CCTK_LOOP4STR_ALL_OMP_PRIVATE(name, \
+                                 i,j,k,l) \
    & && !$omp private(name/**/3_dummy_imin, name/**/3_dummy_imax) \
 
 #define CCTK_LOOP4_ALL(name, \
@@ -4798,8 +5000,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
 #define CCTK_LOOP4STR_ALL_DECLARE(name) \
    CCTK_LOOP4STR_DECLARE(name/**/_all) \
 
-#define CCTK_LOOP4STR_ALL_OMP_PRIVATE(name) \
-   CCTK_LOOP4STR_OMP_PRIVATE(name/**/_all) \
+#define CCTK_LOOP4STR_ALL_OMP_PRIVATE(name, \
+                                      i,j,k,l) \
+   CCTK_LOOP4STR_OMP_PRIVATE(name/**/_all, \
+                             i,j,k,l) \
 
 #define CCTK_LOOP4STR_ALL(name, \
                           i,j,k,l, \
@@ -4822,8 +5026,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP4STR_INT_DECLARE(name) \
    && integer :: name/**/3_dummy_imin, name/**/3_dummy_imax \
 
-#define CCTK_LOOP4_INT_OMP_PRIVATE(name) \
-   CCTK_LOOP4STR_INT_OMP_PRIVATE(name) \
+#define CCTK_LOOP4_INT_OMP_PRIVATE(name, \
+                                   i,j,k,l) \
+   CCTK_LOOP4STR_INT_OMP_PRIVATE(name, \
+                                 i,j,k,l) \
    & && !$omp private(name/**/3_dummy_imin, name/**/3_dummy_imax) \
 
 #define CCTK_LOOP4_INT(name, \
@@ -4844,8 +5050,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && CCTK_INT :: name/**/3_is_physbnd (8) \
    && CCTK_INT :: name/**/3_ierr \
 
-#define CCTK_LOOP4STR_INT_OMP_PRIVATE(name) \
-   CCTK_LOOP4STR_INTERIOR_OMP_PRIVATE(name/**/_int) \
+#define CCTK_LOOP4STR_INT_OMP_PRIVATE(name, \
+                                      i,j,k,l) \
+   CCTK_LOOP4STR_INTERIOR_OMP_PRIVATE(name/**/_int, \
+                                      i,j,k,l) \
    & && !$omp private(name/**/3_bndsize) \
    & && !$omp private(name/**/3_is_ghostbnd) \
    & && !$omp private(name/**/3_is_symbnd) \
@@ -4876,8 +5084,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP4STR_BND_DECLARE(name) \
    && integer :: name/**/3_dummy_imin, name/**/3_dummy_imax \
 
-#define CCTK_LOOP4_BND_OMP_PRIVATE(name) \
-   CCTK_LOOP4STR_BND_OMP_PRIVATE(name) \
+#define CCTK_LOOP4_BND_OMP_PRIVATE(name, \
+                                   i,j,k,l, \
+                                   ni,nj,nk,nl) \
+   CCTK_LOOP4STR_BND_OMP_PRIVATE(name, \
+                                 i,j,k,l, \
+                                 ni,nj,nk,nl) \
    & && !$omp private(name/**/3_dummy_imin, name/**/3_dummy_imax) \
 
 #define CCTK_LOOP4_BND(name, \
@@ -4900,8 +5112,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && CCTK_INT :: name/**/3_is_physbnd (8) \
    && CCTK_INT :: name/**/3_ierr \
 
-#define CCTK_LOOP4STR_BND_OMP_PRIVATE(name) \
-   CCTK_LOOP4STR_BOUNDARIES_OMP_PRIVATE(name/**/_bnd) \
+#define CCTK_LOOP4STR_BND_OMP_PRIVATE(name, \
+                                      i,j,k,l, \
+                                      ni,nj,nk,nl) \
+   CCTK_LOOP4STR_BOUNDARIES_OMP_PRIVATE(name/**/_bnd, \
+                                        i,j,k,l, \
+                                        ni,nj,nk,nl) \
    & && !$omp private(name/**/3_bndsize) \
    & && !$omp private(name/**/3_is_ghostbnd) \
    & && !$omp private(name/**/3_is_symbnd) \
@@ -4939,8 +5155,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    CCTK_LOOP4STR_INTBND_DECLARE(name) \
    && integer :: name/**/3_dummy_imin, name/**/3_dummy_imax \
 
-#define CCTK_LOOP4_INTBND_OMP_PRIVATE(name) \
-   CCTK_LOOP4STR_INTBND_OMP_PRIVATE(name) \
+#define CCTK_LOOP4_INTBND_OMP_PRIVATE(name, \
+                                      i,j,k,l, \
+                                      ni,nj,nk,nl) \
+   CCTK_LOOP4STR_INTBND_OMP_PRIVATE(name, \
+                                    i,j,k,l, \
+                                    ni,nj,nk,nl) \
    & && !$omp private(name/**/3_dummy_imin, name/**/3_dummy_imax) \
 
 #define CCTK_LOOP4_INTBND(name, \
@@ -4963,8 +5183,12 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && CCTK_INT :: name/**/3_is_physbnd (8) \
    && CCTK_INT :: name/**/3_ierr \
 
-#define CCTK_LOOP4STR_INTBND_OMP_PRIVATE(name) \
-   CCTK_LOOP4STR_INTBOUNDARIES_OMP_PRIVATE(name/**/_bnd) \
+#define CCTK_LOOP4STR_INTBND_OMP_PRIVATE(name, \
+                                         i,j,k,l, \
+                                         ni,nj,nk,nl) \
+   CCTK_LOOP4STR_INTBOUNDARIES_OMP_PRIVATE(name/**/_bnd, \
+                                           i,j,k,l, \
+                                           ni,nj,nk,nl) \
    & && !$omp private(name/**/3_bndsize) \
    & && !$omp private(name/**/3_is_ghostbnd) \
    & && !$omp private(name/**/3_is_symbnd) \
