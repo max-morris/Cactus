@@ -527,7 +527,7 @@ sub create_macros
                 $hint = "Check variable or group '${th}::$full_var' and verify ".
                     "correct implementation/thorn name and variable name.'";
               }
-              &CST_error(1, "Error in read/write declaration of '${th}::$full_var' for '$nm' in schedule."
+              &CST_error(0, "Error in read/write declaration of '${th}::$full_var' for '$nm' in schedule."
                     ,$hint, $errline, $ccl_file);
               next;
             }
@@ -536,7 +536,7 @@ sub create_macros
             # the variable type...
             if($vtype eq "CCTK_") {
               my $hint = "Bad variable group name '$full_var' at $errline";
-              &CST_error(1, "Error in read/write declaration $nm schedule. Check variable or group '$full_var'" .
+              &CST_error(0, "Error in read/write declaration $nm schedule. Check variable or group '$full_var'" .
                     ' and verify correct implementation/thorn name and variable name.'
                     ,$hint, $errline, $ccl_file);
               next;
@@ -569,7 +569,7 @@ sub create_macros
                 if(!defined($decls->{$full_var})) {
                   my $line = $reads_writes->{$namekey}->{$th}->{$full_var}->{line};
                   my $hint = "Check access of variable. Maybe add an inherits clause to your interface.ccl";
-                  &CST_error(1, "No access to variable '${th}::$ifull_var'"
+                  &CST_error(0, "No access to variable '${th}::$ifull_var'"
                     ,$hint, $line, $ccl_file);
                 }
                 $$data .= qq($vtype $const * restrict const $ifull_var __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, CCTK_JOIN_TOKENS(cctki_vi_, CCTK_THORN).$ivar));; /* group $group_register */\\\n);
@@ -584,7 +584,7 @@ sub create_macros
               if(!defined($decls->{$full_var})) {
                 my $line = $reads_writes->{$namekey}->{$th}->{$full_var}->{line};
                 my $hint = "Check access of variable. Maybe add an inherits clause to your interface.ccl";
-                &CST_error(1, "No access to variable '${th}::$ifull_var'"
+                &CST_error(0, "No access to variable '${th}::$ifull_var'"
                   ,$hint, $line, $ccl_file);
               }
               $$data .= qq($vtype $const * restrict const $ifull_var __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, CCTK_JOIN_TOKENS(cctki_vi_, CCTK_THORN).$ivar));; /* TL: $namekey --> $timelevel $group_register*/\\\n);
