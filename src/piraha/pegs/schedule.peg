@@ -2,10 +2,11 @@
 skipper = \b([\ \t\n\r\b]|{-ccomment}|\#[^\n]*|\\[\r\n])*
 
 any = [^]
-name = (?i:[a-zA-Z_][a-zA-Z0-9_\-]*\b)
+name = (?i:[a-zA-Z_][a-zA-Z0-9_]*\b)
 expr = {name}|{quote}|{num}
 # TODO: Should this be a * or a ?
 vname = {name}( :: {name})*( \[ {expr} \]|)
+uname = {name}( :: {name})?
 quote = "(\\{any}|[^"])*"
 ccomment = /\*((?!\*/){-any})*\*/
 num = [+\-]?[0-9]+(\.[0-9]+)?
@@ -36,9 +37,10 @@ group = (?i:group)
 nogroup =
 prepositions = ({preposition} )*
 preposition = {par} {pararg}
-sync = (?i:sync) : {vname}( , {vname}|{-spacing}{vname})*
+sync = (?i:sync) : {uname}( , {uname}|{-spacing}{uname})*
 spacing = ([ \t]|\\\r?\n)+
-options = (?i:options?) : {vname}( , {vname}|{-spacing}{vname})*
+optname = [a-zA-Z0-9-]+
+options = (?i:options?) : {optname}( , {optname}|{-spacing}{optname})*
 triggers = (?i:triggers?) : {vname}( , {vname}|{-spacing}{vname})*
 reads = (?i:reads) : {qrname}( , {qrname}|{-spacing}{qrname})*
 writes = (?i:writes) : {qrname}( , {qrname}|{-spacing}{qrname})*
