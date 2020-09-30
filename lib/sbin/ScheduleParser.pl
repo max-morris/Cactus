@@ -121,7 +121,7 @@ sub vname
 {
   my $vname = shift;
   my $out = "";
-  confess("not a vname ".$vname->dump()) unless($vname->is("vname"));
+  confess("not a uname/vname ".$vname->dump()) unless($vname->isre('^[uv]name$'));
   for my $v (@{$vname->{children}}) {
     if($v->is("name")) {
       $out .= "::" unless($out eq "");
@@ -141,7 +141,7 @@ sub qrname
   my $out = "";
   confess("not a qrname ".$qrname->dump()) unless($qrname->is("qrname"));
   for my $v (@{$qrname->{children}}) {
-    if($v->is("vname")) {
+    if($v->isre('^[uv]name$')) {
       $out .= vname($v);
     } elsif($v->is("region")) {
       $out .= "(" . $v->substring() . ")";
@@ -189,14 +189,14 @@ sub parse_schedule_statement
                 $before_list .= vname($item);
               }
             } elsif($prep_name eq "at") {
-              $where = uc($prep->group(1,"pararg")->group(0,"vname")->substring());
+              $where = uc($prep->group(1,"pararg")->groupre(0,'^[uv]name$')->substring());
               $where =~ s/^(CCTK_|)/CCTK_/gi;
               if($where !~ $schedule_bin_regexp) {
 						  my $hint="If this routine should be scheduled check the spelling of the group or timebin name. Note that scheduling IN must be used to schedule a routine to run in a thorn-defined schedule group, whereas scheduling AT is used for a usual timebin. (Schedule IN may also be used with the usual timebins, but in this case the full name of the bin must be used, e.g. CCTK_EVOL and not EVOL";
 						  &CST_error(0,"Scheduling routine $name from thorn $thorn in non-existent group or timebin $where",$hint,$prep->linenum(),$ccl_file);
               }
             } elsif($prep_name eq "in") {
-              $where = $prep->group(1,"pararg")->group(0,"vname")->substring();
+              $where = $prep->group(1,"pararg")->groupre(0,'^[uv]name$')->substring();
               $time_bin_info->{$thorn}->{$name}->{$where} = {
                   line  => $prep->linenum(),
                   file  => $ccl_file,
@@ -248,7 +248,7 @@ sub parse_schedule_statement
               }
             } elsif($child->is("storage")) {
               for my $vname (@{$child->{children}}) {
-                if($vname->is("vname")) {
+                if($vname->isre('^[uv]name$')) {
                   $mem_groups .= "," if(defined($mem_groups));
                   $mem_groups .= vname($vname);
                 }
@@ -276,14 +276,14 @@ sub parse_schedule_statement
               }
             } elsif($child->is("sync")) {
               for my $vname (@{$child->{children}}) {
-                if($vname->is("vname")) {
+                if($vname->isre('^[uv]name$')) {
                   $sync_groups .= "," if(defined($sync_groups));
                   $sync_groups .= vname($vname);
                 }
               }
             } elsif($child->is("triggers")) {
               for my $vname (@{$child->{children}}) {
-                if($vname->is("vname")) {
+                if($vname->isre('^[uv]name$')) {
                   $trigger_groups .= "," if(defined($trigger_groups));
                   $trigger_groups .= vname($vname);
                 }
@@ -299,7 +299,7 @@ sub parse_schedule_statement
           $type = "STOR";
           my $groups = "";
           for my $vname (@{$schedule->{children}}) {
-            if($vname->is("vname")) {
+            if($vname->isre('^[uv]name$')) {
               $groups .= " " if(defined($groups));
               $groups .= vname($vname);
             }

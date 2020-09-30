@@ -75,14 +75,29 @@ use Carp;
 #   $name is supplied, and child number $num does not
 #   have name $name, then this method returns false.
 #
+# $g->hasre($num,$regex)
+#   Returns true if $num is less than groupCount(). If
+#   $regex is supplied, and child number $num does not
+#   have a name $name matching the regex, then this
+#   method returns false.
+#
 # $g->group($num,$name)
 #   Returns child group number $num. If no such child
 #   exists, or if $name is supplied and does not match
 #   the child name, then die.
 #
+# $g->groupre($num,$regex)
+#   Returns child group number $num. If no such child
+#   exists, or if $regex is supplied and does not match
+#   the child name, then die.
+#
 # $g->is($name)
 #   Returns true if the name of the current Group is
 #   equal to $name. The equivalent of ($g->{name} eq $name).
+#
+# $g->isre($regex)
+#   Returns true if the name of the current Group is
+#   matches $regex.
 #
 # $g->dump()
 #   Create a string representation of the parse tree.
@@ -1859,6 +1874,24 @@ sub group
   return $ref;
 }
 
+sub groupre
+{
+  my $self = shift;
+  my $n = shift;
+  my $pat = shift;
+  $n += $self->groupCount()+1+$n if($n < 0);
+  my $ref = $self->{children}->[$n];
+  unless(defined($ref)) {
+    confess("invalid group index: $n");
+  }
+  if(defined($pat)) {
+    my $m = $ref->{name};
+    confess("wrong group '$m' !~ '$pat'")
+      unless($m =~ /$pat/);
+  }
+  return $ref;
+}
+
 sub has
 {
   my $self = shift;
@@ -1875,12 +1908,36 @@ sub has
   return $ref;
 }
 
+sub hasre
+{
+  my $self = shift;
+  my $n = shift;
+  my $pat = shift;
+  $n += $self->groupCount()+1+$n if($n < 0);
+  my $ref = $self->{children}->[$n];
+  return 0 unless(defined($ref));
+  if(defined($pat)) {
+    my $m = $ref->{name};
+    return 0
+      unless($m =~ /$pat/);
+  }
+  return $ref;
+}
+
 sub is
 {
   my $self = shift;
   my $nm = shift;
   return 0 unless(defined($self->{name}));
   return $self->{name} eq $nm;
+}
+
+sub isre
+{
+  my $self = shift;
+  my $pat = shift;
+  return 0 unless(defined($self->{name}));
+  return $self->{name} =~ /$pat/;
 }
 
 sub groupCount
