@@ -141,7 +141,7 @@ sub qrname
   my $out = "";
   confess("not a qrname ".$qrname->dump()) unless($qrname->is("qrname"));
   for my $v (@{$qrname->{children}}) {
-    if($v->isre('^[uv]name$')) {
+    if($v->is('vname')) {
       $out .= vname($v);
     } elsif($v->is("region")) {
       $out .= "(" . $v->substring() . ")";

@@ -1879,6 +1879,8 @@ sub groupre
   my $self = shift;
   my $n = shift;
   my $pat = shift;
+  confess("pattern is missing")
+    unless(defined($pat));
   $n += $self->groupCount()+1+$n if($n < 0);
   my $ref = $self->{children}->[$n];
   unless(defined($ref)) {
@@ -1913,6 +1915,8 @@ sub hasre
   my $self = shift;
   my $n = shift;
   my $pat = shift;
+  confess("pattern is missing")
+    unless(defined($pat));
   $n += $self->groupCount()+1+$n if($n < 0);
   my $ref = $self->{children}->[$n];
   return 0 unless(defined($ref));
@@ -1936,6 +1940,8 @@ sub isre
 {
   my $self = shift;
   my $pat = shift;
+  confess("pattern is missing")
+    unless(defined($pat));
   return 0 unless(defined($self->{name}));
   return $self->{name} =~ /$pat/;
 }
