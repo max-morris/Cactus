@@ -35,7 +35,14 @@ sub CST_error
 
     my $full_warnings = 1 if(defined($line) or defined($file));
 
-    if ($help !~ /^\s*$/)
+    $line = '' unless defined($line);
+    $file = '' unless defined($file);
+
+    if (not defined($help))
+    {
+      $help = '';
+    }
+    elsif ($help !~ /^\s*$/)
     {
       $help = "     HINT: $help\n";
     }
