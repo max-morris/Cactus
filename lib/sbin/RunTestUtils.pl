@@ -1302,7 +1302,7 @@ sub WriteFullResults
       {
         $extratests++;
         $message .= "    $thorn ($parfile)\n";
-        $message .= "      Test created $rundata->{\"$thorn $parfile NFILEEXTRA\"} extra files: $testdata->{\"$thorn $parfile FILEEXTRA\"}\n";
+        $message .= "      Test created $rundata->{\"$thorn $parfile NFILEEXTRA\"} extra files:$rundata->{\"$thorn $parfile FILEEXTRA\"}\n";
       }
     }
   }
