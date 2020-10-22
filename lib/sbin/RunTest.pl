@@ -160,7 +160,7 @@ while ($choice !~ /^Q/i)
           }
           # peel one finished test of the list of running tests
           my $finished_test = waitpid(-1, WNOHANG);
-          my $retcode = $?;
+          my $retcode = $? >> 8; # exit code of child is in high byte of status
           return if $finished_test <= 0; # no child finished
           my ($thorn,$test,$STDOUT_CAPTURE,$STDERR_CAPTURE,$RESULTS_CAPTURE) = @{$running_tests{$finished_test}};
           delete $running_tests{$finished_test};
