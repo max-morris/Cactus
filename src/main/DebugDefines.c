@@ -57,7 +57,7 @@ int CCTK_GFIndex1D (const cGH *GH, int i)
 #ifdef CCTK_DEBUG
   if (i < 0 || i >= GH->cctk_lsh[0])
   {
-    CCTK_VError (__LINE__, __FILE__, CCTK_THORNSTRING,
+    CCTK_VError (__LINE__, __FILE__, "Cactus",
                  "Grid function index out of bounds.  i=%d cctk_lsh=[%d]",
                  i, GH->cctk_lsh[0]);
   }
@@ -71,7 +71,7 @@ int CCTK_GFIndex2D (const cGH *GH, int i, int j)
   if (i < 0 || i >= GH->cctk_lsh[0] ||
       j < 0 || j >= GH->cctk_lsh[1])
   {
-    CCTK_VError (__LINE__, __FILE__, CCTK_THORNSTRING,
+    CCTK_VError (__LINE__, __FILE__, "Cactus",
                  "Grid function index out of bounds.  i=%d j=%d cctk_lsh=[%d,%d]",
                  i, j, GH->cctk_lsh[0], GH->cctk_lsh[1]);
   }
@@ -86,7 +86,7 @@ int CCTK_GFIndex3D (const cGH *GH, int i, int j, int k)
       j < 0 || j >= GH->cctk_lsh[1] ||
       k < 0 || k >= GH->cctk_lsh[2])
   {
-    CCTK_VError (__LINE__, __FILE__, CCTK_THORNSTRING,
+    CCTK_VError (__LINE__, __FILE__, "Cactus",
                  "Grid function index out of bounds.  i=%d j=%d k=%d cctk_lsh=[%d,%d,%d]",
                  i, j, k, GH->cctk_lsh[0], GH->cctk_lsh[1], GH->cctk_lsh[2]);
   }
@@ -102,7 +102,7 @@ int CCTK_GFIndex4D (const cGH *GH, int i, int j, int k, int l)
       k < 0 || k >= GH->cctk_lsh[2] ||
       l < 0 || l >= GH->cctk_lsh[3])
   {
-    CCTK_VError (__LINE__, __FILE__, CCTK_THORNSTRING,
+    CCTK_VError (__LINE__, __FILE__, "Cactus",
                  "Grid function index out of bounds.  i=%d j=%d k=%d l=%d cctk_lsh=[%d,%d,%d,%d]",
                  i, j, k, l, GH->cctk_lsh[0], GH->cctk_lsh[1], GH->cctk_lsh[2], GH->cctk_lsh[3]);
   }
@@ -115,7 +115,7 @@ int CCTK_VectGFIndex0D (const cGH *GH, int n)
 #ifdef CCTK_DEBUG
   if (n < 0)
   {
-    CCTK_VError (__LINE__, __FILE__, CCTK_THORNSTRING,
+    CCTK_VError (__LINE__, __FILE__, "Cactus",
                  "Vector index out of bounds.  n=%d",
                  n);
   }
@@ -128,13 +128,13 @@ int CCTK_VectGFIndex1D (const cGH *GH, int i, int n)
 #ifdef CCTK_DEBUG
   if (i < 0 || i >= GH->cctk_lsh[0])
   {
-    CCTK_VError (__LINE__, __FILE__, CCTK_THORNSTRING,
+    CCTK_VError (__LINE__, __FILE__, "Cactus",
                  "Grid function index out of bounds.  i=%d cctk_lsh=[%d]",
                  i, GH->cctk_lsh[0]);
   }
   if (n < 0)
   {
-    CCTK_VError (__LINE__, __FILE__, CCTK_THORNSTRING,
+    CCTK_VError (__LINE__, __FILE__, "Cactus",
                  "Vector index out of bounds.  n=%d",
                  n);
   }
@@ -148,13 +148,13 @@ int CCTK_VectGFIndex2D (const cGH *GH, int i, int j, int n)
   if (i < 0 || i >= GH->cctk_lsh[0] ||
       j < 0 || j >= GH->cctk_lsh[1])
   {
-    CCTK_VError (__LINE__, __FILE__, CCTK_THORNSTRING,
+    CCTK_VError (__LINE__, __FILE__, "Cactus",
                  "Grid function index out of bounds.  i=%d j=%d cctk_lsh=[%d,%d]",
                  i, j, GH->cctk_lsh[0], GH->cctk_lsh[1]);
   }
   if (n < 0)
   {
-    CCTK_VError (__LINE__, __FILE__, CCTK_THORNSTRING,
+    CCTK_VError (__LINE__, __FILE__, "Cactus",
                  "Vector index out of bounds.  n=%d",
                  n);
   }
@@ -169,13 +169,13 @@ int CCTK_VectGFIndex3D (const cGH *GH, int i, int j, int k, int n)
       j < 0 || j >= GH->cctk_lsh[1] ||
       k < 0 || k >= GH->cctk_lsh[2])
   {
-    CCTK_VError (__LINE__, __FILE__, CCTK_THORNSTRING,
+    CCTK_VError (__LINE__, __FILE__, "Cactus",
                  "Grid function index out of bounds.  i=%d j=%d k=%d cctk_lsh=[%d,%d,%d]",
                  i, j, k, GH->cctk_lsh[0], GH->cctk_lsh[1], GH->cctk_lsh[2]);
   }
   if (n < 0)
   {
-    CCTK_VError (__LINE__, __FILE__, CCTK_THORNSTRING,
+    CCTK_VError (__LINE__, __FILE__, "Cactus",
                  "Vector index out of bounds.  n=%d",
                  n);
   }
@@ -191,13 +191,13 @@ int CCTK_VectGFIndex4D (const cGH *GH, int i, int j, int k, int l, int n)
       k < 0 || k >= GH->cctk_lsh[2] ||
       l < 0 || l >= GH->cctk_lsh[3])
   {
-    CCTK_VError (__LINE__, __FILE__, CCTK_THORNSTRING,
+    CCTK_VError (__LINE__, __FILE__, "Cactus",
                  "Grid function index out of bounds.  i=%d j=%d k=%d l=%d cctk_lsh=[%d,%d,%d,%d]",
                  i, j, k, l, GH->cctk_lsh[0], GH->cctk_lsh[1], GH->cctk_lsh[2], GH->cctk_lsh[3]);
   }
   if (n < 0)
   {
-    CCTK_VError (__LINE__, __FILE__, CCTK_THORNSTRING,
+    CCTK_VError (__LINE__, __FILE__, "Cactus",
                  "Vector index out of bounds.  n=%d",
                  n);
   }
