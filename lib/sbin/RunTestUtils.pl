@@ -1111,11 +1111,10 @@ sub RunCactus
   printf "\n  Issuing $command\n";
 
   $retcode = 0;
-  open (CMD, "pwd; $command 2>&1 |") or die "Could not start '$command': $!";
   open (LOG, "> $testname.log") or die "Could not open '$testname.log' for writing: $!";
 
   my $start_time = &Time::HiRes::gettimeofday();
-  open (CMD, "pwd; $command 2>&1 |");
+  open (CMD, "pwd; $command 2>&1 |") or die "Could not start '$command': $!";
 
   while (<CMD>)
   {
