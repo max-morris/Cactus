@@ -1015,6 +1015,11 @@ command line to choose defaults for these for non-interactive use.
 Setting \var{CCTK\_TESTSUITE\_RUN\_TESTS} to a space separated list of
 \var{thorn} and \var{thorn/test} entries lets you choose which tests to run.
 
+Setting \var{CCTK\_TESTSUITE\_PARALLEL\_TESTS} to a non-zero value lets
+you run that many tests simulataneously. Depending on your MPI stack
+used this may require disabling automatic core binding avoid binding
+rank 0 of multiple tests to the same compute core.
+
 Setting \var{TESTS\_DIR} lets you choose the directory where tests are run
 in, by default this is the \texttt{TEST} directory in the Cactus main
 directory.
