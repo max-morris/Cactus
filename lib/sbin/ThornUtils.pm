@@ -92,7 +92,7 @@ sub FindDirectories
 
    closedir $dirhdl;
 
-   return @directories;
+   return sort @directories;
 } 
 
 #/*@@

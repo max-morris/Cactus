@@ -140,5 +140,5 @@ sub FindDirectories
    }
    closedir $dirhdl;
 
-   return @good_directories;
+   return sort @good_directories;
 } ## END :Find_Directories:

@@ -1204,7 +1204,7 @@ sub FindFiles
   $unrecognizedfiles="";
 
   opendir (DIR, $dir);
-  @tmp = readdir (DIR);
+  @tmp = sort readdir (DIR);
   closedir (DIR);
 
   foreach $f (@tmp)

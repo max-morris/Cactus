@@ -61,7 +61,7 @@ while (<STDIN>) {
                 # the wrong case on case-insensitive file systems
                 my @filenames;
                 if (opendir DIR, "$srcdir/$subdir") {
-                    @filenames = readdir DIR;
+                    @filenames = sort readdir DIR;
                     closedir DIR;
                 }
                 if (grep { $_ eq $name } @filenames) {
@@ -82,7 +82,7 @@ while (<STDIN>) {
                 foreach my $subdir (@subdirs) {
                     my @filenames;
                     if (opendir DIR, "$otherdir/$subdir") {
-                        @filenames = readdir DIR;
+                        @filenames = sort readdir DIR;
                         closedir DIR;
                     }
                     if (grep { $_ eq $name } @filenames) {
@@ -133,7 +133,7 @@ while (<STDIN>) {
             LOOP: foreach my $subdir (@subdirs) {
                 my @filenames;
                 if (opendir DIR, "$srcdir/$subdir") {
-                    @filenames = readdir DIR;
+                    @filenames = sort readdir DIR;
                     closedir DIR;
                 }
                 foreach my $suffix (@suffixes) {
@@ -158,7 +158,7 @@ while (<STDIN>) {
                 foreach my $subdir (@subdirs) {
                     my @filenames;
                     if (opendir DIR, "$otherdir/$subdir") {
-                        @filenames = readdir DIR;
+                        @filenames = sort readdir DIR;
                         closedir DIR;
                     }
                     foreach my $suffix (@suffixes) {

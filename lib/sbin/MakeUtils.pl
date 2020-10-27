@@ -33,7 +33,7 @@ sub buildthorns
   opendir(my $ARRANGEMENTS, $arrangement_dir) or
     die "Cannot open arrangements directory '$arrangement_dir': $!";
 
-  while($_ = readdir $ARRANGEMENTS)
+  foreach (sort readdir $ARRANGEMENTS)
   {
     # Ignore CVS and backup stuff
     next if (m:^CVS$:);
@@ -61,7 +61,7 @@ sub buildthorns
       opendir(my $THORNLIST, "$arrangement_dir/$arrangement") or
         die "Cannot open arrangement directory '$arrangement_dir/$arrangement': $!";
 
-      while($_ = readdir $THORNLIST)
+      foreach (sort readdir $THORNLIST)
       {
         # Ignore CVS and backup stuff
         next if (m:^CVS$:);
