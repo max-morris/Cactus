@@ -224,8 +224,13 @@ sub CreateConfigurationBindings
     }
     &WriteFile("../include/$thorn/cctk_Capabilities.h",\$temp);
   }
-  &WriteFile("../include/CactusBindings/cctk_Capabilities.h",
-             \"#include \"../Configuration/Thorns/cctki_Cactus.h\"\n");
+  # CactusBindings pseudo-thorn
+  $temp = '';
+  if ($cfg->{"\UCactus\E REQUIRES"})
+  {
+    $temp .= "#include \"../Configuration/Thorns/cctki_Cactus.h\"\n";
+  }
+  &WriteFile("../include/CactusBindings/cctk_Capabilities.h", \$temp);
 }
 
 return 1;
