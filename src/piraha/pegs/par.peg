@@ -6,7 +6,7 @@ skipeol = ([ \t\r]|\#.*)*($|\n)
 any = [^]
 stringeol = \n
 stringchar = .
-stringcomment = #.*
+stringcomment = \#.*
 stringparser = ^({var}|{stringchar})*({stringeol}({stringcomment}|{var}|{any})*)?$
 # Note that / occurs in some par files. It is my
 # feeling that this should require quote marks.
