@@ -73,8 +73,16 @@ sub create_interface_database
   {
     print "   $thorn\n";
     #       Get the arrangement name for the thorn
-    $thorns{$thorn} =~ m:.*/arrangements/([^/]*)/[^/]*:;
-    my $arrangement = $1;
+    my $arrangement ;
+    if ($thorn eq "Cactus")
+    {
+      $arrangement = "";
+    }
+    else
+    {
+      $thorns{$thorn} =~ m:.*/arrangements/([^/]*)/[^/]*: or die "Could no extract arrangement from $thorns{$thorn}";
+      $arrangement = $1;
+    }
 
     #       Read the data
     $ccl_file = "$thorns{$thorn}/interface.ccl";
