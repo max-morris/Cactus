@@ -857,8 +857,8 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
                                  i, \
                                  ni, \
                                  name/**/2_idir, \
-                                 max(cctk_tile_min(1)+1, name/**/2_bmin(1)), \
-                                 min(cctk_tile_max(1), name/**/2_bmax(1)), \
+                                 max(cctk_tile_min(1)+1, name/**/2_bmin(1)),  \
+                                 min(cctk_tile_max(1), name/**/2_bmax(1)),  \
                                  cctk_ash(1), \
                                  imin,imax, name/**/2_istr) \
 
@@ -942,8 +942,8 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
                                  i, \
                                  ni, \
                                  name/**/2_idir, \
-                                 max(cctk_tile_min(1)+1, name/**/2_bmin(1)), \
-                                 min(cctk_Tile_max(1), name/**/2_bmax(1)), \
+                                 max(cctk_tile_min(1)+1, name/**/2_bmin(1)),  \
+                                 min(cctk_Tile_max(1), name/**/2_bmax(1)),  \
                                  cctk_ash(1), \
                                  imin,imax, name/**/2_istr) \
 
@@ -1032,8 +1032,8 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && !$omp end single copyprivate(name/**/3_bndsize) \
    && CCTK_LOOP1STR_INTERIOR(name/**/_int, \
                              i, \
-                             int(name/**/3_bndsize(1+1)), \
-                             int(name/**/3_bndsize(2)), \
+                             int(name/**/3_bndsize(1+1)),  \
+                             int(name/**/3_bndsize(2)),  \
                              imin,imax, (cctki3_istr)) \
 
 #define CCTK_ENDLOOP1STR_INT(name) \
@@ -1084,10 +1084,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && CCTK_LOOP1STR_BOUNDARIES(name/**/_bnd, \
                                i, \
                                ni, \
-                               int(name/**/3_bndsize(1)), \
-                               int(name/**/3_bndsize(2)), \
-                               int(name/**/3_is_physbnd(1)), \
-                               int(name/**/3_is_physbnd(2)), \
+                               int(name/**/3_bndsize(1)),  \
+                               int(name/**/3_bndsize(2)),  \
+                               int(name/**/3_is_physbnd(1)),  \
+                               int(name/**/3_is_physbnd(2)),  \
                                imin,imax, (cctki3_istr)) \
 
 #define CCTK_ENDLOOP1STR_BND(name) \
@@ -1141,10 +1141,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && CCTK_LOOP1STR_INTBOUNDARIES(name/**/_bnd, \
                                   i, \
                                   ni, \
-                                  int(name/**/3_bndsize(1)), \
-                                  int(name/**/3_bndsize(2)), \
-                                  int(name/**/3_is_physbnd(1)), \
-                                  int(name/**/3_is_physbnd(2)), \
+                                  int(name/**/3_bndsize(1)),  \
+                                  int(name/**/3_bndsize(2)),  \
+                                  int(name/**/3_is_physbnd(1)),  \
+                                  int(name/**/3_is_physbnd(2)),  \
                                   imin,imax, (cctki3_istr)) \
 
 #define CCTK_ENDLOOP1STR_INTBND(name) \
@@ -2017,8 +2017,8 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
                                  i,j, \
                                  ni,nj, \
                                  name/**/2_idir,name/**/2_jdir, \
-                                 max(cctk_tile_min(1)+1, name/**/2_bmin(1)),max(cctk_tile_min(2)+1, name/**/2_bmin(2)), \
-                                 min(cctk_tile_max(1), name/**/2_bmax(1)),min(cctk_tile_max(2), name/**/2_bmax(2)), \
+                                 max(cctk_tile_min(1)+1, name/**/2_bmin(1)),max(cctk_tile_min(2)+1, name/**/2_bmin(2)),  \
+                                 min(cctk_tile_max(1), name/**/2_bmax(1)),min(cctk_tile_max(2), name/**/2_bmax(2)),  \
                                  cctk_ash(1),cctk_ash(2), \
                                  imin,imax, name/**/2_istr) \
 
@@ -2115,8 +2115,8 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
                                  i,j, \
                                  ni,nj, \
                                  name/**/2_idir,name/**/2_jdir, \
-                                 max(cctk_tile_min(1)+1, name/**/2_bmin(1)),max(cctk_tile_min(2)+1, name/**/2_bmin(2)), \
-                                 min(cctk_Tile_max(1), name/**/2_bmax(1)),min(cctk_Tile_max(2), name/**/2_bmax(2)), \
+                                 max(cctk_tile_min(1)+1, name/**/2_bmin(1)),max(cctk_tile_min(2)+1, name/**/2_bmin(2)),  \
+                                 min(cctk_Tile_max(1), name/**/2_bmax(1)),min(cctk_Tile_max(2), name/**/2_bmax(2)),  \
                                  cctk_ash(1),cctk_ash(2), \
                                  imin,imax, name/**/2_istr) \
 
@@ -2206,8 +2206,8 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && !$omp end single copyprivate(name/**/3_bndsize) \
    && CCTK_LOOP2STR_INTERIOR(name/**/_int, \
                              i,j, \
-                             int(name/**/3_bndsize(1+1)),int(name/**/3_bndsize(3+1)), \
-                             int(name/**/3_bndsize(2)),int(name/**/3_bndsize(4)), \
+                             int(name/**/3_bndsize(1+1)),int(name/**/3_bndsize(3+1)),  \
+                             int(name/**/3_bndsize(2)),int(name/**/3_bndsize(4)),  \
                              imin,imax, (cctki3_istr)) \
 
 #define CCTK_ENDLOOP2STR_INT(name) \
@@ -2258,10 +2258,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && CCTK_LOOP2STR_BOUNDARIES(name/**/_bnd, \
                                i,j, \
                                ni,nj, \
-                               int(name/**/3_bndsize(1)),int(name/**/3_bndsize(3)), \
-                               int(name/**/3_bndsize(2)),int(name/**/3_bndsize(4)), \
-                               int(name/**/3_is_physbnd(1)),int(name/**/3_is_physbnd(3)), \
-                               int(name/**/3_is_physbnd(2)),int(name/**/3_is_physbnd(4)), \
+                               int(name/**/3_bndsize(1)),int(name/**/3_bndsize(3)),  \
+                               int(name/**/3_bndsize(2)),int(name/**/3_bndsize(4)),  \
+                               int(name/**/3_is_physbnd(1)),int(name/**/3_is_physbnd(3)),  \
+                               int(name/**/3_is_physbnd(2)),int(name/**/3_is_physbnd(4)),  \
                                imin,imax, (cctki3_istr)) \
 
 #define CCTK_ENDLOOP2STR_BND(name) \
@@ -2315,10 +2315,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && CCTK_LOOP2STR_INTBOUNDARIES(name/**/_bnd, \
                                   i,j, \
                                   ni,nj, \
-                                  int(name/**/3_bndsize(1)),int(name/**/3_bndsize(3)), \
-                                  int(name/**/3_bndsize(2)),int(name/**/3_bndsize(4)), \
-                                  int(name/**/3_is_physbnd(1)),int(name/**/3_is_physbnd(3)), \
-                                  int(name/**/3_is_physbnd(2)),int(name/**/3_is_physbnd(4)), \
+                                  int(name/**/3_bndsize(1)),int(name/**/3_bndsize(3)),  \
+                                  int(name/**/3_bndsize(2)),int(name/**/3_bndsize(4)),  \
+                                  int(name/**/3_is_physbnd(1)),int(name/**/3_is_physbnd(3)),  \
+                                  int(name/**/3_is_physbnd(2)),int(name/**/3_is_physbnd(4)),  \
                                   imin,imax, (cctki3_istr)) \
 
 #define CCTK_ENDLOOP2STR_INTBND(name) \
@@ -3238,8 +3238,8 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
                                  i,j,k, \
                                  ni,nj,nk, \
                                  name/**/2_idir,name/**/2_jdir,name/**/2_kdir, \
-                                 max(cctk_tile_min(1)+1, name/**/2_bmin(1)),max(cctk_tile_min(2)+1, name/**/2_bmin(2)),max(cctk_tile_min(3)+1, name/**/2_bmin(3)), \
-                                 min(cctk_tile_max(1), name/**/2_bmax(1)),min(cctk_tile_max(2), name/**/2_bmax(2)),min(cctk_tile_max(3), name/**/2_bmax(3)), \
+                                 max(cctk_tile_min(1)+1, name/**/2_bmin(1)),max(cctk_tile_min(2)+1, name/**/2_bmin(2)),max(cctk_tile_min(3)+1, name/**/2_bmin(3)),  \
+                                 min(cctk_tile_max(1), name/**/2_bmax(1)),min(cctk_tile_max(2), name/**/2_bmax(2)),min(cctk_tile_max(3), name/**/2_bmax(3)),  \
                                  cctk_ash(1),cctk_ash(2),cctk_ash(3), \
                                  imin,imax, name/**/2_istr) \
 
@@ -3349,8 +3349,8 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
                                  i,j,k, \
                                  ni,nj,nk, \
                                  name/**/2_idir,name/**/2_jdir,name/**/2_kdir, \
-                                 max(cctk_tile_min(1)+1, name/**/2_bmin(1)),max(cctk_tile_min(2)+1, name/**/2_bmin(2)),max(cctk_tile_min(3)+1, name/**/2_bmin(3)), \
-                                 min(cctk_Tile_max(1), name/**/2_bmax(1)),min(cctk_Tile_max(2), name/**/2_bmax(2)),min(cctk_Tile_max(3), name/**/2_bmax(3)), \
+                                 max(cctk_tile_min(1)+1, name/**/2_bmin(1)),max(cctk_tile_min(2)+1, name/**/2_bmin(2)),max(cctk_tile_min(3)+1, name/**/2_bmin(3)),  \
+                                 min(cctk_Tile_max(1), name/**/2_bmax(1)),min(cctk_Tile_max(2), name/**/2_bmax(2)),min(cctk_Tile_max(3), name/**/2_bmax(3)),  \
                                  cctk_ash(1),cctk_ash(2),cctk_ash(3), \
                                  imin,imax, name/**/2_istr) \
 
@@ -3441,8 +3441,8 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && !$omp end single copyprivate(name/**/3_bndsize) \
    && CCTK_LOOP3STR_INTERIOR(name/**/_int, \
                              i,j,k, \
-                             int(name/**/3_bndsize(1+1)),int(name/**/3_bndsize(3+1)),int(name/**/3_bndsize(5+1)), \
-                             int(name/**/3_bndsize(2)),int(name/**/3_bndsize(4)),int(name/**/3_bndsize(6)), \
+                             int(name/**/3_bndsize(1+1)),int(name/**/3_bndsize(3+1)),int(name/**/3_bndsize(5+1)),  \
+                             int(name/**/3_bndsize(2)),int(name/**/3_bndsize(4)),int(name/**/3_bndsize(6)),  \
                              imin,imax, (cctki3_istr)) \
 
 #define CCTK_ENDLOOP3STR_INT(name) \
@@ -3493,10 +3493,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && CCTK_LOOP3STR_BOUNDARIES(name/**/_bnd, \
                                i,j,k, \
                                ni,nj,nk, \
-                               int(name/**/3_bndsize(1)),int(name/**/3_bndsize(3)),int(name/**/3_bndsize(5)), \
-                               int(name/**/3_bndsize(2)),int(name/**/3_bndsize(4)),int(name/**/3_bndsize(6)), \
-                               int(name/**/3_is_physbnd(1)),int(name/**/3_is_physbnd(3)),int(name/**/3_is_physbnd(5)), \
-                               int(name/**/3_is_physbnd(2)),int(name/**/3_is_physbnd(4)),int(name/**/3_is_physbnd(6)), \
+                               int(name/**/3_bndsize(1)),int(name/**/3_bndsize(3)),int(name/**/3_bndsize(5)),  \
+                               int(name/**/3_bndsize(2)),int(name/**/3_bndsize(4)),int(name/**/3_bndsize(6)),  \
+                               int(name/**/3_is_physbnd(1)),int(name/**/3_is_physbnd(3)),int(name/**/3_is_physbnd(5)),  \
+                               int(name/**/3_is_physbnd(2)),int(name/**/3_is_physbnd(4)),int(name/**/3_is_physbnd(6)),  \
                                imin,imax, (cctki3_istr)) \
 
 #define CCTK_ENDLOOP3STR_BND(name) \
@@ -3550,10 +3550,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && CCTK_LOOP3STR_INTBOUNDARIES(name/**/_bnd, \
                                   i,j,k, \
                                   ni,nj,nk, \
-                                  int(name/**/3_bndsize(1)),int(name/**/3_bndsize(3)),int(name/**/3_bndsize(5)), \
-                                  int(name/**/3_bndsize(2)),int(name/**/3_bndsize(4)),int(name/**/3_bndsize(6)), \
-                                  int(name/**/3_is_physbnd(1)),int(name/**/3_is_physbnd(3)),int(name/**/3_is_physbnd(5)), \
-                                  int(name/**/3_is_physbnd(2)),int(name/**/3_is_physbnd(4)),int(name/**/3_is_physbnd(6)), \
+                                  int(name/**/3_bndsize(1)),int(name/**/3_bndsize(3)),int(name/**/3_bndsize(5)),  \
+                                  int(name/**/3_bndsize(2)),int(name/**/3_bndsize(4)),int(name/**/3_bndsize(6)),  \
+                                  int(name/**/3_is_physbnd(1)),int(name/**/3_is_physbnd(3)),int(name/**/3_is_physbnd(5)),  \
+                                  int(name/**/3_is_physbnd(2)),int(name/**/3_is_physbnd(4)),int(name/**/3_is_physbnd(6)),  \
                                   imin,imax, (cctki3_istr)) \
 
 #define CCTK_ENDLOOP3STR_INTBND(name) \
@@ -4520,8 +4520,8 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
                                  i,j,k,l, \
                                  ni,nj,nk,nl, \
                                  name/**/2_idir,name/**/2_jdir,name/**/2_kdir,name/**/2_ldir, \
-                                 max(cctk_tile_min(1)+1, name/**/2_bmin(1)),max(cctk_tile_min(2)+1, name/**/2_bmin(2)),max(cctk_tile_min(3)+1, name/**/2_bmin(3)),max(cctk_tile_min(4)+1, name/**/2_bmin(4)), \
-                                 min(cctk_tile_max(1), name/**/2_bmax(1)),min(cctk_tile_max(2), name/**/2_bmax(2)),min(cctk_tile_max(3), name/**/2_bmax(3)),min(cctk_tile_max(4), name/**/2_bmax(4)), \
+                                 max(cctk_tile_min(1)+1, name/**/2_bmin(1)),max(cctk_tile_min(2)+1, name/**/2_bmin(2)),max(cctk_tile_min(3)+1, name/**/2_bmin(3)),max(cctk_tile_min(4)+1, name/**/2_bmin(4)),  \
+                                 min(cctk_tile_max(1), name/**/2_bmax(1)),min(cctk_tile_max(2), name/**/2_bmax(2)),min(cctk_tile_max(3), name/**/2_bmax(3)),min(cctk_tile_max(4), name/**/2_bmax(4)),  \
                                  cctk_ash(1),cctk_ash(2),cctk_ash(3),cctk_ash(4), \
                                  imin,imax, name/**/2_istr) \
 
@@ -4644,8 +4644,8 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
                                  i,j,k,l, \
                                  ni,nj,nk,nl, \
                                  name/**/2_idir,name/**/2_jdir,name/**/2_kdir,name/**/2_ldir, \
-                                 max(cctk_tile_min(1)+1, name/**/2_bmin(1)),max(cctk_tile_min(2)+1, name/**/2_bmin(2)),max(cctk_tile_min(3)+1, name/**/2_bmin(3)),max(cctk_tile_min(4)+1, name/**/2_bmin(4)), \
-                                 min(cctk_Tile_max(1), name/**/2_bmax(1)),min(cctk_Tile_max(2), name/**/2_bmax(2)),min(cctk_Tile_max(3), name/**/2_bmax(3)),min(cctk_Tile_max(4), name/**/2_bmax(4)), \
+                                 max(cctk_tile_min(1)+1, name/**/2_bmin(1)),max(cctk_tile_min(2)+1, name/**/2_bmin(2)),max(cctk_tile_min(3)+1, name/**/2_bmin(3)),max(cctk_tile_min(4)+1, name/**/2_bmin(4)),  \
+                                 min(cctk_Tile_max(1), name/**/2_bmax(1)),min(cctk_Tile_max(2), name/**/2_bmax(2)),min(cctk_Tile_max(3), name/**/2_bmax(3)),min(cctk_Tile_max(4), name/**/2_bmax(4)),  \
                                  cctk_ash(1),cctk_ash(2),cctk_ash(3),cctk_ash(4), \
                                  imin,imax, name/**/2_istr) \
 
@@ -4737,8 +4737,8 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && !$omp end single copyprivate(name/**/3_bndsize) \
    && CCTK_LOOP4STR_INTERIOR(name/**/_int, \
                              i,j,k,l, \
-                             int(name/**/3_bndsize(1+1)),int(name/**/3_bndsize(3+1)),int(name/**/3_bndsize(5+1)),int(name/**/3_bndsize(7+1)), \
-                             int(name/**/3_bndsize(2)),int(name/**/3_bndsize(4)),int(name/**/3_bndsize(6)),int(name/**/3_bndsize(8)), \
+                             int(name/**/3_bndsize(1+1)),int(name/**/3_bndsize(3+1)),int(name/**/3_bndsize(5+1)),int(name/**/3_bndsize(7+1)),  \
+                             int(name/**/3_bndsize(2)),int(name/**/3_bndsize(4)),int(name/**/3_bndsize(6)),int(name/**/3_bndsize(8)),  \
                              imin,imax, (cctki3_istr)) \
 
 #define CCTK_ENDLOOP4STR_INT(name) \
@@ -4789,10 +4789,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && CCTK_LOOP4STR_BOUNDARIES(name/**/_bnd, \
                                i,j,k,l, \
                                ni,nj,nk,nl, \
-                               int(name/**/3_bndsize(1)),int(name/**/3_bndsize(3)),int(name/**/3_bndsize(5)),int(name/**/3_bndsize(7)), \
-                               int(name/**/3_bndsize(2)),int(name/**/3_bndsize(4)),int(name/**/3_bndsize(6)),int(name/**/3_bndsize(8)), \
-                               int(name/**/3_is_physbnd(1)),int(name/**/3_is_physbnd(3)),int(name/**/3_is_physbnd(5)),int(name/**/3_is_physbnd(7)), \
-                               int(name/**/3_is_physbnd(2)),int(name/**/3_is_physbnd(4)),int(name/**/3_is_physbnd(6)),int(name/**/3_is_physbnd(8)), \
+                               int(name/**/3_bndsize(1)),int(name/**/3_bndsize(3)),int(name/**/3_bndsize(5)),int(name/**/3_bndsize(7)),  \
+                               int(name/**/3_bndsize(2)),int(name/**/3_bndsize(4)),int(name/**/3_bndsize(6)),int(name/**/3_bndsize(8)),  \
+                               int(name/**/3_is_physbnd(1)),int(name/**/3_is_physbnd(3)),int(name/**/3_is_physbnd(5)),int(name/**/3_is_physbnd(7)),  \
+                               int(name/**/3_is_physbnd(2)),int(name/**/3_is_physbnd(4)),int(name/**/3_is_physbnd(6)),int(name/**/3_is_physbnd(8)),  \
                                imin,imax, (cctki3_istr)) \
 
 #define CCTK_ENDLOOP4STR_BND(name) \
@@ -4846,10 +4846,10 @@ CCTK_ATTRIBUTE_UNUSED static int cctk_loop_max(int i, int j) {
    && CCTK_LOOP4STR_INTBOUNDARIES(name/**/_bnd, \
                                   i,j,k,l, \
                                   ni,nj,nk,nl, \
-                                  int(name/**/3_bndsize(1)),int(name/**/3_bndsize(3)),int(name/**/3_bndsize(5)),int(name/**/3_bndsize(7)), \
-                                  int(name/**/3_bndsize(2)),int(name/**/3_bndsize(4)),int(name/**/3_bndsize(6)),int(name/**/3_bndsize(8)), \
-                                  int(name/**/3_is_physbnd(1)),int(name/**/3_is_physbnd(3)),int(name/**/3_is_physbnd(5)),int(name/**/3_is_physbnd(7)), \
-                                  int(name/**/3_is_physbnd(2)),int(name/**/3_is_physbnd(4)),int(name/**/3_is_physbnd(6)),int(name/**/3_is_physbnd(8)), \
+                                  int(name/**/3_bndsize(1)),int(name/**/3_bndsize(3)),int(name/**/3_bndsize(5)),int(name/**/3_bndsize(7)),  \
+                                  int(name/**/3_bndsize(2)),int(name/**/3_bndsize(4)),int(name/**/3_bndsize(6)),int(name/**/3_bndsize(8)),  \
+                                  int(name/**/3_is_physbnd(1)),int(name/**/3_is_physbnd(3)),int(name/**/3_is_physbnd(5)),int(name/**/3_is_physbnd(7)),  \
+                                  int(name/**/3_is_physbnd(2)),int(name/**/3_is_physbnd(4)),int(name/**/3_is_physbnd(6)),int(name/**/3_is_physbnd(8)),  \
                                   imin,imax, (cctki3_istr)) \
 
 #define CCTK_ENDLOOP4STR_INTBND(name) \
