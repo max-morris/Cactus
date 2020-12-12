@@ -85,7 +85,8 @@
 \def\Cplusplus{\mbox{C\hspace{-.05em}\raisebox{.4ex}{\tiny\bf ++}}}
 
 % reference to code, i.e. routine or variable names
-\newcommand{\code}[1]{\texttt{#1}}
+% \mbox helps work around issues with tex4ht on Ubuntu 20.04
+\newcommand{\code}[1]{\mbox{\texttt{#1}}}
 
 
 
