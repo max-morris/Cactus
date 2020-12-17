@@ -1058,10 +1058,8 @@ UsersGuideHTML: doc/UsersGuide/bincactus2.ps
 	     grep -e "--- warning ---" "LATEX_MESSAGES"; then         \
 	  echo "  For more information see doc/UsersGuide/LATEX_MESSAGES."; \
 	fi;                                                                 \
-  mkdir -p $(CCTK_HOME)/doc/HTML/UsersGuide;            \
-	cp UsersGuide*.png $(CCTK_HOME)/doc/HTML/UsersGuide/; \
-	cp UsersGuide*.html $(CCTK_HOME)/doc/HTML/UsersGuide/; \
-	cp UsersGuide.css $(CCTK_HOME)/doc/HTML/UsersGuide/
+	mkdir -p $(CCTK_HOME)/doc/HTML/UsersGuide;                          \
+	$(PERL) -ne '/^File: .*/ and system("cp", $$1, "$(CCTK_HOME)/doc/HTML/UsersGuide/");' UsersGuide.lg
 	@echo "  Users Guide (HTML) created in doc/HTML/UsersGuide directory."
 	@echo "  Done."
 	$(NOTIFY_DIVIDER)
@@ -1112,9 +1110,7 @@ ReferenceManualHTML:
 	  echo "  For more information see doc/ReferenceManual/LATEX_MESSAGES."; \
 	fi;                                         \
 	mkdir -p $(CCTK_HOME)/doc/HTML/ReferenceManual;                \
-	cp ReferenceManual*.png $(CCTK_HOME)/doc/HTML/ReferenceManual; \
-	cp ReferenceManual*.html $(CCTK_HOME)/doc/HTML/ReferenceManual; \
-	cp ReferenceManual.css  $(CCTK_HOME)/doc/HTML/ReferenceManual
+	$(PERL) -ne '/^File: (.*)/ and system("cp", $$1, "$(CCTK_HOME)/doc/HTML/ReferenceManual/");' ReferenceManual.lg
 	@echo "  HTML ReferenceManual created in doc/HTML/ReferenceManual directory."
 	@echo "  Done."
 	$(NOTIFY_DIVIDER)
@@ -1165,9 +1161,7 @@ MaintGuideHTML:
 	  echo "  For more information see doc/MaintGuide/LATEX_MESSAGES."; \
 	fi;                                                                 \
 	mkdir -p $(CCTK_HOME)/doc/HTML/MaintGuide;                          \
-	cp MaintGuide*.png $(CCTK_HOME)/doc/HTML/MaintGuide;                \
-	cp MaintGuide*.html $(CCTK_HOME)/doc/HTML/MaintGuide;                \
-	cp MaintGuide.css  $(CCTK_HOME)/doc/HTML/MaintGuide
+	$(PERL) -ne '/^File: (.*)/ and system("cp", $$1, "$(CCTK_HOME)/doc/HTML/MaintGuide/");' MaintGuide.lg
 	@echo "  Maintainers Guide (HTML) created in doc/HTML/MaintGuide directory."
 	@echo "  Done."
 	$(NOTIFY_DIVIDER)
