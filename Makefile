@@ -1059,7 +1059,7 @@ UsersGuideHTML: doc/UsersGuide/bincactus2.ps
 	  echo "  For more information see doc/UsersGuide/LATEX_MESSAGES."; \
 	fi;                                                                 \
 	mkdir -p $(CCTK_HOME)/doc/HTML/UsersGuide;                          \
-	$(PERL) -ne '/^File: .*/ and system("cp", $$1, "$(CCTK_HOME)/doc/HTML/UsersGuide/");' UsersGuide.lg
+	$(PERL) -ne '/^File: (.*)/ and system("cp", $$1, "$(CCTK_HOME)/doc/HTML/UsersGuide/");' UsersGuide.lg
 	@echo "  Users Guide (HTML) created in doc/HTML/UsersGuide directory."
 	@echo "  Done."
 	$(NOTIFY_DIVIDER)
