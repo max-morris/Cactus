@@ -177,7 +177,7 @@
 #undef CCTK_REAL8_TYPE
 #undef CCTK_REAL4_TYPE
 
-/* Disable 'restrict' for compiler versions known to be buggy */
+/* Disable 'restrict' for compiler versions known to be broken */
 #undef CCTK_DISABLE_RESTRICT
 
 /****************************************************************************/
