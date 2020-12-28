@@ -93,6 +93,62 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% get git revision to include in documentation
+
+\makeatletter
+% read git revision from .git directory #1
+\newcommand{\gitrevision}[1]{%
+  \begingroup%
+  % given a string "a b" return "b"
+  \def\secondoftwo##1 ##2\relax{##2}%
+  % read content of file #2 into command #1
+  % from https://tex.stackexchange.com/a/203488
+  \def\capturefilecontent##1##2{%
+    \begingroup%
+      \endlinechar=-1\everyeof={\noexpand}%
+      \edef\x{\@@input ##2 }%
+    \expandafter\endgroup\expandafter\edef\expandafter##1\expandafter{\x}%
+  }%
+  % remove last "*/" from a string
+  \def\dir@part##1/##2\relax{\if\relax##2\relax\else##1/\dir@part##2\relax\fi}%
+  % get the current HEAD
+  \IfFileExists{#1/HEAD}{% regular git checkout
+    \def\git@HEAD{#1/HEAD}%
+  }{%
+    \IfFileExists{#1}{% as a submodule
+      \capturefilecontent{\git@content}{#1}%
+      \def\module@dir{\expandafter\secondoftwo\git@content\relax}%
+      \def\git@HEAD{\dir@part#1/\relax\module@dir/HEAD}%
+    }{%
+     \def\git@HEAD{#1}% does not exist
+    }%
+  }%
+  \IfFileExists{\git@HEAD}{%
+    \capturefilecontent{\head@content}{\git@HEAD}%
+    % if its a reflink, read the link
+    %
+    % check if HEAD contains the string "ref: "
+    % expanded from from https://tex.stackexchange.com/a/26873
+    \@expandtwoargs\in@{ref: }{\head@content}\ifin@%
+      % read reflink
+      \capturefilecontent{\reflink@content}{#1/\expandafter\secondoftwo\head@content\relax}%
+      \let\git@revision\reflink@content%
+    \else%
+      \let\git@revision\head@content%
+    \fi%
+  }{%
+    \def\git@revision{\textless unknown git revision \textgreater}%
+  }%
+  \expandafter\endgroup%
+  \git@revision%
+}
+\makeatother
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % MANPAGE like description setting for options, use as % \begin{Lentry}
 %\item[text] text \end{Lentry} \usepackage{ifthen,calc}
 \newcommand{\entrylabel}[1]{\mbox{\textsf{#1}}\hfil}
