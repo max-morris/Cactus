@@ -1,4 +1,6 @@
 ---
+# use with clang-format-9
+# last tested with clang-format 9.0.1-16 by rhaas on 2021-01-23
 Language:        Cpp
 # BasedOnStyle:  LLVM
 AccessModifierOffset: -2
