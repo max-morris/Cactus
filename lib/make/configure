@@ -5496,12 +5496,12 @@ cross_compiling=$ac_cv_prog_cc_cross
 fi
 
 
-echo $ac_n "checking if Intel compiler has buggy restrict""... $ac_c" 1>&6
-echo "configure:5501: checking if Intel compiler has buggy restrict" >&5
-if eval "test \"`echo '$''{'cctk_cv_have_buggy_intel_restrict'+set}'`\" = set"; then
+echo $ac_n "checking if Intel compiler has broken restrict""... $ac_c" 1>&6
+echo "configure:5501: checking if Intel compiler has broken restrict" >&5
+if eval "test \"`echo '$''{'cctk_cv_have_broken_intel_restrict'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
-  cctk_cv_have_buggy_intel_restrict=no
+  cctk_cv_have_broken_intel_restrict=no
 # Try C compiler
 cat > conftest.$ac_ext <<EOF
 #line 5508 "configure"
@@ -5521,7 +5521,7 @@ else
   echo "configure: failed program was:" >&5
   cat conftest.$ac_ext >&5
   rm -rf conftest*
-  cctk_cv_have_buggy_intel_restrict=yes
+  cctk_cv_have_broken_intel_restrict=yes
 fi
 rm -f conftest*
 # Try C++ compiler
@@ -5549,7 +5549,7 @@ else
   echo "configure: failed program was:" >&5
   cat conftest.$ac_ext >&5
   rm -rf conftest*
-  cctk_cv_have_buggy_intel_restrict=yes
+  cctk_cv_have_broken_intel_restrict=yes
 fi
 rm -f conftest*
 ac_ext=c
@@ -5562,7 +5562,7 @@ cross_compiling=$ac_cv_prog_cc_cross
 
 fi
 
-if test "x$cctk_cv_have_buggy_intel_restrict" = 'xyes'; then
+if test "x$cctk_cv_have_broken_intel_restrict" = 'xyes'; then
   cat >> confdefs.h <<\EOF
 #define CCTK_DISABLE_RESTRICT 1
 EOF
@@ -5572,12 +5572,12 @@ else
   echo "$ac_t""no" 1>&6
 fi
 
-echo $ac_n "checking if compiler has buggy omp collapse""... $ac_c" 1>&6
-echo "configure:5577: checking if compiler has buggy omp collapse" >&5
-if eval "test \"`echo '$''{'cctk_cv_have_buggy_omp_collapse'+set}'`\" = set"; then
+echo $ac_n "checking if compiler has broken omp collapse""... $ac_c" 1>&6
+echo "configure:5577: checking if compiler has broken omp collapse" >&5
+if eval "test \"`echo '$''{'cctk_cv_have_broken_omp_collapse'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
-  cctk_cv_have_buggy_omp_collapse=no
+  cctk_cv_have_broken_omp_collapse=no
 # Try C compiler
 # see see http://software.intel.com/en-us/articles/intel-professional-edition-compilers-111-fixes-list/
 cat > conftest.$ac_ext <<EOF
@@ -5597,7 +5597,7 @@ else
   echo "configure: failed program was:" >&5
   cat conftest.$ac_ext >&5
   rm -rf conftest*
-  cctk_cv_have_buggy_omp_collapse=yes
+  cctk_cv_have_broken_omp_collapse=yes
 fi
 rm -f conftest*
 # Try C++ compiler
@@ -5624,7 +5624,7 @@ else
   echo "configure: failed program was:" >&5
   cat conftest.$ac_ext >&5
   rm -rf conftest*
-  cctk_cv_have_buggy_omp_collapse=yes
+  cctk_cv_have_broken_omp_collapse=yes
 fi
 rm -f conftest*
 ac_ext=c
@@ -5641,13 +5641,13 @@ cross_compiling=$ac_cv_prog_cc_cross
 cctk_cv_intel_build_date=$($F90 -V 2>&1 | $PERL -n -e '/intel.*build (\d{8})/i && print $1')
 if test "x$cctk_cv_intel_build_date" != 'x' ; then
   if test $cctk_cv_intel_build_date -lt 20100801 ; then
-    cctk_cv_have_buggy_omp_collapse=yes
+    cctk_cv_have_broken_omp_collapse=yes
   fi
 fi
 
 fi
 
-if test "x$cctk_cv_have_buggy_omp_collapse" = 'xyes'; then
+if test "x$cctk_cv_have_broken_omp_collapse" = 'xyes'; then
   cat >> confdefs.h <<\EOF
 #define CCTK_DISABLE_OMP_COLLAPSE 1
 EOF

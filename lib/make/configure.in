@@ -839,17 +839,17 @@ dnl #######################################################################
 dnl ############################ Compiler bugs ############################
 dnl #######################################################################
 
-AC_MSG_CHECKING([if Intel compiler has buggy restrict])
-AC_CACHE_VAL(cctk_cv_have_buggy_intel_restrict,
+AC_MSG_CHECKING([if Intel compiler has broken restrict])
+AC_CACHE_VAL(cctk_cv_have_broken_intel_restrict,
 [dnl
-cctk_cv_have_buggy_intel_restrict=no
+cctk_cv_have_broken_intel_restrict=no
 # Try C compiler
 AC_TRY_COMPILE(,
 [#if (defined __INTEL_COMPILER                &&                 \
      __INTEL_COMPILER_BUILD_DATE >= 20120731 &&                 \
      __INTEL_COMPILER_BUILD_DATE <  20130728)
 #error "icpc with failing __restrict__ handling detected"
-#endif], [], [cctk_cv_have_buggy_intel_restrict=yes])
+#endif], [], [cctk_cv_have_broken_intel_restrict=yes])
 # Try C++ compiler
 AC_LANG_SAVE dnl
 AC_LANG_CPLUSPLUS dnl
@@ -858,27 +858,27 @@ AC_TRY_COMPILE(,
      __INTEL_COMPILER_BUILD_DATE >= 20120731 &&                 \
      __INTEL_COMPILER_BUILD_DATE <  20130728)
 #error "icpc with failing __restrict__ handling detected"
-#endif], [], [cctk_cv_have_buggy_intel_restrict=yes])
+#endif], [], [cctk_cv_have_broken_intel_restrict=yes])
 AC_LANG_RESTORE
 ])
-if test "x$cctk_cv_have_buggy_intel_restrict" = 'xyes'; then
+if test "x$cctk_cv_have_broken_intel_restrict" = 'xyes'; then
   AC_DEFINE(CCTK_DISABLE_RESTRICT, 1)
   AC_MSG_RESULT(yes)
 else
   AC_MSG_RESULT(no)
 fi
 
-AC_MSG_CHECKING([if compiler has buggy omp collapse])
-AC_CACHE_VAL(cctk_cv_have_buggy_omp_collapse,
+AC_MSG_CHECKING([if compiler has broken omp collapse])
+AC_CACHE_VAL(cctk_cv_have_broken_omp_collapse,
 [dnl
-cctk_cv_have_buggy_omp_collapse=no
+cctk_cv_have_broken_omp_collapse=no
 # Try C compiler
 # see see http://software.intel.com/en-us/articles/intel-professional-edition-compilers-111-fixes-list/
 AC_TRY_COMPILE(,
 [#if ((defined __IBMC__ && defined _ARCH_450D) || \
       (defined __INTEL_COMPILER && __INTEL_COMPILER_BUILD_DATE < 20100801))
 #error "compiler with failing omp collapse detected"
-#endif], [], [cctk_cv_have_buggy_omp_collapse=yes])
+#endif], [], [cctk_cv_have_broken_omp_collapse=yes])
 # Try C++ compiler
 AC_LANG_SAVE dnl
 AC_LANG_CPLUSPLUS dnl
@@ -886,7 +886,7 @@ AC_TRY_COMPILE(,
 [#if ((defined __IBMC__ && defined _ARCH_450D) || \
       (defined __INTEL_COMPILER && __INTEL_COMPILER_BUILD_DATE < 20100801))
 #error "compiler with failing omp collapse detected"
-#endif], [], [cctk_cv_have_buggy_omp_collapse=yes])
+#endif], [], [cctk_cv_have_broken_omp_collapse=yes])
 AC_LANG_RESTORE
 # Try Fortran compiler, there is no preprocessor so I need to call the
 # compiler and check its version output.
@@ -895,11 +895,11 @@ AC_LANG_RESTORE
 cctk_cv_intel_build_date=$($F90 -V 2>&1 | $PERL -n -e '/intel.*build (\d{8})/i && print $1')
 if test "x$cctk_cv_intel_build_date" != 'x' ; then
   if test $cctk_cv_intel_build_date -lt 20100801 ; then
-    cctk_cv_have_buggy_omp_collapse=yes
+    cctk_cv_have_broken_omp_collapse=yes
   fi
 fi
 ])
-if test "x$cctk_cv_have_buggy_omp_collapse" = 'xyes'; then
+if test "x$cctk_cv_have_broken_omp_collapse" = 'xyes'; then
   AC_DEFINE(CCTK_DISABLE_OMP_COLLAPSE, 1)
   AC_MSG_RESULT(yes)
 else
