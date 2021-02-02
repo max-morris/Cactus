@@ -645,7 +645,7 @@
 /* Whether __builtin_trap exists. */
 #undef HAVE_CCTK_CXX_BUILTIN_TRAP
 #ifdef __CUDACC__
-#  define CCTK_BUILTIN_TRAP() asm("trap;")
+#  define CCTK_BUILTIN_TRAP() assert(0);
 #else
 #  ifdef HAVE_CCTK_CXX_BUILTIN_TRAP
 #    define CCTK_BUILTIN_TRAP __builtin_trap
@@ -657,7 +657,7 @@
 /* Whether __builtin_unreachable exists. */
 #undef HAVE_CCTK_CXX_BUILTIN_UNREACHABLE
 #ifdef __CUDACC__
-#  define CCTK_BUILTIN_UNREACHABLE() asm("trap;")
+#  define CCTK_BUILTIN_UNREACHABLE() assert(0);
 #else
 #  ifdef HAVE_CCTK_CXX_BUILTIN_UNREACHABLE
 #    define CCTK_BUILTIN_UNREACHABLE __builtin_unreachable
