@@ -67,7 +67,7 @@ ThornGuideHTML: $(MASTER_FILE).tex
 	$(CCTK_HOME)/lib/sbin/ConvertFigures $(CCTK_HOME)/arrangements
 	@echo "  LaTeXing $<...."
 	# Fall through any latex errors so as to print sensible error message
-	-$(HTLATEX) $< "html,2,fn-in" "" "" --interaction=nonstopmode < /dev/null 2>&1 | tee LOG_LATEX_FULL_MSGS | grep -v Underfull | grep -v Overfull | grep -v OT1 > LOG_LATEX_MSGS
+	-$(HTLATEX) $< $(HTLATEXFLAGS) < /dev/null 2>&1 | tee LOG_LATEX_FULL_MSGS | grep -v Underfull | grep -v Overfull | grep -v OT1 > LOG_LATEX_MSGS
 	if test -e "ThornGuide.html"; then                                    \
 	   if grep "^\! " "LOG_LATEX_FULL_MSGS" | grep -v "destination with the same identifier" | grep -v "You have requested package" ; then            \
 	     echo "  Problem in $<.  See $(DOCBUILDDIR)/LOG_LATEX_* .";  \
@@ -77,9 +77,7 @@ ThornGuideHTML: $(MASTER_FILE).tex
 	     exit 0;                                             \
 	   fi;                                                   \
 	   mkdir -p $(CCTK_HOME)/doc/HTML/ThornGuide;            \
-	   cp ThornGuide*.png  $(CCTK_HOME)/doc/HTML/ThornGuide; \
-     cp ThornGuide*.html $(CCTK_HOME)/doc/HTML/ThornGuide; \
-     cp ThornGuide.css   $(CCTK_HOME)/doc/HTML/ThornGuide; \
+	   $(PERL) -ne '/^File: (.*)/ and system("mv", $$1, "$(CCTK_HOME)/doc/HTML/ThornGuide/");' ThornGuide.lg \
 	else                                                     \
 	   echo "  Cannot find $@, an error must have occured."; \
 	fi
