@@ -13,13 +13,10 @@ if [ -n "${files}" ]; then
   echo "  Converting figures to postscript"
 fi
 
-# name of Ghostscript interpreter command
-GS=gs
-
 for i in $files; do
-  epsfilename=`echo $i | sed s/.pdf$/.eps/`
-  if [ "$i" != "documentation.pdf" ] && [ ! -e $epsfilename ]; then
-    echo "   " `basename $i` " -> " `basename $epsfilename`
-    $GS -q -dNOCACHE -dNOPAUSE -dBATCH -dSAFER -sDEVICE=eps2write -sOutputFile=$epsfilename $i
+  psfilename=`echo $i | sed s/.pdf$/.ps/`
+  if [ "$i" != "documentation.pdf" ] && [ ! -e $psfilename ]; then
+    echo "   " `basename $i` " -> " `basename $psfilename`
+    pdf2ps $i $psfilename
   fi
 done
