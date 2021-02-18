@@ -52,6 +52,7 @@ int         CCTK_GroupIndex(const char *groupname);
 int         CCTK_GroupIndexFromVar(const char *var);
 int         CCTK_GroupIndexFromVarI(int var);
 char      * CCTK_GroupName(int groupnum);
+const char *CCTK_FullGroupName(int groupnum);
 char      * CCTK_GroupNameFromVarI(int varnum);
 int         CCTK_GroupScopeNumber(const char *type);
 CCTK_INT ** CCTK_GroupSizesI(int group);
