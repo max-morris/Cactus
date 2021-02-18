@@ -728,6 +728,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_FullName) (int *nchars, int *var, ONE_FORTSTRIN
    @returntype const char *
    @returndesc
                the full name of the given variable
+               NULL if given variable index is invalid
    @endreturndesc
 @@*/
 const char *CCTK_FullVarName (int var)
@@ -1173,7 +1174,7 @@ int CCTK_GroupData (int group, cGroup *gp)
    @returntype const char *
    @returndesc
                the name of the given variable, or
-               -1 if given variable index is invalid
+               NULL if given variable index is invalid
    @endreturndesc
 @@*/
 const char *CCTK_VarName (int var)
@@ -1271,7 +1272,7 @@ int CCTK_DecomposeName (const char *fullname,
    @returndesc
                the full name of the given group (which should be freed
                if not needed anymore), or
-               -1 if given group index is invalid
+               NULL if given group index is invalid
    @endreturndesc
 @@*/
 char *CCTK_GroupName (int group)
@@ -1319,7 +1320,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GroupName) (int *nchars, int *var, ONE_FORTSTRI
    @returntype const char *
    @returndesc
                the full name of the given group (which must not be freed), or
-               -1 if given group index is invalid
+               NULL if given group index is invalid
    @endreturndesc
 @@*/
 const char *CCTK_FullGroupName (int group)
