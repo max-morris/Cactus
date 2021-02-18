@@ -236,6 +236,9 @@ from Fortran.
 \item[\code{CCTK\_FortranString}] [\pageref{CCTK-FortranString}]
   Copy the contents of a C string into a Fortran string variable
 
+\item[\code{CCTK\_FullGroupName}] [\pageref{CCTK-FullGroupName}]
+  Given a group index, returns the group name
+
 \item[\code{CCTK\_FullName}] [\pageref{CCTK-FullName}]
   Given a variable index, returns the full name of the variable
 
@@ -3808,6 +3811,36 @@ Given a variable index, returns the full name of the variable.
 \end{FunctionDescription}
 
 
+% Groups.c
+\begin{FunctionDescription}{CCTK\_FullGroupName}{Given a group index, returns the group name}
+\label{CCTK-FullGroupName}
+\begin{SynopsisSection}
+\begin{Synopsis}{C}
+\begin{verbatim}const char * name = CCTK_FullGroupName(int index)\end{verbatim}
+\end{Synopsis}
+\end{SynopsisSection}
+\begin{ParameterSection}
+\begin{Parameter}{name}
+The group name
+\end{Parameter}
+\begin{Parameter}{index}
+The group index
+\end{Parameter}
+\end{ParameterSection}
+\begin{Discussion}
+The group name must not be freed.
+\end{Discussion}
+\begin{ExampleSection}
+\begin{Example}{C}
+\begin{verbatim}
+index = CCTK_GroupIndex("evolve::scalars");
+name = CCTK_FullGroupName(index);
+printf ("Group name: %s", name);
+\end{verbatim}
+\end{Example}
+\end{ExampleSection}
+\end{FunctionDescription}
+
 
 \begin{FunctionDescription}{CCTK\_FullVarName}{Given a variable index, returns the full name of the variable}
 \label{CCTK-FullVarName}
@@ -4640,6 +4673,9 @@ The {\t cGroup} structure%%%
 \begin{SeeAlso}{"interface.ccl"}
 Defines variables, groups, tags tables, and lots of other things.
 \end{SeeAlso}
+\begin{SeeAlso2} {CCTK\_FullGroupName} {CCTK-FullGroupName}
+Gets the group name for a given group index.
+\end{SeeAlso2}
 \begin{SeeAlso2} {CCTK\_GroupDynamicData} {CCTK-GroupDynamicData}
 Gets grid-size information for a group's variables.
 \end{SeeAlso2}
@@ -5650,8 +5686,6 @@ The group index
 \end{ParameterSection}
 \begin{Discussion}
 The group name must be explicitly freed after it has been used.
-
-No Fortran routine exists at the moment.
 \end{Discussion}
 \begin{ExampleSection}
 \begin{Example}{C}
@@ -5671,7 +5705,7 @@ free (name);
 \label{CCTK-GroupNameFromVarI}
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-\begin{verbatim}char * group = CCTK_GroupNameFromVarI( int varindex)\end{verbatim}
+\begin{verbatim}char * group = CCTK_GroupNameFromVarI(int varindex)\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
 \begin{ParameterSection}
