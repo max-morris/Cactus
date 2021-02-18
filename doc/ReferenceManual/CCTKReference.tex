@@ -3812,35 +3812,64 @@ Given a variable index, returns the full name of the variable.
 
 
 % Groups.c
-\begin{FunctionDescription}{CCTK\_FullGroupName}{Given a group index, returns the group name}
+\begin{FunctionDescription}{CCTK\_FullGroupName}
 \label{CCTK-FullGroupName}
+Given a group index, returns the group name.
+
 \begin{SynopsisSection}
 \begin{Synopsis}{C}
-\begin{verbatim}const char * name = CCTK_FullGroupName(int index)\end{verbatim}
+\begin{verbatim}
+#include <cctk.h>
+
+const char *name = CCTK_FullGroupName(int index);
+\end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{thorn}
+Name of group, or \code{NULL} if group index is invalid
+\end{Result}
+\end{ResultSection}
+
 \begin{ParameterSection}
-\begin{Parameter}{name}
-The group name
-\end{Parameter}
 \begin{Parameter}{index}
 The group index
 \end{Parameter}
 \end{ParameterSection}
+
 \begin{Discussion}
 The group name must not be freed.
 \end{Discussion}
+
 \begin{ExampleSection}
 \begin{Example}{C}
 \begin{verbatim}
-index = CCTK_GroupIndex("evolve::scalars");
-name = CCTK_FullGroupName(index);
+#include <cctk.h>
+#include <stdio.h>
+
+int index = CCTK_GroupIndex("evolve::scalars");
+const char *name = CCTK_FullGroupName(index);
 printf ("Group name: %s", name);
 \end{verbatim}
 \end{Example}
 \end{ExampleSection}
-\end{FunctionDescription}
 
+\begin{SeeAlsoSection}
+\begin{SeeAlso2}{CCTK\_FullVarName}{CCTK-FullVarName}
+  Given a variable index, returns the variable name
+\end{SeeAlso2}
+\begin{SeeAlso2}{CCTK\_GroupName}{CCTK-GroupName}
+  Given a group index, returns the group name
+\end{SeeAlso2}
+\end{SeeAlsoSection}
+
+\begin{ErrorSection}
+\begin{Error}{NULL}
+The group index is invalid.
+\end{Error}
+\end{ErrorSection}
+\end{FunctionDescription}
 
 \begin{FunctionDescription}{CCTK\_FullVarName}{Given a variable index, returns the full name of the variable}
 \label{CCTK-FullVarName}
