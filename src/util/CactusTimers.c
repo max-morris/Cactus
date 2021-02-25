@@ -1024,7 +1024,7 @@ static void CCTKi_TimerReset (int this_timer, t_Timer *timer)
  /*@@
    @routine    CCTK_TimerIsRunningI
    @date       Wed Oct 24 2012  13:00:00
-   @author     Frank Löffler
+   @author     Frank Loeffler
    @desc
                Returns if a timer is currently running given by its handle.
    @enddesc
@@ -1068,7 +1068,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_TimerIsRunningI)
  /*@@
    @routine    CCTK_TimerIsRunning
    @date       Wed Oct 24 13:00:00
-   @author     Frank Löffler
+   @author     Frank Loeffler
    @desc
                Returns if a timer is currently running.
    @enddesc
