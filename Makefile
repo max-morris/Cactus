@@ -1226,19 +1226,19 @@ ArrangementDoc:
 .PHONY: ThornDocHTML
 %-ThornDocHTML: doc/UsersGuide/bincactus2.ps
 	$(NOTIFY_DEVIDER)
-	@HTLATEX=$(HTLATEX) HTLATEXFLAGS='$(HTLATEXFLAGS)' lib/sbin/ThornDocHTML $(@:%-ThornDocHTML=%)
+	@HTLATEX=$(HTLATEX) HTLATEXFLAGS='$(HTLATEXFLAGS)' PERL=$(PERL) lib/sbin/ThornDocHTML $(@:%-ThornDocHTML=%)
 	$(NOTIFY_DIVIDER)
 ThornDocHTML: doc/UsersGuide/bincactus2.ps
 	$(NOTIFY_DEVIDER)
-	@HTLATEX=$(HTLATEX) HTLATEXFLAGS='$(HTLATEXFLAGS)' lib/sbin/ThornDocHTML
+	@HTLATEX=$(HTLATEX) HTLATEXFLAGS='$(HTLATEXFLAGS)' PERL=$(PERL) lib/sbin/ThornDocHTML
 	$(NOTIFY_DIVIDER)
 %-ArrangementDocHTML: doc/UsersGuide/bincactus2.ps
 	$(NOTIFY_DEVIDER)
-	@HTLATEX=$(HTLATEX) HTLATEXFLAGS='$(HTLATEXFLAGS)' lib/sbin/ArrangementDocHTML $(@:%-ArrangementDocHTML=%)
+	@HTLATEX=$(HTLATEX) HTLATEXFLAGS='$(HTLATEXFLAGS)' PERL=$(PERL) lib/sbin/ArrangementDocHTML $(@:%-ArrangementDocHTML=%)
 	$(NOTIFY_DIVIDER)
 ArrangementDocHTML: doc/UsersGuide/bincactus2.ps
 	$(NOTIFY_DEVIDER)
-	@HTLATEX=$(HTLATEX) HTLATEXFLAGS='$(HTLATEXFLAGS)' lib/sbin/ArrangementDocHTML
+	@HTLATEX=$(HTLATEX) HTLATEXFLAGS='$(HTLATEXFLAGS)' PERL=$(PERL) lib/sbin/ArrangementDocHTML
 	$(NOTIFY_DIVIDER)
 
 ###############################################################################

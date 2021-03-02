@@ -37,6 +37,11 @@ for arr in `cd arrangements; echo *`; do
             $HTLATEX documentation "$@"> LATEX_MESSAGES 2>&1
           ) ||
           echo "    ERROR: Could not create documentation (check for latex errors)"
+
+          # use relative paths for figures and other files in HTML
+          sed -e "s+${path}/++g" <documentation.html > documentation.html.tmp
+          mv documentation.html.tmp documentation.html
+          ${PERL} -ne 'm!^File: (/.*)! and system("mv", $1, "./");' documentation.lg
         )
 
       fi                  # if arrangement has documentation
