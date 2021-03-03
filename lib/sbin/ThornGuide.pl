@@ -224,15 +224,20 @@ sub Read_New_Thorn_Doc
    while (<$DOC>)                           # loop through thorn doc.
    {
       print "processing: $_" if $debug;
-      if (/\\title\{(.*?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?.*?)\}/) { 
-	  $title = $1; 
-	  if ($title !~ /\w/) { 
-	      print 'ThornGuide.pl Warning: \title{} does not contain any word characters.\n';
-	      #close $DOC; return 0;
-	  }
+      if (/\\title\{/) {
+	 $title = &Read_LaTeX_Arg($DOC, "title");
+	 if ($title !~ /\w/) {
+	     print 'ThornGuide.pl Warning: \title{} does not contain any word characters.\n';
+	     #close $DOC; return 0;
+	 }
       }
-      if (/\\author\{(.*?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?.*?)\}/) { $author = $1;}
-      if (/\\date\{(.*?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?.*?)\}/) { $date = $1; $date =~ s/.*Date:(.*?)\$\s*?\$/$1/; }
+      if (/\\author\{/) {
+	 $author = &Read_LaTeX_Arg($DOC, "author");
+      }
+      if (/\\date\{/) {
+	 $date = &Read_LaTeX_Arg($DOC, "date");
+	 $date =~ s/.*Date:(.*?)\$\s*?\$/$1/;
+      }
       if (/^% START CACTUS THORNGUIDE\s*$/) {
          $start = 1;
 
@@ -585,4 +590,55 @@ print $OUT  <<EOC;
 \\newpage
 %%%%%%%%%%%%%%%%%%%%%%%
 EOC
+}
+
+#/*@@
+#  @routine   Read_LaTeX_Arg
+#  @date      2021-03-03T15:05:16 CST
+#  @author    Roland Haas
+#  @desc
+#     Extracts the LaTeX argument for a given command from an IO stream.
+#  @enddesc
+#  @version
+#@@*/
+sub Read_LaTeX_Arg() {
+   my ($DOC, $cmd) = @_;
+   my ($arg, $clause) = (undef, '');
+   while (1) {
+      my $buf = $_;
+      # remove newline
+      chomp $buf;
+      # remove LaTeX comments
+      $buf =~ s/(^|[^\\])(\\\\)*%.*//;
+      $clause .= " $buf";
+      # try to extract term in {} taking nested {} and escapes via \ into
+      # account
+      $clause =~ m/\\$cmd\{(.*)/;
+      my $level = 1;
+      my $esc = 0;
+      $arg = '';
+      foreach my $c (split //, $1) {
+	 if ($esc) {
+	    $arg .= $c;
+	    $esc = 0;
+	 } else {
+	    if ($c eq '/') {
+	       $arg .= $c;
+	       $esc = 1;
+	    } else {
+	       if ($c eq '{') {
+		  $level += 1;
+	       } elsif ($c eq '}') {
+		  $level -= 1;
+	       }
+	       last if $level == 0;
+	       $arg .= $c;
+	    }
+	 }
+      }
+      last if $level == 0;
+      defined ($_ = readline $DOC) or last;
+   }
+
+   return $arg;
 }
