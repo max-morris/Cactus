@@ -197,7 +197,7 @@ BUILD_ACTIVETHORNS = lib/sbin/BuildActiveThorns.pl
 
 HTLATEX = htlatex
 # use mozhtf to spearate ligatures like fi which Mozilla cannot search for
-HTLATEXFLAGS = "xhtml,mathml,mathjax,charset=utf-8" " -cmozhtf -utf8" "" -interaction=nonstopmode
+HTLATEXFLAGS = "$(CCTK_HOME)/doc/latex/tex4ht,mathml,mathjax,charset=utf-8" " -cmozhtf -utf8" "" -interaction=nonstopmode
 
 # Dividers to make the screen output slightly nicer
 DIVEL   =  __________________
