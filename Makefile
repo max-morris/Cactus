@@ -1172,7 +1172,7 @@ DOCDIR		= $(CCTK_HOME)/doc
 CONFIGNAME	= $(@:%-ThornGuide=%)
 CONFIGDIR	= $(CONFIGS_DIR)/$(CONFIGNAME)
 CONFIGOCDIR	= $(CONFIGDIR)/doc
-CONFIGBUILDDIR	= $(CONFIGDIR)/doc/build
+CONFIGDOCBUILDDIR = $(CONFIGDIR)/doc/build
 GUIDENAME	= ThornGuide-$(CONFIGNAME)
 
 ifneq ($strip($(CONFIGURATIONS)),)
@@ -1183,13 +1183,13 @@ $(addsuffix -ThornGuide,$(CONFIGURATIONS)):
 	@echo Creating ThornGuide for configuration $(CONFIGNAME)
 	cd $(CONFIGDIR); \
 	mkdir -p doc
-	rm -rf $(CONFIGBUILDDIR)
-	mkdir $(CONFIGBUILDDIR)
+	rm -rf $(CONFIGDOCBUILDDIR)
+	mkdir $(CONFIGDOCBUILDDIR)
 	if test -r $(CONFIGDIR)/ThornList ; then \
-	  cd $(CONFIGBUILDDIR); \
-	  $(MAKE) -f $(DOCDIR)/ThornGuide/Makefile THORNLIST=$(CONFIGDIR)/ThornList MASTER_FILE=$(GUIDENAME) DOCBUILDDIR=$(CONFIGBUILDDIR); \
-	  if test -e "$(CONFIGBUILDDIR)/$(GUIDENAME).pdf"; then \
-	    mv "$(CONFIGBUILDDIR)/$(GUIDENAME).pdf" $(DOCDIR)/$(GUIDENAME).pdf; \
+	  cd $(CONFIGDOCBUILDDIR); \
+	  $(MAKE) -f $(DOCDIR)/ThornGuide/Makefile THORNLIST=$(CONFIGDIR)/ThornList MASTER_FILE=$(GUIDENAME) DOCBUILDDIR=$(CONFIGDOCBUILDDIR); \
+	  if test -e "$(CONFIGDOCBUILDDIR)/$(GUIDENAME).pdf"; then \
+	    mv "$(CONFIGDOCBUILDDIR)/$(GUIDENAME).pdf" $(DOCDIR)/$(GUIDENAME).pdf; \
 	    echo "  $(GUIDENAME).pdf created in doc directory."; \
 	    echo "  Done."; \
 	  fi \
