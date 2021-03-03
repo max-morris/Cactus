@@ -431,7 +431,6 @@ endif
 	@echo "  ReferenceManual     - create reference manual doc/ReferenceManual.pdf."
 	@echo "  ReferenceManualHTML - create reference manual in HTML format in"
 	@echo "                        doc/HTML/ReferenceManual/."
-	@echo "                        doc/HTML/ThornGuide/."
 	@echo "  ThornDoc            - create documentation for all thorns in doc/ThornDoc."
 	@echo "  ThornDocHTML        - create documentation for all thorns in HTML format"
 	@echo "                        in doc/ThornHTML."
