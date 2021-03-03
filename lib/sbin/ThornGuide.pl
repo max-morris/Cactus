@@ -283,26 +283,26 @@ sub Read_New_Thorn_Doc
    }
    
    $cnts .= "\n\{\\Large\n";
-   $cnts .= "\n\\begin\{tabbing\}\n";
-   $cnts .= "\n\{\\bf Author(s):\} \\= \\kill \\\\\n";
-   $cnts .= "\n\{\\bf Title:\} \\> $title \\\\\n" if ($title =~ /\w/) && (lc($title) ne lc($thorn));
+   $cnts .= "\n\\begin\{tabular\}\{ll\}\n";
+   $cnts .= "\n\{\\bf Title:\} & $title \\\\\n" if ($title =~ /\w/) && (lc($title) ne lc($thorn));
 
    # split the authors names up if we can
    $author =~ s/\\\\/,/g;
    $author =~ s/\s*?,\s*?,\s*?/,/g;
+   $author =~ s/,\s*\}/},/g;
    my @authors = split/,/, $author;
 
    for (my $i = 0; $i < (@authors); $i++) {
-      if ($i eq 0) { $cnts .= "\n\{\\bf Author(s):\} \\>"; 
+      if ($i eq 0) { $cnts .= "\n\{\\bf Author(s):\} &";
       } else {
-         $cnts .= "\n\\\> ";
+         $cnts .= "\n\& ";
       }
       $cnts .= "$authors[$i] \\\\\n"
-      #$cnts .= "\n\{\\bf Author(s):\} \\> $author \\\\\n" if ($author =~ /\w/);
+      #$cnts .= "\n\{\\bf Author(s):\} & $author \\\\\n" if ($author =~ /\w/);
    }
 
-   $cnts .= "\n\{\\bf Date:\} \\> $date \\\\\n" if ($date =~ /\w/);
-   $cnts .= "\n\\end\{tabbing\}\n";
+   $cnts .= "\n\{\\bf Date:\} & $date \\\\\n" if ($date =~ /\w/);
+   $cnts .= "\n\\end\{tabular\}\n";
    $cnts .= "\n\}\n";
    $cnts .= "\n\\minitoc";
    close $DOC;
@@ -407,12 +407,11 @@ sub Read_Thorn_Doc
    } else {
    # we sucessfully parsed the information.  So we print out the author & title & date, etc.
       $cnts .= "\n\{\\Large\n";
-      $cnts .= "\n\\begin\{tabbing\}\n";
-      $cnts .= "\n\{\\bf Author(s):\} \\= \\kill \\\\\n";
-      $cnts .= "\n\{\\bf Title:\} \\> $title \\\\\n" if ($title =~ /\w/) && (lc($title) ne lc($thorn));
-      $cnts .= "\n\{\\bf Author(s):\} \\> $author \\\\\n" if ($author =~ /\w/);
-      $cnts .= "\n\{\\bf Date:\} \\> $date \\\\\n" if ($date =~ /\w/);
-      $cnts .= "\n\\end\{tabbing\}\n";
+      $cnts .= "\n\\begin\{tabular\}\{ll\}\n";
+      $cnts .= "\n\{\\bf Title:\} & $title \\\\\n" if ($title =~ /\w/) && (lc($title) ne lc($thorn));
+      $cnts .= "\n\{\\bf Author(s):\} & $author \\\\\n" if ($author =~ /\w/);
+      $cnts .= "\n\{\\bf Date:\} & $date \\\\\n" if ($date =~ /\w/);
+      $cnts .= "\n\\end\{tabular\}\n";
       $cnts .= "\n\}\n";
       $cnts .= "\n\\minitoc";
    }
