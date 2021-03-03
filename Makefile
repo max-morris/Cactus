@@ -196,7 +196,8 @@ NEWTHORN = lib/make/new_thorn.pl
 BUILD_ACTIVETHORNS = lib/sbin/BuildActiveThorns.pl
 
 HTLATEX = htlatex
-HTLATEXFLAGS = "xhtml,mathml,mathjax,charset=utf-8" " -cunihtf -utf8" "" -interaction=nonstopmode
+# use mozhtf to spearate ligatures like fi which Mozilla cannot search for
+HTLATEXFLAGS = "xhtml,mathml,mathjax,charset=utf-8" " -cmozhtf -utf8" "" -interaction=nonstopmode
 
 # Dividers to make the screen output slightly nicer
 DIVEL   =  __________________
