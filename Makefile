@@ -1168,33 +1168,45 @@ MaintGuideHTML:
 
 # Run ThornGuide on a configuration
 
-DOCDIR		= $(CCTK_HOME)/doc
-CONFIGNAME	= $(@:%-ThornGuide=%)
-CONFIGDIR	= $(CONFIGS_DIR)/$(CONFIGNAME)
-CONFIGOCDIR	= $(CONFIGDIR)/doc
-CONFIGDOCBUILDDIR = $(CONFIGDIR)/doc/build
-GUIDENAME	= ThornGuide-$(CONFIGNAME)
-
 ifneq ($strip($(CONFIGURATIONS)),)
-.PHONY: $(addsuffix -ThornGuide,$(CONFIGURATIONS))
+.PHONY: $(addsuffix -ThornGuide,$(CONFIGURATIONS)) $(addsuffix -ThornGuideHTML,$(CONFIGURATIONS))
 
 $(addsuffix -ThornGuide,$(CONFIGURATIONS)):
 	$(NOTIFY_DIVIDER)
-	@echo Creating ThornGuide for configuration $(CONFIGNAME)
-	cd $(CONFIGDIR); \
-	mkdir -p doc
-	rm -rf $(CONFIGDOCBUILDDIR)
-	mkdir $(CONFIGDOCBUILDDIR)
-	if test -r $(CONFIGDIR)/ThornList ; then \
-	  cd $(CONFIGDOCBUILDDIR); \
-	  $(MAKE) -f $(DOCDIR)/ThornGuide/Makefile THORNLIST=$(CONFIGDIR)/ThornList MASTER_FILE=$(GUIDENAME) DOCBUILDDIR=$(CONFIGDOCBUILDDIR); \
-	  if test -e "$(CONFIGDOCBUILDDIR)/$(GUIDENAME).pdf"; then \
-	    mv "$(CONFIGDOCBUILDDIR)/$(GUIDENAME).pdf" $(DOCDIR)/$(GUIDENAME).pdf; \
-	    echo "  $(GUIDENAME).pdf created in doc directory."; \
+	@echo Creating ThornGuide for configuration $(@:%-ThornGuide=%)
+	GUIDENAME=ThornGuide-$(@:%-ThornGuide=%); \
+	cd $(CONFIGS_DIR)/$(@:%-ThornGuide=%) && \
+	mkdir -p doc && \
+	rm -rf doc/build && mkdir doc/build && \
+	if test -r ThornList ; then \
+	  cd doc/build && \
+	  $(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile THORNLIST=$(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList MASTER_FILE=$${GUIDENAME}; \
+	  if test -e "$${GUIDENAME}.pdf"; then \
+	    mv "$${GUIDENAME}.pdf" $(CCTK_HOME)/doc/$${GUIDENAME}.pdf; \
+	    echo "  $${GUIDENAME}.pdf created in doc directory."; \
 	    echo "  Done."; \
 	  fi \
         else \
-          echo "  Error: $(CONFIGDIR)/ThornList not found."; \
+          echo "  Error: $$(pwd)/ThornList not found."; \
+	fi
+
+$(addsuffix -ThornGuideHTML,$(CONFIGURATIONS)):
+	$(NOTIFY_DIVIDER)
+	@echo Creating ThornGuideHTML for configuration $(@:%-ThornGuideHTML=%)
+	GUIDENAME=ThornGuide-$(@:%-ThornGuideHTML=%); \
+	cd $(CONFIGS_DIR)/$(@:%-ThornGuideHTML=%) && \
+	mkdir -p doc && \
+	rm -rf doc/build && mkdir doc/build && \
+	if test -r ThornList ; then \
+	  cd doc/build && \
+	  $(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile THORNLIST=$(CONFIGS_DIR)/$(@:%-ThornGuideHTML=%)/ThornList MASTER_FILE=$${GUIDENAME} HTLATEX=$(HTLATEX) HTLATEXFLAGS='$(HTLATEXFLAGS)' HTML; \
+	  if test -e "$${GUIDENAME}"; then \
+	    rm -rf "$(CCTK_HOME)/doc/HTML/$${GUIDENAME}" && mkdir -p "$(CCTK_HOME)/doc/HTML" && mv "$${GUIDENAME}" "$(CCTK_HOME)/doc/HTML/$${GUIDENAME}"; \
+	    echo "  $${GUIDENAME} created in doc/HTML directory."; \
+	    echo "  Done."; \
+	  fi \
+        else \
+          echo "  Error: $$(pwd)/ThornList not found."; \
 	fi
 endif
 
@@ -1203,7 +1215,12 @@ endif
 	@echo Configuration $(@:%-ThornGuide=%) does not exist.
 	@echo Thorn Guide creation aborted.
 
-# Make the ThornGuide
+%-ThornGuideHTML:
+	$(NOTIFY_DIVIDER)
+	@echo Configuration $(@:%-ThornGuideHTML=%) does not exist.
+	@echo Thorn Guide HTML creation aborted.
+
+# Make the ThornDoc
 
 .PHONY: ThornDoc
 %-ThornDoc:
