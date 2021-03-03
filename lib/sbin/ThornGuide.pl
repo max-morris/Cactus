@@ -2,6 +2,7 @@
 
 use strict;
 use vars qw($h $help $cctk_home $thornlist $directory $outdir $verbose $debug $outfile $tocdepth);
+use Cwd;
 #$debug = 1;
 
 #/*@@
@@ -70,7 +71,7 @@ require "MakeUtils.pl";
 # INITIAL VARIABLES #
 #####################
 
-my $start_directory = `pwd`;
+my $start_directory = &getcwd();
 chomp ($start_directory);
 
 # what file are we looking for? 
@@ -99,9 +100,9 @@ if ($outfile =~ /ThornGuide\-?(.*?)\.tex/)
 }
 
 # get the date for printing out on the first page of the documentation
-my $TODAYS_DATE = `date +%B%d%Y`;
-chomp $TODAYS_DATE;
-$TODAYS_DATE =~ s/(.*?)(\d{2})(\d{4})/$1 $2, $3/;
+my @months = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
+my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime();
+my $TODAYS_DATE = sprintf("%s %02d, %4d", $months[$mon], $mday, 1900 + $year);
 
 # set some variables in ThornUtils(.pm) namespace
 $ThornUtils::cctk_home          = $cctk_home;
@@ -129,7 +130,7 @@ if (defined $thornlist) {
 }
 
 # open the file for output #
-open (OUT, ">$outdir$outfile") || die "\nCannot open $outdir$outfile for output: $!";
+open (my $OUT, ">$outdir$outfile") || die "\nCannot open $outdir$outfile for output: $!";
 
 &Output_Top;
 ThornUtils::ClassifyThorns(\%arrangements, @listOfThorns);
@@ -146,7 +147,7 @@ foreach my $arrangement (sort keys %arrangements)
 
    # include any documentation for a given ARRANGEMENT, if no documentation exists,
    # we do NOT throw any errors.
-   print OUT &Read_Thorn_Doc($arrangements_dir, $arrangement, "");
+   print $OUT &Read_Thorn_Doc($arrangements_dir, $arrangement, "");
 
    # now each THORN in the given arrangement
    foreach my $thorn (sort @{$arrangements{$arrangement}})
@@ -218,16 +219,16 @@ sub Read_New_Thorn_Doc
    my $date = "";
    my $cnts = "";
 
-   open (DOC, "<$pathandfile") or print "\nCould not find documentation in $pathandfile: $!\n";
+   open (my $DOC, "<$pathandfile") or print "\nCould not find documentation in $pathandfile: $!\n";
 
-   while (<DOC>)                            # loop through thorn doc.
+   while (<$DOC>)                           # loop through thorn doc.
    {
       print "processing: $_" if $debug;
       if (/\\title\{(.*?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?.*?)\}/) { 
 	  $title = $1; 
 	  if ($title !~ /\w/) { 
 	      print 'ThornGuide.pl Warning: \title{} does not contain any word characters.\n';
-	      #close DOC; return 0;
+	      #close $DOC; return 0;
 	  }
       }
       if (/\\author\{(.*?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?.*?)\}/) { $author = $1;}
@@ -237,7 +238,7 @@ sub Read_New_Thorn_Doc
 
          $contents .= "\\begingroup\n";
 
-         while (($_ = <DOC>) && ($_ !~ /^% END CACTUS THORNGUIDE\s*$/))
+         while (($_ = <$DOC>) && ($_ !~ /^% END CACTUS THORNGUIDE\s*$/))
          {
             if (/(.*)\\begin\{abstract\}(.*)/) {
                $_ = "$1\\section\{Abstract\}$2";
@@ -254,7 +255,7 @@ sub Read_New_Thorn_Doc
 
             if (/\\begin\{thebibliography/) {
                my $line;
-               while (($line = <DOC>) && ($line !~ /\\end\{thebibliography/)) {
+               while (($line = <$DOC>) && ($line !~ /\\end\{thebibliography/)) {
                   $bibliography .= $line;
                }
                next;
@@ -273,7 +274,7 @@ sub Read_New_Thorn_Doc
    # (It is probably an older documentation.doc.)
    if (! $start) {
       print "ThornGuide.pl Error: % START CACTUS THORNGUIDE\\s*\$ not found\n" if $debug;
-      close DOC; return 0;
+      close $DOC; return 0;
    }
    
    $cnts .= "\n\{\\Large\n";
@@ -299,7 +300,7 @@ sub Read_New_Thorn_Doc
    $cnts .= "\n\\end\{tabbing\}\n";
    $cnts .= "\n\}\n";
    $cnts .= "\n\\minitoc";
-   close DOC;
+   close $DOC;
 
    return "$cnts\n$contents";
 }
@@ -339,16 +340,16 @@ sub Read_Thorn_Doc
    my $date = "";
    my $cnts = "";
 
-   open (DOC, "<$pathandfile") or print "\nCould not find documentation in $pathandfile: $!\n";
+   open (my $DOC, "<$pathandfile") or print "\nCould not find documentation in $pathandfile: $!\n";
 
-   while (<DOC>)                            # loop through thorn doc.
+   while (<$DOC>)                            # loop through thorn doc.
    {
       if (/\\title\{(.*?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?.*?)\}/) { $title = $1; if ($title !~ /\w/)  {$start = 0; last;}}
       if (/\\author\{(.*?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?(?:.*?\{.*?[^\{].*?\}.*?)?.*?)\}/) { $author = $1; }
       if (/\\date\{(.*?)\}/) { $date = $1; $date =~ s/.*Date:(.*?)\$\s*?\$/$1/; }
       if (/\\begin\{thebibliography/) {
          my $line;
-         while (($line = <DOC>) && ($line !~ /\\end\{thebibliography/)) {
+         while (($line = <$DOC>) && ($line !~ /\\end\{thebibliography/)) {
             $bibliography .= $line;
          }
          next;
@@ -410,7 +411,7 @@ sub Read_Thorn_Doc
       $cnts .= "\n\}\n";
       $cnts .= "\n\\minitoc";
    }
-   close DOC;
+   close $DOC;
 
    return "$cnts\n$contents";
 }
@@ -430,8 +431,8 @@ sub Add_Section
    my $thorn    = shift;
    my $contents = shift;
 
-$thorn = ThornUtils::CleanForLatex($thorn);
-print OUT <<EOC;
+   $thorn = ThornUtils::CleanForLatex($thorn);
+print $OUT <<EOC;
 
 \\chapter*{$thorn}
 \\addcontentsline{toc}{chapter}{$thorn}
@@ -451,7 +452,7 @@ EOC
 #@@*/
 sub End_Arr
 {
-print OUT <<EOC;
+print $OUT <<EOC;
 
 \\end{cactuspart}
 
@@ -473,7 +474,7 @@ sub Start_Arr
    my $partnum = shift;
 
    $arr = ThornUtils::CleanForLatex($arr);
-print OUT <<EOC;
+print $OUT <<EOC;
 
 \\begin{cactuspart}{$arr}{}{}
 EOC
@@ -498,7 +499,7 @@ sub Output_Bottom
       &End_Arr;
    }
 
-print OUT <<EOC;
+print $OUT <<EOC;
 
 $bibliography
 
@@ -518,7 +519,7 @@ EOC
 sub Output_Top 
 {
 
-print OUT  <<EOC;
+print $OUT  <<EOC;
 \\documentclass{report}
 
 \% no hyperref, because it does not work with minitoc on some machines
