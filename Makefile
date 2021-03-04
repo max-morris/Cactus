@@ -1059,7 +1059,7 @@ UsersGuideHTML: doc/UsersGuide/bincactus2.ps
 	  echo "  For more information see doc/UsersGuide/LATEX_MESSAGES."; \
 	fi;                                                                 \
 	mkdir -p $(CCTK_HOME)/doc/HTML/UsersGuide;                          \
-	$(PERL) -ne '/^File: (.*)/ and system("mv", $$1, "$(CCTK_HOME)/doc/HTML/UsersGuide/");' UsersGuide.lg
+	$(PERL) -ne 'chomp;m!^File: (.*/)?([^/]*)$$! and rename("$$1$$2", "$(CCTK_HOME)/doc/HTML/UsersGuide/$$2");' UsersGuide.lg
 	@echo "  Users Guide (HTML) created in doc/HTML/UsersGuide directory."
 	@echo "  Done."
 	$(NOTIFY_DIVIDER)
@@ -1110,7 +1110,7 @@ ReferenceManualHTML:
 	  echo "  For more information see doc/ReferenceManual/LATEX_MESSAGES."; \
 	fi;                                         \
 	mkdir -p $(CCTK_HOME)/doc/HTML/ReferenceManual;                \
-	$(PERL) -ne '/^File: (.*)/ and system("mv", $$1, "$(CCTK_HOME)/doc/HTML/ReferenceManual/");' ReferenceManual.lg
+	$(PERL) -ne 'chomp;m!^File: (.*/)?([^/]*)$$! and rename("$$1$$2", "$(CCTK_HOME)/doc/HTML/ReferenceManual/$$2");' ReferenceManual.lg
 	@echo "  HTML ReferenceManual created in doc/HTML/ReferenceManual directory."
 	@echo "  Done."
 	$(NOTIFY_DIVIDER)
@@ -1161,7 +1161,7 @@ MaintGuideHTML:
 	  echo "  For more information see doc/MaintGuide/LATEX_MESSAGES."; \
 	fi;                                                                 \
 	mkdir -p $(CCTK_HOME)/doc/HTML/MaintGuide;                          \
-	$(PERL) -ne '/^File: (.*)/ and system("mv", $$1, "$(CCTK_HOME)/doc/HTML/MaintGuide/");' MaintGuide.lg
+	$(PERL) -ne 'chomp;m!^File: (.*/)?([^/]*)! and rename("$$1$$2", "$(CCTK_HOME)/doc/HTML/MaintGuide/$$2");' MaintGuide.lg
 	@echo "  Maintainers Guide (HTML) created in doc/HTML/MaintGuide directory."
 	@echo "  Done."
 	$(NOTIFY_DIVIDER)

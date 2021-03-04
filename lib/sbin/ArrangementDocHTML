@@ -38,7 +38,7 @@ for arr in `cd arrangements; echo *`; do
             # use relative paths for figures and other files in HTML
             sed -e "s+${path}/++g" <documentation.html > documentation.html.tmp &&
             mv documentation.html.tmp documentation.html &&
-            ${PERL} -ne 'm!^File: (/.*)! and system("mv", $1, "./");' documentation.lg
+            ${PERL} -ne 'chomp;m!^File: (/.*/)?([^/]*)$! and rename("$1$2", "./$2");' documentation.lg
           ) ||
           echo "    ERROR: Could not create documentation (check for latex errors)"
 
