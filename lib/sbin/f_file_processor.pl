@@ -163,54 +163,20 @@ sub free_format_splitline
 {
   my ($LINE) = @_;
   my $OUT;
-  my $maxlen1 = $max_line_length - 1;
-  my $maxlen1i = $max_line_length - $indentation - 1;
-  my $maxlen2i = $max_line_length - $indentation - 2;
+  my $maxlen = $max_line_length - 1;
   my $sentinel = "";
 
-  if ($LINE =~ /^(.{$maxlen1,$maxlen1})../m)
+  # any piece longer than the allowed F90 length
+  while ($LINE =~ s/^(.{$maxlen,$maxlen})(..)/$2/)
   {
     $OUT = $1;
-    if ($OUT =~ /^\s*(!\$(omp|hpf))/mi)
-    {
-      $sentinel = $1;
-      $maxlen1i = $maxlen1i - length($sentinel);
-      $maxlen2i = $maxlen2i - length($sentinel);
-    }
-    # Check if the line already has a continuation mark.
-    $OUT = "$OUT&" if (! ($OUT =~ /\&\s*$/m));
+    $OUT = "$OUT&";
     &printline ($OUT);
-    $LINE =~ s/.{$maxlen1,$maxlen1}//m;
 
-    while ($LINE =~ /^(.{$maxlen1i,$maxlen1i})/m)
-    {
-      $LINE =~ /^(.{$maxlen2i,$maxlen2i})/m;
-      $OUT = $1;
-      $OUT = "$indent$sentinel&$OUT" if (! ($OUT =~ /^\s*\&/m));
-      $OUT = "$OUT&" if (! ($OUT =~ /\&\s*$/m));
-      &printline ($OUT);
-      $LINE =~ s/.{$maxlen2i,$maxlen2i}//m;
-    }
-
-    if ($LINE =~ /^\&\s*$/m)
-    {
-      &printline ("$indent$sentinel& $LINE");
-    }
-    elsif ($LINE =~ /^\s*\&\s*$/m)
-    {
-      &printline ("$indent$sentinel&$LINE");
-    }
-    else
-    {
-      $OUT = $LINE;
-      $OUT = "$indent$sentinel&$OUT" if (! ($LINE =~ /^\s*\&/m));
-      &printline ($OUT);
-    }
+    $LINE = "$indent$sentinel&$LINE";
   }
-  else
-  {
-    &printline ($LINE);
-  }
+  # any leftover piece
+  &printline ($LINE);
 }
 
 
