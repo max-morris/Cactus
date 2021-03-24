@@ -53,9 +53,6 @@ $autoline = 1;
 $autofile = "";
 while (<>)
 {
-  # Get rid of final \n
-  chomp;
-
   # Handle directives
   if (/^\#/)
   {
@@ -82,87 +79,19 @@ while (<>)
     }
   }
 
-  # Get rid of any tabs
-  s/\t/        /g;
-
-  # Chop Fortran comments to 132 columns (they stay in code)
-  # removing any quotes
-  # (standard c C, or even ! comments)
-  if (/$standard_comments/i)
+  # Put in the line breaks (&&)
+  if($free_format)
   {
-    # Remove quotes
-    s/['"]//g;
-    if (/(.{$max_line_length,$max_line_length})/)
-    {
-      &printline ($1);
-    }
-    else
-    {
-      &printline ($_);
-    }
+    s/\s*\&\&\s*/\n$indent/g;
   }
   else
   {
-    # Get rid of ! comments : a bit tricky as ! may appear inside strings
+    s/\s*\&\&\s*/\n      /g;
+  }
 
-    # the following code by Fokke Dijkstra also checks for comments
-    # on a line with a string
-    # Search for possible comment
-    if (/!(?!\$(omp|hpf))/i)
-    {
-      # find all ! " and ' and check for strings or comments
-      $string = 0;
-      while (m/(["'!])/g)
-      {
-        # keep track of position for substr include last character
-        $position = (pos) - 1;
-
-        # check if we are currently in a string and possibly end it,
-        # or check for a new string or a comment
-        if ($string)
-        {
-          if ($1 eq "\'" && $string == 1)
-          {
-            $string = 0;
-          }
-          if ($1 eq "\"" && $string == 2)
-          {
-            $string = 0;
-          }
-        }
-        elsif ($1 eq "\'")
-        {
-          $string = 1;
-        }
-        elsif ($1 eq "\"")
-        {
-          $string = 2;
-        }
-        elsif ($1 eq "!")
-        {
-          $_ = substr ($_, 0, $position);
-          last;
-        }
-      }
-    }
-
-    # Get rid of trailing blanks
-    s/\s*$//;
-
-    # Put in the line breaks (&&)
-    if($free_format)
-    {
-      s/\s*\&\&\s*/\n$indent/g;
-    }
-    else
-    {
-      s/\s*\&\&\s*/\n      /g;
-    }
-
-    foreach my $LINE (split('\n',$_))
-    {
-      &splitline($LINE);
-    }
+  while (m/(.*)\n/g)
+  {
+    &splitline($1);
   }
 
   ++$line;
@@ -292,29 +221,25 @@ sub printline
 {
   my ($LINE) = @_;
   
-  if ($LINE eq '') {
-    # don't print empty lines
-  } else {
-    if ($line_directives) {
-      if ($file ne $autofile) {
-        print "# $line \"$file\"\n";
+  if ($line_directives) {
+    if ($file ne $autofile) {
+      print "# $line \"$file\"\n";
+      $autoline = $line;
+      $autofile = $file;
+    } elsif ($line ne $autoline) {
+      if ($line>$autoline && $line<=$autoline+3) {
+        while ($autoline!=$line) {
+          print "\n";
+          ++$autoline;
+        }
+      } else {
+        # print "# $line \"$file\"\n";
+        print "# $line\n";
         $autoline = $line;
         $autofile = $file;
-      } elsif ($line ne $autoline) {
-        if ($line>$autoline && $line<=$autoline+3) {
-          while ($autoline!=$line) {
-            print "\n";
-            ++$autoline;
-          }
-        } else {
-          # print "# $line \"$file\"\n";
-          print "# $line\n";
-          $autoline = $line;
-          $autofile = $file;
-        }
       }
     }
-    print "$LINE\n";
-    ++$autoline;
   }
+  print "$LINE\n";
+  ++$autoline;
 }
