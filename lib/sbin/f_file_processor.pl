@@ -166,10 +166,50 @@ sub free_format_splitline
   my $maxlen = $max_line_length - 1;
   my $sentinel = "";
 
+  # assuming correct input then a "&" must only occur at the end or at the
+  # beginning (possibly after a sentinel) of the line, not in the bulk of it
+  #
+  # ifort and gfortran handle OMP continuations with only space differently.
+  # ifort will not accept something like "!$OMP&   &" ie only spaces between
+  # the & while gfortran will not accept "!$OMP  " ie only spaces.
+  # This triggers when breaking up constructs like:
+  # $!OMP parallel private(i)
+  # that need to be rendered as (gfortran):
+  # $!OMP parallell&
+  # $!OMP& &
+  # $!OMP&private(i)
+  # and (ifort)
+  # $!OMP parallell&
+  # $!OMP
+  # $!OMP&private(i)
+  # neither of which the other one accepts.
+  #
+  # We avoid this by remoiving multi-space sections from OMP lines where they
+  # are equivalent to a single space which avoids most instance of the issue of
+  # producing space only continuations except at the very end of a line "!$OMP
+  # parallel &" if the desired split point is just before the last space, which
+  # we handle explictly below.
+  if ($LINE =~ m/^(\s*(!\$(?:omp|hpf)))(.*)/i)
+  {
+    $head = $1;
+    $sentinel = $2;
+    $tail = $3;
+
+    $tail =~ s/\s+/ /g;
+    $LINE = "$head$tail";
+  }
+
   # any piece longer than the allowed F90 length
   while ($LINE =~ s/^(.{$maxlen,$maxlen})(..)/$2/)
   {
     $OUT = $1;
+    if ($sentinel and $LINE =~ m/^\s&$/)
+    {
+      $OUT =~ s/^(.*)(.)$/$1/;
+      $tail = $2;
+      die "Internal error: could not split '$OUT'" unless $tail =~ m/\S/;
+      $LINE = "$tail$LINE";
+    }
     $OUT = "$OUT&";
     &printline ($OUT);
 
