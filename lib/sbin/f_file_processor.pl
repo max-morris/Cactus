@@ -30,16 +30,6 @@
 # Do we want line directives?
 $line_directives = $line_directives eq 'yes';
 
-# Pick the correct set of comments to remove.
-if ($free_format)
-{
-  $standard_comments = "^\\s*!(?!\\\$(omp|hpf))";
-}
-else
-{
-  $standard_comments = "^[c!*](?!\\\$(omp|hpf))";
-}
-
 # Maximum line length for free form Fortran
 $max_line_length = 132;
 # Indentation for continued free form Fortran
@@ -51,6 +41,7 @@ $line = 1;
 $file = "";
 $autoline = 1;
 $autofile = "";
+$stringdelim = undef;
 while (<>)
 {
   # Handle directives
@@ -76,6 +67,57 @@ while (<>)
     {
       # Ignore directives
       next;
+    }
+  }
+
+  # remove comments
+  if ($free_format)
+  {
+    # handle comment markers in strings even through line continuation in strings,
+    # adapted from Fokke Dijkstra's code
+    while (m/(["'!])/g)
+    {
+      # keep track of position for substr
+      $position = pos() - 1;
+
+      if ($stringdelim)
+      {
+        $stringdelim = undef if $1 eq $stringdelim;
+      }
+      elsif ($1 eq "!")
+      {
+        unless (m/\G\$(omp|hpf)/i)
+        {
+          $_ = substr ($_, 0, $position) . "\n";
+        }
+        pos = 0; # reset global match on $_
+        last;
+      }
+      else
+      {
+        $stringdelim = $1;
+      }
+    }
+  }
+  else
+  {
+    if (not $stringdelim and m/^[c!*]/)
+    {
+      $_ = "c\n" unless m/^[c!*]\$(omp|hpf)/;
+    }
+    else
+    {
+      while (m/(["'])/g)
+      {
+        if ($stringdelim)
+        {
+          $stringdelim = undef if $1 eq $stringdelim;
+        }
+        else
+        {
+          $stringdelim = $1;
+        }
+      }
     }
   }
 
