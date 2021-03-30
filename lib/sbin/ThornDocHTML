@@ -53,7 +53,11 @@ for arr in `cd arrangements; echo *`; do
                 # the complicated expansion is needed to deal with quotes in
                 # HTLATEXFLAGS
                 eval set $HTLATEXFLAGS
-                $HTLATEX documentation "$@"> LATEX_MESSAGES 2>&1
+                $HTLATEX documentation "$@"> LATEX_MESSAGES 2>&1 &&
+                # use relative paths for figures and other files in HTML
+                sed -e "s+${path}/++g" <documentation.html > documentation.html.tmp &&
+                mv documentation.html.tmp documentation.html &&
+                ${PERL} -ne 'chomp;m!^File: (/.*/)?([^/]*)$! and rename("$1$2", "./$2");' documentation.lg
               ) ||
               echo "    ERROR: Could not create documentation (check for latex errors)"
             )

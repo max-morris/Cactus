@@ -14,8 +14,9 @@ ifneq ($(shell echo $(strip $(VERBOSE)) | tr '[:upper:]' '[:lower:]'),yes)
 endif
 
 ifeq ($(strip $(CCTK_HOME)), )
-   CCTK_HOME=$(shell pwd | sed 's,^/cygdrive/\(.\)/,\1:/,' | sed 's,^//\(.\)/,\1:/,' | sed 's/\/doc\/ThornGuide.*//' )
+   CCTK_HOME:=$(shell pwd | sed 's,^/cygdrive/\(.\)/,\1:/,' | sed 's,^//\(.\)/,\1:/,' | sed 's/\/doc\/ThornGuide.*//' )
 endif
+DOCBUILDDIR:=$(shell pwd)
 
 ARRANGEMENTS_DIR=$(CCTK_HOME)/arrangements
 
@@ -40,9 +41,10 @@ IMAGE_FILE_HTML=$(CCTK_HOME)/doc/UsersGuide/bincactus2.ps
 
 -include make.thornlist
 
-.PHONY: default
+.PHONY: default HTML
 
 default : $(MASTER_FILE).pdf
+HTML: $(MASTER_FILE).html
 
 $(MASTER_FILE).pdf: $(MASTER_FILE).tex
 	@echo "  LaTeXing $<...."
@@ -62,24 +64,25 @@ $(MASTER_FILE).pdf: $(MASTER_FILE).tex
 	   echo "  Cannot find $@, an error must have occured. See $(DOCBUILDDIR)/LOG_LATEX_* ."; \
 	fi
 
-ThornGuideHTML: $(MASTER_FILE).tex
+$(MASTER_FILE).html: $(MASTER_FILE).tex
 	# Convert figures to postscript
 	$(CCTK_HOME)/lib/sbin/ConvertFigures $(CCTK_HOME)/arrangements
-	@echo "  LaTeXing $<...."
+	@echo "  HTML-LaTeXing $<...."
 	# Fall through any latex errors so as to print sensible error message
-	-$(HTLATEX) $< "html,2,fn-in" "" "" --interaction=nonstopmode < /dev/null 2>&1 | tee LOG_LATEX_FULL_MSGS | grep -v Underfull | grep -v Overfull | grep -v OT1 > LOG_LATEX_MSGS
-	if test -e "ThornGuide.html"; then                                    \
+	-$(HTLATEX) $< $(HTLATEXFLAGS) < /dev/null 2>&1 | tee LOG_LATEX_FULL_MSGS | grep -v Underfull | grep -v Overfull | grep -v OT1 > LOG_LATEX_MSGS ; \
+	if test -e "$(MASTER_FILE).html"; then                                    \
 	   if grep "^\! " "LOG_LATEX_FULL_MSGS" | grep -v "destination with the same identifier" | grep -v "You have requested package" ; then            \
 	     echo "  Problem in $<.  See $(DOCBUILDDIR)/LOG_LATEX_* .";  \
 	     exit 1;                                             \
 	   elif grep "^LaTeX Warning:" "LOG_LATEX_FULL_MSGS" | grep -v "destination with the same identifier" | grep -v "You have requested package" ; then         \
 	     echo "  Warnings in $<.  See $(DOCBUILDDIR)/LOG_LATEX_* ."; \
-	     exit 0;                                             \
-	   fi;                                                   \
-	   mkdir -p $(CCTK_HOME)/doc/HTML/ThornGuide;            \
-	   cp ThornGuide*.png  $(CCTK_HOME)/doc/HTML/ThornGuide; \
-     cp ThornGuide*.html $(CCTK_HOME)/doc/HTML/ThornGuide; \
-     cp ThornGuide.css   $(CCTK_HOME)/doc/HTML/ThornGuide; \
+	   fi ; \
+	   : use relative paths for figures and other files in HTML && \
+	   sed -e "s+$(CCTK_HOME)/arrangements/++g" <$(MASTER_FILE).html > $(MASTER_FILE).html.tmp && \
+           mv $(MASTER_FILE).html.tmp $(MASTER_FILE).html &&       \
+	   mkdir -p $(MASTER_FILE) &&      \
+	   $(PERL) -e 'use File::Path qw{ mkpath };use File::Basename qw{ dirname }; while(<>){chomp;if(m!^File: $(CCTK_HOME)/arrangements/(.*)!){mkpath("$(MASTER_FILE)/".dirname($$1));rename("$(CCTK_HOME)/arrangements/$$1", "$(MASTER_FILE)/$$1");}}' $(MASTER_FILE).lg && \
+	   $(PERL) -ne 'chomp;m!^File: ([^/]*)! and rename($$1, "$(MASTER_FILE)/$$1")' $(MASTER_FILE).lg ; \
 	else                                                     \
 	   echo "  Cannot find $@, an error must have occured."; \
 	fi

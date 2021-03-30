@@ -14,9 +14,9 @@ if [ -n "${files}" ]; then
 fi
 
 for i in $files; do
-  psfilename=`echo $i | sed s/.pdf$/.ps/`
-  if [ "$i" != "documentation.pdf" ] && [ ! -e $psfilename ]; then
-    echo "   " `basename $i` " -> " `basename $psfilename`
-    pdf2ps $i $psfilename
+  epsfilename=`echo $i | sed s/.pdf$/.eps/`
+  if [ "$i" != "documentation.pdf" ] && [ ! -e $epsfilename ]; then
+    echo "   " `basename $i` " -> " `basename $epsfilename`
+    pdf2ps $i $epsfilename
   fi
 done

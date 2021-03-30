@@ -65,6 +65,8 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GroupIndexFromVarI)
                            (int *gindex, const int *var);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupName)
                            (int *nchars, int *var, ONE_FORTSTRING_ARG);
+void CCTK_FCALL CCTK_FNAME (CCTK_FullGroupName)
+                           (int *nchars, int *var, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupNameFromVarI)
                            (int *nchars, int *var, ONE_FORTSTRING_ARG);
 void CCTK_FCALL CCTK_FNAME (CCTK_GroupScopeNumber)
@@ -152,7 +154,8 @@ typedef struct
 {
   /* The various names of the thing. */
   char *implementation,
-       *name;
+       *name,
+       *fullname;
 
   /* The group number. */
   int number;
@@ -725,6 +728,7 @@ void CCTK_FCALL CCTK_FNAME (CCTK_FullName) (int *nchars, int *var, ONE_FORTSTRIN
    @returntype const char *
    @returndesc
                the full name of the given variable
+               NULL if given variable index is invalid
    @endreturndesc
 @@*/
 const char *CCTK_FullVarName (int var)
@@ -1170,7 +1174,7 @@ int CCTK_GroupData (int group, cGroup *gp)
    @returntype const char *
    @returndesc
                the name of the given variable, or
-               -1 if given variable index is invalid
+               NULL if given variable index is invalid
    @endreturndesc
 @@*/
 const char *CCTK_VarName (int var)
@@ -1268,7 +1272,7 @@ int CCTK_DecomposeName (const char *fullname,
    @returndesc
                the full name of the given group (which should be freed
                if not needed anymore), or
-               -1 if given group index is invalid
+               NULL if given group index is invalid
    @endreturndesc
 @@*/
 char *CCTK_GroupName (int group)
@@ -1302,6 +1306,40 @@ void CCTK_FCALL CCTK_FNAME (CCTK_GroupName) (int *nchars, int *var, ONE_FORTSTRI
   *nchars = CCTK_FortranString (groupname ? groupname : "", groupnameptr,
                                 groupnamelen);
   free (groupname);
+}
+
+
+ /*@@
+   @routine    CCTK_FullGroupName
+   @date       2021-02-17
+   @author     Erik Schnetter
+   @desc
+               Given a group index returns the group name
+   @enddesc
+
+   @returntype const char *
+   @returndesc
+               the full name of the given group (which must not be freed), or
+               NULL if given group index is invalid
+   @endreturndesc
+@@*/
+const char *CCTK_FullGroupName (int group)
+{
+  return 0 <= group && group < n_groups ?
+         groups[group].fullname :
+         NULL;
+}
+
+void CCTK_FCALL CCTK_FNAME (CCTK_FullGroupName) (int *nchars, int *var, ONE_FORTSTRING_ARG)
+{
+  ONE_FORTSTRING_PTR (groupnameptr)
+  ONE_FORTSTRING_LEN (groupnamelen)
+  const char *groupname;
+
+
+  groupname = CCTK_FullGroupName (*var);
+  *nchars = CCTK_FortranString (groupname ? groupname : "", groupnameptr,
+                                groupnamelen);
 }
 
 
@@ -2501,9 +2539,12 @@ static cGroupDefinition *CCTKi_SetupGroup (const char *implementation,
       groups = (cGroupDefinition *) temp;
 
       /* Allocate memory to various fields */
-      groups[n_groups].implementation = malloc (strlen (implementation)+1);
+      groups[n_groups].implementation = malloc (strlen (implementation) + 1);
 
       groups[n_groups].name = malloc (strlen (name) + 1);
+
+      groups[n_groups].fullname = malloc (strlen (implementation) +
+                                          strlen (name) + 3);
 
       groups[n_groups].variables = malloc (n_variables *
                                            sizeof (cVariableDefinition));
@@ -2523,6 +2564,7 @@ static cGroupDefinition *CCTKi_SetupGroup (const char *implementation,
 
         strcpy (groups[n_groups].implementation, implementation);
         strcpy (groups[n_groups].name, name);
+        sprintf (groups[n_groups].fullname, "%s::%s", implementation, name);
 
         groups[n_groups].number       = n_groups;
         groups[n_groups].n_variables  = n_variables;
@@ -2548,6 +2590,9 @@ static cGroupDefinition *CCTKi_SetupGroup (const char *implementation,
 
         free (groups[n_groups].name);
         groups[n_groups].name = NULL;
+
+        free (groups[n_groups].fullname);
+        groups[n_groups].fullname = NULL;
 
         free (groups[n_groups].variables);
         groups[n_groups].variables = NULL;

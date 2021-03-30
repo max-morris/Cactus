@@ -196,7 +196,8 @@ NEWTHORN = lib/make/new_thorn.pl
 BUILD_ACTIVETHORNS = lib/sbin/BuildActiveThorns.pl
 
 HTLATEX = htlatex
-HTLATEXFLAGS = "xhtml,mathml,mathjax,charset=utf-8" " -cunihtf -utf8" "" -interaction=nonstopmode
+# use mozhtf to spearate ligatures like fi which Mozilla cannot search for
+HTLATEXFLAGS = "$(CCTK_HOME)/doc/latex/tex4ht,mathml,mathjax,charset=utf-8" " -cmozhtf -utf8" "" -interaction=nonstopmode
 
 # Dividers to make the screen output slightly nicer
 DIVEL   =  __________________
@@ -430,7 +431,6 @@ endif
 	@echo "  ReferenceManual     - create reference manual doc/ReferenceManual.pdf."
 	@echo "  ReferenceManualHTML - create reference manual in HTML format in"
 	@echo "                        doc/HTML/ReferenceManual/."
-	@echo "                        doc/HTML/ThornGuide/."
 	@echo "  ThornDoc            - create documentation for all thorns in doc/ThornDoc."
 	@echo "  ThornDocHTML        - create documentation for all thorns in HTML format"
 	@echo "                        in doc/ThornHTML."
@@ -1059,7 +1059,7 @@ UsersGuideHTML: doc/UsersGuide/bincactus2.ps
 	  echo "  For more information see doc/UsersGuide/LATEX_MESSAGES."; \
 	fi;                                                                 \
 	mkdir -p $(CCTK_HOME)/doc/HTML/UsersGuide;                          \
-	$(PERL) -ne '/^File: (.*)/ and system("cp", $$1, "$(CCTK_HOME)/doc/HTML/UsersGuide/");' UsersGuide.lg
+	$(PERL) -ne 'chomp;m!^File: (.*/)?([^/]*)$$! and rename("$$1$$2", "$(CCTK_HOME)/doc/HTML/UsersGuide/$$2");' UsersGuide.lg
 	@echo "  Users Guide (HTML) created in doc/HTML/UsersGuide directory."
 	@echo "  Done."
 	$(NOTIFY_DIVIDER)
@@ -1110,7 +1110,7 @@ ReferenceManualHTML:
 	  echo "  For more information see doc/ReferenceManual/LATEX_MESSAGES."; \
 	fi;                                         \
 	mkdir -p $(CCTK_HOME)/doc/HTML/ReferenceManual;                \
-	$(PERL) -ne '/^File: (.*)/ and system("cp", $$1, "$(CCTK_HOME)/doc/HTML/ReferenceManual/");' ReferenceManual.lg
+	$(PERL) -ne 'chomp;m!^File: (.*/)?([^/]*)$$! and rename("$$1$$2", "$(CCTK_HOME)/doc/HTML/ReferenceManual/$$2");' ReferenceManual.lg
 	@echo "  HTML ReferenceManual created in doc/HTML/ReferenceManual directory."
 	@echo "  Done."
 	$(NOTIFY_DIVIDER)
@@ -1161,40 +1161,52 @@ MaintGuideHTML:
 	  echo "  For more information see doc/MaintGuide/LATEX_MESSAGES."; \
 	fi;                                                                 \
 	mkdir -p $(CCTK_HOME)/doc/HTML/MaintGuide;                          \
-	$(PERL) -ne '/^File: (.*)/ and system("cp", $$1, "$(CCTK_HOME)/doc/HTML/MaintGuide/");' MaintGuide.lg
+	$(PERL) -ne 'chomp;m!^File: (.*/)?([^/]*)! and rename("$$1$$2", "$(CCTK_HOME)/doc/HTML/MaintGuide/$$2");' MaintGuide.lg
 	@echo "  Maintainers Guide (HTML) created in doc/HTML/MaintGuide directory."
 	@echo "  Done."
 	$(NOTIFY_DIVIDER)
 
 # Run ThornGuide on a configuration
 
-DOCDIR		= $(CCTK_HOME)/doc
-CONFIGNAME	= $(@:%-ThornGuide=%)
-CONFIGDIR	= $(CONFIGS_DIR)/$(CONFIGNAME)
-CONFIGOCDIR	= $(CONFIGDIR)/doc
-CONFIGBUILDDIR	= $(CONFIGDIR)/doc/build
-GUIDENAME	= ThornGuide-$(CONFIGNAME)
-
 ifneq ($strip($(CONFIGURATIONS)),)
-.PHONY: $(addsuffix -ThornGuide,$(CONFIGURATIONS))
+.PHONY: $(addsuffix -ThornGuide,$(CONFIGURATIONS)) $(addsuffix -ThornGuideHTML,$(CONFIGURATIONS))
 
 $(addsuffix -ThornGuide,$(CONFIGURATIONS)):
 	$(NOTIFY_DIVIDER)
-	@echo Creating ThornGuide for configuration $(CONFIGNAME)
-	cd $(CONFIGDIR); \
-	mkdir -p doc
-	rm -rf $(CONFIGBUILDDIR)
-	mkdir $(CONFIGBUILDDIR)
-	if test -r $(CONFIGDIR)/ThornList ; then \
-	  cd $(CONFIGBUILDDIR); \
-	  $(MAKE) -f $(DOCDIR)/ThornGuide/Makefile THORNLIST=$(CONFIGDIR)/ThornList MASTER_FILE=$(GUIDENAME) DOCBUILDDIR=$(CONFIGBUILDDIR); \
-	  if test -e "$(CONFIGBUILDDIR)/$(GUIDENAME).pdf"; then \
-	    mv "$(CONFIGBUILDDIR)/$(GUIDENAME).pdf" $(DOCDIR)/$(GUIDENAME).pdf; \
-	    echo "  $(GUIDENAME).pdf created in doc directory."; \
+	@echo Creating ThornGuide for configuration $(@:%-ThornGuide=%)
+	GUIDENAME=ThornGuide-$(@:%-ThornGuide=%); \
+	cd $(CONFIGS_DIR)/$(@:%-ThornGuide=%) && \
+	mkdir -p doc && \
+	rm -rf doc/build && mkdir doc/build && \
+	if test -r ThornList ; then \
+	  cd doc/build && \
+	  $(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile THORNLIST=$(CONFIGS_DIR)/$(@:%-ThornGuide=%)/ThornList MASTER_FILE=$${GUIDENAME}; \
+	  if test -e "$${GUIDENAME}.pdf"; then \
+	    mv "$${GUIDENAME}.pdf" $(CCTK_HOME)/doc/$${GUIDENAME}.pdf; \
+	    echo "  $${GUIDENAME}.pdf created in doc directory."; \
 	    echo "  Done."; \
 	  fi \
         else \
-          echo "  Error: $(CONFIGDIR)/ThornList not found."; \
+          echo "  Error: $$(pwd)/ThornList not found."; \
+	fi
+
+$(addsuffix -ThornGuideHTML,$(CONFIGURATIONS)):
+	$(NOTIFY_DIVIDER)
+	@echo Creating ThornGuideHTML for configuration $(@:%-ThornGuideHTML=%)
+	GUIDENAME=ThornGuide-$(@:%-ThornGuideHTML=%); \
+	cd $(CONFIGS_DIR)/$(@:%-ThornGuideHTML=%) && \
+	mkdir -p doc && \
+	rm -rf doc/build && mkdir doc/build && \
+	if test -r ThornList ; then \
+	  cd doc/build && \
+	  $(MAKE) -f $(CCTK_HOME)/doc/ThornGuide/Makefile THORNLIST=$(CONFIGS_DIR)/$(@:%-ThornGuideHTML=%)/ThornList MASTER_FILE=$${GUIDENAME} HTLATEX=$(HTLATEX) HTLATEXFLAGS='$(HTLATEXFLAGS)' HTML; \
+	  if test -e "$${GUIDENAME}"; then \
+	    rm -rf "$(CCTK_HOME)/doc/HTML/$${GUIDENAME}" && mkdir -p "$(CCTK_HOME)/doc/HTML" && mv "$${GUIDENAME}" "$(CCTK_HOME)/doc/HTML/$${GUIDENAME}"; \
+	    echo "  $${GUIDENAME} created in doc/HTML directory."; \
+	    echo "  Done."; \
+	  fi \
+        else \
+          echo "  Error: $$(pwd)/ThornList not found."; \
 	fi
 endif
 
@@ -1203,7 +1215,12 @@ endif
 	@echo Configuration $(@:%-ThornGuide=%) does not exist.
 	@echo Thorn Guide creation aborted.
 
-# Make the ThornGuide
+%-ThornGuideHTML:
+	$(NOTIFY_DIVIDER)
+	@echo Configuration $(@:%-ThornGuideHTML=%) does not exist.
+	@echo Thorn Guide HTML creation aborted.
+
+# Make the ThornDoc
 
 .PHONY: ThornDoc
 %-ThornDoc:
@@ -1226,19 +1243,19 @@ ArrangementDoc:
 .PHONY: ThornDocHTML
 %-ThornDocHTML: doc/UsersGuide/bincactus2.ps
 	$(NOTIFY_DEVIDER)
-	@HTLATEX=$(HTLATEX) HTLATEXFLAGS='$(HTLATEXFLAGS)' lib/sbin/ThornDocHTML $(@:%-ThornDocHTML=%)
+	@HTLATEX=$(HTLATEX) HTLATEXFLAGS='$(HTLATEXFLAGS)' PERL=$(PERL) lib/sbin/ThornDocHTML $(@:%-ThornDocHTML=%)
 	$(NOTIFY_DIVIDER)
 ThornDocHTML: doc/UsersGuide/bincactus2.ps
 	$(NOTIFY_DEVIDER)
-	@HTLATEX=$(HTLATEX) HTLATEXFLAGS='$(HTLATEXFLAGS)' lib/sbin/ThornDocHTML
+	@HTLATEX=$(HTLATEX) HTLATEXFLAGS='$(HTLATEXFLAGS)' PERL=$(PERL) lib/sbin/ThornDocHTML
 	$(NOTIFY_DIVIDER)
 %-ArrangementDocHTML: doc/UsersGuide/bincactus2.ps
 	$(NOTIFY_DEVIDER)
-	@HTLATEX=$(HTLATEX) HTLATEXFLAGS='$(HTLATEXFLAGS)' lib/sbin/ArrangementDocHTML $(@:%-ArrangementDocHTML=%)
+	@HTLATEX=$(HTLATEX) HTLATEXFLAGS='$(HTLATEXFLAGS)' PERL=$(PERL) lib/sbin/ArrangementDocHTML $(@:%-ArrangementDocHTML=%)
 	$(NOTIFY_DIVIDER)
 ArrangementDocHTML: doc/UsersGuide/bincactus2.ps
 	$(NOTIFY_DEVIDER)
-	@HTLATEX=$(HTLATEX) HTLATEXFLAGS='$(HTLATEXFLAGS)' lib/sbin/ArrangementDocHTML
+	@HTLATEX=$(HTLATEX) HTLATEXFLAGS='$(HTLATEXFLAGS)' PERL=$(PERL) lib/sbin/ArrangementDocHTML
 	$(NOTIFY_DIVIDER)
 
 ###############################################################################
