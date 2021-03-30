@@ -32,8 +32,7 @@ boolcmp = (>=|<=|==|!=|<|>)
 boolexpr = {boolterm} ({boolop} {boolexpr} )+
      | {term} {boolcmp} {term} | {boolterm}
 
-fc = (?i:(Fortran|C))
-lang = (?i:lang(uage|) : {fc})
+lang = (?i:lang(uage|) : {name})
 group = (?i:group)
 nogroup =
 prepositions = ({preposition} )*

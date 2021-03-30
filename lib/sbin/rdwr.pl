@@ -312,7 +312,13 @@ sub do_schedules
         # different functions must be distinguished for macro
         # generation. '_C' or '_F' are appended to the end of
         # the function name for clarity.
-        my $language = uc $ch->has(0,"fc")->substring();
+        my $language = uc $ch->has(0,"name")->substring();
+        if(lc($language) ne "c" and lc($language) ne "fortran") {
+          CST_error(0,
+          "Invalid language: '$language'. Must be C or Fortran.",
+          undef,
+          $ch->linenum(),$ccl_file);
+        }
         $nm .= "_".substr($language,0,1);
         $lang->{$nm} = $language;
         last;
