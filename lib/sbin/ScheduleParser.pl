@@ -8,7 +8,6 @@
 #  @enddesc
 #  @version   $Header$
 #@@*/
-use lib ".";
 use strict;
 use warnings;
 
