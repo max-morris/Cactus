@@ -236,6 +236,12 @@ sub parse_schedule_statement
           for my $child (@children[3..$#children-1]) {
             if($child->is("lang")) {
               $language = $child->group(0,"name")->substring();
+              if(lc($language) ne "c" and lc($language) ne "fortran") {
+                CST_error(0,
+                "Invalid language: '$language'. Must be C or Fortran.",
+                undef,
+                $child->linenum(),$ccl_file);
+              }
             } elsif($child->is("options")) {
               for my $opt (@{$child->{children}}) {
                 $options .= "," if(defined($options));
