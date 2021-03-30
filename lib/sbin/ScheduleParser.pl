@@ -235,7 +235,7 @@ sub parse_schedule_statement
           $as = $name unless(defined($as));
           for my $child (@children[3..$#children-1]) {
             if($child->is("lang")) {
-              $language = $child->group(0,"name")->substring();
+              $language = $child->group(0,"fc")->substring();
             } elsif($child->is("options")) {
               for my $opt (@{$child->{children}}) {
                 $options .= "," if(defined($options));

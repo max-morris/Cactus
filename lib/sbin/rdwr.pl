@@ -312,7 +312,7 @@ sub do_schedules
         # different functions must be distinguished for macro
         # generation. '_C' or '_F' are appended to the end of
         # the function name for clarity.
-        my $language = uc $ch->has(0,"name")->substring();
+        my $language = uc $ch->has(0,"fc")->substring();
         $nm .= "_".substr($language,0,1);
         $lang->{$nm} = $language;
         last;
