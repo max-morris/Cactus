@@ -173,6 +173,7 @@ sub cross_index_interface_data
     foreach $ancestor_imp ( split(' ', $interface_data_ref->{"\U$thorn INHERITS\E"}))
     {
       next if($ancestor_imp eq '');
+      next if(not defined $interface_data_ref->{"IMPLEMENTATION \U$ancestor_imp\E THORNS"});
       $thorn_ancestor{uc($thorn)} .= $interface_data_ref->{"IMPLEMENTATION \U$ancestor_imp\E THORNS"}. ' ';
     }
   }
@@ -266,39 +267,12 @@ sub get_implementation_ancestors
     if(! $ancestors_ref->{"\U$ancestor\E"})
     {
       $ancestors_ref->{"\U$ancestor\E"} = 1;
-      if(! $interface_data_ref->{"IMPLEMENTATION \U$ancestor\E THORNS"})
+      # do not recurse if thorn ancestor does not exist, error is reported to
+      # user latter during consitency checks
+      if ($interface_data_ref->{"IMPLEMENTATION \U$ancestor\E THORNS"})
       {
-        # Implementation not found; give extensive information
-        %info = &buildthorns("$main::cctk_home/arrangements","thorns");
-        my $suggest_thorns = "";
-        foreach my $thorninfo (sort keys %info)
-        {
-         $info{"$thorninfo"} =~ /^([^\s]+)/;
-         my $testimp = $1;
-         if ($testimp =~ m:^$ancestor$:i)
-         {
-           $suggest_thorns .= "\n        $thorninfo";
-         }
-        }
-        my $message = "$implementation (thorn $thorn) inherits from $ancestor\n";
-        $message .= "     No thorn in your current ThornList implements $ancestor\n";
-        $message .= "     Either remove $thorn, or add a thorn to your\n";
-        $message .= "      ThornList implementing $ancestor\n";
-        if ($suggest_thorns !~ m:^$:)
-        {
-          $message .= "     Available thorns in arrangements directory implementing $ancestor:";
-          $message .= "$suggest_thorns";
-        }
-        else
-        {
-          $message .= "     No thorns in arrangements directory implement $ancestor";
-        }
-        &CST_error(0,$message,"",__LINE__,__FILE__);
-
-        next;
+        &get_implementation_ancestors($ancestor, $interface_data_ref, $ancestors_ref);
       }
-
-      &get_implementation_ancestors($ancestor, $interface_data_ref, $ancestors_ref);
     }
   }
 }
@@ -633,6 +607,37 @@ sub check_interface_consistency
   {
     # Need one thorn which implements this ancestor (we already have checked consistency)
     $ancestor_thorn = $interface_data_ref->{"IMPLEMENTATION \U$ancestor_imp\E THORNS"};
+    if(! $ancestor_thorn)
+    {
+      # Implementation not found; give extensive information
+      my %info = &buildthorns("$main::cctk_home/arrangements","thorns");
+      my $suggest_thorns = "";
+      foreach my $thorninfo (sort keys %info)
+      {
+       $info{"$thorninfo"} =~ /^([^\s]+)/;
+       my $testimp = $1;
+       if ($testimp =~ m:^$ancestor_imp$:i)
+       {
+         $suggest_thorns .= "\n        $thorninfo";
+       }
+      }
+      my $message = "$implementation (thorn $thorn) inherits from $ancestor_imp\n";
+      $message .= "     No thorn in your current ThornList implements $ancestor_imp\n";
+      $message .= "     Either remove $thorn, or add a thorn to your\n";
+      $message .= "      ThornList implementing $ancestor_imp\n";
+      if ($suggest_thorns !~ m:^$:)
+      {
+        $message .= "     Available thorns in arrangements directory implementing $ancestor_imp:";
+        $message .= "$suggest_thorns";
+      }
+      else
+      {
+        $message .= "     No thorns in arrangements directory implement $ancestor_imp";
+      }
+      &CST_error(0,$message,"",__LINE__,__FILE__);
+      next;
+    }
+
     if ($ancestor_thorn =~ m:(\w+)[^\w]*:)
     {
       $ancestor_thorn = $1;
@@ -644,6 +649,7 @@ sub check_interface_consistency
         foreach $ancestor2_imp (split " ",$interface_data_ref->{"IMPLEMENTATION \U$implementation\E ANCESTORS"})
         {
           $ancestor2 = $interface_data_ref->{"IMPLEMENTATION \U$ancestor2_imp\E THORNS"};
+          next if (not defined($ancestor2));
           if ($ancestor2 =~ m:(\w+)[^\w]*:)
           {
             $ancestor2 = $1;
