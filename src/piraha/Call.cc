@@ -968,6 +968,7 @@ extern "C" void *Util_ExpressionParse(const char *expr) {
       return m2;
     } else {
       std::ostringstream msg;
+      msg << "V1 ";
       m2->showError(msg);
       CCTK_Error(__LINE__,__FILE__,"Cactus",msg.str().c_str());
       return 0;
@@ -1046,6 +1047,7 @@ inline int first_line(int new_line,int old_line) {
 int report_syntax(smart_ptr<Group> g) {
   if(g->getPatternName() == "syntax") {
     std::ostringstream msg;
+    msg << "V2 ";
     g->showError(msg);
     std::string par = get_parfile();
     CCTK_Warn(1,g->line(),par.c_str(),"cactus",msg.str().c_str());
@@ -1184,7 +1186,10 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
                 variables[gr->group(0)->substring()] = meval(gr->group(1),0);
             }
         }
+        std::cout << "DUMP:" << std::endl;
+        m2->dump(std::cout);
     } else {
+        int line = -1;
         std::ostringstream msg;
         msg << "ERROR IN PARAMETER FILE:";
         if(m2->inrule_max == "file::set::par" && m2->foundChar() =='=') {
@@ -1205,12 +1210,14 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
                         break;
                 }
                 msg << "You wrote: " << gr->substring() << " = ..." << std::endl;
+                line = gr->line();
             }
         } else {
-            m2->showError(msg);
+            msg << "V3 ";
+            line = m2->showError(msg);
         }
         std::string par = get_parfile();
-        CCTK_Warn(0,m2->line(),par.c_str(),"cactus",msg.str().c_str());
+        CCTK_Warn(0,line,par.c_str(),"cactus",msg.str().c_str());
         return 1;
     }
     return 0;

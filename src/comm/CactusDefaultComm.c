@@ -287,7 +287,8 @@ int CactusDefaultMyProc (const cGH *GH)
 #ifdef HAVE_CAPABILITY_MPI
   if (! CCTK_ParamChecking() && cctki_MPI_Active)
   {
-    CACTUS_MPI_ERROR (MPI_Comm_rank (MPI_COMM_WORLD, &myproc));
+    //CACTUS_MPI_ERROR (MPI_Comm_rank (MPI_COMM_WORLD, &myproc));
+    MPI_Comm_rank (MPI_COMM_WORLD, &myproc);
   }
 #endif
 

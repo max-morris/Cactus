@@ -74,7 +74,7 @@ public:
     	smart_ptr<Group> ret;
     	return ret;
     }
-    void showError(std::ostream& o);
+    int showError(std::ostream& o);
 };
 
 class Grammar;
@@ -369,8 +369,8 @@ public:
     bool matches();
     bool matchesTo(int mt);
     Bracket expected;
-    void showError(std::ostream& out);
-    void showError();
+    int showError(std::ostream& out);
+    int showError();
     std::string inrule;
     std::string inrule_max;
     int err_pos;
