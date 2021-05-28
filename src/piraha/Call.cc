@@ -1066,10 +1066,10 @@ int report_syntax(smart_ptr<Matcher> g) {
 extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int (*set_function)(const char *, const char *, int)) {
     std::string active;
     smart_ptr<Matcher> m2 = new Matcher(par_file_grammar,"file",buffer,buffersize);
-    std::clock_t st = std::clock();
+    //std::clock_t st = std::clock();
     bool b = m2->matches();
-    std::clock_t en = std::clock();
-    std::cout << "PARSE TIME = " << ((en-st)/CLOCKS_PER_SEC) << std::endl;
+    //std::clock_t en = std::clock();
+    //std::cout << "PARSE TIME = " << ((en-st)/CLOCKS_PER_SEC) << std::endl;
     if(b) {
         std::ostringstream active_buf;
         int line = -1;
@@ -1209,7 +1209,6 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
                 line = gr->line();
             }
         } else {
-            msg << "V3 ";
             line = m2->showError(msg);
         }
         std::string par = get_parfile();
