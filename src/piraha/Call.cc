@@ -968,7 +968,6 @@ extern "C" void *Util_ExpressionParse(const char *expr) {
       return m2;
     } else {
       std::ostringstream msg;
-      msg << "V1 ";
       m2->showError(msg);
       CCTK_Error(__LINE__,__FILE__,"Cactus",msg.str().c_str());
       return 0;
@@ -1047,7 +1046,6 @@ inline int first_line(int new_line,int old_line) {
 int report_syntax(smart_ptr<Group> g) {
   if(g->getPatternName() == "syntax") {
     std::ostringstream msg;
-    msg << "V2 ";
     g->showError(msg);
     std::string par = get_parfile();
     CCTK_Warn(1,g->line(),par.c_str(),"cactus",msg.str().c_str());
@@ -1068,10 +1066,10 @@ int report_syntax(smart_ptr<Matcher> g) {
 extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int (*set_function)(const char *, const char *, int)) {
     std::string active;
     smart_ptr<Matcher> m2 = new Matcher(par_file_grammar,"file",buffer,buffersize);
-    //std::clock_t st = std::clock();
+    std::clock_t st = std::clock();
     bool b = m2->matches();
-    //std::clock_t en = std::clock();
-    //std::cout << "PARSE TIME = " << ((en-st)/CLOCKS_PER_SEC) << std::endl;
+    std::clock_t en = std::clock();
+    std::cout << "PARSE TIME = " << ((en-st)/CLOCKS_PER_SEC) << std::endl;
     if(b) {
         std::ostringstream active_buf;
         int line = -1;
@@ -1094,11 +1092,11 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
             active += thorn;
           }
         }
-        set_function("ActiveThorns",active.c_str(),line);
         std::string parf = get_parfile();
         int syntax_error_line = report_syntax(m2);
         if(syntax_error_line > 0)
             CCTK_Error(syntax_error_line,parf.c_str(),"Cactus","Terminating because of parse errors");
+        set_function("ActiveThorns",active.c_str(),line);
         for(int i=0;i<m2->groupCount();i++) {
             smart_ptr<Group> gr = m2->group(i);
             if(gr->getPatternName() == "set") {
@@ -1186,8 +1184,6 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
                 variables[gr->group(0)->substring()] = meval(gr->group(1),0);
             }
         }
-        std::cout << "DUMP:" << std::endl;
-        m2->dump(std::cout);
     } else {
         int line = -1;
         std::ostringstream msg;
