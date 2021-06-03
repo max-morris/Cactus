@@ -1092,11 +1092,11 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
             active += thorn;
           }
         }
-        set_function("ActiveThorns",active.c_str(),line);
         std::string parf = get_parfile();
         int syntax_error_line = report_syntax(m2);
         if(syntax_error_line > 0)
             CCTK_Error(syntax_error_line,parf.c_str(),"Cactus","Terminating because of parse errors");
+        set_function("ActiveThorns",active.c_str(),line);
         for(int i=0;i<m2->groupCount();i++) {
             smart_ptr<Group> gr = m2->group(i);
             if(gr->getPatternName() == "set") {
@@ -1185,6 +1185,7 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
             }
         }
     } else {
+        int line = -1;
         std::ostringstream msg;
         msg << "ERROR IN PARAMETER FILE:";
         if(m2->inrule_max == "file::set::par" && m2->foundChar() =='=') {
@@ -1205,12 +1206,13 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
                         break;
                 }
                 msg << "You wrote: " << gr->substring() << " = ..." << std::endl;
+                line = gr->line();
             }
         } else {
-            m2->showError(msg);
+            line = m2->showError(msg);
         }
         std::string par = get_parfile();
-        CCTK_Warn(0,m2->line(),par.c_str(),"cactus",msg.str().c_str());
+        CCTK_Warn(0,line,par.c_str(),"cactus",msg.str().c_str());
         return 1;
     }
     return 0;

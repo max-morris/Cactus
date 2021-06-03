@@ -171,7 +171,7 @@ const int num_previous_lines = 5;
  * five lines and uses a ^ to point to
  * the position of the error.
  */
-void Group::showError(std::ostream& out) {
+int Group::showError(std::ostream& out) {
   out << "Parse Error" << std::endl;
   // keep the start position of the last 5 lines
   int start_position[num_previous_lines];
@@ -213,4 +213,5 @@ void Group::showError(std::ostream& out) {
   for(int i=start_position[m]+1;i<err_pos;i++)
     out << ' ';
   out << '^' << std::endl;
+  return line;
 }

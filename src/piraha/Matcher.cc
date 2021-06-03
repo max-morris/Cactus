@@ -68,8 +68,8 @@ void Matcher::fail(char lo,char hi) {
   err_pos = pos;
 }
 
-void Matcher::showError() {
-    showError(std::cout);
+int Matcher::showError() {
+    return showError(std::cout);
 }
 
 const int num_previous_lines = 5;
@@ -78,7 +78,7 @@ bool isHumanReadableRange(char c) {
   return ('a' <= c && c <= 'y') or ('A' <= c && c <= 'Y') or ('0' <= c && c <= '8');
 }
 
-void Matcher::showError(std::ostream& out) {
+int Matcher::showError(std::ostream& out) {
   std::vector<char> expectedChars;
   for(auto r = expected.ranges.begin(); r != expected.ranges.end(); ++r) {
     for(int i = (*r)->lo; i <= (*r)->hi; ++i) {
@@ -136,4 +136,5 @@ void Matcher::showError(std::ostream& out) {
   for(int i=buf[m]+1;i<err_pos;i++)
     out << ' ';
   out << '^' << std::endl;
+  return line;
 }
