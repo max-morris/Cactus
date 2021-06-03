@@ -1113,6 +1113,8 @@ Short Version & Long Version \\
 \hline
  -r[o|e|oe|eo] & --redirect=[o|e|oe|eo]\\
 \hline
+ -R[o|e|oe|eo] & --Redirect=[o|e|oe|eo]\\
+\hline
  & --logdir=<\var{directory}> \\
 \hline
  -b[no|line|full] & --buffering=[no|line|full]\\
@@ -1193,6 +1195,12 @@ will abort the Cactus run.
 Redirects the standard output (`\texttt{o}') and/or standard error
 (`\texttt{e}') of each processor to a file.  By default,
 the standard outputs from processors other than processor 0 are discarded.
+
+\item [\texttt{-R[o|e|oe|eo]} or \texttt{--Redirect=[o|e|oe|eo]}]
+Redirects the standard output (`\texttt{o}') and/or standard error
+(`\texttt{e}') of each processor to a file like \texttt{-r} does, however
+different from \texttt{-r} it also redirects standard output and/or
+standard error from processor 0.
 
 \item [\texttt{--logdir=<\var{directory}>}]
 Sets the output directory for logfiles created by the \texttt{-r} option.
