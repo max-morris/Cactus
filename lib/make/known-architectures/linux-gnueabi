@@ -7,5 +7,6 @@
 #   
 #   @enddesc 
 # @@*/
+#CCTK ARCHITECTURE linux-gnueabi*
 
 . $srcdir/known-architectures/linux
