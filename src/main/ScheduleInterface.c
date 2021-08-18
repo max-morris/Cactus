@@ -1526,7 +1526,7 @@ static t_attribute *CreateAttribute(const char *where,
     {
       this->mem_groups     = malloc(n_mem_groups*sizeof(int));
       this->timelevels     = malloc(n_mem_groups*sizeof(int));
-      this->StorageOnEntry = malloc(n_mem_groups*sizeof(int));
+      this->StorageOnEntry = calloc(1, n_mem_groups*sizeof(int));
     }
     if (n_trigger_groups > 0)
     {
