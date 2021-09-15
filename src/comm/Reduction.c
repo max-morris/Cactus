@@ -407,6 +407,14 @@ int CCTK_Reduce(const cGH *GH,
               "CCTK_Reduce: Invalid handle passed to CCTK_Reduce");
     retval = -1;
   }
+  else if (operation_handle >= ARRAY_OPERATOR_HANDLE_OFFSET)
+  {
+    CCTK_VWarn(3,__LINE__,__FILE__,"Cactus",
+               "CCTK_Reduce: Reduction operation handle %d is not registered "
+               "for grid variables and cannot be called. You must use "
+               "handles obtained from CCTK_ReductionHandle.", operation_handle);
+    retval = -1;
+  }
   else
   {
     operator = Util_GetHandledData(ReductionOperators,operation_handle);
@@ -464,6 +472,15 @@ void CCTK_FCALL CCTK_FNAME(CCTK_Reduce)
   {
     CCTK_Warn(3,__LINE__,__FILE__,"Cactus",
               "CCTK_Reduce: Invalid handle passed to CCTK_Reduce");
+    retval = -1;
+  }
+  else if (*operation_handle >= ARRAY_OPERATOR_HANDLE_OFFSET)
+  {
+    CCTK_VWarn(3,__LINE__,__FILE__,"Cactus",
+               "CCTK_Reduce: Reduction operation handle %d is not registered "
+               "for grid variables and cannot be called. You must use "
+               "handles obtained from CCTK_ReductionHandle.",
+               *operation_handle);
     retval = -1;
   }
   else
@@ -692,6 +709,15 @@ int CCTK_ReduceArray(const cGH *GH,
               "CCTK_ReduceArray: Invalid handle passed to CCTK_ReduceArray");
     return (-1);
   }
+  else if (operation_handle < ARRAY_OPERATOR_HANDLE_OFFSET)
+  {
+    CCTK_VWarn(3,__LINE__,__FILE__,"Cactus",
+               "CCTK_ReduceArray: Reduction operation handle %d is not "
+               "registered for grid variables and cannot be called. You must "
+               "use handles obtained from CCTK_ReductioArraynHandle.",
+               operation_handle);
+    return (-1);
+  }
 
   data = Util_GetHandledData(ReductionArrayOperators,operation_handle - ARRAY_OPERATOR_HANDLE_OFFSET);
   if (! data)
@@ -761,6 +787,16 @@ void CCTK_FCALL CCTK_FNAME(CCTK_ReduceArray)
   {
     CCTK_Warn (3,__LINE__,__FILE__,"Cactus",
                "CCTK_ReduceArray: Invalid handle passed to CCTK_ReduceArray");
+    return;
+  }
+
+  if (*operation_handle < ARRAY_OPERATOR_HANDLE_OFFSET)
+  {
+    CCTK_VWarn(3,__LINE__,__FILE__,"Cactus",
+               "CCTK_ReduceArray: Reduction operation handle %d is not "
+               "registered for grid variables and cannot be called. You must "
+               "use handles obtained from CCTK_ReductioArraynHandle.",
+               *operation_handle);
     return;
   }
 
