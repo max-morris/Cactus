@@ -31,6 +31,7 @@ int  CCTKi_CreateGroup(const char *gname,
                        const char *size,
                        const char *ghostsize,
                        const char *tags,
+                       const char *centering,
                        const char *vararraysize,
                        int         n_basevars,
                        ...);

@@ -1148,7 +1148,15 @@ sub CreateThornGroupInitialisers
     {
       $line .= $rhinterface_db->{"\U$thorn GROUP $group\E TAGS"};
     }
-    $line .= '",';
+    $line .= '", /* tags */';
+    push(@data, $line);
+
+    $line = '                         "';
+    if(defined($rhinterface_db->{"\U$thorn GROUP $group\E CENTERING"}))
+    {
+      $line .= $rhinterface_db->{"\U$thorn GROUP $group\E CENTERING"};
+    }
+    $line .= '", /* centering */';
     push(@data, $line);
 
     # Is it a vector group ?

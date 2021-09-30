@@ -195,6 +195,9 @@ typedef struct
   const char *tags_string;
   int tags_table;
 
+  const char *centering_string;
+  int centering_table;
+
 } cGroupDefinition;
 
 
@@ -1143,6 +1146,7 @@ int CCTK_GroupData (int group, cGroup *gp)
       gp->vectorlength  = groups[group].vectorlength;
       gp->numtimelevels = groups[group].n_timelevels;
       gp->tagstable     = groups[group].tags_table;
+      gp->centeringtable    = groups[group].centering_table;
 
       if(groups[group].vararraysize)
       {
@@ -1408,6 +1412,40 @@ int CCTK_GroupTagsTableI(int group)
   if (0 <= group && group < n_groups)
   {
     retval = groups[group].tags_table;
+  }
+  else
+  {
+    retval = -1;
+  }
+
+  return retval;
+}
+
+ /*@@
+   @routine    CCTK_GroupCenteringTableI
+   @date       Wed 15 Sep 2021 02:02:07 PM CDT
+   @author     Steven R. Brandt
+   @desc
+   Returns the table handle of the CENTERING table for a group.
+   @enddesc
+   @var     group
+   @vdesc   The group centering
+   @vtype   int
+   @vio     in
+   @endvar
+
+   @returntype int
+   @returndesc
+               -1 if group centering out of range
+   @endreturndesc
+ @@*/
+int CCTK_GroupCenteringTableI(int group)
+{
+  int retval;
+
+  if (0 <= group && group < n_groups)
+  {
+    retval = groups[group].centering_table;
   }
   else
   {
@@ -2319,6 +2357,7 @@ int CCTKi_CreateGroup (const char *gname,
                        const char *size,
                        const char *ghostsize,
                        const char *tags,
+                       const char *centering,
                        const char *vararraysize,
                        int         n_basevars,
                        ...
@@ -2389,12 +2428,20 @@ int CCTKi_CreateGroup (const char *gname,
     group->dtype        = CCTK_GroupDistribNumber (dtype);
     group->n_timelevels = ntimelevels;
     group->tags_string  = Util_Strdup(tags);
+    group->centering_string  = Util_Strdup(centering);
 
     group->tags_table   = Util_TableCreateFromString(tags);
     if(group->tags_table < 0)
     {
       CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
                   "CCTKi_CreateGroup: Failed to create TAGS table for group '%s' from thorn '%s'",
+                  gname, thorn);
+    }
+    group->centering_table   = Util_TableCreateFromString(centering);
+    if(group->centering_table < 0)
+    {
+      CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                  "CCTKi_CreateGroup: Failed to create CENTERING table for group '%s' from thorn '%s'",
                   gname, thorn);
     }
 

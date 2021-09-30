@@ -61,13 +61,15 @@ distrib = (?i:CONSTANT|DEFAULT)
 ghostsize = {-size}
 stagger = (?i:[MCP](,[MCP])*)
 tags = {-quote}
+ind = [VCvc]
+centering = (?i:centering = \{ {ind}([ \t]*{ind})* \})
 gname = {name} (\[ {expr} \] )?
 group_comment = {dquote}?
 desc = {dquote}?
 
 GROUP_VARS = (?i:CCTK_|){vtype} {gname} (?i:TYPE = {gtype} |DIM = {dim}
              |TIMELEVELS = {timelevels} |SIZE = {size} |DISTRIB = {distrib}
-             |GHOSTSIZE = {ghostsize} |STAGGER = {stagger} |TAGS = {tags} )*{desc} (
+             |GHOSTSIZE = {ghostsize} |STAGGER = {stagger} |TAGS = {tags} |{centering} )*{desc} (
  \{
     {VARS}
  \} {group_comment}

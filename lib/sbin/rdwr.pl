@@ -110,6 +110,7 @@ sub do_interfaces
     my $dim = 3; # this is the default value
     my $size = undef;
     my $gname;
+    my $centering;
     my $gtype;
     my $cap_gname;
     for my $ch (@{$gr->{children}}) {
@@ -137,6 +138,11 @@ sub do_interfaces
         $dim = $ch->substring();
       } elsif($ch->is("size")) {
         $size = $ch;
+      } elsif($ch->is("centering")) {
+        $centering = "";
+        for my $ch2 (@{$ch->{children}}) {
+            $centering .= uc $ch2->substring();
+        }
       } elsif($ch->is("timelevels")) {
         $level = $ch->substring();
       }
@@ -154,6 +160,9 @@ sub do_interfaces
       $hash->{$gname}->{level} = 0;
     } else {
       $hash->{$gname}->{level} = $level-1;
+    }
+    if($centering) {
+        $hash->{$gname}->{centering} = $centering;
     }
     $hash->{$gname}->{vtype} = uc $vtype;
     $hash->{$gname}->{vector} = $vecval;
@@ -327,7 +336,7 @@ sub do_schedules
     for my $ch (@{$gr->{children}}) {
       if($ch->is("reads") or $ch->is("writes")) {
         my $is_writes = $ch->is("writes");
-        
+
         # Process variable names in this definition.
         my $i = 0;
         while($ch->has($i,"qrname")) {
@@ -397,6 +406,50 @@ sub do_schedules
 }
 
 #/*@@
+#  @routine do_centering
+#  @date    Thu Sep 30 17:10:22 UTC 2021
+#  @author  Steven R. Brandt
+#  @desc
+#           Generate CarpetX-specific declarations.
+#
+#           Example implementation:
+#
+#           #define CCTK_CENTERING_GRID \
+#               const GridDescBaseDevice grid(cctkGH)
+#           #define CCTK_CENTERING_LAYOUT(L,V) \
+#               constexpr array<int, dim> L ## _centered V; \
+#               const GF3D2layout L ## gf_layout(cctkGH, L ## _centered)
+#           #define CCTK_CENTERING_GF(C,L,N) \
+#               const GF3D2<C CCTK_REAL> N(L ## gf_layout, ptr__ ## N )
+#
+#  @enddesc
+#@@*/
+sub do_centering
+{
+    my $data = shift;
+    my $nm_data = shift;
+    my $var_group = shift;
+    my $const = shift;
+    my $full_var = shift;
+
+    if(!defined($nm_data->{"grid"})) {
+      $$data .= "CCTK_CENTERING_GRID; \\\n";
+      $nm_data->{grid}=1;
+    }
+    my $indstr = $var_group->{centering};
+    if(!defined($nm_data->{$indstr})) {
+        my $numstr = $indstr;
+        $numstr =~ s/C/1, /g;
+        $numstr =~ s/V/0, /g;
+        $numstr =~ s/, $//;
+        $numstr = "({".$numstr."})";
+        $$data .= "CCTK_CENTERING_LAYOUT($indstr,$numstr); \\\n";
+        $nm_data->{$indstr}=1;
+    }
+    $$data .= "CCTK_CENTERING_GF($const,$indstr,$full_var); \\\n";
+}
+
+#/*@@
 #  @routine create_macros
 #  @date    Mon Feb 24 16:10:38 EST 2020
 #  @author  Steven R. Brandt and Samuel D. Cupp
@@ -442,6 +495,7 @@ sub create_macros
     croak($namekey) unless($namekey =~ /_(F|C)$/);
 
     my $nm = substr($namekey,0,-2); # removing language suffix from function name
+    my $nm_data = {};
     if(defined($reads_writes->{$namekey}->{$namekey}->{$namekey})) {
       # This generates macros for functions with no read/write declarations.
       if ($lang->{$namekey} eq "C") {
@@ -540,6 +594,10 @@ sub create_macros
                     ,$hint, $errline, $ccl_file);
               next;
             }
+            my $has_centering = 0;
+            if(defined($var_group->{centering})) {
+                $has_centering = 1;
+            }
             my $vtype = "CCTK_".$var_group->{vtype};
             # This next test only fails if we could not determine
             # the variable type...
@@ -581,7 +639,14 @@ sub create_macros
                   &CST_error(0, "No access to variable '${th}::$ifull_var'"
                     ,$hint, $line, $ccl_file);
                 }
+                if($has_centering) {
+                    $ifull_var = "ptr__".$ifull_var;
+                }
                 $$data .= qq($vtype $const * restrict const $ifull_var __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, CCTK_JOIN_TOKENS(cctki_vi_, CCTK_THORN).$ivar));; /* group $group_register */\\\n);
+
+                if($has_centering) {
+                    do_centering($data, $nm_data, $var_group, $const, $full_var);
+                }
               }
             } else {
               my $vname = "${th}::$var";
@@ -596,7 +661,13 @@ sub create_macros
                 &CST_error(0, "No access to variable '${th}::$ifull_var'"
                   ,$hint, $line, $ccl_file);
               }
+              if($has_centering) {
+                  $ifull_var = "ptr__".$ifull_var;
+              }
               $$data .= qq($vtype $const * restrict const $ifull_var __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, CCTK_JOIN_TOKENS(cctki_vi_, CCTK_THORN).$ivar));; /* TL: $namekey --> $timelevel $group_register*/\\\n);
+              if($has_centering) {
+                do_centering($data, $nm_data, $var_group, $const, $full_var);
+              }
             }
           } # loop over read/write variables
         } # loop over read/write thorns

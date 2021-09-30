@@ -858,6 +858,7 @@ sub parse_interface_ccl
       my $distrib = undef;
       my $gtype = undef;
       my $tags = undef;
+      my $centering = undef;
       my $timelevels = 1;
       my $size = undef;
       my $var_array_size = undef;
@@ -911,6 +912,22 @@ sub parse_interface_ccl
             $ghost .= expr($c);
           }
           $interface_data_ref->{"\U$thorn GROUP $gname GHOSTSIZE\E"} = uc($ghost);
+        } elsif($nm eq "centering") {
+          $centering = "centering={";
+          my $sp = "";
+          for my $c (@{$ch->{children}}) {
+            my $ch = $c->substring();
+            if($ch eq "V" or $ch eq "v") {
+                $centering .= $sp . "0";
+            } elsif($ch eq "C" or $ch eq "c") {
+                $centering .= $sp . "1";
+            } else {
+                $line = $c->linenum();
+                die "Invalid character in centering ($ch) in file $ccl_file on line $line, only C or V are allowed";
+            }
+            $sp = " ";
+          }
+          $centering .= "}";
         } elsif($nm eq "tags") {
           my $new_tags = trim_quotes($ch->substring());
           $new_tags =~ s/"/\\"/g;
@@ -934,6 +951,9 @@ sub parse_interface_ccl
       $interface_data_ref->{"\U$thorn GROUP $gname GTYPE\E"} = $gtype;
       if(defined($tags)) {
         $interface_data_ref->{"\U$thorn GROUP $gname TAGS\E"} = $tags;
+      }
+      if(defined($centering)) {
+        $interface_data_ref->{"\U$thorn GROUP $gname CENTERING\E"} = $centering;
       }
       $interface_data_ref->{"\U$thorn GROUP $gname TIMELEVELS\E"} = $timelevels;
       $interface_data_ref->{"\U$thorn GROUP $gname VTYPE\E"} = $vtype;
