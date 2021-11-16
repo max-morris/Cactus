@@ -1664,7 +1664,8 @@ in \texttt{schedule.ccl}, using \texttt{const} for the C/C++ variables
 and \texttt{intent(in)} for the Fortran variables. (Note that, for technical
 reasons, in Fortran variables declared in \texttt{DECLARE\_CCTK\_ARGUMENTS}
 but not in the \texttt{READS/WRITES} directives are actually declared as
-\texttt{intent(in), character*8}, and are thus unusable.)
+\texttt{intent(in), type(cctki\_inaccessible\_grid\_variable)}, and are thus
+unusable.)
 
 To pass the arguments to another routine in the same thorn use the macro
 \texttt{CCTK\_PASS\_FTOF} in the calling routine, and again the macro
