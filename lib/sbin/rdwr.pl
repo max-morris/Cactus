@@ -458,6 +458,9 @@ sub create_macros
         $$data .= "#define DECLARE_CCTK_ARGUMENTS_\U${nm}\E DECLARE_CCTK_ARGUMENTS_${nm}\n";
         $$data .= "#define DECLARE_CCTK_ARGUMENTS_${nm} \\\n";
         $$data .= "  _DECLARE_CCTK_FARGUMENTS; \\\n";
+        $$data .= " type cctki_inaccessible_grid_variable /* dummy-rdwr-type */ && \\\n";
+        $$data .= "  integer :: dummy && \\\n";
+        $$data .= " end type && \\\n";
         for my $var (@$all_cctk_arguments) {
           if(not defined($cctk_arguments{$var})) {
               # In Fortran, all GF's are passed in regardless of
@@ -467,7 +470,7 @@ sub create_macros
               # be converted into an int or float. The unsual
               # capitalization makes it easier to identify in
               # generated files.
-              $$data .= " characTer*8, intent(IN) :: $var /* dummy-rdwr-var */ && \\\n";
+              $$data .= " type(cctki_inaccessible_grid_variable), intent(IN) :: $var /* dummy-rdwr-var */ && \\\n";
           }
         }
         $$data .= "  /* end $nm */\n";
@@ -604,6 +607,9 @@ sub create_macros
         $$data .= "#define DECLARE_CCTK_ARGUMENTS_\U${nm}\E DECLARE_CCTK_ARGUMENTS_${nm}\n";
         $$data .= "#define DECLARE_CCTK_ARGUMENTS_${nm} \\\n";
         $$data .= "  _DECLARE_CCTK_FARGUMENTS \\\n";
+        $$data .= " type cctki_inaccessible_grid_variable /* dummy-rdwr-type */ && \\\n";
+        $$data .= "  integer :: dummy && \\\n";
+        $$data .= " end type && \\\n";
         for my $th (sort keys %{$reads_writes->{$namekey}}) {
           for my $full_var (sort keys %{$reads_writes->{$namekey}->{$th}}) {
             my $var_group;
@@ -736,8 +742,8 @@ sub create_macros
         # Declare the variables that got missed...
         for my $var (@$all_cctk_arguments) {
           if(not defined($cctk_arguments{$var})) {
-              $$data .= " characTer*8, intent(IN) :: $var /* dummy-rdwr-var */ && \\\n";
-              $$data .= " integer, parameter :: cctki_use_$var = kind($var) &&\\\n";
+              $$data .= " type(cctki_inaccessible_grid_variable), intent(IN) :: $var /* dummy-rdwr-var */ && \\\n";
+              $$data .= " integer, parameter :: cctki_use_$var = kind($var%dummy) &&\\\n";
           }
         }
       } else {
