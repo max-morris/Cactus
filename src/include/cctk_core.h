@@ -34,8 +34,8 @@
   print '("--------------------------------------------------------------------------------")'
 
 #define _CCTK_FARGUMENTS \
-cctk_dim,cctk_gsh,cctk_lsh,cctk_lbnd,cctk_ubnd,cctk_tile_min,cctk_tile_max,\
-cctk_ash,\
+cctk_dim,cctk_gsh,cctk_lsh,cctk_lbnd,cctk_ubnd,cctk_patch, \
+cctk_tile_min,cctk_tile_max,cctk_ash,\
 cctk_alignment,cctk_alignment_offset,cctk_from,cctk_to,\
 cctk_bbox,cctk_delta_time,cctk_time,cctk_delta_space,cctk_origin_space,\
 cctk_levfac,cctk_levoff,cctk_levoffdenom,cctk_timefac,cctk_convlevel,\
@@ -49,6 +49,7 @@ cctk_ash1,cctk_ash2,cctk_ash3
         CCTK_DECLARE(INTEGER,cctk_lsh,(cctk_dim))&&\
         CCTK_DECLARE(INTEGER,cctk_lbnd,(cctk_dim))&&\
         CCTK_DECLARE(INTEGER,cctk_ubnd,(cctk_dim))&&\
+        CCTK_DECLARE(INTEGER,cctk_patch,)&&\
         CCTK_DECLARE(INTEGER,cctk_tile_min,(cctk_dim))&&\
         CCTK_DECLARE(INTEGER,cctk_tile_max,(cctk_dim))&&\
         CCTK_DECLARE(INTEGER,cctk_ash,(cctk_dim))&&\
@@ -333,6 +334,7 @@ static inline int CCTK_VECTGFINDEX4D (const cGH *restrict cctkGH,
         CCTK_DECLARE_INIT(int const *restrict const,cctk_lsh,cctkGH->cctk_lsh);\
         CCTK_DECLARE_INIT(int const *restrict const,cctk_lbnd,cctkGH->cctk_lbnd);\
         CCTK_DECLARE_INIT(int const *restrict const,cctk_ubnd,cctkGH->cctk_ubnd);\
+        CCTK_DECLARE_INIT(int const,cctk_patch,cctkGH->cctk_patch);\
         CCTK_DECLARE_INIT(int const *restrict const,cctk_tile_min,cctkGH->cctk_tile_min);\
         CCTK_DECLARE_INIT(int const *restrict const,cctk_tile_max,cctkGH->cctk_tile_max);\
         CCTK_DECLARE_INIT(int const *restrict const,cctk_ash,cctkGH->cctk_ash);\
@@ -359,6 +361,7 @@ static inline int CCTK_VECTGFINDEX4D (const cGH *restrict cctkGH,
 #define _PASS_CCTK_C2F(xGH) &(xGH)->cctk_dim,\
                             (xGH)->cctk_gsh,(xGH)->cctk_lsh,\
                             (xGH)->cctk_lbnd,(xGH)->cctk_ubnd,\
+                            &(xGH)->cctk_patch,\
                             (xGH)->cctk_tile_min,(xGH)->cctk_tile_max,\
                             (xGH)->cctk_ash,\
                             &(xGH)->cctk_alignment,\
@@ -379,29 +382,30 @@ static inline int CCTK_VECTGFINDEX4D (const cGH *restrict cctkGH,
                             &(xGH)->cctk_ash[0],\
                             &(xGH)->cctk_ash[1],\
                             &(xGH)->cctk_ash[2]
-#define _CCTK_C2F_PROTO     int const *,\
-                            int const *, int const *,\
-                            int const *, int const *,\
-                            int const *, int const *,\
-                            int const *,\
-                            int const *,\
-                            int const *,\
-                            int const *, int const *,\
-                            int const *,\
-                            CCTK_REAL const *, CCTK_REAL const *,\
-                            CCTK_REAL const *, CCTK_REAL const *,\
-                            int const *,\
-                            int const *,\
-                            int const *,\
-                            int const *,\
-                            int const *,\
-                            int const *,\
-                            int const *,\
-                            int const *,\
-                            cGH const *const *,\
-                            int const *,\
-                            int const *,\
-                            int const *
+#define _CCTK_C2F_PROTO     int const *cctk_dim,\
+                            int const *cctk_gsh, int const *cctk_lsh,\
+                            int const *cctk_lbnd, int const *cctk_ubnd,\
+                            int const *cctk_patch,\
+                            int const *cctk_tile_min, int const *cctk_tile_max,\
+                            int const *cctk_ash,\
+                            int const *cctk_alignment,\
+                            int const *cctk_alignment_offset,\
+                            int const *cctk_from, int const *cctk_to,\
+                            int const *cctk_bbox,\
+                            CCTK_REAL const *cctk_delta_time, CCTK_REAL const *cctk_time,\
+                            CCTK_REAL const *cctk_delta_space, CCTK_REAL const *cctk_origin_space,\
+                            int const *cctk_levfac,\
+                            int const *cctk_levoff,\
+                            int const *cctk_levoffdenom,\
+                            int const *cctk_timefac,\
+                            int const *cctk_convlevel,\
+                            int const *cctk_convfac,\
+                            int const *cctk_nghostzones,\
+                            int const *cctk_iteration,\
+                            cGH const *const *cctkGH,\
+                            int const *cctk_ash0,\
+                            int const *cctk_ash1,\
+                            int const *cctk_ash2
 
 #define CCTK_EQUALS(a,b) (CCTK_Equals((a),(b)))
 
