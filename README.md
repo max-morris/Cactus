@@ -8,4 +8,4 @@ Cactus runs on many architectures. Applications, developed on standard workstati
 
 The Cactus user community has created and is maintaining toolkits for several research fields. The [Einstein Toolkit](http://www.einsteintoolkit.org) addresses computational relativistic astrophysics, supporting simulations of black holes, neutron stars, and related systems.
 
-Connect to our [Cactus demo](http://cactuscode.org/demo) to see the simple WaveToy example in action, and read the [demo guide](http://cactuscode.org/documentation/tutorials/wavetoydemo/).
+Connect to our [Cactus demo](http://www.cactuscode.org/demo) to see the simple WaveToy example in action, and read the [demo guide](http://cactuscode.org/documentation/tutorials/wavetoydemo/).
