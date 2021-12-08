@@ -5,6 +5,8 @@ use Carp;
 use Data::Dumper;
 use strict;
 
+my $ptr_prefix = "cctk_ptr_";
+
 my $sch_file = $ENV{CCTK_HOME}."/src/piraha/pegs/schedule.peg";
 my($S_grammar,$S_rule)=piraha::parse_peg_file($sch_file);
 
@@ -32,7 +34,7 @@ sub get_cap {
     my $hash = shift;
     my $th = shift;
     my $var = shift;
-    my $realvar = $var;;
+    my $realvar = $var;
     my $suffix = "";
     if($var =~ /(.*?)((_p)*)$/) {
         $realvar = $1;
@@ -420,7 +422,7 @@ sub do_schedules
 #               constexpr array<int, dim> L ## _centered V; \
 #               const GF3D2layout L ## gf_layout(cctkGH, L ## _centered)
 #           #define CCTK_CENTERING_GF(C,L,N) \
-#               const GF3D2<C CCTK_REAL> N(L ## gf_layout, ptr__ ## N )
+#               const GF3D2<C CCTK_REAL> N(L ## gf_layout, $ptr_prefix ## N )
 #
 #  @enddesc
 #@@*/
@@ -496,12 +498,19 @@ sub create_macros
 
     my $nm = substr($namekey,0,-2); # removing language suffix from function name
     my $nm_data = {};
+    my $data2="";
+    my $has_centering = 0;
     if(defined($reads_writes->{$namekey}->{$namekey}->{$namekey})) {
       # This generates macros for functions with no read/write declarations.
       if ($lang->{$namekey} eq "C") {
         $$data .= "#ifdef CCODE \n";
         $$data .= "#ifndef DECLARE_CCTK_ARGUMENTS_${nm} \n";
         $$data .= "#define DECLARE_CCTK_ARGUMENTS_${nm} \\\n";
+        $$data .= "  _DECLARE_CCTK_ARGUMENTS; \\\n";
+        $$data .= "  /* end $nm */\n";
+        $$data .= "#endif\n";
+        $$data .= "#ifndef DECLARE_CCTK_ARGUMENTSX_${nm} \n";
+        $$data .= "#define DECLARE_CCTK_ARGUMENTSX_${nm} \\\n";
         $$data .= "  _DECLARE_CCTK_ARGUMENTS; \\\n";
         $$data .= "  /* end $nm */\n";
         $$data .= "#endif\n";
@@ -538,9 +547,15 @@ sub create_macros
     } else {
       if($lang->{$namekey} eq "C") {
         $$data .= "#ifdef CCODE \n";
+
         $$data .= "#ifndef DECLARE_CCTK_ARGUMENTS_${nm} \n";
         $$data .= "#define DECLARE_CCTK_ARGUMENTS_${nm} \\\n";
+
+        $data2 .= "#ifndef DECLARE_CCTK_ARGUMENTSX_${nm} \n";
+        $data2 .= "#define DECLARE_CCTK_ARGUMENTSX_${nm} \\\n";
+
         $$data .= "  _DECLARE_CCTK_ARGUMENTS; \\\n";
+        $data2 .= "  _DECLARE_CCTK_ARGUMENTS; \\\n";
         for my $th (sort keys %{$reads_writes->{$namekey}}) {
           for my $full_var (sort keys %{$reads_writes->{$namekey}->{$th}}) {
             my $errline = $reads_writes->{$namekey}->{$th}->{$full_var}->{line};
@@ -594,7 +609,6 @@ sub create_macros
                     ,$hint, $errline, $ccl_file);
               next;
             }
-            my $has_centering = 0;
             if(defined($var_group->{centering})) {
                 $has_centering = 1;
             }
@@ -639,13 +653,12 @@ sub create_macros
                   &CST_error(0, "No access to variable '${th}::$ifull_var'"
                     ,$hint, $line, $ccl_file);
                 }
-                if($has_centering) {
-                    $ifull_var = "ptr__".$ifull_var;
-                }
-                $$data .= qq($vtype $const * restrict const $ifull_var __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, CCTK_JOIN_TOKENS(cctki_vi_, CCTK_THORN).$ivar));; /* group $group_register */\\\n);
+                $$data .= qq($vtype $const * restrict const $ifull_var __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, CCTK_JOIN_TOKENS(cctki_vi_, CCTK_THORN).$ivar)); /* group $group_register */\\\n);
+                my $ifull_var2 = $ptr_prefix.$ifull_var;
+                $data2 .= qq($vtype $const * restrict const $ifull_var2 __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, CCTK_JOIN_TOKENS(cctki_vi_, CCTK_THORN).$ivar)); /* group $group_register */\\\n);
 
                 if($has_centering) {
-                    do_centering($data, $nm_data, $var_group, $const, $full_var);
+                    do_centering(\$data2, $nm_data, $var_group, $const, $full_var);
                 }
               }
             } else {
@@ -661,16 +674,23 @@ sub create_macros
                 &CST_error(0, "No access to variable '${th}::$ifull_var'"
                   ,$hint, $line, $ccl_file);
               }
+              $$data .= qq($vtype $const * restrict const $ifull_var __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, CCTK_JOIN_TOKENS(cctki_vi_, CCTK_THORN).$ivar)); /* TL: $namekey --> $timelevel $group_register*/\\\n);
+              my $ifull_var2 = $ptr_prefix.$ifull_var;
+              $data2 .= qq($vtype $const * restrict const $ifull_var2 __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, CCTK_JOIN_TOKENS(cctki_vi_, CCTK_THORN).$ivar)); /* TL: $namekey --> $timelevel $group_register*/\\\n);
+
               if($has_centering) {
-                  $ifull_var = "ptr__".$ifull_var;
-              }
-              $$data .= qq($vtype $const * restrict const $ifull_var __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, CCTK_JOIN_TOKENS(cctki_vi_, CCTK_THORN).$ivar));; /* TL: $namekey --> $timelevel $group_register*/\\\n);
-              if($has_centering) {
-                do_centering($data, $nm_data, $var_group, $const, $full_var);
+                do_centering(\$data2, $nm_data, $var_group, $const, $full_var);
               }
             }
           } # loop over read/write variables
         } # loop over read/write thorns
+        $data2 .= "  /* end $nm */\n";
+        $data2 .= "#endif\n";
+
+        $$data .= "  /* end $nm */\n";
+        $$data .= "#endif\n";
+        $$data .= $data2;
+        $$data .= "#endif\n";
       } elsif($lang->{$namekey} eq "FORTRAN") {
         my $vector_len = {};
         $$data .= "#ifdef FCODE \n";
@@ -817,13 +837,14 @@ sub create_macros
               $$data .= " integer, parameter :: cctki_use_$var = kind($var%dummy) &&\\\n";
           }
         }
+
+        $$data .= "  /* end $nm */\n";
+        $$data .= "#endif\n";
+        $$data .= "#endif\n";
       } else {
         &CST_error(0, "Failed to match the language for the function $nm."
             ,"", __LINE__, __FILE__);
       }
-      $$data .= "  /* end $nm */\n";
-      $$data .= "#endif\n";
-      $$data .= "#endif\n";
     } # if logic for empty/non-empty macros
   } #loop over functions
   $$data .= "#endif";
