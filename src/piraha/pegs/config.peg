@@ -25,5 +25,5 @@ pname = {-notkey}[A-Za-z0-9_./-]+
 # << means less than, >> means greater than
 vop   = (<<|<=|=|>=|>>)
 
-vname = {-notkey}[A-Za-z0-9_-]+
+vname = {-notkey}[A-Za-z0-9_.:+-]+
 all = ^ ({provopt} |{requires} )*$
