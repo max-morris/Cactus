@@ -948,19 +948,15 @@ CCTK_CHECK_CXX_STDMATHFUNC(signbit)
 
 CCTK_C__PRAGMA
 
-# NOTE: Erik Schnetter, 2009-06-22: These lead to wrong code on
-# Ranger.  Don't know whether this is a problem with the compiler or
-# with how the function annotations are used here.
-#
-## Find out whether the compiler supports __attribute__((const))
-#CCTK_C_ATTRIBUTE_CONST
-#CCTK_CXX_ATTRIBUTE_CONST
-#CCTK_CXX_MEMBER_ATTRIBUTE_CONST
-#
-## Find out whether the compiler supports __attribute__((pure))
-#CCTK_C_ATTRIBUTE_PURE
-#CCTK_CXX_ATTRIBUTE_PURE
-#CCTK_CXX_MEMBER_ATTRIBUTE_PURE
+# Find out whether the compiler supports __attribute__((const))
+CCTK_C_ATTRIBUTE_CONST
+CCTK_CXX_ATTRIBUTE_CONST
+CCTK_CXX_MEMBER_ATTRIBUTE_CONST
+
+# Find out whether the compiler supports __attribute__((pure))
+CCTK_C_ATTRIBUTE_PURE
+CCTK_CXX_ATTRIBUTE_PURE
+CCTK_CXX_MEMBER_ATTRIBUTE_PURE
 
 # Find out whether the compiler supports __attribute__((common))
 CCTK_C_ATTRIBUTE_COMMON
