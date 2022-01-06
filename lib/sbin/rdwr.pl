@@ -433,12 +433,14 @@ sub do_centering
     my $var_group = shift;
     my $const = shift;
     my $full_var = shift;
+    my $sub_nm = shift;
 
     if(!defined($nm_data->{"grid"})) {
       $$data .= "CCTK_CENTERING_GRID; \\\n";
       $nm_data->{grid}=1;
     }
     my $indstr = $var_group->{centering};
+    $indstr = "VVV" if(not(defined($indstr)));
     if(!defined($nm_data->{$indstr})) {
         my $numstr = $indstr;
         $numstr =~ s/C/1, /g;
@@ -499,7 +501,6 @@ sub create_macros
     my $nm = substr($namekey,0,-2); # removing language suffix from function name
     my $nm_data = {};
     my $data2="";
-    my $has_centering = 0;
     if(defined($reads_writes->{$namekey}->{$namekey}->{$namekey})) {
       # This generates macros for functions with no read/write declarations.
       if ($lang->{$namekey} eq "C") {
@@ -609,9 +610,6 @@ sub create_macros
                     ,$hint, $errline, $ccl_file);
               next;
             }
-            if(defined($var_group->{centering})) {
-                $has_centering = 1;
-            }
             my $vtype = "CCTK_".$var_group->{vtype};
             # This next test only fails if we could not determine
             # the variable type...
@@ -657,9 +655,7 @@ sub create_macros
                 my $ifull_var2 = $ptr_prefix.$ifull_var;
                 $data2 .= qq($vtype $const * restrict const $ifull_var2 __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, CCTK_JOIN_TOKENS(cctki_vi_, CCTK_THORN).$ivar)); /* group $group_register */\\\n);
 
-                if($has_centering) {
-                    do_centering(\$data2, $nm_data, $var_group, $const, $full_var);
-                }
+                do_centering(\$data2, $nm_data, $var_group, $const, $full_var, "${th}::${nm}");
               }
             } else {
               my $vname = "${th}::$var";
@@ -678,9 +674,7 @@ sub create_macros
               my $ifull_var2 = $ptr_prefix.$ifull_var;
               $data2 .= qq($vtype $const * restrict const $ifull_var2 __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, CCTK_JOIN_TOKENS(cctki_vi_, CCTK_THORN).$ivar)); /* TL: $namekey --> $timelevel $group_register*/\\\n);
 
-              if($has_centering) {
-                do_centering(\$data2, $nm_data, $var_group, $const, $full_var);
-              }
+              do_centering(\$data2, $nm_data, $var_group, $const, $full_var, "${th}::${nm}");
             }
           } # loop over read/write variables
         } # loop over read/write thorns
