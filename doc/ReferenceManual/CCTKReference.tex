@@ -7132,7 +7132,7 @@ In a multiprocessor run they may vary from processor to processor;
 each processor will get whatever interpolated data it asks for.
 The routine \code{CCTK\_InterpGridArrays} does not do the actual interpolation
 itself but rather takes care of whatever interprocessor communication may be
-necessary, and -- for each processor's local patch of the domain-decomposed grid
+necessary, and -- for each processor's local component of the domain-decomposed grid
 variables -- calls \code{CCTK\_InterpLocalUniform} to invoke an external
 local interpolation operator (as identified by an interpolation handle).
 

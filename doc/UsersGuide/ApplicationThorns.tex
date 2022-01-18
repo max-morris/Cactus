@@ -2680,7 +2680,7 @@ should be obvious):
         it only takes care of the interprocessor communication
         necessary when interpolating distributed grid arrays, and invokes
         the \texttt{CCTK\_InterpLocalUniform()} API on the each processor's
-        local patch of the data.
+        local component of the data.
 \item[\texttt{CCTK\_InterpLocalUniform()}]
         Interpolates processor-local arrays with \emph{uniformly}
         spaced data points, \ie{} where the coordinates~$xyz$
@@ -2802,7 +2802,7 @@ should be obvious):
         it only takes care of the interprocessor communication
         necessary when reducing distributed grid arrays, and invokes
         the \texttt{CCTK\_ReduceLocalArrays()} API on the each processor's
-        local patch of the data.
+        local component of the data.
 \item[\texttt{CCTK\_ReduceLocalArrays()}]
         Reduces processor-local arrays with various options including 
         \emph{offsets}, \emph{strides} and \emph{masks}.
