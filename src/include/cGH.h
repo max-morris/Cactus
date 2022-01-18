@@ -33,6 +33,7 @@ typedef struct _cGH
 #define CCTK_HAVE_CGH_PATCH
 #endif
   int cctk_patch;
+  int cctk_npatches;
 #ifndef CCTK_HAVE_CGH_TILE
 #define CCTK_HAVE_CGH_TILE
 #endif
