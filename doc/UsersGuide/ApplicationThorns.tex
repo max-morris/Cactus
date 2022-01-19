@@ -2057,6 +2057,16 @@ The following variables are used for identifying convergence levels.
         The convergence factor defaults to $2$.
 \end{Lentry}
 
+The following variables are used for identifying the coordinate patch in a
+multipatch/multiblock simulation.
+
+\begin{Lentry}
+\item [\texttt{cctk\_patch}] An integer with the multipatch patch
+      number on this processor.
+\item [\texttt{cctk\_npatches}] An integer with the total number of
+      multipatch patches on all processors.
+\end{Lentry}
+
 The variables \texttt{cctk\_delta\_space}, \texttt{cctk\_delta\_time}, and
 \texttt{cctk\_origin\_space} denote the grid spacings, time step size,
 and spatial origin on the \textit{base} grid.  If you are using a grid
