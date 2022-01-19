@@ -198,9 +198,6 @@ else
       : ${CXX_OPTIMISE_FLAGS='-fastsse -O3 -Mvect=assoc'}
       : ${CXX_WARN_FLAGS='-Minfo -Mneginfo'}
       : ${CXX_DEPEND='$(CXX) $(CPPFLAGS) $(CXXFLAGS) -E -M'}
-      if test `basename $LD` = 'pgCC'; then
-        : ${LDFLAGS='-Wl,--allow-multiple-definition'}
-      fi
       CXX_VERSION="`$CXX -V 2>&1 | grep pgCC | head -n1`"
       ;;
     pathCC)

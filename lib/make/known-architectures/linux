@@ -465,9 +465,6 @@ else
      : ${CXX_OPENMP_FLAGS='-mp'}
      : ${CXX_OPTIMISE_FLAGS='-fast -O3 -Mvect=assoc'}
      : ${CXX_WARN_FLAGS='-Minfo -Mneginfo'}
-     if test `basename $LD` = 'pgCC'; then
-       : ${LDFLAGS='-Wl,--allow-multiple-definition'}
-     fi
      CXX_VERSION="`$CXX -V 2>&1 | grep pgCC | head -n1`"
      ;;
    Pathscale)
