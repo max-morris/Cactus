@@ -241,7 +241,25 @@ fi
 AC_SUBST(LD)
 
 if test -z "$LD" ; then
-  LD=$CXX
+  LD="$CXX"
+  if test "${CXX_WARN_FLAGS+set}" = set ; then
+    : ${LD_WARN_FLAGS="$CXX_WARN_FLAGS"}
+  fi
+  if test "${CXX_DEBUG_FLAGS+set}" = set ; then
+    : ${LD_DEBUG_FLAGS="$CXX_DEBUG_FLAGS"}
+  fi
+  if test "${CXX_OPTIMISE_FLAGS+set}" = set ; then
+    : ${LD_OPTIMISE_FLAGS="$CXX_OPTIMISE_FLAGS"}
+  fi
+  if test "${CXX_NO_OPTIMISE_FLAGS+set}" = set ; then
+    : ${LD_NO_OPTIMISE_FLAGS="$CXX_NO_OPTIMISE_FLAGS"}
+  fi
+  if test "${CXX_PROFILE_FLAGS+set}" = set ; then
+    : ${LD_PROFILE_FLAGS="$CXX_PROFILE_FLAGS"}
+  fi
+  if test "${CXX_OPENMP_FLAGS+set}" = set ; then
+    : ${LD_OPENMP_FLAGS="$CXX_OPENMP_FLAGS"}
+  fi
 fi
 
 
@@ -335,6 +353,9 @@ fi
 AC_SUBST(F77_WARN_FLAGS)
 F77_WARN_FLAGS="$F90_WARN_FLAGS"
 
+AC_SUBST(LD_WARN_FLAGS)
+: ${CXX_WARN_FLAGS=''}
+
 AC_SUBST(DEBUG_MODE)
 DEBUG_MODE='no'
 if test -n "$DEBUG_FLAGS"; then
@@ -364,6 +385,9 @@ AC_SUBST(F90_DEBUG_FLAGS)
 AC_SUBST(F77_DEBUG_FLAGS)
 F77_DEBUG_FLAGS="$F90_DEBUG_FLAGS"
 
+AC_SUBST(LD_DEBUG_FLAGS)
+: ${LD_DEBUG_FLAGS='-g'}
+
 # Set the optimization flags if they've not been set by now
 # (using '-O2' as a reasonable default)
 AC_SUBST(OPTIMISE_MODE)
@@ -389,6 +413,9 @@ AC_SUBST(F90_OPTIMISE_FLAGS)
 AC_SUBST(F77_OPTIMISE_FLAGS)
 F77_OPTIMISE_FLAGS="$F90_OPTIMISE_FLAGS"
 
+AC_SUBST(LD_OPTIMISE_FLAGS)
+: ${LD_OPTIMISE_FLAGS='-O2'}
+
 # Set the no-optimization flags if they've not been set by now
 # (using '-O0' as a reasonable default)
 
@@ -406,6 +433,9 @@ AC_SUBST(F90_NO_OPTIMISE_FLAGS)
 
 AC_SUBST(F77_NO_OPTIMISE_FLAGS)
 F77_NO_OPTIMISE_FLAGS="$F90_NO_OPTIMISE_FLAGS"
+
+AC_SUBST(LD_NO_OPTIMISE_FLAGS)
+: ${LD_NO_OPTIMISE_FLAGS='-O0'}
 
 # Set the profiling flags if they've not been set by now
 # (using '-pg' as a reasonable default)
@@ -432,6 +462,9 @@ AC_SUBST(F90_PROFILE_FLAGS)
 AC_SUBST(F77_PROFILE_FLAGS)
 F77_PROFILE_FLAGS="$F90_PROFILE_FLAGS"
 
+AC_SUBST(LD_PROFILE_FLAGS)
+: ${LD_PROFILE_FLAGS='-pg'}
+
 # Set the OpenMP flags if they've not been set by now
 AC_SUBST(OPENMP_MODE)
 
@@ -442,6 +475,7 @@ AC_SUBST(CXX_OPENMP_FLAGS)
 AC_SUBST(CUCC_OPENMP_FLAGS)
 AC_SUBST(F90_OPENMP_FLAGS)
 AC_SUBST(F77_OPENMP_FLAGS)
+AC_SUBST(LD_OPENMP_FLAGS)
 F77_OPENMP_FLAGS="$F90_OPENMP_FLAGS"
 
 ##########################################################################
