@@ -54,16 +54,18 @@ http://en.wikipedia.org/wiki/Cactus
   The \textit{Cactus Configuration Language}, this is the language that
   the thorn configuration files are written in.
   See Section~\ref{sec:Appendix.ccl}.
+
 \item[configuration]
   The combination of a set of thorns, and all the Cactus configure
   options which affect what binary will be produced when compiling
-  Cactus.  For example, the choice of compilers (Cactus \verb|CC|,
-  \verb|CXX|, \verb|CUCC|, and \verb|F90| configure options) and the
-  compiler optimization settings (\verb|OPTIMISE|/\verb|OPTIMIZE| and
-  \verb|*_OPTIMISE_FLAGS| configure options) are part of a
-  configuration (these flags change what binary is produced), but the
-  Cactus \verb|VERBOSE| and \verb|WARN| configure options aren't part
-  of a configuration (they don't change what binary will be produced).
+  Cactus.  For example, the choice of compilers and linker (Cactus
+  \verb|CC|, \verb|CXX|, \verb|CUCC|, \verb|F90|, and \verb|LD|
+  configure options) and the compiler optimization settings
+  (\verb|OPTIMISE|/\verb|OPTIMIZE| and \verb|*_OPTIMISE_FLAGS| configure
+  options) are part of a configuration (these flags change what binary
+  is produced), but the Cactus \verb|VERBOSE| and \verb|WARN| configure
+  options aren't part of a configuration (they don't change what binary
+  will be produced).
   See Section~\ref{sec:configurations}.
 \item[checkout]
   Get a copy of source code from git.  See Section~\ref{sec:checkout}.

@@ -433,6 +433,12 @@ type of debugging being used.
 \item [\texttt{F77\_DEBUG\_FLAGS}]
 Ignored.
 
+\item [\texttt{LD\_DEBUG\_FLAGS}]
+Debug flags for the linker, their use depends on the type of debugging
+being used.
+Default to \texttt{CXX\_DEBUG\_FLAGS} if \verb|LD| is not set.
+
+
 \item [\texttt{OPTIMISE, OPTIMIZE}]
 Specifies what type of optimisation should be used. The only options currently
 available are \texttt{yes} and \texttt{no}.  The default is to use optimisation.\\
@@ -458,6 +464,11 @@ type of optimisation being used.
 \item [\texttt{F77\_OPTIMISE\_FLAGS}]
 Ignored.
 
+\item [\texttt{LD\_OPTIMISE\_FLAGS}]
+Optimisation flags for the linker, their use depends on the type of
+optimisation being used.
+Default to \texttt{CXX\_OPTIMISE\_FLAGS} if \verb|LD| is not set.
+
 \item [\texttt{C\_NO\_OPTIMISE\_FLAGS}]
 Optimisation flags used to indicate that no optimisation should be
 performed.  These are invoked when OPTIMISE=no is used.
@@ -476,6 +487,42 @@ performed.  These are invoked when OPTIMISE=no is used.
 
 \item [\texttt{F77\_NO\_OPTIMISE\_FLAGS}]
 Ignored.
+
+\item [\texttt{LD\_NO\_OPTIMISE\_FLAGS}]
+Optimisation flags used to indicate that no optimisation should be
+performed.  These are invoked when OPTIMISE=no is used.
+Default to \texttt{CXX\_NO\_OPTIMISE\_FLAGS} if \verb|LD| is not set.
+
+
+\item [\texttt{OPENMP}]
+Specifies if OpenMP multi-threading should be used.  The only options
+currently available are \texttt{yes} and \texttt{no}.  The default is to
+use no OpenMP.
+
+\item [\texttt{C\_OPENMP\_FLAGS}]
+OpenMP flags for the C compiler, their use depends on the type of
+OpenMP stack being used.
+
+\item [\texttt{CUCC\_OPENMP\_FLAGS}]
+OpenMP flags for the CUDA compiler, their use depends on the type of
+OpenMP stack being used.
+
+\item [\texttt{CXX\_OPENMP\_FLAGS}]
+OpenMP flags for the C++ compiler, their use depends on the type of
+OpenMP stack being used.
+
+\item [\texttt{F90\_OPENMP\_FLAGS}]
+OpenMP flags for the Fortran 90 compiler, their use depends on the
+type of OpenMP stack being used.
+
+\item [\texttt{F77\_OPENMP\_FLAGS}]
+Ignored.
+
+\item [\texttt{LD\_OPENMP\_FLAGS}]
+OpenMP flags for the linker, their use depends on the type of OpenMP
+stack being used.
+Default to \texttt{CXX\_OPENMP\_FLAGS} if \verb|LD| is not set.
+
 
 \item [\texttt{PROFILE}]
   Specifies what type of profiling should be used.  The only options
@@ -501,6 +548,11 @@ Ignored.
 \item [\texttt{F77\_PROFILE\_FLAGS}]
   Ignored.
 
+\item [\texttt{LD\_PROFILE\_FLAGS}]
+  Profile flags for the linker, their use depends on the type of
+  profiling being used.
+  Default to \texttt{CXX\_PROFILE\_FLAGS} if \verb|LD| is not set.
+
 \item [\texttt{WARN}]
   Specifies what type of build warnings should be used.  The only
   options currently available are \texttt{yes} and \texttt{no}.  The
@@ -524,6 +576,11 @@ warnings used during compilation (Section \ref{sec:gmopfobuco}).
 
 \item [\texttt{F77\_WARN\_FLAGS}]
 Ignored.
+
+\item [\texttt{LD\_WARN\_FLAGS}]
+Warning flags for the linker, their use depends on the type of
+warnings used during linking (Section \ref{sec:gmopfobuco}).
+Default to \texttt{CXX\_WARN\_FLAGS} if \verb|LD| is not set.
 
 \end{Lentry}
 
