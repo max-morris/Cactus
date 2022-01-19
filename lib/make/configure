@@ -716,6 +716,7 @@ F77
 LIBLINK_PREFIX
 RUNDIR_PREFIX
 LIBDIR_PREFIX
+LD_OPENMP_FLAGS
 F77_OPENMP_FLAGS
 F90_OPENMP_FLAGS
 CUCC_OPENMP_FLAGS
@@ -724,6 +725,7 @@ C_OPENMP_FLAGS
 FPP_OPENMP_FLAGS
 CPP_OPENMP_FLAGS
 OPENMP_MODE
+LD_PROFILE_FLAGS
 F77_PROFILE_FLAGS
 F90_PROFILE_FLAGS
 CUCC_PROFILE_FLAGS
@@ -732,11 +734,13 @@ C_PROFILE_FLAGS
 FPP_PROFILE_FLAGS
 CPP_PROFILE_FLAGS
 PROFILE_MODE
+LD_NO_OPTIMISE_FLAGS
 F77_NO_OPTIMISE_FLAGS
 F90_NO_OPTIMISE_FLAGS
 CUCC_NO_OPTIMISE_FLAGS
 CXX_NO_OPTIMISE_FLAGS
 C_NO_OPTIMISE_FLAGS
+LD_OPTIMISE_FLAGS
 F77_OPTIMISE_FLAGS
 F90_OPTIMISE_FLAGS
 CUCC_OPTIMISE_FLAGS
@@ -745,6 +749,7 @@ C_OPTIMISE_FLAGS
 FPP_OPTIMISE_FLAGS
 CPP_OPTIMISE_FLAGS
 OPTIMISE_MODE
+LD_DEBUG_FLAGS
 F77_DEBUG_FLAGS
 F90_DEBUG_FLAGS
 CUCC_DEBUG_FLAGS
@@ -753,6 +758,7 @@ C_DEBUG_FLAGS
 FPP_DEBUG_FLAGS
 CPP_DEBUG_FLAGS
 DEBUG_MODE
+LD_WARN_FLAGS
 F77_WARN_FLAGS
 F90_WARN_FLAGS
 CUCC_WARN_FLAGS
@@ -3364,7 +3370,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 rm -fr conftest*
 cat > conftest.$ac_ext << EOF
 
-#line 3367 "configure"
+#line 3373 "configure"
 #include "confdefs.h"
 
 int main(void){return(0);} int PilotMain(void){return(0);}
@@ -4498,7 +4504,7 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 rm -fr conftest*
 cat > conftest.$ac_ext << EOF
 
-#line 4501 "configure"
+#line 4507 "configure"
 #include "confdefs.h"
 
 int main(){return(0);} extern "C" int PilotMain(){return(0);}
@@ -5719,7 +5725,25 @@ fi
 
 
 if test -z "$LD" ; then
-  LD=$CXX
+  LD="$CXX"
+  if test "${CXX_WARN_FLAGS+set}" = set ; then
+    : ${LD_WARN_FLAGS="$CXX_WARN_FLAGS"}
+  fi
+  if test "${CXX_DEBUG_FLAGS+set}" = set ; then
+    : ${LD_DEBUG_FLAGS="$CXX_DEBUG_FLAGS"}
+  fi
+  if test "${CXX_OPTIMISE_FLAGS+set}" = set ; then
+    : ${LD_OPTIMISE_FLAGS="$CXX_OPTIMISE_FLAGS"}
+  fi
+  if test "${CXX_NO_OPTIMISE_FLAGS+set}" = set ; then
+    : ${LD_NO_OPTIMISE_FLAGS="$CXX_NO_OPTIMISE_FLAGS"}
+  fi
+  if test "${CXX_PROFILE_FLAGS+set}" = set ; then
+    : ${LD_PROFILE_FLAGS="$CXX_PROFILE_FLAGS"}
+  fi
+  if test "${CXX_OPENMP_FLAGS+set}" = set ; then
+    : ${LD_OPENMP_FLAGS="$CXX_OPENMP_FLAGS"}
+  fi
 fi
 
 
@@ -5817,6 +5841,9 @@ fi
 F77_WARN_FLAGS="$F90_WARN_FLAGS"
 
 
+: ${CXX_WARN_FLAGS=''}
+
+
 DEBUG_MODE='no'
 if test -n "$DEBUG_FLAGS"; then
   DEBUG_MODE=$DEBUG_FLAGS
@@ -5845,6 +5872,9 @@ fi
 
 F77_DEBUG_FLAGS="$F90_DEBUG_FLAGS"
 
+
+: ${LD_DEBUG_FLAGS='-g'}
+
 # Set the optimization flags if they've not been set by now
 # (using '-O2' as a reasonable default)
 
@@ -5870,6 +5900,9 @@ F77_DEBUG_FLAGS="$F90_DEBUG_FLAGS"
 
 F77_OPTIMISE_FLAGS="$F90_OPTIMISE_FLAGS"
 
+
+: ${LD_OPTIMISE_FLAGS='-O2'}
+
 # Set the no-optimization flags if they've not been set by now
 # (using '-O0' as a reasonable default)
 
@@ -5887,6 +5920,9 @@ F77_OPTIMISE_FLAGS="$F90_OPTIMISE_FLAGS"
 
 
 F77_NO_OPTIMISE_FLAGS="$F90_NO_OPTIMISE_FLAGS"
+
+
+: ${LD_NO_OPTIMISE_FLAGS='-O0'}
 
 # Set the profiling flags if they've not been set by now
 # (using '-pg' as a reasonable default)
@@ -5913,7 +5949,11 @@ F77_NO_OPTIMISE_FLAGS="$F90_NO_OPTIMISE_FLAGS"
 
 F77_PROFILE_FLAGS="$F90_PROFILE_FLAGS"
 
+
+: ${LD_PROFILE_FLAGS='-pg'}
+
 # Set the OpenMP flags if they've not been set by now
+
 
 
 
@@ -9946,7 +9986,7 @@ else case e in #(
   e) cctk_cv_c_static_inline=no
 for ac_kw in 'static inline' 'static __inline__' 'static __inline' static; do
   cat > conftest.$ac_ext <<EOF
-#line 9949 "configure"
+#line 9989 "configure"
 #include "confdefs.h"
 
 int main(void) {
@@ -9954,7 +9994,7 @@ int main(void) {
 ; return 0; }
 EOF
 cat > conftest2.$ac_ext <<EOF
-#line 9957 "configure"
+#line 9997 "configure"
 #include "confdefs.h"
 
 int main2() {
