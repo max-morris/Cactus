@@ -302,7 +302,7 @@ smart_ptr<Value> find_val(smart_ptr<Group> gr,std::string thorn,std::string name
     return ret;
 }
 
-smart_ptr<Value> lookup_var(smart_ptr<Group> gr) {
+smart_ptr<Value> lookup_var(smart_ptr<Group> gr,bool in_active_thorns,int add_line) {
     smart_ptr<Value> ret;
     if(gr->group(0)->getPatternName() == "env") {
         const char *env = getenv(gr->group(0)->group(0)->substring().c_str());
@@ -326,15 +326,20 @@ smart_ptr<Value> lookup_var(smart_ptr<Group> gr) {
     }
     if(!ret.valid()) {
         std::ostringstream msg;
-        msg << "Unknown variable: " << gr->substring() << std::endl;
+        if(in_active_thorns) {
+            msg << "Variables are not allowed in ActiveThorns." << std::endl;
+            current_thorn = "Cactus";
+        } else {
+            msg << "Unknown variable: " << gr->substring() << std::endl;
+        }
         std::string par = get_parfile();
-        CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
+        CCTK_Error(gr->line()+add_line,par.c_str(),current_thorn.c_str(),msg.str().c_str());
     }
     return ret;
 }
 
 
-std::string string_reparser(std::string s) {
+std::string string_reparser(std::string s,bool in_active_thorns,int add_line) {
     smart_ptr<Matcher> m = new Matcher(par_file_grammar,"stringparser",s.c_str(),s.length());
     if(m->matches()) {
         std::string out = "";
@@ -345,7 +350,7 @@ std::string string_reparser(std::string s) {
             } else if(pn == "stringcomment") {
                 ;
             } else if(pn == "var") {
-                smart_ptr<Value> val = lookup_var(m->group(i));
+                smart_ptr<Value> val = lookup_var(m->group(i),in_active_thorns,add_line);
                 out += val->copy();
             } else {
                 CCTK_VError(__LINE__, __FILE__, "Cactus",
@@ -372,7 +377,7 @@ struct ExpressionEvaluationData {
  * from it. It is, therefore, designed to be
  * used recursively.
  **/
-smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
+smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata,bool in_active_thorns=false) {
     assert(gr.valid());
     std::string pn = gr->getPatternName();
     smart_ptr<Value> ret = new Value(gr);
@@ -395,13 +400,13 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
             CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
         }
     } else if(pn == "paren" || pn == "parindex") {
-        return meval(gr->group(0),eedata);
+        return meval(gr->group(0),eedata,in_active_thorns);
     } else if(pn == "func") {
         std::string fn = gr->group(0)->substring();
         fn = mklower(fn);
         // the grammer disallows empyt function arguments foo() so there is
         // always at least group(0) and group(1)
-        smart_ptr<Value> val = meval(gr->group(1),eedata);
+        smart_ptr<Value> val = meval(gr->group(1),eedata,in_active_thorns);
         // First, functions with at least one, but potentially more than one argument
         if (fn == "max" || fn == "min") {
             if (gr->groupCount() < 2) {
@@ -411,7 +416,7 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
                 CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
             }
             for (int i=1; i<gr->groupCount(); i++) {
-                smart_ptr<Value> val_next = meval(gr->group(i),eedata);
+                smart_ptr<Value> val_next = meval(gr->group(i),eedata,in_active_thorns);
                 // Make sure all arguments are either integer or real
                 if (val_next->type != PIR_REAL && val_next->type != PIR_INT) {
                     std::ostringstream msg;
@@ -654,7 +659,7 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
         std::string name = gr->group(1)->substring();
         if(gr->groupCount() == 3) {
             std::ostringstream vn;
-            smart_ptr<Value> index = meval(gr->group(2),eedata);
+            smart_ptr<Value> index = meval(gr->group(2),eedata,in_active_thorns);
             if(index->type == PIR_INT) {
                 std::stringstream o;
                 o << name << "[" << index->idata << "]";
@@ -672,11 +677,11 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
         std::string par = get_parfile();
         CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
     } else if(pn == "var") {
-        ret = lookup_var(gr);
+        ret = lookup_var(gr,in_active_thorns,0);
     } else if(pn == "value") {
         if(gr->groupCount()==2) {
             std::string unop = gr->group(0)->substring();
-            ret = meval(gr->group(1),eedata);
+            ret = meval(gr->group(1),eedata,in_active_thorns);
             if(unop == "-") {
                 if(ret->type == PIR_INT) {
                     ret->idata = -ret->idata;
@@ -706,45 +711,45 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
                 CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
             }
         } else {
-            return meval(gr->group(0),eedata);
+            return meval(gr->group(0),eedata,in_active_thorns);
         }
     } else if(pn == "quot") {
         ret->type = PIR_STRING;
-        ret->sdata = string_reparser(gr->group(0)->substring());
+        ret->sdata = string_reparser(gr->group(0)->substring(),in_active_thorns,gr->line()-1);
     } else if(pn == "inquot") {
         ret->type = PIR_STRING;
         ret->sdata = gr->substring();
     } else if(pn == "expr") {
         if(gr->groupCount()==1)
-            return meval(gr->group(0),eedata);
-        smart_ptr<Value> v1 = meval(gr->group(0),eedata);
-        smart_ptr<Value> v2 = meval(gr->group(1),eedata);
+            return meval(gr->group(0),eedata,in_active_thorns);
+        smart_ptr<Value> v1 = meval(gr->group(0),eedata,in_active_thorns);
+        smart_ptr<Value> v2 = meval(gr->group(1),eedata,in_active_thorns);
         v1->checkBool();
         v2->checkBool();
         ret->type = PIR_BOOL;
         ret->idata = v1->idata || v2->idata;
     } else if(pn == "powexpr") {
         if(gr->groupCount()==1)
-            return meval(gr->group(0),eedata);
-        smart_ptr<Value> v1 = meval(gr->group(0),eedata);
-        smart_ptr<Value> v2 = meval(gr->group(1),eedata);
+            return meval(gr->group(0),eedata,in_active_thorns);
+        smart_ptr<Value> v1 = meval(gr->group(0),eedata,in_active_thorns);
+        smart_ptr<Value> v2 = meval(gr->group(1),eedata,in_active_thorns);
         ret->type = PIR_REAL;
         ret->ddata = pow(v1->realValue(),v2->realValue());
     } else if(pn == "andexpr") {
         if(gr->groupCount()==1)
-            return meval(gr->group(0),eedata);
-        smart_ptr<Value> v1 = meval(gr->group(0),eedata);
-        smart_ptr<Value> v2 = meval(gr->group(1),eedata);
+            return meval(gr->group(0),eedata,in_active_thorns);
+        smart_ptr<Value> v1 = meval(gr->group(0),eedata,in_active_thorns);
+        smart_ptr<Value> v2 = meval(gr->group(1),eedata,in_active_thorns);
         v1->checkBool();
         v2->checkBool();
         ret->type = PIR_BOOL;
         ret->idata = v1->idata && v2->idata;
     } else if(pn == "eqexpr") {
         if(gr->groupCount()==1)
-            return meval(gr->group(0),eedata);
-        smart_ptr<Value> v1 = meval(gr->group(0),eedata);
+            return meval(gr->group(0),eedata,in_active_thorns);
+        smart_ptr<Value> v1 = meval(gr->group(0),eedata,in_active_thorns);
         std::string eqop = gr->group(1)->substring();
-        smart_ptr<Value> v2 = meval(gr->group(2),eedata);
+        smart_ptr<Value> v2 = meval(gr->group(2),eedata,in_active_thorns);
         ret->type = PIR_BOOL;
         if(eqop == "==") {
             ret->idata = v1->equals(v2);
@@ -758,11 +763,11 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
         }
     } else if(pn == "compexpr") {
         if(gr->groupCount()==1)
-            return meval(gr->group(0),eedata);
-        smart_ptr<Value> v1 = meval(gr->group(0),eedata);
+            return meval(gr->group(0),eedata,in_active_thorns);
+        smart_ptr<Value> v1 = meval(gr->group(0),eedata,in_active_thorns);
         if(gr->groupCount()>0) {
             std::string compop = gr->group(1)->substring();
-            smart_ptr<Value> v2 = meval(gr->group(2),eedata);
+            smart_ptr<Value> v2 = meval(gr->group(2),eedata,in_active_thorns);
             CCTK_REAL d1 = v1->realValue();
             CCTK_REAL d2 = v2->realValue();
             ret->type = PIR_BOOL;
@@ -786,12 +791,12 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
         }
     } else if(pn == "aexpr") {
         if(gr->groupCount()==1)
-            return meval(gr->group(0),eedata);
-        smart_ptr<Value> v1 = meval(gr->group(0),eedata);
+            return meval(gr->group(0),eedata,in_active_thorns);
+        smart_ptr<Value> v1 = meval(gr->group(0),eedata,in_active_thorns);
         for(int i=1;i+1<gr->groupCount();i+=2) {
             ret = new Value(gr);
             std::string addop = gr->group(i)->substring();
-            smart_ptr<Value> v2 = meval(gr->group(i+1),eedata);
+            smart_ptr<Value> v2 = meval(gr->group(i+1),eedata,in_active_thorns);
             assert(v2.valid());
             if(v1->type == PIR_INT && v2->type == PIR_INT) {
                 ret->type = PIR_INT;
@@ -840,12 +845,12 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata) {
         }
     } else if(pn == "mexpr") {
         if(gr->groupCount()==1)
-            return meval(gr->group(0),eedata);
-        smart_ptr<Value> v1 = meval(gr->group(0),eedata);
+            return meval(gr->group(0),eedata,in_active_thorns);
+        smart_ptr<Value> v1 = meval(gr->group(0),eedata,in_active_thorns);
         for(int i=1;i+1<gr->groupCount();i+=2) {
             ret = new Value(gr);
             std::string mulop = gr->group(i)->substring();
-            smart_ptr<Value> v2 = meval(gr->group(i+1),eedata);
+            smart_ptr<Value> v2 = meval(gr->group(i+1),eedata,in_active_thorns);
             if(v1->type == PIR_INT && v2->type == PIR_INT) {
                 ret->type = PIR_INT;
                 if(mulop == "*") {
@@ -1076,7 +1081,7 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
         for(int i=0;i<m2->groupCount();i++) {
             smart_ptr<Group> gr = m2->group(i);
             if(gr->group(0)->getPatternName() == "active") {
-                smart_ptr<Value> smv = meval(gr->group(1),0);
+                smart_ptr<Value> smv = meval(gr->group(1),0,true);
                 if(active_buf.tellp() > 0)
                   active_buf << ' ';
                 active_buf << smv->copy();
