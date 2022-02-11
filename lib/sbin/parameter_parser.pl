@@ -128,6 +128,7 @@ sub parse_param_ccl
 
   #   The default block is private.
   $block = 'PRIVATE';
+  my $default;
 
 
   $parameter_db{"\U$thorn PRIVATE\E variables"} = '';
@@ -227,6 +228,15 @@ sub parse_param_ccl
           }
         }
         $parameter_db{"\U$thorn $as_name\E ranges"} = $item_count-1;
+        if($gr->has(-1,"keyword")) {
+            $default = $gr->group(-1)->substring();
+            if($gr->group(-1)->has(0,"quote")) {
+                $default =~ s/^\"//;
+                $default =~ s/\"$//;
+            }
+            $parameter_db{"\U$thorn $as_name\E default"} = $default;
+            &CheckParameterDefault($gr->linenum(),$thorn,$name,$default,%parameter_db);
+        }
       } elsif($gr->is("intpar")) {
         my $item_count = 1;
         my @items = ();
@@ -259,6 +269,13 @@ sub parse_param_ccl
         }
         $parameter_db{"\U$thorn $as_name\E ranges"} = $item_count-1;
         $parameter_db{"\U$thorn $as_name\E type"} = "INT";
+
+        if($gr->has(-1,"num")) {
+            $default = 1*$gr->group(-1,"num")->substring();
+            $parameter_db{"\U$thorn $name\E default"} = $default;
+            &CheckParameterDefault($gr->linenum(),$thorn,$name,$default,%parameter_db);
+        }
+
       } elsif($gr->is("realpar")) {
         my $item_count = 1;
         my @items = ();
@@ -288,6 +305,15 @@ sub parse_param_ccl
         }
         $parameter_db{"\U$thorn $as_name\E ranges"} = $item_count-1;
         $parameter_db{"\U$thorn $as_name\E type"} = "REAL";
+
+        if($gr->has(-1,"real")) {
+            $default = $gr->group(-1,"real")->substring();
+            # CCL files allow 1.0d-3, but perl needs 1.0e-3
+            $default =~ s/[dD]/e/g;
+            $default = 1*$default;
+            $parameter_db{"\U$thorn $name\E default"} = $default;
+            &CheckParameterDefault($gr->linenum(),$thorn,$name,$default,%parameter_db);
+        }
       } elsif($gr->is("stringpar")) {
         $parameter_db{"\U$thorn $as_name\E type"}="STRING";
         $parameter_db{"\U$thorn $as_name\E ranges"}=0;
@@ -316,6 +342,16 @@ sub parse_param_ccl
           }
         }
         $parameter_db{"\U$thorn $as_name\E ranges"}=$item_count-1;
+        $parameter_db{"\U$thorn $as_name\E ranges"} = $item_count-1;
+        if($gr->has(-1,"string")) {
+            $default = $gr->group(-1)->substring();
+            if($gr->group(-1)->has(0,"quote")) {
+                $default =~ s/^\"//;
+                $default =~ s/\"$//;
+            }
+            $parameter_db{"\U$thorn $as_name\E default"} = $default;
+            &CheckParameterDefault($gr->linenum(),$thorn,$name,$default,%parameter_db);
+        }
       } elsif($gr->{name} eq "boolpar") {
         $parameter_db{"\U$thorn $as_name\E ranges"} = 0;
         $parameter_db{"\U$thorn $as_name\E type"} = "BOOLEAN";
@@ -336,6 +372,10 @@ sub parse_param_ccl
           }
         }
         $parameter_db{"\U$thorn $as_name\E ranges"} = $item_count-1;
+        if($gr->has(-1,"bool")) {
+            $default = $gr->group(-1)->substring();
+            &CheckParameterDefault($gr->linenum(),$thorn,$name,$default,%parameter_db);
+        }
       }
       $parameter_db{"\U$thorn $as_name\E realname"} = $name;
       if($uses_or_extends eq "uses") {
@@ -347,7 +387,7 @@ sub parse_param_ccl
       } elsif($uses_or_extends eq "") {
         $parameter_db{"\U$thorn $block\E variables"} .= $as_name." ";
         my @children = @{$gr->{children}};
-        my $default = trim_quotes($children[$#children]->substring());
+        $default = trim_quotes($children[$#children]->substring());
         $default =~ s/\\\n//g;
         $parameter_db{"\U$thorn $as_name\E default"} = $default;
       }
@@ -402,7 +442,7 @@ sub PrintParameterStatistics
 
 sub CheckParameterDefault
 {
-  my($thorn,$variable,$default,%parameter_db) = @_;
+  my($line,$thorn,$variable,$default,%parameter_db) = @_;
   my($foundit,$i,$range);
 
   $foundit = 0;
@@ -416,16 +456,18 @@ sub CheckParameterDefault
                     "is incorrect in param.ccl for thorn $thorn",
                  "The default value for a boolean parameter must be one of " .
                     "yes,no,y,n,1,0,t,f,true,false",
-                 __LINE__, __FILE__);
+                 $line, $ccl_file);
     }
   }
   elsif ($parameter_db{"\U$thorn $variable\E type"} =~ /KEYWORD/)
   {
+    my $rangestr = "";
     my $nranges=$parameter_db{"\U$thorn $variable\E ranges"};
     for ($i=1; $i<=$nranges; $i++)
     {
       # Keywords don't use pattern matching but are case insensitive
       $range = $parameter_db{"\U$thorn $variable\E range $i range"};
+      $rangestr .= " $range";
       $foundit = 1 if ("\U$default\E" eq "\U$range\E");
     }
     if ($foundit == 0)
@@ -433,8 +475,8 @@ sub CheckParameterDefault
       &CST_error(0, "Default ($default) for keyword parameter '$variable' " .
                     "is incorrect in param.ccl for thorn $thorn",
                  "The default value for a parameter must lie within the " .
-                    "allowed range",
-                 __LINE__, __FILE__);
+                    "allowed range:$rangestr",
+                 $line, $ccl_file);
     }
   }
   elsif ($parameter_db{"\U$thorn $variable\E type"} =~ /STRING/)
@@ -448,7 +490,7 @@ sub CheckParameterDefault
       {
         &CST_error(0, "Invalid regular expression '$range' for string " .
                       "parameter '$variable': $@",
-                   __LINE__, __FILE__);
+                 $line, $ccl_file);
       }
 
       # An empty regular expression should match everything.
@@ -462,25 +504,64 @@ sub CheckParameterDefault
                     "is incorrect in param.ccl for thorn $thorn",
                  "The default value for a parameter must lie within an " .
                     "allowed range",
-                 __LINE__, __FILE__);
+                 $line, $ccl_file);
     }
   }
   elsif ($parameter_db{"\U$thorn $variable\E type"} =~ /INT/)
   {
+    my $rangestr = "";
     my $nranges=$parameter_db{"\U$thorn $variable\E ranges"};
     for (my $i=1; $i<=$nranges; $i++)
     {
       $range = $parameter_db{"\U$thorn $variable\E range $i range"};
-      $range =~ /^([\(]?)([\s\*0-9]*):([\s\*0-9]*)([\)]?)/;
-      my $lower_bounds_excluded = $1 eq '(';
-      my $min = $2;
-      my $max = $3;
-      my $upper_bounds_excluded = $4 eq ')';
-      $foundit = 1 if ($min =~ /^\s*[\*\s]*\s*$/ or
+      if(!defined($range)) {
+        # create an entry in the cached parameter_db even for incorrect ccl
+        # files without a range present
+        print("parameter_db{\U$thorn $variable\E range $i range} = ; $ccl_file\n");
+        next;
+      }
+      my $min;
+      my $max;
+      my $lower_bounds_excluded;
+      my $upper_bounds_excluded;
+      if($range =~ /^(.*):(.*):(.*)$/) {
+        my $lo = $1;
+        my $hi = $2;
+        my $stride = $3;
+        $hi = 1<<31-1 if($hi eq "*");
+        if($stride <= 0) {
+            &CST_error(0, "The increment for range in integer parameter '$variable' should be positive.",
+                    "The value of the stride is currently $stride, the range is currently $range.",
+                 $line, $ccl_file);
+        }
+        if($hi < $lo) {
+            &CST_error(0, "Bad range for integer parameter '$variable'.",
+                    "The value of the range is currently $range.",
+                 $line, $ccl_file);
+        }
+        if( $stride > 0 and ($default - $lo) % $stride == 0) {
+            $foundit=1;
+            last;
+        }
+        next;
+      }
+      if($range =~ /^([\(\[]?)([^:]*):([^:]*?)([\)\]]?)$/) {
+        $lower_bounds_excluded = $1 eq '(';
+        $min = $2;
+        $max = $3;
+        $upper_bounds_excluded = $4 eq ')';
+      } else {
+        $lower_bounds_excluded = 0;
+        $min = $range;
+        $max = $range;
+        $upper_bounds_excluded = 0;
+      }
+      $rangestr .= " $range";
+      $foundit = 1 if ($min =~ /^\*?$/ or
                        ($lower_bounds_excluded ? $default >  $min :
                                                  $default >= $min))
                       and
-                      ($max =~ /^\s*[\*\s]*\s*$/ or
+                      ($max =~ /^\*?$/ or
                        ($upper_bounds_excluded ? $default <  $max :
                                                  $default <= $max));
     }
@@ -489,21 +570,35 @@ sub CheckParameterDefault
       &CST_error(0, "Default ($default) for integer parameter '$variable' " .
                     "is incorrect in param.ccl for thorn $thorn",
                  "The default value for a parameter must lie within the " .
-                    "allowed range",
-                 __LINE__, __FILE__);
+                    "allowed range:$rangestr",
+                 $line, $ccl_file);
     }
   }
   elsif ($parameter_db{"\U$thorn $variable\E type"} =~ /REAL/)
   {
+    my $rangestr = "";
     my $nranges=$parameter_db{"\U$thorn $variable\E ranges"};
     for (my $i=1; $i<=$nranges; $i++)
     {
       $range = $parameter_db{"\U$thorn $variable\E range $i range"};
-      $range =~ /^([\(]?)([\s\*0-9\.eE+-]*):([\s\*0-9\.eE+-]*)([\)]?)/;
-      my $lower_bounds_excluded = $1 eq '(';
-      my $min = $2;
-      my $max = $3;
-      my $upper_bounds_excluded = $4 eq ')';
+      my $lower_bounds_excluded;
+      my $min;
+      my $max;
+      my $upper_bounds_excluded;
+      if($range =~ /^([\(\[]?)([^:]*):([^:]*?)([\)\]]?)$/) {
+        $lower_bounds_excluded = $1 eq '(';
+        $min = $2;
+        $max = $3;
+        $upper_bounds_excluded = $4 eq ')';
+      } else {
+        $lower_bounds_excluded = 0;
+        $min = $range;
+        $max = $range;
+        $upper_bounds_excluded = 0;
+      }
+      $min =~ s/[dD]/e/g;
+      $max =~ s/[dD]/e/g;
+      $rangestr .= " $range";
       $foundit = 1 if ($min =~ /^\s*[\*\s]*\s*$/ or
                        ($lower_bounds_excluded ? $default >  $min :
                                                  $default >= $min))
@@ -517,9 +612,11 @@ sub CheckParameterDefault
       &CST_error(0, "Default ($default) for real parameter '$variable' " .
                     "is incorrect in param.ccl for thorn $thorn",
                  "The default value for a parameter must lie within the " .
-                    "allowed range",
-                 __LINE__, __FILE__);
+                    "allowed range: $range",
+                 $line, $ccl_file);
     }
+  } else {
+    die "Missing type for $thorn $variable";
   }
 }
 
