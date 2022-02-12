@@ -585,6 +585,11 @@ sub CheckParameterDefault
       my $min;
       my $max;
       my $upper_bounds_excluded;
+      if($range =~ /^(.*):(.*):(.*)$/) {
+        &CST_error(0, "Strides are not supported for real numbers.", "",
+                 $line, $ccl_file);
+        next;
+      }
       if($range =~ /^([\(\[]?)([^:]*):([^:]*?)([\)\]]?)$/) {
         $lower_bounds_excluded = $1 eq '(';
         $min = $2;
