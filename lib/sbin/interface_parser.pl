@@ -119,6 +119,7 @@ sub cross_index_interface_data
   foreach $thorn (@$thorns_ref)
   {
     $implementation = $interface_data_ref->{"\U$thorn\E IMPLEMENTS"};
+    next unless(defined($implementation));
     if($implementation =~ m:^\s*$:)
     {
       $message = "Thorn $thorn doesn't specify an implementation";
@@ -603,6 +604,7 @@ sub check_interface_consistency
   $implementation =  $interface_data_ref->{"\U$thorn\E IMPLEMENTS"};
 
   # Loop over ancestors
+  return unless(defined($implementation));
   foreach $ancestor_imp (split " ",$interface_data_ref->{"IMPLEMENTATION \U$implementation\E ANCESTORS"})
   {
     # Need one thorn which implements this ancestor (we already have checked consistency)
@@ -982,7 +984,8 @@ sub PrintInterfaceStatistics
   my($block);
   my($sep);
 
-  print "           Implements: " . $interface_database_ref->{"\U$thorn IMPLEMENTS"} . "\n";
+  print "           Implements: " . $interface_database_ref->{"\U$thorn IMPLEMENTS"} . "\n"
+    if(defined($interface_database_ref->{"\U$thorn IMPLEMENTS"}));
 
   if($interface_database_ref->{"\U$thorn INHERITS"} ne "")
   {
