@@ -1138,15 +1138,15 @@ int CCTK_GroupData (int group, cGroup *gp)
   {
     if (gp)
     {
-      gp->grouptype     = groups[group].gtype;
-      gp->vartype       = groups[group].vtype;
-      gp->disttype      = groups[group].dtype;
-      gp->dim           = groups[group].dim;
-      gp->numvars       = groups[group].n_variables;
-      gp->vectorlength  = groups[group].vectorlength;
-      gp->numtimelevels = groups[group].n_timelevels;
-      gp->tagstable     = groups[group].tags_table;
-      gp->centeringtable    = groups[group].centering_table;
+      gp->grouptype      = groups[group].gtype;
+      gp->vartype        = groups[group].vtype;
+      gp->disttype       = groups[group].dtype;
+      gp->dim            = groups[group].dim;
+      gp->numvars        = groups[group].n_variables;
+      gp->vectorlength   = groups[group].vectorlength;
+      gp->numtimelevels  = groups[group].n_timelevels;
+      gp->tagstable      = groups[group].tags_table;
+      gp->centeringtable = groups[group].centering_table;
 
       if(groups[group].vararraysize)
       {
