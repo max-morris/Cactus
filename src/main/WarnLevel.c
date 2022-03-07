@@ -769,7 +769,7 @@ void CCTK_VError (int line,
              "  while executing schedule bin %s, routine %s::%s\n"
              "  in thorn %s, file %s:%d:\n"
              "  ->",
-              hostname, myproc,
+             hostname, myproc,
              cf_where, cf_thorn, cf_routine,
              thorn, file, line);
   }
