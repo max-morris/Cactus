@@ -1901,10 +1901,10 @@ sub has
   my $nm = shift;
   $n += $self->groupCount()+1+$n if($n < 0);
   my $ref = $self->{children}->[$n];
-  return 0 unless(defined($ref));
+  return undef unless(defined($ref));
   if(defined($nm)) {
     my $m = $ref->{name};
-    return 0
+    return undef
       unless($m eq $nm);
   }
   return $ref;
