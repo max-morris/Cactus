@@ -351,6 +351,13 @@ sub parse_param_ccl
             }
             $parameter_db{"\U$thorn $as_name\E default"} = $default;
             &CheckParameterDefault($gr->linenum(),$thorn,$name,$default,%parameter_db);
+        } else {
+            my $uses_or_extends = lc $gr->group(0)->substring();
+            if($uses_or_extends ne "uses") {
+                &CST_error(0, "Default value is missing for parameter '$as_name' in thorn '$thorn'",
+                    "Please edit the file and supply a default value",
+                    $gr->linenum(),$ccl_file);
+            }
         }
       } elsif($gr->{name} eq "boolpar") {
         $parameter_db{"\U$thorn $as_name\E ranges"} = 0;
