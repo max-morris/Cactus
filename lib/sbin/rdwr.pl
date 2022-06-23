@@ -652,10 +652,12 @@ sub create_macros
                     ,$hint, $line, $ccl_file);
                 }
                 $$data .= qq($vtype $const * restrict const $ifull_var __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, CCTK_JOIN_TOKENS(cctki_vi_, CCTK_THORN).$ivar)); /* group $group_register */\\\n);
-                my $ifull_var2 = $ptr_prefix.$ifull_var;
+                my $prefix = $ptr_prefix;
+                $prefix = "" unless(uc($var_group->{gtype}) eq "GF");
+                my $ifull_var2 = $prefix.$ifull_var;
                 $data2 .= qq($vtype $const * restrict const $ifull_var2 __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, CCTK_JOIN_TOKENS(cctki_vi_, CCTK_THORN).$ivar)); /* group $group_register */\\\n);
 
-                do_centering(\$data2, $nm_data, $var_group, $const, $ifull_var, "${th}::${nm}");
+                do_centering(\$data2, $nm_data, $var_group, $const, $ifull_var, "${th}::${nm}") if(uc($var_group->{gtype}) eq "GF");
               }
             } else {
               my $vname = "${th}::$var";
@@ -671,10 +673,12 @@ sub create_macros
                   ,$hint, $line, $ccl_file);
               }
               $$data .= qq($vtype $const * restrict const $ifull_var __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, CCTK_JOIN_TOKENS(cctki_vi_, CCTK_THORN).$ivar)); /* TL: $namekey --> $timelevel $group_register*/\\\n);
-              my $ifull_var2 = $ptr_prefix.$ifull_var;
+              my $prefix = $ptr_prefix;
+              $prefix = "" unless(uc($var_group->{gtype}) eq "GF");
+              my $ifull_var2 = $prefix.$ifull_var;
               $data2 .= qq($vtype $const * restrict const $ifull_var2 __attribute__((__unused__)) = (($vtype *) CCTKi_VarDataPtrI(cctkGH, $timelevel, CCTK_JOIN_TOKENS(cctki_vi_, CCTK_THORN).$ivar)); /* TL: $namekey --> $timelevel $group_register*/\\\n);
 
-              do_centering(\$data2, $nm_data, $var_group, $const, $ifull_var, "${th}::${nm}");
+              do_centering(\$data2, $nm_data, $var_group, $const, $ifull_var, "${th}::${nm}") if(uc($var_group->{gtype}) eq "GF");
             }
           } # loop over read/write variables
         } # loop over read/write thorns
