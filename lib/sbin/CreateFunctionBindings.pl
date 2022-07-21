@@ -2175,8 +2175,9 @@ sub ProvidedFunctions
       {
         my $type = $Function->{"Provider Language"};
         my @args = &printArgList($type,$Function->{"Arguments"});
-        my $nameC = "Alias".$Function->{"Name"}."_C";
-        my $nameF = "Alias".$Function->{"Name"}."_F";
+        my $name = $Function->{"Name"};
+        my $nameC = "Alias".$name."_C";
+        my $nameF = "Alias".$name."_F";
         my $provider = $Function->{"Provider"};
 
         if ($type =~ /Fortran/)
@@ -2191,8 +2192,8 @@ sub ProvidedFunctions
         }
         push(@data,"  if (ierr)");
         push(@data,"  {");
-        push(@data,"    CCTK_Warn(0, __LINE__, __FILE__, \"Bindings\",");
-        push(@data,"              \"Function already registered!\");");
+        push(@data,"    CCTK_Error(__LINE__, __FILE__, \"Bindings\",");
+        push(@data,"               \"Aliased function $name already registered! It is provided by the function $provider.\");");
         push(@data,"  }");
       }
     }
