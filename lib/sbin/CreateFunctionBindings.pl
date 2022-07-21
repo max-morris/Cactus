@@ -2193,7 +2193,7 @@ sub ProvidedFunctions
         push(@data,"  if (ierr)");
         push(@data,"  {");
         push(@data,"    CCTK_Error(__LINE__, __FILE__, \"Bindings\",");
-        push(@data,"               \"Aliased function $name already registered!\");");
+        push(@data,"               \"Aliased function $name already registered! It is provided by the function $provider.\");");
         push(@data,"  }");
       }
     }
