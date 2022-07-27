@@ -58,7 +58,7 @@ sub Configure
   }
   else
   {
-    $configs_dir = "$homedir/configs";
+    $configs_dir = "$home_dir/configs";
   }
   $config_data->{"CONFIGSDIR"} = $configs_dir;
 
@@ -297,7 +297,6 @@ sub ParseTestConfigs
         elsif ($line =~ m/^\s*TEST\s*(.*)/i)
         {
           my ($test, $ABSTOL, $RELTOL, $POSTPROC, $NPROCS);
-          ($test, $ABSTOL, $RELTOL, $POSTPROC, $NPROCS, $line_number);
           ($test, $ABSTOL, $RELTOL, $POSTPROC, $NPROCS, $line_number) =
             &ParseTestBlock($line_number, $config_file, \@config);
           $rundata->{"$thorn $test ABSTOL"} = $ABSTOL;
@@ -750,7 +749,7 @@ sub ParseExtras
     $dir = $config_data->{"CCTK_DIR"}.${sep}."configs";
   }
 
-  $extradir = "${dir}${sep}$config{$sep}config-data${sep}cctk_Extradefs.h";
+  $extradir = "${dir}${sep}${config}{$sep}config-data${sep}cctk_Extradefs.h";
   $capabilitydir = "${dir}${sep}$config${sep}bindings${sep}Configuration${sep}Capabilities${sep}cctki_MPI.h";
 
   $mpi = 0;
@@ -921,30 +920,30 @@ sub PrintToleranceTable
   my($testabstol,$testreltol);
 
   # Get default tolerances for the test
-  if (defined($runconfig{"$thorn $test ABSTOL"}->{".*"}))
+  if (defined($runconfig->{"$thorn $test ABSTOL"}->{".*"}))
   {
-     $testabstol=$runconfig{"$thorn $test ABSTOL"}->{".*"};
+     $testabstol=$runconfig->{"$thorn $test ABSTOL"}->{".*"};
   }
-  elsif (defined($runconfig{"$thorn ABSTOL"}->{".*"}) )
+  elsif (defined($runconfig->{"$thorn ABSTOL"}->{".*"}) )
   {
-     $testabstol=$runconfig{"$thorn ABSTOL"}->{".*"};
+     $testabstol=$runconfig->{"$thorn ABSTOL"}->{".*"};
   }
   else
   {
-     $testabstol=$runconfig{"ABSTOL"};
+     $testabstol=$runconfig->{"ABSTOL"};
   }
 
-  if (defined($runconfig{"$thorn $test RELTOL"}->{".*"}))
+  if (defined($runconfig->{"$thorn $test RELTOL"}->{".*"}))
   {
-     $testreltol=$runconfig{"$thorn $test RELTOL"}->{".*"};
+     $testreltol=$runconfig->{"$thorn $test RELTOL"}->{".*"};
   }
-  elsif (defined($runconfig{"$thorn RELTOL"}->{".*"}) )
+  elsif (defined($runconfig->{"$thorn RELTOL"}->{".*"}) )
   { 
-     $testreltol=$runconfig{"$thorn RELTOL"}->{".*"};
+     $testreltol=$runconfig->{"$thorn RELTOL"}->{".*"};
   }
   else
   {
-     $testreltol=$runconfig{"RELTOL"};
+     $testreltol=$runconfig->{"RELTOL"};
   }
 
   # longest file name for table alignment
@@ -964,7 +963,7 @@ sub PrintToleranceTable
   print "    (.*)"," "x($maxfilenamelen-4),"\t$testabstol\t\t$testreltol\n";
   foreach my $file (split(" ",$testdata->{"$thorn $test DATAFILES"}))
   {
-     ($fileabstol, $filereltol)=&GetFileTolerances($test,$thorn,\%runconfig,$file);
+     ($fileabstol, $filereltol)=&GetFileTolerances($test,$thorn,$runconfig,$file);
      if ( $fileabstol == $testabstol ) { $fileabstol="--"; }
      if ( $filereltol == $testreltol ) { $filereltol="--"; }
      if ( $fileabstol ne "--" || $filereltol ne "--" )
@@ -1774,7 +1773,7 @@ sub CompareTestFiles
             $thorndir =~ s{(.*)(/.*)}{$1};
         }
 
-        my $progs = {};
+        my %progs;
 
         # Find all matches from the individual test...
         my $postproc_cfg = $runconfig->{"$thorn $test POSTPROC"};
@@ -2241,7 +2240,7 @@ sub ResetTestStatistics
   $rundata->{"NFAILED"} = 0;
   $rundata->{"NPASSED"} = 0;
   $rundata->{"NPASSEDTOTOL"} = 0;
-  foreach my $thorn (split(" ",$testdata->{"THORN"}))
+  foreach my $thorn (split(" ",$testdata->{"THORNS"}))
   {
     $rundata->{"$thorn TESTED"} = 0;
   }
