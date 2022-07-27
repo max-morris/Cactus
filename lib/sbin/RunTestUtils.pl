@@ -1092,12 +1092,16 @@ sub CleanDir
   my($dir) = @_;
 
   opendir (DIR, $dir);
-  my @list = (grep (/.+\..+/, readdir (DIR)));
+  my @list = readdir (DIR);
+  closedir (DIR);
   foreach my $entry (@list)
   {
+    next if ($entry eq "." || $entry eq "..");
+    if (-d "$dir/$entry") {
+      &CleanDir("$dir/$entry");
+    }
     unlink "$dir/$entry";
   }
-  closedir (DIR);
 }
 
 ############################################################
@@ -1217,12 +1221,21 @@ sub FindFiles
   @tmp = sort readdir (DIR);
   closedir (DIR);
 
-  foreach $f (@tmp)
+  foreach my $f (@tmp)
   {
+    next if ($f eq '.' or $f eq '..');
     $f =~ m:.*\.([^\s\.]+)\s*$:;
-    $extension = $1;
+    my $extension = $1;
 
-    if ($f !~ /^(\.\#.*|\.|\.\.|.*\.par|CVS|.svn|.*~)$/)
+    if (-d "$dir/$f")
+    {
+      my ($subdir_unrecognizedfiles, $subdir_recognizedfiles) = &FindFiles("$dir/$f", $testdata);
+      $subdir_unrecognizedfiles =~ s: (\S*) : $f/$1 :g;
+      $unrecognizedfiles .= $subdir_unrecognizedfiles;
+      $subdir_recognizedfiles =~ s: (\S*) : $f/$1 :g;
+      $recognizedfiles .= $subdir_recognizedfiles;
+    }
+    elsif ($f !~ /^(\.\#.*|\.|\.\.|.*\.par|CVS|.svn|.*~)$/)
     {
       if ($extension =~ /.+/ && $testdata->{"EXTENSIONS"} =~ /\b$extension\b/)
       {
