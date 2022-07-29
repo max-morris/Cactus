@@ -1749,7 +1749,7 @@ sub CompareTestFiles
   {
     my (@maxabsdiff, @absdiff, @valmax) = ();
     my ($filereltol, $fileabstol);
-    my ($nline, $nold, $nnew) = (0,0,0);
+    my ($nline, $nold, $nnew, $ncommon) = (0,0,0,0);
 
     my $newfile = "$test_dir$sep$file";
     # This is the standard location of test data files
@@ -1885,18 +1885,20 @@ sub CompareTestFiles
 
           $nnew = scalar(@newvals);
           $nold = scalar(@oldvals);
+          $ncommon = $nnew < $nold ? $nnew : $nold;
+
+          # missing column in new data ?
+          if ($nnew < $nold)
+          {
+            $rundata->{"$thorn $test $file NNAN"}++;
+            $rundata->{"$thorn $test $file NFAILWEAK"}++;
+            $rundata->{"$thorn $test $file NFAILSTRONG"}++;
+          }
 
           my $allzero = 1;
-          for (my $count = 0; $count < $nold; $count++)
+          for (my $count = 0; $count < $ncommon; $count++)
           {
-            if ($count < $nnew)
-            {
-              $absdiff[$count] = abs($newvals[$count] - $oldvals[$count]);
-            }
-            else
-            {
-              $absdiff[$count] = abs(0. - $oldvals[$count]);
-            }
+            $absdiff[$count] = abs($newvals[$count] - $oldvals[$count]);
             $allzero = 0 if ($absdiff[$count]);
           }
           next if ($allzero);
@@ -1905,7 +1907,7 @@ sub CompareTestFiles
           $rundata->{"$thorn $test $file NFAILWEAK"}++;
 
           # store difference for strong failures
-          for (my $count = 0; $count < $nold; $count++)
+          for (my $count = 0; $count < $ncommon; $count++)
           {
            if (not defined $maxabsdiff[$count] or
                $maxabsdiff[$count] < $absdiff[$count]) {
@@ -1917,7 +1919,7 @@ sub CompareTestFiles
                               $absoldval : $absnewval;
           }
 
-          for (my $count = 0; $count < $nold; $count++)
+          for (my $count = 0; $count < $ncommon; $count++)
           {
             my $vreltol = $filereltol * $valmax[$count];
             my $vtol = $fileabstol > $vreltol ? $fileabstol : $vreltol;
@@ -2028,11 +2030,10 @@ sub CompareTestFiles
 
     my $havediffs = 0;
     my @maxreldiff = @maxabsdiff;
-    for (my $count = 0; $count < $nold; $count++)
+    for (my $count = 0; $count < $ncommon; $count++)
     {
       next unless ($maxreldiff[$count]);
       $havediffs = 1;
-      next unless $count < $nnew; # fewer columns in new file
       if ($valmax[$count] > 0)
       {
         $maxreldiff[$count] /= $valmax[$count];
