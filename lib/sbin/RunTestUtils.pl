@@ -1536,7 +1536,8 @@ sub ChooseTests
       $myarrs[$count] = "$arrangement";
       $count++;
     }
-    while (!$arrchoice or $arrchoice eq " ")
+    while (!$arrchoice or $arrchoice eq " " or
+            $arrchoice < 1 or $arrchoice > @myarrs)
     {
       $arrchoice = &defprompt("  Choose arrangement by number:"," ");
     }
@@ -1562,7 +1563,8 @@ sub ChooseTests
         $count++;
       }
     }
-    while (!$thornchoice or $thornchoice eq " ")
+    while (!$thornchoice or $thornchoice eq " " or
+            $thornchoice < 1 or $thornchoice > @mythorns)
     {
       $thornchoice = &defprompt("  Choose thorn by number:"," ");
     }
@@ -1575,7 +1577,9 @@ sub ChooseTests
       print "       $testdata->{\"$mythorns[$thornchoice] $test DESC\"}\n";
       $mytests[$testcount] = "$test";
     }
-    $testchoice = &defprompt("  Choose test:","0");
+    do {
+      $testchoice = &defprompt("  Choose test:","0");
+    } until($testchoice >= 0 and $testchoice <= @mytests);
 
     if ($testchoice == 0)
     {
@@ -1604,7 +1608,8 @@ sub ChooseTests
     }
     if ($count > 1)
     {
-      while (!$thornchoice or $thornchoice eq " ")
+      while (!$thornchoice or $thornchoice eq " " or
+            $thornchoice < 1 or $thornchoice > @mythorns)
       {
         $thornchoice = &defprompt("  Choose thorn:"," ");
       }
@@ -1617,7 +1622,9 @@ sub ChooseTests
         print "       $testdata->{\"$mythorns[$thornchoice] $test DESC\"}\n";
         $mytests[$testcount] = "$test";
       }
-      $testchoice = &defprompt("  Choose test:","0");
+      do {
+        $testchoice = &defprompt("  Choose test:","0");
+      } until($testchoice >= 0 and $testchoice <= @mytests);
       if ($testchoice == 0)
       {
         $ntests = $testcount;
@@ -2451,7 +2458,9 @@ sub ViewResults
       &debug_dedent;
 
       if ($count>1) {
-        $myfile = &defprompt("  Choose file by number or [c]ontinue","c");
+        do {
+          $myfile = &defprompt("  Choose file by number or [c]ontinue","c");
+        } until ($myfile eq 'c' or ($myfile >= 1 and $myfile <= @myfiles));
       } else {
         $myfile = 'c';
       }
@@ -2544,6 +2553,10 @@ sub ViewResults
           $command .= "\nEOF";
           print "  $command\n";
           system($command);
+        }
+        else
+        {
+          print "  Unknown action '$choice'\n";
         }
       }
     }
