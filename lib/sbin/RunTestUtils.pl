@@ -1091,7 +1091,9 @@ sub CleanDir
 {
   my($dir) = @_;
 
-  opendir (DIR, $dir);
+  return if not -e "$dir"; # nothing to delete
+
+  opendir (DIR, $dir) or die "Failed to open directory '$dir' for deletion";
   my @list = readdir (DIR);
   closedir (DIR);
   foreach my $entry (@list)
@@ -1214,10 +1216,12 @@ sub FindFiles
   my ($dir,$testdata) = @_;
   my ($unrecognizedfiles,$recognizedfiles, @tmp);
 
+  return ("", "") if not -e "$dir"; # nothing to do
+
   $recognizedfiles="";
   $unrecognizedfiles="";
 
-  opendir (DIR, $dir);
+  opendir (DIR, $dir) or die "Could not open directory '$dir' for reading";
   @tmp = sort readdir (DIR);
   closedir (DIR);
 
