@@ -225,7 +225,7 @@ sub CreateConfigurationDatabase
       foreach my $cap (split (' ', $cfg{"\U$thorn\E ACTIVATES"}))
       {
           my $cap_thorn = $capabilities{"\U$cap\E"};
-          $activates .= " $cap_thorn";
+          $activates .= " $cap_thorn" if $cap_thorn;
       }
       $cfg{"\U$thorn\E ACTIVATES THORNS"} = $activates;
   }
