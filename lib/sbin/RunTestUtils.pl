@@ -1904,6 +1904,7 @@ sub CompareTestFiles
             $rundata->{"$thorn $test $file NNAN"}++;
             $rundata->{"$thorn $test $file NFAILWEAK"}++;
             $rundata->{"$thorn $test $file NFAILSTRONG"}++;
+            next;
           }
 
           my $allzero = 1;
