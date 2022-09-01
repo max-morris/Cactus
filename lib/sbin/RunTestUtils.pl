@@ -1777,6 +1777,8 @@ sub CompareTestFiles
 
     $rundata->{"$thorn $test $file NINF"}=0;
     $rundata->{"$thorn $test $file NNAN"}=0;
+    $rundata->{"$thorn $test $file NMISSINGLINES"}=0;
+    $rundata->{"$thorn $test $file NEXTRALINES"}=0;
     $rundata->{"$thorn $test $file NINFNOTFOUND"}=0;
     $rundata->{"$thorn $test $file NNANNOTFOUND"}=0;
     $rundata->{"$thorn $test $file NFAILSTRONG"}=0;
@@ -1874,7 +1876,12 @@ sub CompareTestFiles
           # ignore comment lines in new file
           last unless ($nline =~ /^\s*(["#].*)?$/);
         }
-        $nline = "" if not defined($nline); # EOF encountered
+        if (not defined($nline)) { # EOF encountered
+          $rundata->{"$thorn $test $file NMISSINGLINES"}++;
+          $rundata->{"$thorn $test $file NFAILWEAK"}++;
+          $rundata->{"$thorn $test $file NFAILSTRONG"}++;
+          next;
+        }
 
         # Now lets see if they differ.
         $numlines++;
@@ -1979,6 +1986,7 @@ sub CompareTestFiles
       }
       if (!eof(INNEW))
       {
+        $rundata->{"$thorn $test $file NEXTRALINES"}++;
         $rundata->{"$thorn $test $file NFAILWEAK"}++;
         $rundata->{"$thorn $test $file NFAILSTRONG"}++;
       }
@@ -2131,6 +2139,10 @@ sub ReportOnTest
       push (@log, "      did not reproduce  $tmp Infs from old $file") if $tmp;
       $tmp = $rundata->{"$key NFAILSTRONG"};
       push (@log, "      significant differences on $tmp (out of $rundata->{\"$key NUMLINES\"}) lines");
+      $tmp = $rundata->{"$key NMISSINGLINES"};
+      push (@log, "      missing  $tmp lines in new $file") if $tmp;
+      $tmp = $rundata->{"$key NEXTRALINES"};
+      push (@log, "      extra  $tmp lines in new $file") if $tmp;
 
       my $maxabsdiff = $rundata->{"$key MAXABSDIFF"};
       my $maxreldiff = $rundata->{"$key MAXRELDIFF"};
