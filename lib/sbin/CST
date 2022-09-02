@@ -790,9 +790,9 @@ sub  CompareValues
     }
     elsif ($parameter_db->{"\U$thorn1 $variable\E type"} =~ /REAL/)
     {
-      $default1 =~ tr/dD/eE/
+      $default1 =~ tr/dD/eE/;
       $default1 = $default1 + 0.;
-      $default2 =~ tr/dD/eE/
+      $default2 =~ tr/dD/eE/;
       $default2 = $default2 + 0.;
     }
     else
