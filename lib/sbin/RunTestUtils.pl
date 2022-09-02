@@ -1895,8 +1895,8 @@ sub CompareTestFiles
           # This is the new comparison (subtract last two numbers)
 
           # Make sure that floating point numbers have 'e' if exponential.
-          $nline =~ tr/d/e/;
-          $oline =~ tr/d/e/;
+          $nline =~ tr/dD/eE/;
+          $oline =~ tr/dD/eE/;
 
           my @newvals = split(' ',$nline);
           my @oldvals = split(' ',$oline);
