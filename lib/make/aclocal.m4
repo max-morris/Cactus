@@ -338,7 +338,7 @@ AC_DEFUN(CCTK_PROG_CC_WORKS,
 AC_LANG_SAVE
 AC_LANG_C
 rm -fr conftest*
-CCTK_TRY_COMPILER([main(){return(0);} int PilotMain(){return(0);}], ac_cv_prog_cc_works, ac_cv_prog_cc_cross)
+CCTK_TRY_COMPILER([int main(){return(0);} int PilotMain(){return(0);}], ac_cv_prog_cc_works, ac_cv_prog_cc_cross)
 AC_LANG_RESTORE
 AC_MSG_RESULT($ac_cv_prog_cc_works)
 if test $ac_cv_prog_cc_works = no; then
