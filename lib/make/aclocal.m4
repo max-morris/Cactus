@@ -301,7 +301,8 @@ AC_DEFUN(CCTK_TIME_GETTIMEOFDAY,
 [AC_MSG_CHECKING([for availability of gettimeofday timing])
 AC_CACHE_VAL(cctk_cv_time_gettimeofday,
 [AC_TRY_LINK([],
-[gettimeofday(0, 0);
+[#include <sys/time.h>
+ gettimeofday(0, 0);
  return 0;], eval "cctk_cv_time_gettimeofday=yes",
   eval "cctk_cv_time_gettimeofday=no")])dnl
 if eval "test \"`echo '$cctk_cv_time_gettimeofday'`\" = yes"; then
@@ -707,7 +708,7 @@ AC_DEFUN(CCTK_CHECK_C_STATIC_INLINE,
 [AC_CACHE_CHECK([for C static inline], cctk_cv_c_static_inline,
 [cctk_cv_c_static_inline=no
 for ac_kw in 'static inline' 'static __inline__' 'static __inline' static; do
-  CCTK_TRY_LINK_2(, [;} $ac_kw ifoo(){} foo(){ifoo();], [;} $ac_kw ifoo(){} foo2(){ifoo();], [cctk_cv_c_static_inline=$ac_kw; break])
+  CCTK_TRY_LINK_2(, [;} $ac_kw int ifoo(){} foo(){ifoo();], [;} $ac_kw int ifoo(){} foo2(){ifoo();], [cctk_cv_c_static_inline=$ac_kw; break])
 done
 ])
 case "$cctk_cv_c_static_inline" in
