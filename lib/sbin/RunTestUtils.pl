@@ -1241,7 +1241,7 @@ sub FindFiles
     }
     elsif ($f !~ /^(\.\#.*|\.|\.\.|.*\.par|CVS|.svn|.*~)$/)
     {
-      if ($extension =~ /.+/ && $testdata->{"EXTENSIONS"} =~ /\b$extension\b/)
+      if (defined $extension && $testdata->{"EXTENSIONS"} =~ /\b$extension\b/)
       {
         $recognizedfiles .= " $f ";
       }
