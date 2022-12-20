@@ -508,13 +508,19 @@ sub FindTestParameterFiles
     next if (defined $found_thorns{"$arrangement/$thorn"});
     $found_thorns{"$arrangement/$thorn"} = 1;
 
-    $testdata->{"FULL"} .= "$fullthorn ";
-    $testdata->{"THORNS"} .= "$thorn ";
+    if ( $testdata->{"FULL"} !~ m:(^|\s)$fullthorn\s:)
+    {
+      $testdata->{"FULL"} .= "$fullthorn ";
+    }
+    if ($testdata->{"THORNS"} !~ m:(^|\s)$thorn\s:)
+    {
+      $testdata->{"THORNS"} .= "$thorn ";
+    }
     $testdata->{"$thorn ARRANGEMENT"} = "$arrangement";
     $testdata->{"$thorn TESTS"} = "";
     $testdata->{"$thorn NTESTS"} = 0;
 
-    if ($testdata->{"ARRANGEMENTS"} !~ m:\s$arrangement\s:)
+    if ($testdata->{"ARRANGEMENTS"} !~ m:(^|\s)$arrangement\s:)
     {
       $testdata->{"ARRANGEMENTS"} .= "$arrangement ";
     }
@@ -796,7 +802,7 @@ sub ParseExtras
 =item $testdata
  Consists of FULL, NNODATAFILES, NRUNNABLE, NUNRUNNABLE,
  RUNNABLETHORNS, UNRUNNABLETHORNS, RUNNABLEARRANGEMENTS,
- and UNRUNNABLEARRANGEMENTS.
+ UNRUNNABLEARRANGEMENTS, ARRANGEMENTS, THORNS
 
 =back
 
@@ -810,7 +816,11 @@ sub InitialiseTestData
   my($testdata);
 
   # Complete list of thorns: arrangement/thorn
-  $testdata->{"FULL"} = "";
+  $testdata->{"FULL"} = "CACTUS ";
+  $testdata->{"THORNS"} = "CACTUS ";
+  $testdata->{"CACTUS ARRANGEMENT"} = "";
+  $testdata->{"CACTUS TESTS"} = "";
+  $testdata->{"CACTUS NTESTS"} = 0;
 
   $testdata->{"NNODATAFILES"} = 0;
   $testdata->{"NRUNNABLE"} = 0;
