@@ -122,7 +122,7 @@ function find_standardlib {
   fi
   # standard paths
 
-  local DIRS="$GUESS /usr /usr/local /usr/local/packages /usr/local/apps /opt /opt/local $HOME c:/packages"
+  local DIRS="$GUESS /usr /usr/local /usr/local/packages /usr/local/apps /opt /opt/local /opt/homebrew $HOME c:/packages"
   local ALLDIRS=$(echo "$DIRS" | perl -pe 's/([^ \n]+)/\1\/'"$LIBNAME"' \1/g')
   # for each of these dirs, check if all necessary files are there
   for dir in $ALLDIRS; do
