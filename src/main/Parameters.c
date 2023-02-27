@@ -1007,7 +1007,7 @@ int CCTK_ParameterWalk (int first,
   const t_param         *startpoint;
   static const t_param  *prev_startpoint_all;
   static const t_param  *prev_startpoint_thorn;
-  static int            next_index = 0;
+  static int            next_index;
   /* FIXME : This routine has become extremely ugly:
    *         It should only have one return in it.
    *         The malloc failure should be flagged.
@@ -1043,6 +1043,7 @@ int CCTK_ParameterWalk (int first,
     /* return next match which also becomes startpoint for following searches */
     return_found = 1;
     startpoint = NULL;
+    next_index = 0;
   }
 
   /* iterate over nodes */
