@@ -93,9 +93,9 @@ void parse(const char *str,rdwr_t rdwr,cFunctionData* func,std::set<RDWR_entry>&
     DECLARE_CCTK_PARAMETERS;
 
     const char* rdwr_s = rdwr == reads_t ? "READS" : rdwr == writes_t ?
-                                          "WRITES" : "INVALIDATES";
+                                           "WRITES" : "INVALIDATES";
 
-    char varbuf[256], where[256];
+    char varbuf[257], where[257];
     int vecnum = -1;
     if(sscanf(str, "%256[^[][%d](%256[^)])", varbuf, &vecnum, where) != 3 and
        sscanf(str, "%256[^(](%256[^)])", varbuf, where) != 2) {
