@@ -212,9 +212,6 @@ for my $header (@$definethisthornheader) {
 # Write configuration scripts messages/errors to log file
 &CreateLogFile($config_dir, $configuration_database,\%thorns);
 
-print "Generating arguments...\n";
-&GenerateArguments(%thorns);
-
 # Stop the make process if there were any errors
 &CheckCSTErrors();
 
@@ -601,6 +598,9 @@ sub CreateBindings
   &CreateScheduleBindings($bindings_dir, $rhinterface_db, $rhschedule_db);
   print "   Creating function bindings...\n";
   &CreateFunctionBindings($bindings_dir, $rhinterface_db);
+  print "   Generating arguments...\n";
+  &GenerateArguments(%thorns);
+
 
   # Place an appropriate make.code.defn in the bindings directory.
   my $data = 'SUBDIRS = Functions Implementations Parameters Variables Schedule';
