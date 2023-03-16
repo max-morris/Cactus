@@ -1,26 +1,16 @@
-#include <iostream>
-#include <stdarg.h>
 #include "Piraha.hpp"
+
+#include <iostream>
 
 using namespace cctki_piraha;
 
-Or::Or(Pattern *p,...) : patterns() {
-    va_list ap;
-    va_start(ap,p);
-    patterns.push_back(p);
-    while(true) {
-        Pattern *pat = va_arg(ap,Pattern*);
-        if(pat == NULL)
-            break;
-        //std::cout << "pat=" << pat->fmt() << std::endl;
-        patterns.push_back(pat);
-        assert(patterns.size()<7);
-    }
-    va_end(ap);
+Or::Or(std::initializer_list<Pattern*> patterns_) {
+    for (auto p: patterns_)
+        patterns.emplace_back(p);
 }
 
-bool Or::match(Matcher *m) {
-    typedef vector<smart_ptr<Pattern> >::iterator pattern_iter;
+bool Or::match(std::shared_ptr<Matcher> m) {
+    typedef std::vector<std::shared_ptr<Pattern> >::iterator pattern_iter;
     int save = m->pos;
     int chSave = m->children->size();
     for(pattern_iter p = patterns.begin();p != patterns.end();++p) {

@@ -3,7 +3,7 @@
 
 using namespace cctki_piraha;
 
-Matcher::Matcher(smart_ptr<Grammar> g_,const char *pat_,const char *input_,int input_size_) :
+Matcher::Matcher(std::shared_ptr<Grammar> g_,const char *pat_,const char *input_,int input_size_) :
     Group(pat_,input_),
     input(input_), g(g_), input_size(input_size_),
     pos(0), max_pos(-1), match_to(-2), pat(pat_), expected(), err_pos(-1) {
@@ -21,19 +21,19 @@ bool Matcher::matches() {
 }
 
 bool Matcher::matchesTo(int match_to_) {
-    smart_ptr<Pattern> p = g->patterns.get(pat);
-    if(!p.valid()) {
+    std::shared_ptr<Pattern> p = g->patterns.get(pat);
+    if(!p) {
         std::cout << "Grammar does not contain \"" << pat << "\"" << std::endl;
         std::cout << g->patterns << std::endl;
     }
-    assert(p.valid());
+    assert(p);
     //packrat.clear();
     pos = 0;
     max_pos = -1;
     match_to = match_to_;
     err_pos = -1;
     children->clear();
-    bool b = p->match(this);
+    bool b = p->match(shared_from_this());
     end_ = pos;
     return b;
 }

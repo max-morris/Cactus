@@ -1,29 +1,26 @@
 #include "Piraha.hpp"
-#include <string.h>
+
+#include <cstring>
 
 using namespace cctki_piraha;
 
-typedef vector<smart_ptr<Range> >::iterator range_iter;
+typedef std::vector<std::shared_ptr<Range> >::iterator range_iter;
 
-bool Range::match(Matcher *m) {
+bool Range::match(std::shared_ptr<Matcher> m) {
   if(m->pos - m->input_size >= 0)
     return false;
   char c = m->input[m->pos];
-  if(lo <= c && c <= hi) {
-    return true;
-  } else {
-    return false;
-  }
+  return lo <= c && c <= hi;
 }
 
 Bracket::Bracket(bool b) : neg(b), ranges() {}
 
-Bracket *Bracket::addRange(char lo,char hi) {
+Bracket* Bracket::addRange(char lo,char hi) {
   bool done = false;
   while(!done) {
     done = true;
     for(range_iter ri = ranges.begin();ri != ranges.end(); ++ri) {
-      smart_ptr<Range> r = *ri;
+      std::shared_ptr<Range> r = *ri;
       if(hi < r->lo || r->hi < lo) {
         // no intersection
         continue;
@@ -36,30 +33,30 @@ Bracket *Bracket::addRange(char lo,char hi) {
       }
     }
   }
-  ranges.push_back(new Range(lo,hi));
+  ranges.push_back(std::make_shared<Range>(lo,hi));
   return this;
 };
 
-Bracket *Bracket::addRange(char lo,char hi,bool ign) {
+Bracket* Bracket::addRange(char lo,char hi,bool ign) {
   if(ign) {
     char lolc = lc_(lo);
     char hilc = lc_(hi);
     char louc = uc_(lo);
     char hiuc = uc_(hi);
     if(lolc == louc && hilc == hiuc) {
-      ranges.push_back(new Range(lo,hi));
+      ranges.push_back(std::make_shared<Range>(lo,hi));
     } else {
-      ranges.push_back(new Range(lolc,hilc));
-      ranges.push_back(new Range(louc,hiuc));
+      ranges.push_back(std::make_shared<Range>(lolc,hilc));
+      ranges.push_back(std::make_shared<Range>(louc,hiuc));
     }
   } else {
-    ranges.push_back(new Range(lo,hi));
+    ranges.push_back(std::make_shared<Range>(lo,hi));
   }
   return this;
 };
 
-static void fail(Bracket *b,Matcher *m) {
-  typedef vector<smart_ptr<Range> >::iterator range_iter;
+static void fail(Bracket *b,std::shared_ptr<Matcher> m) {
+  typedef std::vector<std::shared_ptr<Range> >::iterator range_iter;
   Bracket bex;
   if(m->pos == m->max_pos+1) {
     for(range_iter r = b->ranges.begin();r != b->ranges.end(); ++r) {
@@ -69,7 +66,7 @@ static void fail(Bracket *b,Matcher *m) {
   }
 }
 
-bool Bracket::match(Matcher *m) {
+bool Bracket::match(std::shared_ptr<Matcher> m) {
   if(m->pos >= (int)m->input_size) {
     fail(this,m);
     return false;

@@ -1,7 +1,20 @@
 INCS += src/include
-SRCS=\
-AutoGrammar.cc Bracket.cc Dot.cc End.cc \
-Grammar.cc Group.cc ILiteral.cc \
-Literal.cc Lookup.cc Matcher.cc Multi.cc \
-Or.cc ReParse.cc Seq.cc Start.cc Call.cc \
-smart_ptr.cc Boundary.cc NegLookAhead.cc
+SRCS =						\
+	AutoGrammar.cc				\
+	Boundary.cc				\
+	Bracket.cc				\
+	Call.cc					\
+	Dot.cc					\
+	End.cc					\
+	Grammar.cc				\
+	Group.cc				\
+	ILiteral.cc				\
+	Literal.cc				\
+	Lookup.cc				\
+	Matcher.cc				\
+	Multi.cc				\
+	NegLookAhead.cc				\
+	Or.cc					\
+	ReParse.cc				\
+	Seq.cc					\
+	Start.cc

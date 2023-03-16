@@ -2,7 +2,7 @@
 
 using namespace cctki_piraha;
 
-bool Dot::match(Matcher *m) {
+bool Dot::match(std::shared_ptr<Matcher> m) {
     if(m->pos - m->input_size >= 0)
         return false;
     char c = m->input[m->pos];

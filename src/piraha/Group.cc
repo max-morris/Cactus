@@ -17,7 +17,7 @@ void Group::dump(int n,std::ostream& o,int indent) {
             o << input[i];
     }
     o << std::endl;
-    typedef vector<smart_ptr<Group> >::iterator group_iter;
+    typedef std::vector<std::shared_ptr<Group> >::iterator group_iter;
     int nn = 0;
     for(group_iter gi = children->begin();
             gi != children->end();
@@ -52,7 +52,7 @@ void Group::dumpPerl(std::ostream &o,int indent) {
 		for(int i=0;i<indent;i++)
 			o << ' ';
 		o << "children=>[" << std::endl;
-		typedef vector<smart_ptr<Group> >::iterator group_iter;
+		typedef std::vector<std::shared_ptr<Group> >::iterator group_iter;
 		for(group_iter gi = children->begin();
 				gi != children->end();
 				++gi) {
@@ -106,7 +106,7 @@ void Group::dumpPython(std::ostream &o,int indent) {
 		for(int i=0;i<indent;i++)
 			o << ' ';
 		o << "'children' : [" << std::endl;
-		typedef vector<smart_ptr<Group> >::iterator group_iter;
+		typedef std::vector<std::shared_ptr<Group> >::iterator group_iter;
 		for(group_iter gi = children->begin();
 				gi != children->end();
 				++gi) {
@@ -159,7 +159,7 @@ int Group::childCount() {
     return children->size();
 }
 
-smart_ptr<Group> Group::child(int n) {
+std::shared_ptr<Group> Group::child(int n) {
     return (*children)[n];
 }
 

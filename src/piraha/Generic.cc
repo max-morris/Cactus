@@ -95,9 +95,9 @@ int main(int argc,char **argv) {
     read_file(grammarArg.c_str(),grammar_file);
     read_file(inputArg.c_str(),input_file);
 
-    smart_ptr<Grammar> g = new Grammar();
+    std::shared_ptr<Grammar> g = new Grammar();
     compileFile(g,grammar_file.c_str());
-    smart_ptr<Matcher> mg =
+    std::shared_ptr<Matcher> mg =
         new Matcher (g,g->default_rule.c_str(),input_file.c_str());
     if(mg->matches()) {
         //std::vector<char> vec(4096);
@@ -105,7 +105,7 @@ int main(int argc,char **argv) {
         //o.rdbuf()->pubsetbuf(&vec.front(),vec.size());
         o.open(outFile.c_str());
         std::cout << "writing file: " << outFile << std::endl;
-        smart_ptr<Group> src_file =
+        std::shared_ptr<Group> src_file =
             new Group("annot:src_file",inputArg.c_str());
         mg->children->push_back(src_file);
     	if(perlFlag) {

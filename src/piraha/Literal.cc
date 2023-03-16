@@ -2,7 +2,7 @@
 
 using namespace cctki_piraha;
 
-bool Literal::match(Matcher *m) {
+bool Literal::match(std::shared_ptr<Matcher> m) {
   if(m->pos - m->input_size >= 0) {
     m->fail(c);
     return false;

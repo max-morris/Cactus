@@ -2,19 +2,19 @@
 
 using namespace cctki_piraha;
 
-Lookup::Lookup(std::string name_,Grammar *g) : gram(g), name(name_), capture(true) {
+Lookup::Lookup(std::string name_,std::shared_ptr<Grammar> g) : gram(g), name(name_), capture(true) {
     if(name[0] == '-') {
         capture = false;
         name = name.substr(1);
     }
 }
 
-bool Lookup::match(Matcher *m) {
-    smart_ptr<Pattern> p = gram->patterns.get(name);
-    if(!p.valid()) std::cout << "Lookup of pattern [" << name << "] failed. Jmap = " << gram->patterns << std::endl;
-    assert(p.valid());
-    smart_ptr<vector<smart_ptr<Group> > > chSave = m->children;
-    m->children = new vector<smart_ptr<Group> >();
+bool Lookup::match(std::shared_ptr<Matcher> m) {
+    std::shared_ptr<Pattern> p = gram->patterns.get(name);
+    if(!p) std::cout << "Lookup of pattern [" << name << "] failed. Jmap = " << gram->patterns << std::endl;
+    assert(p);
+    std::shared_ptr<std::vector<std::shared_ptr<Group> > > chSave = m->children;
+    m->children = std::make_shared<std::vector<std::shared_ptr<Group> > >();
     int s = m->pos;
     std::string save_name = m->inrule;
     m->inrule += "::";
@@ -31,7 +31,7 @@ bool Lookup::match(Matcher *m) {
             std::cout << "}" << std::endl;
         }
         */
-        smart_ptr<Group> g = new Group(name,m->input,s,e,m->children);
+        std::shared_ptr<Group> g = std::make_shared<Group>(name,m->input,s,e,m->children);
         if(capture)
             chSave->push_back(g);
     }

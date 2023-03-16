@@ -9,7 +9,7 @@ bool is_c_ident(char c) {
         || c == '_';
 }
 
-bool Boundary::match(Matcher *m) {
+bool Boundary::match(std::shared_ptr<Matcher> m) {
     if(m->pos == 0 || m->pos == (int)m->input_size)
         return true;
     char c2 =  m->input[m->pos];

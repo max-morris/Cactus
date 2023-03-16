@@ -3,7 +3,7 @@
 
 using namespace cctki_piraha;
 
-bool Multi::match(Matcher *m) {
+bool Multi::match(std::shared_ptr<Matcher> m) {
     int chSize;
     for(int i=0;i<maxv;i++) {
         int save = m->pos;

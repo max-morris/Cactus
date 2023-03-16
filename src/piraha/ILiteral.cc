@@ -4,7 +4,7 @@ using namespace cctki_piraha;
 
 ILiteral::ILiteral(char b) : lc(lc_(b)), uc(uc_(b)) {}
 
-bool ILiteral::match(Matcher *m) {
+bool ILiteral::match(std::shared_ptr<Matcher> m) {
   if(m->pos >= (int)m->input_size ) {
     m->fail(lc);
     m->fail(uc);

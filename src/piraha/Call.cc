@@ -1,25 +1,28 @@
-#include <iostream>
-#include <iomanip>
-#include <string>
-#include "Piraha.hpp"
-#include <cstdlib>
-#include <sstream>
-#include "cctk_core.h"
-#include "cctk_Parameter.h"
-#include <map>
-#include <cmath>
-#include <algorithm>
-#include <limits>
-#include <fstream>
-#include "util_Expression.h"
 #include "ParGrammar.hh"
+#include "Piraha.hpp"
+
+#include "cctk_Parameter.h"
+#include "cctk_core.h"
+#include "util_Expression.h"
+
+#include <algorithm>
+#include <cmath>
+#include <cstdlib>
+#include <cstring>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <limits>
+#include <map>
+#include <sstream>
+#include <string>
 
 namespace cctki_piraha {
 
 #define VAR(X) " " #X "=" << X
 
-smart_ptr<Grammar> create_grammar() {
-    smart_ptr<Grammar> grammar = new Grammar();
+std::shared_ptr<Grammar> create_grammar() {
+    auto grammar = std::make_shared<Grammar>();
     //std::ofstream peg("/tmp/par.peg");
     //peg << par_file_src;
     //peg.close();
@@ -32,10 +35,9 @@ smart_ptr<Grammar> create_grammar() {
  * This holds the structure required for parsing
  * a Cactus par file.
  */
-static smart_ptr<Grammar> par_file_grammar = create_grammar();
+static std::shared_ptr<Grammar> par_file_grammar = create_grammar();
 
-static std::string mklower(std::string& in) {
-    std::string s = in;
+static std::string mklower(std::string s) {
     std::transform(s.begin(), s.end(), s.begin(), ::tolower);
     return s;
 }
@@ -94,12 +96,12 @@ std::string current_thorn;
  */
 struct Value {
     /** This field holds the parse tree element associated with this Value. */
-    smart_ptr<Group> hold;
+    std::shared_ptr<Group> hold;
     CCTK_REAL ddata;
     CCTK_INT idata;
     std::string sdata;
     ValueType type;
-    Value(smart_ptr<Group> g) : hold(g), ddata(0), idata(0), sdata(), type(PIR_VOID) { smart_ptr<Group> foo(g); }
+    Value(std::shared_ptr<Group> g) : hold(g), ddata(0), idata(0), sdata(), type(PIR_VOID) { std::shared_ptr<Group> foo(g); }
     ~Value() {}
     /**
      * Create a string representation of the Value.
@@ -137,7 +139,7 @@ struct Value {
      * Compares with another Value, and throws a CCTK_Error
      * if the comparison doesn't make sense.
      */
-    bool equals(smart_ptr<Value> v) {
+    bool equals(std::shared_ptr<Value> v) {
         if(type == PIR_BOOL && v->type == PIR_BOOL) {
             return idata == v->idata;
         } else if(type == PIR_INT && v->type == PIR_INT) {
@@ -186,7 +188,7 @@ struct Value {
             }
         }
     }
-    void booleanize(smart_ptr<Group> gr) {
+    void booleanize(std::shared_ptr<Group> gr) {
         if(type == PIR_STRING) {
             std::string s = mklower(sdata);
             if(s == "yes" || s == "true") {
@@ -210,8 +212,8 @@ struct Value {
     }
 };
 
-std::ostream& operator<<(std::ostream& o,const smart_ptr<Value>& val) {
-    if(!val.valid()) {
+std::ostream& operator<<(std::ostream& o,const std::shared_ptr<Value>& val) {
+    if(!val) {
         return o << "NULL";
     }
     o << "(" << val->type << ")";
@@ -229,24 +231,24 @@ std::ostream& operator<<(std::ostream& o,const smart_ptr<Value>& val) {
     return o;
 }
 
-typedef std::map<std::string,std::map<std::string,smart_ptr<Value> > >::iterator th_iter;
-typedef std::map<std::string,smart_ptr<Value> >::iterator nm_iter;
-std::map<std::string,smart_ptr<Value> > variables;
+typedef std::map<std::string,std::map<std::string,std::shared_ptr<Value> > >::iterator th_iter;
+typedef std::map<std::string,std::shared_ptr<Value> >::iterator nm_iter;
+std::map<std::string,std::shared_ptr<Value> > variables;
 
-smart_ptr<Value> eval_expr(std::string inp);
+std::shared_ptr<Value> eval_expr(std::string inp);
 
 enum read_write { init, read, write };
 
 typedef std::map<std::string,read_write> read_write_tracker_type;
 read_write_tracker_type read_write_tracker;
 
-read_write& read_write_status(std::string& key) {
+read_write& read_write_status(const std::string& key) {
   if(read_write_tracker.find(key) == read_write_tracker.end())
     read_write_tracker[key] = init;
   return read_write_tracker[key];
 }
 
-read_write& read_write_status(std::string& thorn,std::string& name) {
+read_write& read_write_status(const std::string& thorn,const std::string& name) {
   std::ostringstream msg;
   msg << thorn << "::" << name;
   std::string key = msg.str();
@@ -255,8 +257,8 @@ read_write& read_write_status(std::string& thorn,std::string& name) {
 
 // If the value was already defined in this parameter file, look
 // it up in the map. Otherwise, get it from Cactus.
-smart_ptr<Value> find_val(smart_ptr<Group> gr,std::string thorn,std::string name) {
-    smart_ptr<Value> ret = new Value(gr);
+std::shared_ptr<Value> find_val(std::shared_ptr<Group> gr,std::string thorn,std::string name) {
+    std::shared_ptr<Value> ret = std::make_shared<Value>(gr);
     int type;
     const void *result;
     result = CCTK_ParameterGet(name.c_str(),thorn.c_str(),&type);
@@ -302,21 +304,21 @@ smart_ptr<Value> find_val(smart_ptr<Group> gr,std::string thorn,std::string name
     return ret;
 }
 
-smart_ptr<Value> lookup_var(smart_ptr<Group> gr,bool in_active_thorns,int add_line) {
-    smart_ptr<Value> ret;
+std::shared_ptr<Value> lookup_var(std::shared_ptr<Group> gr,bool in_active_thorns,int add_line) {
+    std::shared_ptr<Value> ret;
     if(gr->group(0)->getPatternName() == "env") {
         const char *env = getenv(gr->group(0)->group(0)->substring().c_str());
         if(env != NULL) {
-            ret = new Value(gr);
+            ret = std::make_shared<Value>(gr);
             ret->type = PIR_STRING;
             ret->sdata = env;
         }
     } else if(gr->group(0)->substring() == "parfile") {
-        ret = new Value(gr);
+        ret = std::make_shared<Value>(gr);
         ret->type = PIR_STRING;
         ret->sdata = get_parfilename();
     } else if(gr->group(0)->substring() == "pi") {
-        ret = new Value(gr);
+        ret = std::make_shared<Value>(gr);
         ret->type = PIR_REAL;
         ret->ddata = 4.0*atan2(1.0,1.0);
     }
@@ -324,7 +326,7 @@ smart_ptr<Value> lookup_var(smart_ptr<Group> gr,bool in_active_thorns,int add_li
     if(iter != variables.end()) {
         ret = iter->second;
     }
-    if(!ret.valid()) {
+    if(!ret) {
         std::ostringstream msg;
         if(in_active_thorns) {
             msg << "Variables are not allowed in ActiveThorns." << std::endl;
@@ -340,7 +342,7 @@ smart_ptr<Value> lookup_var(smart_ptr<Group> gr,bool in_active_thorns,int add_li
 
 
 std::string string_reparser(std::string s,bool in_active_thorns,int add_line) {
-    smart_ptr<Matcher> m = new Matcher(par_file_grammar,"stringparser",s.c_str(),s.length());
+    auto m = std::make_shared<Matcher>(par_file_grammar,"stringparser",s.c_str(),s.length());
     if(m->matches()) {
         std::string out = "";
         for(int i=0;i < m->groupCount(); i++) {
@@ -350,7 +352,7 @@ std::string string_reparser(std::string s,bool in_active_thorns,int add_line) {
             } else if(pn == "stringcomment") {
                 ;
             } else if(pn == "var") {
-                smart_ptr<Value> val = lookup_var(m->group(i),in_active_thorns,add_line);
+                std::shared_ptr<Value> val = lookup_var(m->group(i),in_active_thorns,add_line);
                 out += val->copy();
             } else {
                 CCTK_VError(__LINE__, __FILE__, "Cactus",
@@ -377,10 +379,10 @@ struct ExpressionEvaluationData {
  * from it. It is, therefore, designed to be
  * used recursively.
  **/
-smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata,bool in_active_thorns=false) {
-    assert(gr.valid());
+std::shared_ptr<Value> meval(std::shared_ptr<Group> gr,ExpressionEvaluationData *eedata,bool in_active_thorns=false) {
+    assert(gr);
     std::string pn = gr->getPatternName();
-    smart_ptr<Value> ret = new Value(gr);
+    auto ret = std::make_shared<Value>(gr);
     if(pn == "num") {
         std::string s = gr->substring();
         s = mklower(s);
@@ -406,7 +408,7 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata,bool
         fn = mklower(fn);
         // the grammer disallows empyt function arguments foo() so there is
         // always at least group(0) and group(1)
-        smart_ptr<Value> val = meval(gr->group(1),eedata,in_active_thorns);
+        std::shared_ptr<Value> val = meval(gr->group(1),eedata,in_active_thorns);
         // First, functions with at least one, but potentially more than one argument
         if (fn == "max" || fn == "min") {
             if (gr->groupCount() < 2) {
@@ -416,7 +418,7 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata,bool
                 CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
             }
             for (int i=1; i<gr->groupCount(); i++) {
-                smart_ptr<Value> val_next = meval(gr->group(i),eedata,in_active_thorns);
+                std::shared_ptr<Value> val_next = meval(gr->group(i),eedata,in_active_thorns);
                 // Make sure all arguments are either integer or real
                 if (val_next->type != PIR_REAL && val_next->type != PIR_INT) {
                     std::ostringstream msg;
@@ -544,14 +546,14 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata,bool
                     std::istringstream buf(val->sdata);
                     if(!(buf >> val->idata)) {
                         std::ostringstream msg;
-                        msg << "Invalid numerical value: " << val->sdata << std::endl;
+                        msg << "Invalid integer value: " << val->sdata << std::endl;
                         std::string par = get_parfile();
                         CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
                     }
                     std::string extra;
                     if(buf >> extra) {
                         std::ostringstream msg;
-                        msg << "Trailing input in numerical value: " << val->sdata << std::endl;
+                        msg << "Trailing input in integer value: " << val->sdata << std::endl;
                         std::string par = get_parfile();
                         CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
                     }
@@ -561,14 +563,14 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata,bool
                     std::istringstream buf(val->sdata);
                     if(!(buf >> val->ddata)) {
                         std::ostringstream msg;
-                        msg << "Invalid numerical value: " << val->sdata << std::endl;
+                        msg << "Invalid real value: " << val->sdata << std::endl;
                         std::string par = get_parfile();
                         CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
                     }
                     std::string extra;
                     if(buf >> extra) {
                         std::ostringstream msg;
-                        msg << "Trailing input in numerical value: " << val->sdata << std::endl;
+                        msg << "Trailing input in real value: " << val->sdata << std::endl;
                         std::string par = get_parfile();
                         CCTK_Error(gr->line(),par.c_str(),current_thorn.c_str(),msg.str().c_str());
                     }
@@ -659,9 +661,9 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata,bool
         std::string name = gr->group(1)->substring();
         if(gr->groupCount() == 3) {
             std::ostringstream vn;
-            smart_ptr<Value> index = meval(gr->group(2),eedata,in_active_thorns);
+            std::shared_ptr<Value> index = meval(gr->group(2),eedata,in_active_thorns);
             if(index->type == PIR_INT) {
-                std::stringstream o;
+                std::ostringstream o;
                 o << name << "[" << index->idata << "]";
                 o << std::flush;
                 std::string keyi = o.str();
@@ -722,8 +724,8 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata,bool
     } else if(pn == "expr") {
         if(gr->groupCount()==1)
             return meval(gr->group(0),eedata,in_active_thorns);
-        smart_ptr<Value> v1 = meval(gr->group(0),eedata,in_active_thorns);
-        smart_ptr<Value> v2 = meval(gr->group(1),eedata,in_active_thorns);
+        std::shared_ptr<Value> v1 = meval(gr->group(0),eedata,in_active_thorns);
+        std::shared_ptr<Value> v2 = meval(gr->group(1),eedata,in_active_thorns);
         v1->checkBool();
         v2->checkBool();
         ret->type = PIR_BOOL;
@@ -731,15 +733,15 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata,bool
     } else if(pn == "powexpr") {
         if(gr->groupCount()==1)
             return meval(gr->group(0),eedata,in_active_thorns);
-        smart_ptr<Value> v1 = meval(gr->group(0),eedata,in_active_thorns);
-        smart_ptr<Value> v2 = meval(gr->group(1),eedata,in_active_thorns);
+        std::shared_ptr<Value> v1 = meval(gr->group(0),eedata,in_active_thorns);
+        std::shared_ptr<Value> v2 = meval(gr->group(1),eedata,in_active_thorns);
         ret->type = PIR_REAL;
         ret->ddata = pow(v1->realValue(),v2->realValue());
     } else if(pn == "andexpr") {
         if(gr->groupCount()==1)
             return meval(gr->group(0),eedata,in_active_thorns);
-        smart_ptr<Value> v1 = meval(gr->group(0),eedata,in_active_thorns);
-        smart_ptr<Value> v2 = meval(gr->group(1),eedata,in_active_thorns);
+        std::shared_ptr<Value> v1 = meval(gr->group(0),eedata,in_active_thorns);
+        std::shared_ptr<Value> v2 = meval(gr->group(1),eedata,in_active_thorns);
         v1->checkBool();
         v2->checkBool();
         ret->type = PIR_BOOL;
@@ -747,9 +749,9 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata,bool
     } else if(pn == "eqexpr") {
         if(gr->groupCount()==1)
             return meval(gr->group(0),eedata,in_active_thorns);
-        smart_ptr<Value> v1 = meval(gr->group(0),eedata,in_active_thorns);
+        std::shared_ptr<Value> v1 = meval(gr->group(0),eedata,in_active_thorns);
         std::string eqop = gr->group(1)->substring();
-        smart_ptr<Value> v2 = meval(gr->group(2),eedata,in_active_thorns);
+        std::shared_ptr<Value> v2 = meval(gr->group(2),eedata,in_active_thorns);
         ret->type = PIR_BOOL;
         if(eqop == "==") {
             ret->idata = v1->equals(v2);
@@ -764,10 +766,10 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata,bool
     } else if(pn == "compexpr") {
         if(gr->groupCount()==1)
             return meval(gr->group(0),eedata,in_active_thorns);
-        smart_ptr<Value> v1 = meval(gr->group(0),eedata,in_active_thorns);
+        std::shared_ptr<Value> v1 = meval(gr->group(0),eedata,in_active_thorns);
         if(gr->groupCount()>0) {
             std::string compop = gr->group(1)->substring();
-            smart_ptr<Value> v2 = meval(gr->group(2),eedata,in_active_thorns);
+            std::shared_ptr<Value> v2 = meval(gr->group(2),eedata,in_active_thorns);
             CCTK_REAL d1 = v1->realValue();
             CCTK_REAL d2 = v2->realValue();
             ret->type = PIR_BOOL;
@@ -792,12 +794,12 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata,bool
     } else if(pn == "aexpr") {
         if(gr->groupCount()==1)
             return meval(gr->group(0),eedata,in_active_thorns);
-        smart_ptr<Value> v1 = meval(gr->group(0),eedata,in_active_thorns);
+        std::shared_ptr<Value> v1 = meval(gr->group(0),eedata,in_active_thorns);
         for(int i=1;i+1<gr->groupCount();i+=2) {
-            ret = new Value(gr);
+            ret = std::make_shared<Value>(gr);
             std::string addop = gr->group(i)->substring();
-            smart_ptr<Value> v2 = meval(gr->group(i+1),eedata,in_active_thorns);
-            assert(v2.valid());
+            std::shared_ptr<Value> v2 = meval(gr->group(i+1),eedata,in_active_thorns);
+            assert(v2);
             if(v1->type == PIR_INT && v2->type == PIR_INT) {
                 ret->type = PIR_INT;
                 if(addop == "+") {
@@ -846,11 +848,11 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata,bool
     } else if(pn == "mexpr") {
         if(gr->groupCount()==1)
             return meval(gr->group(0),eedata,in_active_thorns);
-        smart_ptr<Value> v1 = meval(gr->group(0),eedata,in_active_thorns);
+        std::shared_ptr<Value> v1 = meval(gr->group(0),eedata,in_active_thorns);
         for(int i=1;i+1<gr->groupCount();i+=2) {
-            ret = new Value(gr);
+            ret = std::make_shared<Value>(gr);
             std::string mulop = gr->group(i)->substring();
-            smart_ptr<Value> v2 = meval(gr->group(i+1),eedata,in_active_thorns);
+            std::shared_ptr<Value> v2 = meval(gr->group(i+1),eedata,in_active_thorns);
             if(v1->type == PIR_INT && v2->type == PIR_INT) {
                 ret->type = PIR_INT;
                 if(mulop == "*") {
@@ -916,16 +918,16 @@ smart_ptr<Value> meval(smart_ptr<Group> gr,ExpressionEvaluationData *eedata,bool
 }
 
 
-smart_ptr<Value> eval_expr(std::string input,ExpressionEvaluationData *eedata) {
-    smart_ptr<Matcher> m = new Matcher(par_file_grammar,"eval",input.c_str());
-    smart_ptr<Value> ret;
+std::shared_ptr<Value> eval_expr(std::string input,ExpressionEvaluationData *eedata) {
+    auto m = std::make_shared<Matcher>(par_file_grammar,"eval",input.c_str());
+    std::shared_ptr<Value> ret;
     if(m->matches()) {
         ret = meval(m->group(0),eedata);
     }
     return ret;
 }
 
-void check_types(const char *thorn,int line,smart_ptr<Value> svm,int t) {
+void check_types(const char *thorn,int line,std::shared_ptr<Value> svm,int t) {
     ValueType v = svm->type;
     bool ok = false;
     if(v == PIR_STRING && (t == PARAMETER_STRING || t == PARAMETER_KEYWORD))
@@ -965,12 +967,17 @@ void check_types(const char *thorn,int line,smart_ptr<Value> svm,int t) {
     }
 }
 
+struct Expression {
+  std::shared_ptr<Matcher> matcher;
+};
+
 extern "C" void *Util_ExpressionParse(const char *expr) {
     int exprsize = strlen(expr);
-    Matcher *m2 = new Matcher(par_file_grammar,"eval",expr,exprsize);
+    auto m2 = std::make_shared<Matcher>(par_file_grammar,"eval",expr,exprsize);
     bool b = m2->matches();
     if(b) {
-      return m2;
+      auto m3 = new Expression{m2};
+      return m3;
     } else {
       std::ostringstream msg;
       m2->showError(msg);
@@ -979,22 +986,23 @@ extern "C" void *Util_ExpressionParse(const char *expr) {
     }
 }
 
-extern "C" void Util_ExpressionFree(void *m2_) {
-  Matcher *m2 = (Matcher *)m2_;
-  delete m2;
+extern "C" void Util_ExpressionFree(void *m3_) {
+  auto m3 = (Expression *)m3_;
+  delete m3;
 }
 
-extern "C" int Util_ExpressionEvaluate(void *m2_,
+extern "C" int Util_ExpressionEvaluate(void *m3_,
       uExpressionValue *result,
       uExpressionEvaluator eval,
       const void *data) {
-  Matcher *m2 = (Matcher *)m2_;
+  auto m3 = (Expression *)m3_;
+  auto m2 = m3->matcher;
 
   ExpressionEvaluationData eedata;
   eedata.eval = eval;
   eedata.data = data;
 
-  smart_ptr<Value> value;
+  std::shared_ptr<Value> value;
   bool set;
   if(m2->group(0)->getPatternName() == "set_var") {
     set = true;
@@ -1048,7 +1056,7 @@ inline int first_line(int new_line,int old_line) {
  * match, nodes in the AST with the name "syntax" are
  * all reported as errors by this function.
  */
-int report_syntax(smart_ptr<Group> g) {
+int report_syntax(std::shared_ptr<Group> g) {
   if(g->getPatternName() == "syntax") {
     std::ostringstream msg;
     g->showError(msg);
@@ -1061,7 +1069,7 @@ int report_syntax(smart_ptr<Group> g) {
     line = first_line(report_syntax(g->group(i)),line);
   return line;
 }
-int report_syntax(smart_ptr<Matcher> g) {
+int report_syntax(std::shared_ptr<Matcher> g) {
   int line = -1;
   for(int i=0;i<g->groupCount();i++)
     line = first_line(report_syntax(g->group(i)),line);
@@ -1070,7 +1078,7 @@ int report_syntax(smart_ptr<Matcher> g) {
 
 extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int (*set_function)(const char *, const char *, int)) {
     std::string active;
-    smart_ptr<Matcher> m2 = new Matcher(par_file_grammar,"file",buffer,buffersize);
+    auto m2 = std::make_shared<Matcher>(par_file_grammar,"file",buffer,buffersize);
     //std::clock_t st = std::clock();
     bool b = m2->matches();
     //std::clock_t en = std::clock();
@@ -1079,9 +1087,9 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
         std::ostringstream active_buf;
         int line = -1;
         for(int i=0;i<m2->groupCount();i++) {
-            smart_ptr<Group> gr = m2->group(i);
+            std::shared_ptr<Group> gr = m2->group(i);
             if(gr->group(0)->getPatternName() == "active") {
-                smart_ptr<Value> smv = meval(gr->group(1),0,true);
+                std::shared_ptr<Value> smv = meval(gr->group(1),0,true);
                 if(active_buf.tellp() > 0)
                   active_buf << ' ';
                 active_buf << smv->copy();
@@ -1103,10 +1111,10 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
             CCTK_Error(syntax_error_line,parf.c_str(),"Cactus","Terminating because of parse errors");
         set_function("ActiveThorns",active.c_str(),line);
         for(int i=0;i<m2->groupCount();i++) {
-            smart_ptr<Group> gr = m2->group(i);
+            std::shared_ptr<Group> gr = m2->group(i);
             if(gr->getPatternName() == "set") {
-                smart_ptr<Group> par = gr->group("par");
-                if(par.valid()) {
+                std::shared_ptr<Group> par = gr->group("par");
+                if(par) {
                     // add value->quot->inquot
                     std::string key;
                     std::string thorn = par->group("name",0)->substring();
@@ -1116,10 +1124,10 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
                     key += name;
                     const cParamData *data = CCTK_ParameterData(name.c_str(),thorn.c_str());
 
-                    smart_ptr<Group> index = par->group("parindex");
-                    if(index.valid()) {
+                    std::shared_ptr<Group> index = par->group("parindex");
+                    if(index) {
                         key += '[';
-                        smart_ptr<Value> vv = meval(index,0);
+                        std::shared_ptr<Value> vv = meval(index,0);
                         if(vv->type != PIR_INT) {
                             std::ostringstream msg;
                             msg << "bad index " << vv << std::endl;
@@ -1131,12 +1139,12 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
                     }
 
                     std::string val;
-                    smart_ptr<Group> aexpr = gr->group("expr");
-                    if(aexpr.valid()) {
+                    std::shared_ptr<Group> aexpr = gr->group("expr");
+                    if(aexpr) {
                         current_thorn = thorn;
-                        smart_ptr<Value> smv = meval(aexpr,0);
+                        std::shared_ptr<Value> smv = meval(aexpr,0);
                         val = smv->copy();
-                        assert(smv.valid());
+                        assert(smv);
                         smv->integerize();
                         if(data != NULL) {
                             if(data->type == PARAMETER_REAL)
@@ -1156,12 +1164,12 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
                                 val.c_str(),
                                 gr->group(0)->line());
                     } else {
-                        smart_ptr<Group> arr = gr->group("array");
+                        std::shared_ptr<Group> arr = gr->group("array");
                         for(int i=0;i<arr->groupCount();i++) {
                             aexpr = arr->group(i);
                             std::ostringstream keyi;
                             keyi << key << '[' << i << ']';
-                            smart_ptr<Value> smv = meval(aexpr,0);
+                            std::shared_ptr<Value> smv = meval(aexpr,0);
                             val = smv->copy();
                             if(data != NULL) {
                                 if(data->type == PARAMETER_REAL)
@@ -1202,7 +1210,7 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
             // Construct the parse tree for the partial match
             if(m2->matchesTo(m2->max_pos)) {
                 // find the last element in the parse tree
-                smart_ptr<Group> gr = m2->group(m2->groupCount()-1);
+                std::shared_ptr<Group> gr = m2->group(m2->groupCount()-1);
                 while(true) {
                     int n = gr->groupCount();
                     if(n > 0)
@@ -1217,7 +1225,7 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
             line = m2->showError(msg);
         }
         std::string par = get_parfile();
-        CCTK_Warn(0,line,par.c_str(),"cactus",msg.str().c_str());
+        CCTK_Error(line,par.c_str(),"cactus",msg.str().c_str());
         return 1;
     }
     return 0;
