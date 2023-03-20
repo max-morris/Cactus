@@ -771,6 +771,32 @@ sub ScheduleStatement
   return ($buffer, $prototype);
 }
 
+sub get_gtype
+{
+    my $db = shift;
+    my $key = lc(shift);
+    my $thorn_or_impl = lc(shift);
+    $key =~ s/\s*\[\d+\]$//;
+    $key =~ s/(_p)+$//;
+    if($key !~ /::/) {
+        $key = $thorn_or_impl . "::" . $key;
+    }
+    $key =~ /^[^:]*/;
+    my $keythorn = $&;
+    my $gdata = undef;
+    my $gtype = undef;
+    if(defined($db->{global_type}->{$key})) {
+        $gdata = $db->{global_type}->{$key};
+        $gtype = $gdata->{type};
+    }
+    if(!defined($gdata)) {
+        my $mess = "Could not determine gtype for '$key'";
+        my $help = "Did you type the correct name?";
+        &CST_error(0,$mess,$help,__LINE__,__FILE__);
+    }
+    return $gdata;
+}
+
 #/*@@
 #  @routine    ScheduleSelectRDWR
 #  @date       Fri May  1 19:40:53 CDT 2020
@@ -803,6 +829,10 @@ sub ScheduleSelectRDWR
     $vecnum = defined($3) ? $3 : "";
 
     $region = defined($4) ? $4 : $default_region;
+    my $gdata = get_gtype($rhinterface_db, $group_or_var, $thorn);
+    if($gdata->{type} eq "SCALAR") {
+        $region = "everywhere";
+    }
 
     if($group_or_var =~ m/^(.+)::(.+)$/)
     {

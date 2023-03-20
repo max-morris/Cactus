@@ -11,6 +11,32 @@ use Data::Dumper;
 use Piraha;
 use File::stat;
 
+sub set_gtype
+{
+    my $db = shift;
+    my $name = lc(shift);
+    my $thorn = lc(shift);
+    my $gdata = shift;
+    my $gtype = uc($gdata->{type});
+    my $key = $thorn . "::" . $name;
+    die Dumper($gdata) unless defined($gdata->{type});
+    die Dumper($gdata) unless defined($gdata->{file});
+    die Dumper($gdata) unless defined($gdata->{line});
+
+    $db->{global_type} = {}  unless(defined($db->{global_type}));
+    my $previous_gtype = $db->{global_type}->{$key}->{type} if(defined($db->{global_type}->{$key}));
+    if(!defined($previous_gtype)) {
+        $db->{global_type} = {} unless(defined($db->{global_type}));
+        $db->{global_type}->{$key} = $gdata;
+    } else {
+        # This should never happen
+        &CST_error(0,"Multiple gtypes for $key: $previous_gtype, $gtype",
+          "Are you defining the same interface twice with contradictory gtypes?",
+          $gdata->{file},$gdata->{line})
+            unless $previous_gtype eq $gtype;
+    }
+}
+
 # This function turns an expression to a string. It functions
 # similar to mkstring() documented at the top of Piraha.pm,
 # however, it needs some special code for parenthetical groups
@@ -781,11 +807,13 @@ sub parse_interface_ccl
   $interface_data_ref->{"\U$thorn ARRANGEMENT\E"} = "$arrangement";
 
   my $access = "PRIVATE";
+  my $iface_name = undef;
 
   for my $fgroup (@{$group->{children}}) {
     my $fin =  $fgroup->{children}->[0];
     if($fin->is("IMPLEMENTS")) {
-      $interface_data_ref->{"\U$thorn\E IMPLEMENTS"} = $fin->group(0,"name")->substring();
+      $iface_name = $fin->group(0,"name")->substring();
+      $interface_data_ref->{"\U$thorn\E IMPLEMENTS"} = $iface_name;
     } elsif($fin->is("INHERITS")) {
       for my $ch (@{$fin->{children}}) {
         $interface_data_ref->{"\U$thorn\E INHERITS"} .= $ch->substring()." ";
@@ -858,7 +886,11 @@ sub parse_interface_ccl
       my $desc = undef;
       my $dim = undef;
       my $distrib = undef;
-      my $gtype = undef;
+      my $gdata = {
+        type => undef,
+        file => $ccl_file,
+        line => "?"
+      };
       my $tags = undef;
       my $centering = undef;
       my $timelevels = 1;
@@ -901,11 +933,19 @@ sub parse_interface_ccl
         } elsif($nm eq "distrib") {
           $distrib = uc($ch->substring());
         } elsif($nm eq "gtype") {
-          $gtype = uc($ch->substring());
+          $gdata->{type} = uc($ch->substring());
+          $gdata->{line} = $ch->linenum();
         } elsif($nm eq "VARS") {
           $interface_data_ref->{"\U$thorn GROUP $gname\E"} = "";
           for my $c (@{$ch->{children}}) {
-            $interface_data_ref->{"\U$thorn GROUP $gname\E"} .= " ".$c->substring();
+            my $name = $c->substring();
+            $interface_data_ref->{"\U$thorn GROUP $gname\E"} .= " ".$name;
+            if(!defined($gdata->{type})) {
+                $gdata->{type} = "SCALAR";
+                $gdata->{line} = $c->linenum();
+            }
+            set_gtype($interface_data_ref, $name, $thorn, $gdata);
+            set_gtype($interface_data_ref, $name, $iface_name, $gdata);
           }
         } elsif($nm eq "ghostsize") {
           my $ghost = "";
@@ -937,11 +977,14 @@ sub parse_interface_ccl
         }
       }
       # Fill in default values
-      $gtype = "SCALAR" if(!defined($gtype));
+      $gdata->{type} = "SCALAR" if(!defined($gdata->{type}));
+      my $gtype = $gdata->{type};
       $dim = 0 if(!defined($dim) and $gtype eq "SCALAR");
       $dim = 3 if(!defined($dim) and $gtype eq "GF");
       $distrib = "DEFAULT" if(!defined($distrib) and ($gtype eq "GF" or $gtype eq "ARRAY"));
       $distrib = "CONSTANT" if(!defined($distrib));
+      set_gtype($interface_data_ref, $gname, $thorn, $gdata);
+      set_gtype($interface_data_ref, $gname, $iface_name, $gdata);
       # Note that Compact groups are only documented in the FAQ, and
       # are not supported by Carpet.
       $interface_data_ref->{"\U$thorn GROUP $gname COMPACT\E"} = 0;
