@@ -1505,6 +1505,28 @@ fi
 
 
 
+AC_DEFUN(CCTK_CXX_MATH,
+[AC_CACHE_CHECK([for C++11 math support], cctk_cv_have_cxx_math,
+[cctk_cv_have_cxx_math=no
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE([#include <cmath>],dnl
+  [using namespace std;
+   float fzero = 0.f;
+   double dzero = 0.;
+   isnan(fzero);
+   isnan(dzero);],dnl
+  cctk_cv_have_cxx_math=yes,dnl
+  cctk_cv_have_cxx_math=no)
+AC_LANG_RESTORE
+])
+if test "$cctk_cv_have_cxx_matha" = "yes" ; then
+   AC_DEFINE(HAVE_CCTK_CXX_MATH)
+fi
+])
+
+
+
 AC_DEFUN(CCTK_CHECK_C99,
 [AC_CACHE_CHECK([for C99 features], cctk_cv_have_c99,
 [cctk_cv_have_c99=no
