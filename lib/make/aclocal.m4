@@ -300,9 +300,8 @@ fi
 AC_DEFUN(CCTK_TIME_GETTIMEOFDAY,
 [AC_MSG_CHECKING([for availability of gettimeofday timing])
 AC_CACHE_VAL(cctk_cv_time_gettimeofday,
-[AC_TRY_LINK([],
-[#include <sys/time.h>
- gettimeofday(0, 0);
+[AC_TRY_LINK([#include <sys/time.h>],
+[gettimeofday(0, 0);
  return 0;], eval "cctk_cv_time_gettimeofday=yes",
   eval "cctk_cv_time_gettimeofday=no")])dnl
 if eval "test \"`echo '$cctk_cv_time_gettimeofday'`\" = yes"; then
