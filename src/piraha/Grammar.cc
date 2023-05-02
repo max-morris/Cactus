@@ -19,9 +19,10 @@ void compile(std::shared_ptr<Grammar> thisg,std::string name,std::string pattern
         std::shared_ptr<Pattern> p = cctki_piraha::compile(g,false,thisg);
         thisg->patterns.put(name,p);
     } else {
-        std::cout << "Could not compile(" << name << "," << pattern << ")" << std::endl;
-        std::cout << "pos = " << m->pos << std::endl;
-        assert(false);
+        std::ostringstream o;
+        o << "Could not compile(" << name << "," << pattern << ")" << std::endl;;
+        o << "pos = " << m->pos;
+        CCTK_Error(__LINE__,__FILE__,"Cactus",o.str().c_str());
     }
 }
 }

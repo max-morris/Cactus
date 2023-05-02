@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <cctk.h>
 
 namespace cctki_piraha {
 
@@ -331,7 +332,7 @@ public:
     std::shared_ptr<Pattern> pattern;
     LookAhead(std::shared_ptr<Pattern> p) : pattern(p) {}
     virtual ~LookAhead() {}
-    bool match(std::shared_ptr<Matcher> m) { assert(false); }//TODO: Fill in
+    bool match(std::shared_ptr<Matcher> m) { CCTK_Error(__LINE__,__FILE__,"Cactus","Not implemented"); }//TODO: Fill in
 };
 
 class Boundary : public Pattern {
@@ -339,7 +340,7 @@ class Boundary : public Pattern {
 };
 
 class Break : public Pattern {
-    virtual bool match(std::shared_ptr<Matcher> m) { assert(false); }//TODO: Fill in
+    virtual bool match(std::shared_ptr<Matcher> m) { CCTK_Error(__LINE__,__FILE__,"Cactus","Not implemented"); }//TODO: Fill in
 };
 
 class BackRef : public Pattern {
@@ -347,7 +348,7 @@ public:
     int index;
     bool ignCase;
     BackRef(int in,bool ign) : index(in), ignCase(ign) {}
-    virtual bool match(std::shared_ptr<Matcher> m) { assert(false); }//TODO: Fill in
+    virtual bool match(std::shared_ptr<Matcher> m) { CCTK_Error(__LINE__,__FILE__,"Cactus","Not implemented"); }//TODO: Fill in
 };
 
 class AutoGrammar {
