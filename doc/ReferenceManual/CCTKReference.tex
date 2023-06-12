@@ -13858,9 +13858,9 @@ are usually used. In Fortran, grid functions are accessed as Fortran arrays.
 for (i=0; i<cctk_lsh[0]; i++)
 {
   /* vector indices are 0, 1, 2 */
-  vel[CCTK_VECTGFINDEX4D(cctkGH,i,0)] = 1.0;
-  vel[CCTK_VECTGFINDEX4D(cctkGH,i,1)] = 0.0;
-  vel[CCTK_VECTGFINDEX4D(cctkGH,i,2)] = 0.0;
+  vel[CCTK_VECTGFINDEX1D(cctkGH,i,0)] = 1.0;
+  vel[CCTK_VECTGFINDEX1D(cctkGH,i,1)] = 0.0;
+  vel[CCTK_VECTGFINDEX1D(cctkGH,i,2)] = 0.0;
 }
 \end{verbatim}
 \end{Example}
@@ -13920,9 +13920,9 @@ for (j=0; j<cctk_lsh[1]; j++)
   for (i=0; i<cctk_lsh[0]; i++)
   {
     /* vector indices are 0, 1, 2 */
-    vel[CCTK_VECTGFINDEX4D(cctkGH,i,j,0)] = 1.0;
-    vel[CCTK_VECTGFINDEX4D(cctkGH,i,j,1)] = 0.0;
-    vel[CCTK_VECTGFINDEX4D(cctkGH,i,j,2)] = 0.0;
+    vel[CCTK_VECTGFINDEX2D(cctkGH,i,j,0)] = 1.0;
+    vel[CCTK_VECTGFINDEX2D(cctkGH,i,j,1)] = 0.0;
+    vel[CCTK_VECTGFINDEX2D(cctkGH,i,j,2)] = 0.0;
   }
 }
 \end{verbatim}
@@ -13985,9 +13985,9 @@ for (k=0; k<cctk_lsh[2]; k++)
     for (i=0; i<cctk_lsh[0]; i++)
     {
       /* vector indices are 0, 1, 2 */
-      vel[CCTK_VECTGFINDEX4D(cctkGH,i,j,k,0)] = 1.0;
-      vel[CCTK_VECTGFINDEX4D(cctkGH,i,j,k,1)] = 0.0;
-      vel[CCTK_VECTGFINDEX4D(cctkGH,i,j,k,2)] = 0.0;
+      vel[CCTK_VECTGFINDEX3D(cctkGH,i,j,k,0)] = 1.0;
+      vel[CCTK_VECTGFINDEX3D(cctkGH,i,j,k,1)] = 0.0;
+      vel[CCTK_VECTGFINDEX3D(cctkGH,i,j,k,2)] = 0.0;
     }
   }
 }
