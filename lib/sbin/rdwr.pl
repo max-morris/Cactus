@@ -285,7 +285,6 @@ sub lookup_thorn
         # In the event that we fail to find the variable,
         # just ruturn the parsing thorn as the thorn. This
         # will eventually generate a sensible CST error.
-        print Dumper($th_def);
         die "$parsing_thorn / $var";
         return $parsing_thorn;
     }
