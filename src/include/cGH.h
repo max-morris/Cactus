@@ -29,11 +29,19 @@ typedef struct _cGH
   int *cctk_lsh;
   int *cctk_lbnd;
   int *cctk_ubnd;
+#ifndef CCTK_HAVE_CGH_LEVEL
+#define CCTK_HAVE_CGH_LEVEL
+#endif
+  int cctk_level;
 #ifndef CCTK_HAVE_CGH_PATCH
 #define CCTK_HAVE_CGH_PATCH
 #endif
   int cctk_patch;
   int cctk_npatches;
+#ifndef CCTK_HAVE_CGH_BLOCK
+#define CCTK_HAVE_CGH_BLOCK
+#endif
+  int cctk_block;
 #ifndef CCTK_HAVE_CGH_TILE
 #define CCTK_HAVE_CGH_TILE
 #endif
