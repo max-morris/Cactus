@@ -34,7 +34,8 @@
   print '("--------------------------------------------------------------------------------")'
 
 #define _CCTK_FARGUMENTS \
-cctk_dim,cctk_gsh,cctk_lsh,cctk_lbnd,cctk_ubnd,cctk_level,cctk_patch,cctk_npatches,cctk_block, \
+cctk_dim,cctk_gsh,cctk_lsh,cctk_lbnd,cctk_ubnd,\
+cctk_level,cctk_patch,cctk_npatches,cctk_component,\
 cctk_tile_min,cctk_tile_max,cctk_ash,\
 cctk_alignment,cctk_alignment_offset,cctk_from,cctk_to,\
 cctk_bbox,cctk_delta_time,cctk_time,cctk_delta_space,cctk_origin_space,\
@@ -52,7 +53,7 @@ cctk_ash1,cctk_ash2,cctk_ash3
         CCTK_DECLARE(INTEGER,cctk_level,)&&\
         CCTK_DECLARE(INTEGER,cctk_patch,)&&\
         CCTK_DECLARE(INTEGER,cctk_npatches,)&&\
-        CCTK_DECLARE(INTEGER,cctk_block,)&&\
+        CCTK_DECLARE(INTEGER,cctk_component,)&&\
         CCTK_DECLARE(INTEGER,cctk_tile_min,(cctk_dim))&&\
         CCTK_DECLARE(INTEGER,cctk_tile_max,(cctk_dim))&&\
         CCTK_DECLARE(INTEGER,cctk_ash,(cctk_dim))&&\
@@ -340,7 +341,7 @@ static inline int CCTK_VECTGFINDEX4D (const cGH *restrict cctkGH,
         CCTK_DECLARE_INIT(int const,cctk_level,cctkGH->cctk_level);\
         CCTK_DECLARE_INIT(int const,cctk_patch,cctkGH->cctk_patch);\
         CCTK_DECLARE_INIT(int const,cctk_npatches,cctkGH->cctk_npatches);\
-        CCTK_DECLARE_INIT(int const,cctk_block,cctkGH->cctk_block);\
+        CCTK_DECLARE_INIT(int const,cctk_component,cctkGH->cctk_component);\
         CCTK_DECLARE_INIT(int const *restrict const,cctk_tile_min,cctkGH->cctk_tile_min);\
         CCTK_DECLARE_INIT(int const *restrict const,cctk_tile_max,cctkGH->cctk_tile_max);\
         CCTK_DECLARE_INIT(int const *restrict const,cctk_ash,cctkGH->cctk_ash);\
@@ -369,7 +370,7 @@ static inline int CCTK_VECTGFINDEX4D (const cGH *restrict cctkGH,
                             (xGH)->cctk_lbnd,(xGH)->cctk_ubnd,\
                             &(xGH)->cctk_level,\
                             &(xGH)->cctk_patch,&(xGH)->cctk_npatches,\
-                            &(xGH)->cctk_block,\
+                            &(xGH)->cctk_component,\
                             (xGH)->cctk_tile_min,(xGH)->cctk_tile_max,\
                             (xGH)->cctk_ash,\
                             &(xGH)->cctk_alignment,\
@@ -395,7 +396,7 @@ static inline int CCTK_VECTGFINDEX4D (const cGH *restrict cctkGH,
                             int const *cctk_lbnd, int const *cctk_ubnd,\
                             int const *cctk_level,\
                             int const *cctk_patch,int const *cctk_npatches,\
-                            int const *cctk_block,\
+                            int const *cctk_component,\
                             int const *cctk_tile_min, int const *cctk_tile_max,\
                             int const *cctk_ash,\
                             int const *cctk_alignment,\

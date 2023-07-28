@@ -175,7 +175,7 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
     thisGH->cctk_level        = 0;
     thisGH->cctk_patch        = 0;
     thisGH->cctk_npatches     = 1;
-    thisGH->cctk_block        = 0;
+    thisGH->cctk_component    = 0;
     thisGH->cctk_tile_min     = malloc(cctk_dim*sizeof(int));
     thisGH->cctk_tile_max     = malloc(cctk_dim*sizeof(int));
 

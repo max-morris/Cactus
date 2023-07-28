@@ -38,10 +38,10 @@ typedef struct _cGH
 #endif
   int cctk_patch;
   int cctk_npatches;
-#ifndef CCTK_HAVE_CGH_BLOCK
-#define CCTK_HAVE_CGH_BLOCK
+#ifndef CCTK_HAVE_CGH_COMPONENT
+#define CCTK_HAVE_CGH_COMPONENT
 #endif
-  int cctk_block;
+  int cctk_component;
 #ifndef CCTK_HAVE_CGH_TILE
 #define CCTK_HAVE_CGH_TILE
 #endif
