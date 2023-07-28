@@ -245,6 +245,12 @@ int SimpleScheduleTraverseGH(cGH *GH, const char *where)
 
   extension = (struct SimpleExtension *)GH->extensions[SimpleExtension];
 
+#ifdef CCTK_HAVE_CGH_LEVEL
+  GH->cctk_level = 0;
+#endif
+#ifdef CCTK_HAVE_CGH_COMPONENT
+  GH->cctk_component = extension->myproc;
+#endif
   for (idir=0;idir<GH->cctk_dim;idir++)
   {
     GH->cctk_levfac[idir] = 1;

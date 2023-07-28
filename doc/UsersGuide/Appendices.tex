@@ -1043,13 +1043,14 @@ at the same time.
 \item[{\tt LEVEL}] This routine will only be called once on any
   ``level'' of the grid hierarchy.  That is, it will only be called
   once for any set of sub-grids which have the same
-  \texttt{cctk\_levfac} numbers.
+  \texttt{cctk\_levfac} and \texttt{cctk\_level} numbers.
   
 \item[{\tt SINGLEMAP}] This routine will only be called once on any of
   the ``patches'' that form a ``level'' of the grid hierarchy.
   
 \item[{\tt LOCAL} (this is the default)] This routine will be called
-  on every ``component''.
+  on every ``component'', identified by their \texttt{cctk\_component}
+  number.
 
 \end{Lentry}
 

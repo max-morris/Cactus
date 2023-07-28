@@ -2007,6 +2007,8 @@ The following variables describe the location of the local
 grid (e.g.\ the grid treated on a given processor) within
 the global grid.
 \begin{Lentry}
+\item [\texttt{cctk\_level}]
+      The current refinement level, counting from $0$ for the base level.
 \item [\texttt{cctk\_lbnd}]
       An array of \texttt{cctk\_dim} integers
       containing the lowest index (in each direction)
@@ -2035,6 +2037,9 @@ The following variable is needed for grid refinement methods
 \item [\texttt{cctk\_levfac}] An array of \texttt{cctk\_dim} integer factors
         by which the local grid is refined in the corresponding
         direction with respect to the base grid.
+\item [\texttt{cctk\_level}] An integer number of the refinement level,
+        with the base level is level $0$ and larger number indicating
+        refined levels.
 \item [\texttt{cctk\_levoff}] and \texttt{cctk\_levoffdenom} Two arrays of
         \texttt{cctk\_dim} integers describing the distance by which the
         local grid is offset with respect to the base grid, measured
