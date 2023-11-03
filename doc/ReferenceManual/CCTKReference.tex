@@ -9072,7 +9072,7 @@ For a single processor run this call will return zero. For multiprocessor
 runs, this call will return 0 $\leq$ myproc $<$ \code{CCTK\_nProcs(cctkGH)}.
 
 Calling \code{CCTK\_MyProc(NULL)} is safe (it will not crash).
-Current drivers (PUGH, Carpet) handle this case correctly
+Current drivers (PUGH, Carpet, CarpetX) handle this case correctly
 (i.e.\ \code{CCTK\_MyProc(NULL)} returns a correct result), but only
 a ``best effort'' is guaranteed for future drivers (or future revisions
 of current drivers).
@@ -9110,7 +9110,7 @@ pointer to CCTK grid hierarchy
 For a single processor run this call will return one.
 
 Calling \code{CCTK\_nProcs(NULL)} is safe (it will not crash).
-Current drivers (PUGH, Carpet) handle this case correctly
+Current drivers (PUGH, Carpet, CarpetX) handle this case correctly
 (i.e.\ \code{CCTK\_nProcs(NULL)} returns a correct result), but only
 a ``best effort'' is guaranteed for future drivers (or future revisions
 of current drivers).
