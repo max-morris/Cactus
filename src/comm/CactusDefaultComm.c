@@ -195,6 +195,8 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
     thisGH->cctk_timefac = 1;
     thisGH->cctk_convlevel = 0;
 
+    thisGH->current_scheduled_function = NULL;
+
     n_variables = CCTK_NumVars();
 
     /* Allocate memory for the variable data pointers.

@@ -19,6 +19,8 @@ typedef struct
   char comm;
 } cGHGroupData;
 
+struct _cFunctionData;
+
 typedef struct _cGH
 {
   int cctk_dim;
@@ -91,6 +93,9 @@ typedef struct _cGH
 
   /* The coordinate time */
   CCTK_REAL cctk_time;
+
+  /* The current function being called. */
+  struct _cFunctionData *current_scheduled_function;
 
   /* An identifier string for this hierarchy
     (used to construct names for output files) */

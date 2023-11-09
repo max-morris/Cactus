@@ -238,9 +238,6 @@ static int *scheduled_storage_groups_timelevels = NULL;
 static cTimerData *timerinfo = NULL;
 static int total_timer = -1;
 
-static const cFunctionData *current_scheduled_function = NULL;
-
-
 /********************************************************************
  *********************     External Routines   **********************
  ********************************************************************/
@@ -278,7 +275,7 @@ static const cFunctionData *current_scheduled_function = NULL;
 @@*/
 int CCTK_CallFunction(void *function,
                       cFunctionData *fdata,
-                      void *data)
+                      cGH *data)
 {
   void (*standardfunc)(void *);
 
@@ -286,21 +283,24 @@ int CCTK_CallFunction(void *function,
 
   int (*oneargfunc)(void *);
 
+  const cFunctionData *previous_scheduled_function = NULL;
+  if(data != NULL) {
 #if ALLOW_RECURSIVE_SCHEDULE_CALLS
-  const cFunctionData *previous_scheduled_function = current_scheduled_function;
+    previous_scheduled_function = data->current_scheduled_function;
 #else
-  if(current_scheduled_function != NULL)
-  {
-    CCTK_VWarn(CCTK_WARN_PICKY, __LINE__, __FILE__, "Cactus",
-               "CCTK_CallFunction: recursive call, calling "
-               "'%s: %s::%s' while within '%s: %s::%s'",
-               fdata->where, fdata->thorn, fdata->routine,
-               current_scheduled_function->where,
-               current_scheduled_function->thorn,
-               current_scheduled_function->routine);
-  }
+    if(data->current_scheduled_function != NULL)
+    {
+      CCTK_VWarn(CCTK_WARN_PICKY, __LINE__, __FILE__, "Cactus",
+                   "CCTK_CallFunction: recursive call, calling "
+                   "'%s: %s::%s' while within '%s: %s::%s'",
+                   fdata->where, fdata->thorn, fdata->routine,
+                   data->current_scheduled_function->where,
+                   data->current_scheduled_function->thorn,
+                   data->current_scheduled_function->routine);
+      }
 #endif
-  current_scheduled_function = fdata;
+      data->current_scheduled_function = fdata;
+  }
 
   switch(fdata->type)
   {
@@ -335,11 +335,13 @@ int CCTK_CallFunction(void *function,
                 "CCTK_CallFunction: Unknown function type.");
   }
 
+  if(data != 0) {
 #if ALLOW_RECURSIVE_SCHEDULE_CALLS
-  current_scheduled_function = previous_scheduled_function;
+    data->current_scheduled_function = previous_scheduled_function;
 #else
-  current_scheduled_function = NULL;
+    data->current_scheduled_function = NULL;
 #endif
+  }
 
   /* Return 0, meaning didn't synchronise */
   return 0;
@@ -367,9 +369,11 @@ int CCTK_CallFunction(void *function,
    CCTK_CallFunction.
    @endreturndesc
 @@*/
-const cFunctionData *CCTK_ScheduleQueryCurrentFunction(const cGH * CCTK_ATTRIBUTE_UNUSED GH)
+const cFunctionData *CCTK_ScheduleQueryCurrentFunction(const cGH *GH)
 {
-  return current_scheduled_function;
+  if(GH == NULL)
+    return NULL;
+  return GH->current_scheduled_function;
 }
 
 /*@@

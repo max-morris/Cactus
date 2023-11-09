@@ -1,3 +1,4 @@
+#include "cctk_core.h"
 #include "cctk_Flesh.h"
 #include "cctk_Groups.h"
 #include "cctk_Misc.h"
@@ -310,6 +311,7 @@ void CCTKi_FreeRDWRData(cFunctionData *f)
 bool hasAccess(cFunctionData const * const f,
                int const RDWR_entry::* const access, const int vi,
                const int tl) {
+  if(f == nullptr) return true;
   const RDWR_entry val{vi,-1,tl};
   const auto it = std::lower_bound(f->RDWR, f->RDWR + f->n_RDWR, val);
   return it-f->RDWR < f->n_RDWR and it->varindex == vi and it->timelevel == tl;
@@ -319,14 +321,15 @@ int CCTK_HasAccess(const cGH *cctkGH, int var_index)
 {
   DECLARE_CCTK_PARAMETERS;
 
-  static bool presync_only = CCTK_Equals(presync_mode, "presync-only");
-
-  if(!presync_only)
+  if(cctkGH == nullptr)
     return true;
+
+  static bool presync_only = CCTK_Equals(presync_mode, "presync-only");
 
   cFunctionData const * const current_function = CCTK_ScheduleQueryCurrentFunction(cctkGH);
   if(current_function == nullptr) // called directly by the driver or flesh
     return true;
+  assert(current_function->RDWR);
 
   // vectors of grid functions are all accessed via a single pointer to the
   // vector's 0th member. Thus access to the whole vector must be granted if
@@ -357,6 +360,17 @@ int CCTK_HasAccess(const cGH *cctkGH, int var_index)
       return true;
   }
 
-  return false;
+#ifdef CCTK_DEBUG
+  // Enable debugging if you suspect that your segfault has to do with illegal access
+  const char *full_name = CCTK_FullVarname(var0);
+  CCTK_VWarn(CCTK_WARN_ALERT, "Cactus",
+      "Possibly illegal access by '%s::%s' for grid function '%s' where '%s'.",
+      current_function->thorn, current_function->routine, full_name, current_function->where);
+#endif
+
+  if(presync_only)
+    return false;
+  else
+    return true;
 }
 }

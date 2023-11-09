@@ -65,7 +65,7 @@ typedef struct
   int where_wr, where_rd, where_inv;
 } RDWR_entry;
 
-typedef struct
+typedef struct _cFunctionData
 {
   cLanguage language;
 
@@ -126,7 +126,7 @@ extern "C"
 
 int CCTK_CallFunction(void *function,
                       cFunctionData *fdata,
-                      void *data);
+                      cGH *data);
 
 const cFunctionData *CCTK_ScheduleQueryCurrentFunction(const cGH *GH);
 
