@@ -130,9 +130,10 @@ int CCTK_CallFunction(void *function,
 
 const cFunctionData *CCTK_ScheduleQueryCurrentFunction(const cGH *GH);
 
+typedef int (*cCallFunction)(void *, cFunctionData *, void *);
 int CCTK_ScheduleTraverse(const char *where,
                           void *GH,
-                          int (*CallFunction)(void *, cFunctionData *, void *));
+                          cCallFunction CallFunction);
 
 int CCTK_SchedulePrint(const char *where);
 int CCTK_SchedulePrintTimes(const char *where);

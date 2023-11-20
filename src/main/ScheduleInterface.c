@@ -103,7 +103,7 @@ typedef struct
 
   /* Stuff passed in in user calls */
 
-  int (*CallFunction)(void *, cFunctionData *, void *);
+  cCallFunction CallFunction;
 
 } t_sched_data;
 
@@ -1389,13 +1389,13 @@ cLanguage CCTK_TranslateLanguage(const char *sval)
 
 static int ScheduleTraverse(const char *where,
                             void *GH,
-                            int (*CallFunction)(void *, cFunctionData *, void *))
+                            cCallFunction CallFunction)
 {
   t_sched_data data;
   int (*calling_function)(void *, t_attribute *, t_sched_data *);
 
   data.GH = (cGH *)GH;
-  data.CallFunction = CallFunction ? CallFunction : CCTK_CallFunction;
+  data.CallFunction = CallFunction ? CallFunction : (cCallFunction)CCTK_CallFunction;
   data.schedule_bin = where;
   data.schedpoint = CCTK_Equals(data.schedule_bin, "CCTK_ANALYSIS") ?
                     schedpoint_analysis : schedpoint_misc;

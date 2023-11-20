@@ -366,8 +366,8 @@ int CCTK_HasAccess(const cGH *cctkGH, int var_index)
 
 #ifdef CCTK_DEBUG
   // Enable debugging if you suspect that your segfault has to do with illegal access
-  const char *full_name = CCTK_FullVarname(var0);
-  CCTK_VWarn(CCTK_WARN_ALERT, "Cactus",
+  const char *full_name = CCTK_FullVarName(var0);
+  CCTK_VWarn(CCTK_WARN_ALERT, __LINE__, __FILE__, "Cactus",
       "Possibly illegal access by '%s::%s' for grid function '%s' where '%s'.",
       current_function->thorn, current_function->routine, full_name, current_function->where);
 #endif

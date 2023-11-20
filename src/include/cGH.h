@@ -95,7 +95,7 @@ typedef struct _cGH
   CCTK_REAL cctk_time;
 
   /* The current function being called. */
-  struct _cFunctionData *current_scheduled_function;
+  const struct _cFunctionData *current_scheduled_function;
 
   /* An identifier string for this hierarchy
     (used to construct names for output files) */
