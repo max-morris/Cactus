@@ -325,6 +325,10 @@ int CCTK_HasAccess(const cGH *cctkGH, int var_index)
     return true;
 
   static bool presync_only = CCTK_Equals(presync_mode, "presync-only");
+#ifndef CCTK_DEBUG
+  if(!presync_only)
+    return true;
+#endif
 
   cFunctionData const * const current_function = CCTK_ScheduleQueryCurrentFunction(cctkGH);
   if(current_function == nullptr) // called directly by the driver or flesh
