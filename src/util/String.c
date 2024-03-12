@@ -12,6 +12,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
+#include <assert.h>
 
 #include "util_String.h"
 
@@ -92,10 +93,9 @@ static const char *rcsid = "$Header$";
 const char *Util_StrSep(const char **stringp, const char *delim)
 {
   int retlength = 0;
-  static char *retval = NULL;
-  char *temp;
-  const char *start;
-  const char *end;
+  char *retval = NULL;
+  const char *start = NULL;
+  const char *end = NULL;
 
   start = *stringp;
 
@@ -104,38 +104,14 @@ const char *Util_StrSep(const char **stringp, const char *delim)
   /* Is the delimiter part of the string */
   if(end)
   {
-    if(retlength < (end-start)+1)
-    {
-      temp = realloc(retval, (end-start+1));
+    retval = malloc(sizeof(char)*(end-start+1));
+    assert(retval != NULL);
+    retlength = end-start+1;
+    strncpy(retval, start, (size_t)(end-start));
+    retval[end-start] = '\0';
 
-      if(temp)
-      {
-        retval = temp;
-        retlength = end-start+1;
-      }
-      else
-      {
-        free(retval);
-        retval = NULL;
-        retlength = 0;
-      }
-    }
-
-    if(retval)
-    {
-      strncpy(retval, start, (size_t)(end-start));
-      retval[end-start] = '\0';
-
-      *stringp = end+strlen(delim);
-    }
-
-  }
-  else
-  {
-    free(retval);
-    retval = NULL;
-    retlength = 0;
-  }
+    *stringp = end+strlen(delim);
+   }
 
   return retval;
 }
@@ -712,6 +688,8 @@ int main(int argc, char *argv[])
   while((token = Util_StrSep(&argument, delim)))
   {
     printf("Token is     '%s'\n", token);
+    free((char *)token);
+    token = NULL;
   }
 
   if(argument - argv[1] < strlen(argv[1]))

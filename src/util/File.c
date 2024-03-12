@@ -85,9 +85,15 @@ int CCTK_CreateDirectory (int mode, const char *pathname)
   const char *path;
   size_t maxlength_current;
   char *current;
-  const char *token;
+  const char *token = NULL;
   struct stat statbuf;
 
+  // We should create an empty dir
+  if(pathname == NULL || strcmp(pathname, "") == 0) {
+      CCTK_Warn(1,__LINE__,__FILE__,"Cactus",
+              "Attempt to create a directory with an empty or NULL string");
+      return -1;
+  }
 
   maxlength_current = strlen (pathname);
   current = (char *) malloc (maxlength_current + 1);
@@ -102,6 +108,13 @@ int CCTK_CreateDirectory (int mode, const char *pathname)
       /* Treat first token carefully. */
       if (*current)
       {
+        if (strlen(current) + 1 + strlen(token) > maxlength_current) {
+            CCTK_VError(__LINE__,__FILE__,"Cactus",
+              "Internal failure while creating a direcoty.\n"
+              "%ld + 1 + %ld > %ld\n"
+              "current=%s\n"
+              "token=%s\n", strlen(current), strlen(token), maxlength_current, current, token);
+        }
         assert (strlen(current) + 1 + strlen(token) <= maxlength_current);
         sprintf (current + strlen(current), "/%s", token);
       }
@@ -110,6 +123,8 @@ int CCTK_CreateDirectory (int mode, const char *pathname)
         assert ((*token ? strlen(token) : 1) <= maxlength_current);
         strcpy (current, *token ? token : "/");
       }
+      free((void *)token);
+      token = NULL;
 
       if (stat (current, &statbuf))
       {
