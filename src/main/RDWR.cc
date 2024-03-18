@@ -162,7 +162,7 @@ void parse(const char *str,rdwr_t rdwr,cFunctionData* func,std::set<RDWR_entry>&
 
     if(vecnum < 0) {
         /* try if this is a single member of a group that is a vector of
-         * variables to be able to handle cases where the vector size is no
+         * variables to be able to handle cases where the vector size is not
          * known at compile time */
         char fullvarvect[sizeof(fullvar) + 12]; // room for 10 digits and [];
         size_t written = snprintf(fullvarvect, sizeof(fullvarvect), "%s[%d]", fullvar, 0);
@@ -179,10 +179,10 @@ void parse(const char *str,rdwr_t rdwr,cFunctionData* func,std::set<RDWR_entry>&
             assert(group.vectorgroup);
             const int firstvar = CCTK_FirstVarIndexI(gi);
             assert(firstvar >= 0);
-            const int varstride = group.numvars/group.vectorlength;
             assert(group.numvars % group.vectorlength == 0);
             for(int var = 0 ; var < group.vectorlength ; var++) {
-                add_entry(firstvar+var*varstride,tl,rdwr,wh,func,s);
+                int vind = vi + var;
+                add_entry(vind,tl,rdwr,wh,func,s);
             }
             return;
         }
