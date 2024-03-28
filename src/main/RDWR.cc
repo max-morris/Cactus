@@ -321,7 +321,7 @@ int CCTK_HasAccess(const cGH *cctkGH, int var_index)
 {
   DECLARE_CCTK_PARAMETERS;
 
-  if(cctkGH == nullptr)
+  if(cctkGH == nullptr || CCTK_Equals(presync_mode, "off"))
     return true;
 
   static bool presync_only = CCTK_Equals(presync_mode, "presync-only");
