@@ -512,11 +512,20 @@ Deprecated; use \code{vsnprintf} instead.
 \begin{Synopsis}{C}
 \begin{verbatim}
 #include "util_String.h"
-int count = Util_asprintf(char** buffer, const char* format,
-                           va_list arg)
+
+int count = Util_asprintf(char** buffer,
+                          const char* format,
+                          ...);
 \end{verbatim}
 \end{Synopsis}
 \end{SynopsisSection}
+
+\begin{ResultSection}
+\begin{Result}{count}
+Number of characters (excluding the terminating NUL) that have been placed in
+the allocated buffer.
+\end{Result}
+\end{ResultSection}
 
 \begin{ParameterSection}
 \begin{Parameter}{buffer}
