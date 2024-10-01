@@ -10,7 +10,7 @@ dnl @@*/
 
 
 dnl  These are copies of the standard autoconf macros, except they
-dnl  use AC_TRY_COMPILE rather than AC_TRY_CPP to check for headers.
+dnl  use AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],[],[]) rather than AC_PREPROC_IFELSE([AC_LANG_SOURCE([[]])],[],[]) to check for headers.
 dnl  This gets round the problem on cygwin where the gnu cpp finds
 dnl  the gcc headers and not the ones for the actual compiler.
 
@@ -20,9 +20,8 @@ AC_DEFUN(CCTK_CHECK_HEADER,
 cctk_safe=`echo "$1" | sed 'y%./+-%__p_%'`
 AC_MSG_CHECKING([for $1])
 AC_CACHE_VAL(cctk_cv_header_$cctk_safe,
-[AC_TRY_COMPILE([$2
-#include <$1>], [ ], eval "cctk_cv_header_$cctk_safe=yes",
-  eval "cctk_cv_header_$cctk_safe=no")])dnl
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[$2
+#include <$1>]], [[ ]])],[eval "cctk_cv_header_$cctk_safe=yes"],[eval "cctk_cv_header_$cctk_safe=no"])])dnl
 if eval "test \"`echo '$cctk_cv_header_'$cctk_safe`\" = yes"; then
   AC_MSG_RESULT(yes)
   ifelse([$3], , :, [$3])
@@ -59,21 +58,15 @@ ac_member_var=`echo $1['_']$2 | sed 'y% %_%'`
 AC_MSG_CHECKING([for $1.$2])
 AC_CACHE_VAL(ac_cv_member_$ac_member_var,
 [dnl
-AC_TRY_COMPILE([$5],
-[static $1 ac_aggr;
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[$5]], [[static $1 ac_aggr;
 if (ac_aggr.$2)
-return 0;],
-		eval "ac_cv_member_$ac_member_var=yes",
-		eval "ac_cv_member_$ac_member_var=no"dnl
-)
+return 0;]])],[eval "ac_cv_member_$ac_member_var=yes"],[eval "ac_cv_member_$ac_member_var=no"dnl
+])
 if eval "test \"`echo '$''{'ac_cv_member_$ac_member_var'}'`\" = no"; then
-AC_TRY_COMPILE([$5],
-[static $1 ac_aggr;
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[$5]], [[static $1 ac_aggr;
 if (sizeof ac_aggr.$2)
-return 0;],
-		eval "ac_cv_member_$ac_member_var=yes",
-		eval "ac_cv_member_$ac_member_var=no"dnl
-)
+return 0;]])],[eval "ac_cv_member_$ac_member_var=yes"],[eval "ac_cv_member_$ac_member_var=no"dnl
+])
 fi dnl
 ])dnl
 if eval "test \"`echo '$ac_cv_member_'$ac_member_var`\" = yes"; then
@@ -110,19 +103,19 @@ cctk_lower_bound=1
 cctk_upper_bound=2
 cctk_upper_bound_found=no
 while test $cctk_upper_bound_found = no; do
-  AC_TRY_COMPILE([#include <stddef.h>],dnl
-  [int array[sizeof($1) < $cctk_upper_bound ? 1 : -1]],dnl
-  [cctk_upper_bound_found=yes],dnl
-  [cctk_lower_bound=$cctk_upper_bound
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stddef.h>]], [[dnl
+  int array[sizeof($1) < $cctk_upper_bound ? 1 : -1]]])],[dnl
+  cctk_upper_bound_found=yes],[dnl
+  cctk_lower_bound=$cctk_upper_bound
    cctk_upper_bound=$(expr $cctk_upper_bound \* 2)])
 done
 # then bisect to actual value
 while test $cctk_lower_bound -ne $(expr $cctk_upper_bound - 1); do
   cctk_size_guess=$(expr \( $cctk_lower_bound + $cctk_upper_bound \) / 2)
-  AC_TRY_COMPILE([#include <stddef.h>],dnl
-  [int array[sizeof($1) < $cctk_size_guess ? 1 : -1]],dnl
-  [cctk_upper_bound=$cctk_size_guess],dnl
-  [cctk_lower_bound=$cctk_size_guess])
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stddef.h>]], [[dnl
+  int array[sizeof($1) < $cctk_size_guess ? 1 : -1]]])],[dnl
+  cctk_upper_bound=$cctk_size_guess],[dnl
+  cctk_lower_bound=$cctk_size_guess])
 done
 AC_CV_NAME=$cctk_lower_bound
 else
@@ -169,14 +162,14 @@ EOF
 if AC_TRY_EVAL(ac_link) && test -s conftest${ac_exeext}; then
   [$2]=yes
   # If we can't run a trivial program, we are probably using a cross compiler.
-  if (./conftest; exit) 2>&AC_FD_CC; then
+  if (./conftest; exit) 2>&AS_MESSAGE_LOG_FD; then
     [$3]=no
   else
     [$3]=yes
   fi
 else
-  echo "configure: failed program was:" >&AC_FD_CC
-  cat conftest.$ac_ext >&AC_FD_CC
+  echo "configure: failed program was:" >&AS_MESSAGE_LOG_FD
+  cat conftest.$ac_ext >&AS_MESSAGE_LOG_FD
   [$2]=no
 fi
 rm -fr conftest*])
@@ -222,8 +215,8 @@ if AC_TRY_EVAL(ac_link conftest2.$ac_ext) && test -s conftest${ac_exeext}; then
   ifelse([$4], , :, [rm -rf conftest*
   $4])
 else
-  echo "configure: failed program was:" >&AC_FD_CC
-  cat conftest.$ac_ext >&AC_FD_CC
+  echo "configure: failed program was:" >&AS_MESSAGE_LOG_FD
+  cat conftest.$ac_ext >&AS_MESSAGE_LOG_FD
 ifelse([$5], , , [  rm -rf conftest*
   $5
 ])dnl
@@ -260,15 +253,13 @@ fi
 AC_DEFUN(CCTK_TIME__FTIME,
 [AC_MSG_CHECKING([for availability of _ftime timing])
 AC_CACHE_VAL(cctk_cv_time_ftime,
-[AC_TRY_LINK([#include <stdio.h>
+[AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>
 #include <time.h>
 #include <sys/types.h>
-#include <sys/timeb.h>],
-[  struct _timeb timebs;
+#include <sys/timeb.h>]], [[  struct _timeb timebs;
   _ftime(&timebs);
   printf("%f\n",(double)(timebs.time + timebs.millitm/1000.0));
-  return 0;], eval "cctk_cv_time_ftime=yes",
-  eval "cctk_cv_time_ftime=no")])dnl
+  return 0;]])],[eval "cctk_cv_time_ftime=yes"],[eval "cctk_cv_time_ftime=no"])])dnl
 if eval "test \"`echo '$cctk_cv_time_ftime'`\" = yes"; then
   AC_MSG_RESULT(yes)
   AC_DEFINE_UNQUOTED(HAVE_TIME__FTIME)
@@ -280,15 +271,13 @@ fi
 AC_DEFUN(CCTK_TIME_GETRUSAGE,
 [AC_MSG_CHECKING([for availability of getrusage timing])
 AC_CACHE_VAL(cctk_cv_time_getrusage,
-[AC_TRY_LINK([#include <stdio.h>
+[AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>
 #include <sys/time.h>
 #include <sys/resource.h>
-#include <unistd.h>],
-[struct rusage ru;
+#include <unistd.h>]], [[struct rusage ru;
  getrusage(RUSAGE_SELF, &ru);
  printf("%f\n",(double)(ru.ru_utime.tv_sec + (double)ru.ru_utime.tv_usec/1000000.0));
- return 0;], eval "cctk_cv_time_getrusage=yes",
-  eval "cctk_cv_time_getrusage=no")])dnl
+ return 0;]])],[eval "cctk_cv_time_getrusage=yes"],[eval "cctk_cv_time_getrusage=no"])])dnl
 if eval "test \"`echo '$cctk_cv_time_getrusage'`\" = yes"; then
   AC_MSG_RESULT(yes)
   AC_DEFINE_UNQUOTED(HAVE_TIME_GETRUSAGE)
@@ -300,10 +289,8 @@ fi
 AC_DEFUN(CCTK_TIME_GETTIMEOFDAY,
 [AC_MSG_CHECKING([for availability of gettimeofday timing])
 AC_CACHE_VAL(cctk_cv_time_gettimeofday,
-[AC_TRY_LINK([#include <sys/time.h>],
-[gettimeofday(0, 0);
- return 0;], eval "cctk_cv_time_gettimeofday=yes",
-  eval "cctk_cv_time_gettimeofday=no")])dnl
+[AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sys/time.h>]], [[gettimeofday(0, 0);
+ return 0;]])],[eval "cctk_cv_time_gettimeofday=yes"],[eval "cctk_cv_time_gettimeofday=no"])])dnl
 if eval "test \"`echo '$cctk_cv_time_gettimeofday'`\" = yes"; then
   AC_MSG_RESULT(yes)
   AC_DEFINE_UNQUOTED(HAVE_TIME_GETTIMEOFDAY)
@@ -314,15 +301,13 @@ fi
 if eval "test \"`echo '$cctk_cv_time_gettimeofday'`\" = yes"; then
 [AC_MSG_CHECKING([if gettimeofday needs timezone])
 AC_CACHE_VAL(cctk_cv_time_gettimeofday_timezone,
-[AC_TRY_LINK([#include <stdio.h>
+[AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>
 #include <sys/time.h>
-#include <unistd.h>],
-[struct timeval tp;
+#include <unistd.h>]], [[struct timeval tp;
  struct timezone tzp;
  gettimeofday(&tp, &tzp);
  printf("%f\n", (double)(tp.tv_sec + (double)tp.tv_usec/1000000.0));
- return 0;], eval "cctk_cv_time_gettimeofday_timezone=yes",
-  eval "cctk_cv_time_gettimeofday_timezone=no")])dnl
+ return 0;]])],[eval "cctk_cv_time_gettimeofday_timezone=yes"],[eval "cctk_cv_time_gettimeofday_timezone=no"])])dnl
 if eval "test \"`echo '$cctk_cv_time_gettimeofday_timezone'`\" = yes"; then
   AC_MSG_RESULT(yes)
   AC_DEFINE_UNQUOTED(GETTIMEOFDAY_NEEDS_TIMEZONE)
@@ -336,7 +321,7 @@ fi
 AC_DEFUN(CCTK_PROG_CC_WORKS,
 [AC_MSG_CHECKING([whether the C compiler ($CC $CFLAGS $LDFLAGS) works])
 AC_LANG_SAVE
-AC_LANG_C
+AC_LANG([C])
 rm -fr conftest*
 CCTK_TRY_COMPILER([int main(){return(0);} int PilotMain(){return(0);}], ac_cv_prog_cc_works, ac_cv_prog_cc_cross)
 AC_LANG_RESTORE
@@ -358,7 +343,7 @@ cross_compiling=$ac_cv_prog_cc_cross
 AC_DEFUN(CCTK_PROG_CXX_WORKS,
 [AC_MSG_CHECKING([whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) works])
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
+AC_LANG([C++])
 rm -fr conftest*
 CCTK_TRY_COMPILER([int main(){return(0);} extern "C" int PilotMain(){return(0);}], ac_cv_prog_cxx_works, ac_cv_prog_cxx_cross)
 AC_LANG_RESTORE
@@ -377,7 +362,7 @@ cross_compiling=$ac_cv_prog_cxx_cross
 AC_DEFUN(CCTK_PROG_F77_WORKS,
 [AC_MSG_CHECKING([whether the Fortran compiler ($F77 $F77FLAGS $LDFLAGS) works])
 AC_LANG_SAVE
-AC_LANG_FORTRAN77
+AC_LANG([Fortran 77])
 rm -fr conftest*
 CCTK_TRY_COMPILER([
       program conftest
@@ -403,7 +388,7 @@ AC_DEFUN(CCTK_HAVE_TYPE_STAR,
 [AC_CACHE_CHECK([whether the Fortran compiler ($F77 $F77FLAGS $LDFLAGS) supports TYPE(*) for CCTK_PointerTo], cctk_cv_have_f_type_star,
 [cctk_cv_have_f_type_star=no
 AC_LANG_SAVE
-AC_LANG_FORTRAN77
+AC_LANG([Fortran 77])
 CCTK_TRY_COMPILE(
 [
       subroutine foo(a)
@@ -424,9 +409,8 @@ fi
 AC_DEFUN(CCTK_HEADER_REGEX,
 [AC_MSG_CHECKING([for regex.h])
 AC_CACHE_VAL(cctk_cv_header_regex_h,
-[AC_TRY_COMPILE([#include <stdio.h>
-#include <regex.h>], [return 0;], eval "cctk_cv_header_regex_h=yes",
-  eval "cctk_cv_header_regex_h=no")])dnl
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>
+#include <regex.h>]], [[return 0;]])],[eval "cctk_cv_header_regex_h=yes"],[eval "cctk_cv_header_regex_h=no"])])dnl
 if eval "test \"`echo '$cctk_cv_header_regex_h'`\" = yes"; then
   AC_MSG_RESULT(yes)
   AC_DEFINE_UNQUOTED(HAVE_REGEX_H)
@@ -466,23 +450,20 @@ AC_CACHE_VAL(ac_cv_lib_$ac_lib_var,
 [ac_link='${CC-cc} -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext `CCTK_Wrap "$LIBDIR_PREFIX" "$LIBDIR_SUFFIX" "$LIBDIRS"` `CCTK_Wrap "$LIBLINK_PREFIX" "$LIBLINK_SUFFIX" "$LIBS"` >&5'
 ac_save_LIBS="$LIBS"
 LIBS="$1 $5 $LIBS"
-AC_TRY_LINK(dnl
-ifelse(AC_LANG, [FORTRAN77], ,
-ifelse([$2], [main], , dnl Avoid conflicting decl of main.
-[/* Override any gcc2 internal prototype to avoid an error.  */
-]ifelse(AC_LANG, CPLUSPLUS, [#ifdef __cplusplus
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[dnl
+ifelse(AC_LANG, FORTRAN77, ,
+ifelse($2, main, , dnl Avoid conflicting decl of main.
+/* Override any gcc2 internal prototype to avoid an error.  */
+ifelse(AC_LANG, CPLUSPLUS, #ifdef __cplusplus
 extern "C"
 #endif
-])dnl
-[/* We use char because int might match the return type of a gcc2
+)dnl
+/* We use char because int might match the return type of a gcc2
     builtin and then its argument prototype would still apply.  */
 dnl We need a space before the parentheses to avoid accidentally calling
 dnl an m4 function, if $2 expands to an m4 function.
 char $2 ();
-])),
-            [$2()],
-            eval "ac_cv_lib_$ac_lib_var=yes",
-            eval "ac_cv_lib_$ac_lib_var=no")
+))]], [[$2()]])],[eval "ac_cv_lib_$ac_lib_var=yes"],[eval "ac_cv_lib_$ac_lib_var=no"])
 LIBS="$ac_save_LIBS"
 ])dnl
 if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
@@ -535,18 +516,15 @@ AC_CACHE_VAL(ac_cv_lib_$ac_lib_var,
 [ac_link='${CC-cc} -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext `CCTK_Wrap "$LIBDIR_PREFIX" "$LIBDIR_SUFFIX" "$LIBDIRS"` `CCTK_Wrap "$LIBLINK_PREFIX" "$LIBLINK_SUFFIX" "$LIBS"` >&5'
 ac_save_LIBS="$LIBS"
 LIBS="$2 $7 $LIBS"
-AC_TRY_LINK(dnl
-ifelse(AC_LANG, [FORTRAN77], ,
-ifelse([$3], [main], , dnl Avoid conflicting decl of main.
-[]ifelse(AC_LANG, CPLUSPLUS, [#ifdef __cplusplus
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[dnl
+ifelse(AC_LANG, FORTRAN77, ,
+ifelse($3, main, , dnl Avoid conflicting decl of main.
+ifelse(AC_LANG, CPLUSPLUS, #ifdef __cplusplus
 extern "C"
 #endif
-])dnl
-[#include <$1>
-])),
-            [$3 $4],
-            eval "ac_cv_lib_$ac_lib_var=yes",
-            eval "ac_cv_lib_$ac_lib_var=no")
+)dnl
+#include <$1>
+))]], [[$3 $4]])],[eval "ac_cv_lib_$ac_lib_var=yes"],[eval "ac_cv_lib_$ac_lib_var=no"])
 LIBS="$ac_save_LIBS"
 ])dnl
 if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
@@ -595,7 +573,7 @@ AC_DEFUN(CCTK_CHECK_C_RESTRICT,
 [AC_CACHE_CHECK([for C restrict], cctk_cv_c_restrict,
 [cctk_cv_c_restrict=no
 for ac_kw in restrict __restrict__ __restrict; do
-  AC_TRY_COMPILE([
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 double * $ac_kw p1;
 double * $ac_kw p2[3];
 struct s1 { char * $ac_kw arr; };
@@ -610,10 +588,10 @@ void f2 (void * $ac_kw p[]) { }
 void f3 (void * $ac_kw p[3]) { }
 /* void f4 (void * $ac_kw p[$ac_kw]) { } */
 /* void f5 (void * $ac_kw p[$ac_kw 3]) { } */
-], [
+]], [[
 double * $ac_kw v1;
 double * $ac_kw v2[3];
-], [cctk_cv_c_restrict=$ac_kw; break])
+]])],[cctk_cv_c_restrict=$ac_kw; break],[])
 done
 ])
 case "$cctk_cv_c_restrict" in
@@ -628,9 +606,9 @@ AC_DEFUN(CCTK_CHECK_CXX_RESTRICT,
 [AC_CACHE_CHECK([for C++ restrict], cctk_cv_cxx_restrict,
 [cctk_cv_cxx_restrict=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
+AC_LANG([C++])
 for ac_kw in restrict __restrict__ __restrict; do
-  AC_TRY_COMPILE([
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 double * $ac_kw p1;
 double * $ac_kw p2[3];
 struct s1 { char * $ac_kw arr; };
@@ -645,10 +623,10 @@ void f2 (void * $ac_kw p[]) { }
 void f3 (void * $ac_kw p[3]) { }
 // void f4 (void * $ac_kw p[$ac_kw]) { }
 // void f5 (void * $ac_kw p[$ac_kw 3]) { }
-], [
+]], [[
 double * $ac_kw v1;
 double * $ac_kw v2[3];
-], [cctk_cv_cxx_restrict=$ac_kw; break])
+]])],[cctk_cv_cxx_restrict=$ac_kw; break],[])
 done
 AC_LANG_RESTORE
 ])
@@ -667,7 +645,7 @@ AC_DEFUN(CCTK_CHECK_C_INLINE,
 [AC_CACHE_CHECK([for C inline], cctk_cv_c_inline,
 [cctk_cv_c_inline=no
 for ac_kw in inline __inline__ __inline; do
-  AC_TRY_COMPILE(, [} $ac_kw int foo() {], [cctk_cv_c_inline=$ac_kw; break])
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[} $ac_kw int foo() {]])],[cctk_cv_c_inline=$ac_kw; break],[])
 done
 ])
 case "$cctk_cv_c_inline" in
@@ -721,22 +699,22 @@ dnl Otherwise define _Pragma to be empty.
 AC_DEFUN(CCTK_C__PRAGMA,
 [AC_CACHE_CHECK([for C _Pragma], cctk_cv_have_c__Pragma,
 [cctk_cv_have_c__Pragma=no
-AC_TRY_COMPILE([
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #define LOOP(i) _Pragma("omp for") for (int i=0; i<10; ++i)
-],[
+]], [[
   int s=0;
 #pragma omp parallel reduction(+: s)
   LOOP(i) {
     s+=i;
   }
-], cctk_cv_have_c__Pragma=yes, cctk_cv_have_c__Pragma=no)
+]])],[cctk_cv_have_c__Pragma=yes],[cctk_cv_have_c__Pragma=no])
 ])
 if test "$cctk_cv_have_c__Pragma" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_C__PRAGMA)
 fi
 ])
 
-dnl The autoconf 2.13 function AC_TRY_COMPILE does not work for Fortran.
+dnl The autoconf 2.13 function AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],[],[]) does not work for Fortran.
 dnl This version is corrected and should work for both C and Fortran.
 dnl CCTK_TRY_COMPILE(INCLUDES, FUNCTION-BODY,
 dnl             [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
@@ -761,8 +739,8 @@ if AC_TRY_EVAL(ac_compile); then
   ifelse([$3], , :, [rm -rf conftest*
   $3])
 else
-  echo "configure: failed program was:" >&AC_FD_CC
-  cat conftest.$ac_ext >&AC_FD_CC
+  echo "configure: failed program was:" >&AS_MESSAGE_LOG_FD
+  cat conftest.$ac_ext >&AS_MESSAGE_LOG_FD
 ifelse([$4], , , [  rm -rf conftest*
   $4
 ])dnl
@@ -773,7 +751,7 @@ AC_DEFUN(CCTK_FORTRAN_REAL4,
 [AC_CACHE_CHECK([for Fortran REAL*4], cctk_cv_have_fortran_real4,
 [cctk_cv_have_fortran_real4=no
 AC_LANG_SAVE
-AC_LANG_FORTRAN77
+AC_LANG([Fortran 77])
 CCTK_TRY_COMPILE(,[      REAL*4 a], cctk_cv_have_fortran_real4=yes, cctk_cv_have_fortran_real4=no)
 AC_LANG_RESTORE
 ])
@@ -786,7 +764,7 @@ AC_DEFUN(CCTK_FORTRAN_REAL8,
 [AC_CACHE_CHECK([for Fortran REAL*8], cctk_cv_have_fortran_real8,
 [cctk_cv_have_fortran_real8=no
 AC_LANG_SAVE
-AC_LANG_FORTRAN77
+AC_LANG([Fortran 77])
 CCTK_TRY_COMPILE(,[      REAL*8 a], cctk_cv_have_fortran_real8=yes, cctk_cv_have_fortran_real8=no)
 AC_LANG_RESTORE
 ])
@@ -799,7 +777,7 @@ AC_DEFUN(CCTK_FORTRAN_REAL16,
 [AC_CACHE_CHECK([for Fortran REAL*16], cctk_cv_have_fortran_real16,
 [cctk_cv_have_fortran_real16=no
 AC_LANG_SAVE
-AC_LANG_FORTRAN77
+AC_LANG([Fortran 77])
 CCTK_TRY_COMPILE(,[      REAL*$REAL16_KIND a], cctk_cv_have_fortran_real16=yes, cctk_cv_have_fortran_real16=no)
 AC_LANG_RESTORE
 ])
@@ -812,7 +790,7 @@ AC_DEFUN(CCTK_FORTRAN_COMPLEX8,
 [AC_CACHE_CHECK([for Fortran COMPLEX*8], cctk_cv_have_fortran_complex8,
 [cctk_cv_have_fortran_complex8=no
 AC_LANG_SAVE
-AC_LANG_FORTRAN77
+AC_LANG([Fortran 77])
 CCTK_TRY_COMPILE(,[      COMPLEX*8 a], cctk_cv_have_fortran_complex8=yes, cctk_cv_have_fortran_complex8=no)
 AC_LANG_RESTORE
 ])
@@ -825,7 +803,7 @@ AC_DEFUN(CCTK_FORTRAN_COMPLEX16,
 [AC_CACHE_CHECK([for Fortran COMPLEX*16], cctk_cv_have_fortran_complex16,
 [cctk_cv_have_fortran_complex16=no
 AC_LANG_SAVE
-AC_LANG_FORTRAN77
+AC_LANG([Fortran 77])
 CCTK_TRY_COMPILE(,[      COMPLEX*16 a], cctk_cv_have_fortran_complex16=yes, cctk_cv_have_fortran_complex16=no)
 AC_LANG_RESTORE
 ])
@@ -838,7 +816,7 @@ AC_DEFUN(CCTK_FORTRAN_COMPLEX32,
 [AC_CACHE_CHECK([for Fortran COMPLEX*32], cctk_cv_have_fortran_complex32,
 [cctk_cv_have_fortran_complex32=no
 AC_LANG_SAVE
-AC_LANG_FORTRAN77
+AC_LANG([Fortran 77])
 CCTK_TRY_COMPILE(,[      COMPLEX*$COMPLEX32_KIND a], cctk_cv_have_fortran_complex32=yes, cctk_cv_have_fortran_complex32=no)
 AC_LANG_RESTORE
 ])
@@ -852,7 +830,7 @@ fi
 AC_DEFUN(CCTK_C_ATTRIBUTE_CONST,
 [AC_CACHE_CHECK([for C function __attribute__((__const__))], cctk_cv_have_c_attribute_const,
 [cctk_cv_have_c_attribute_const=no
-AC_TRY_COMPILE(, double foo (double) __attribute__((__const__));, cctk_cv_have_c_attribute_const=yes, cctk_cv_have_c_attribute_const=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[double foo (double) __attribute__((__const__));]])],[cctk_cv_have_c_attribute_const=yes],[cctk_cv_have_c_attribute_const=no])
 ])
 if test "$cctk_cv_have_c_attribute_const" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_CONST)
@@ -863,8 +841,8 @@ AC_DEFUN(CCTK_CXX_ATTRIBUTE_CONST,
 [AC_CACHE_CHECK([for C++ function __attribute__((__const__))], cctk_cv_have_cxx_attribute_const,
 [cctk_cv_have_cxx_attribute_const=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE(, double foo (double) __attribute__((__const__));, cctk_cv_have_cxx_attribute_const=yes, cctk_cv_have_cxx_attribute_const=no)
+AC_LANG([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[double foo (double) __attribute__((__const__));]])],[cctk_cv_have_cxx_attribute_const=yes],[cctk_cv_have_cxx_attribute_const=no])
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_attribute_const" = "yes" ; then
@@ -876,8 +854,8 @@ AC_DEFUN(CCTK_CXX_MEMBER_ATTRIBUTE_CONST,
 [AC_CACHE_CHECK([for C++ member function __attribute__((__const__))], cctk_cv_have_cxx_member_attribute_const,
 [cctk_cv_have_cxx_member_attribute_const=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE(, struct bar { double foo (double) __attribute__((__const__)); };, cctk_cv_have_cxx_member_attribute_const=yes, cctk_cv_have_cxx_member_attribute_const=no)
+AC_LANG([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[struct bar { double foo (double) __attribute__((__const__)); };]])],[cctk_cv_have_cxx_member_attribute_const=yes],[cctk_cv_have_cxx_member_attribute_const=no])
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_member_attribute_const" = "yes" ; then
@@ -890,7 +868,7 @@ fi
 AC_DEFUN(CCTK_C_ATTRIBUTE_PURE,
 [AC_CACHE_CHECK([for C function __attribute__((__pure__))], cctk_cv_have_c_attribute_pure,
 [cctk_cv_have_c_attribute_pure=no
-AC_TRY_COMPILE(, double foo (double) __attribute__((__pure__));, cctk_cv_have_c_attribute_pure=yes, cctk_cv_have_c_attribute_pure=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[double foo (double) __attribute__((__pure__));]])],[cctk_cv_have_c_attribute_pure=yes],[cctk_cv_have_c_attribute_pure=no])
 ])
 if test "$cctk_cv_have_c_attribute_pure" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_PURE)
@@ -901,8 +879,8 @@ AC_DEFUN(CCTK_CXX_ATTRIBUTE_PURE,
 [AC_CACHE_CHECK([for C++ function __attribute__((__pure__))], cctk_cv_have_cxx_attribute_pure,
 [cctk_cv_have_cxx_attribute_pure=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE(, double foo (double) __attribute__((__pure__));, cctk_cv_have_cxx_attribute_pure=yes, cctk_cv_have_cxx_attribute_pure=no)
+AC_LANG([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[double foo (double) __attribute__((__pure__));]])],[cctk_cv_have_cxx_attribute_pure=yes],[cctk_cv_have_cxx_attribute_pure=no])
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_attribute_pure" = "yes" ; then
@@ -914,8 +892,8 @@ AC_DEFUN(CCTK_CXX_MEMBER_ATTRIBUTE_PURE,
 [AC_CACHE_CHECK([for C++ member function __attribute__((__pure__))], cctk_cv_have_cxx_member_attribute_pure,
 [cctk_cv_have_cxx_member_attribute_pure=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE(, struct bar { double foo (double) __attribute__((__pure__)); };, cctk_cv_have_cxx_member_attribute_pure=yes, cctk_cv_have_cxx_member_attribute_pure=no)
+AC_LANG([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[struct bar { double foo (double) __attribute__((__pure__)); };]])],[cctk_cv_have_cxx_member_attribute_pure=yes],[cctk_cv_have_cxx_member_attribute_pure=no])
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_member_attribute_pure" = "yes" ; then
@@ -928,7 +906,7 @@ fi
 AC_DEFUN(CCTK_C_ATTRIBUTE_COMMON,
 [AC_CACHE_CHECK([for C data __attribute__((__common__))], cctk_cv_have_c_attribute_common,
 [cctk_cv_have_c_attribute_common=no
-AC_TRY_COMPILE(, struct foo_t {int bar;} foo_s  __attribute__((__common__));, cctk_cv_have_c_attribute_common=yes, cctk_cv_have_c_attribute_common=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[struct foo_t {int bar;} foo_s  __attribute__((__common__));]])],[cctk_cv_have_c_attribute_common=yes],[cctk_cv_have_c_attribute_common=no])
 ])
 if test "$cctk_cv_have_c_attribute_common" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_COMMON)
@@ -939,8 +917,8 @@ AC_DEFUN(CCTK_CXX_ATTRIBUTE_COMMON,
 [AC_CACHE_CHECK([for C+ data __attribute__((__common__))], cctk_cv_have_cxx_attribute_common,
 [cctk_cv_have_cxx_attribute_common=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE(, struct foo_t {int bar;} foo_s  __attribute__((__common__));, cctk_cv_have_cxx_attribute_common=yes, cctk_cv_have_cxx_attribute_common=no)
+AC_LANG([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[struct foo_t {int bar;} foo_s  __attribute__((__common__));]])],[cctk_cv_have_cxx_attribute_common=yes],[cctk_cv_have_cxx_attribute_common=no])
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_attribute_common" = "yes" ; then
@@ -953,7 +931,7 @@ fi
 AC_DEFUN(CCTK_C_ATTRIBUTE_NOINLINE,
 [AC_CACHE_CHECK([for C function __attribute__((__noinline__))], cctk_cv_have_c_attribute_noinline,
 [cctk_cv_have_c_attribute_noinline=no
-AC_TRY_COMPILE(, double foo (double) __attribute__((__noinline__));, cctk_cv_have_c_attribute_noinline=yes, cctk_cv_have_c_attribute_noinline=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[double foo (double) __attribute__((__noinline__));]])],[cctk_cv_have_c_attribute_noinline=yes],[cctk_cv_have_c_attribute_noinline=no])
 ])
 if test "$cctk_cv_have_c_attribute_noinline" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_NOINLINE)
@@ -964,8 +942,8 @@ AC_DEFUN(CCTK_CXX_ATTRIBUTE_NOINLINE,
 [AC_CACHE_CHECK([for C++ function __attribute__((__noinline__))], cctk_cv_have_cxx_attribute_noinline,
 [cctk_cv_have_cxx_attribute_noinline=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE(, double foo (double) __attribute__((__noinline__));, cctk_cv_have_cxx_attribute_noinline=yes, cctk_cv_have_cxx_attribute_noinline=no)
+AC_LANG([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[double foo (double) __attribute__((__noinline__));]])],[cctk_cv_have_cxx_attribute_noinline=yes],[cctk_cv_have_cxx_attribute_noinline=no])
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_attribute_noinline" = "yes" ; then
@@ -977,8 +955,8 @@ AC_DEFUN(CCTK_CXX_MEMBER_ATTRIBUTE_NOINLINE,
 [AC_CACHE_CHECK([for C++ member function __attribute__((__noinline__))], cctk_cv_have_cxx_member_attribute_noinline,
 [cctk_cv_have_cxx_member_attribute_noinline=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE(, struct bar { double foo (double) __attribute__((__noinline__)); };, cctk_cv_have_cxx_member_attribute_noinline=yes, cctk_cv_have_cxx_member_attribute_noinline=no)
+AC_LANG([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[struct bar { double foo (double) __attribute__((__noinline__)); };]])],[cctk_cv_have_cxx_member_attribute_noinline=yes],[cctk_cv_have_cxx_member_attribute_noinline=no])
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_member_attribute_noinline" = "yes" ; then
@@ -991,7 +969,7 @@ fi
 AC_DEFUN(CCTK_C_ATTRIBUTE_ALWAYS_INLINE,
 [AC_CACHE_CHECK([for C function __attribute__((__always_inline__))], cctk_cv_have_c_attribute_always_inline,
 [cctk_cv_have_c_attribute_always_inline=no
-AC_TRY_COMPILE(, double foo (double) __attribute__((__always_inline__));, cctk_cv_have_c_attribute_always_inline=yes, cctk_cv_have_c_attribute_always_inline=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[double foo (double) __attribute__((__always_inline__));]])],[cctk_cv_have_c_attribute_always_inline=yes],[cctk_cv_have_c_attribute_always_inline=no])
 ])
 if test "$cctk_cv_have_c_attribute_always_inline" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_ALWAYS_INLINE)
@@ -1002,8 +980,8 @@ AC_DEFUN(CCTK_CXX_ATTRIBUTE_ALWAYS_INLINE,
 [AC_CACHE_CHECK([for C++ function __attribute__((__always_inline__))], cctk_cv_have_cxx_attribute_always_inline,
 [cctk_cv_have_cxx_attribute_always_inline=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE(, double foo (double) __attribute__((__always_inline__));, cctk_cv_have_cxx_attribute_always_inline=yes, cctk_cv_have_cxx_attribute_always_inline=no)
+AC_LANG([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[double foo (double) __attribute__((__always_inline__));]])],[cctk_cv_have_cxx_attribute_always_inline=yes],[cctk_cv_have_cxx_attribute_always_inline=no])
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_attribute_always_inline" = "yes" ; then
@@ -1015,8 +993,8 @@ AC_DEFUN(CCTK_CXX_MEMBER_ATTRIBUTE_ALWAYS_INLINE,
 [AC_CACHE_CHECK([for C++ member function __attribute__((__always_inline__))], cctk_cv_have_cxx_member_attribute_always_inline,
 [cctk_cv_have_cxx_member_attribute_always_inline=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE(, struct bar { double foo (double) __attribute__((__always_inline__)); };, cctk_cv_have_cxx_member_attribute_always_inline=yes, cctk_cv_have_cxx_member_attribute_always_inline=no)
+AC_LANG([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[struct bar { double foo (double) __attribute__((__always_inline__)); };]])],[cctk_cv_have_cxx_member_attribute_always_inline=yes],[cctk_cv_have_cxx_member_attribute_always_inline=no])
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_member_attribute_always_inline" = "yes" ; then
@@ -1029,7 +1007,7 @@ fi
 AC_DEFUN(CCTK_C_ATTRIBUTE_UNUSED,
 [AC_CACHE_CHECK([for C __attribute__((__unused__))], cctk_cv_have_c_attribute_unused,
 [cctk_cv_have_c_attribute_unused=no
-AC_TRY_COMPILE(, double * foo __attribute__((__unused__));, cctk_cv_have_c_attribute_unused=yes, cctk_cv_have_c_attribute_unused=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[double * foo __attribute__((__unused__));]])],[cctk_cv_have_c_attribute_unused=yes],[cctk_cv_have_c_attribute_unused=no])
 ])
 if test "$cctk_cv_have_c_attribute_unused" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_UNUSED)
@@ -1040,8 +1018,8 @@ AC_DEFUN(CCTK_CXX_ATTRIBUTE_UNUSED,
 [AC_CACHE_CHECK([for C++ __attribute__((__unused__))], cctk_cv_have_cxx_attribute_unused,
 [cctk_cv_have_cxx_attribute_unused=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE(, double * foo __attribute__((__unused__));, cctk_cv_have_cxx_attribute_unused=yes, cctk_cv_have_cxx_attribute_unused=no)
+AC_LANG([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[double * foo __attribute__((__unused__));]])],[cctk_cv_have_cxx_attribute_unused=yes],[cctk_cv_have_cxx_attribute_unused=no])
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_attribute_unused" = "yes" ; then
@@ -1054,7 +1032,7 @@ fi
 AC_DEFUN(CCTK_C_ATTRIBUTE_ALIGNED,
 [AC_CACHE_CHECK([for C __attribute__((__aligned__(...)))], cctk_cv_have_c_attribute_aligned,
 [cctk_cv_have_c_attribute_aligned=no
-AC_TRY_COMPILE(, double * foo __attribute__((__aligned__(16)));, cctk_cv_have_c_attribute_aligned=yes, cctk_cv_have_c_attribute_aligned=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[double * foo __attribute__((__aligned__(16)));]])],[cctk_cv_have_c_attribute_aligned=yes],[cctk_cv_have_c_attribute_aligned=no])
 ])
 if test "$cctk_cv_have_c_attribute_aligned" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_ALIGNED)
@@ -1065,8 +1043,8 @@ AC_DEFUN(CCTK_CXX_ATTRIBUTE_ALIGNED,
 [AC_CACHE_CHECK([for C++ __attribute__((__aligned__(...)))], cctk_cv_have_cxx_attribute_aligned,
 [cctk_cv_have_cxx_attribute_aligned=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE(, double * foo __attribute__((__aligned__(16)));, cctk_cv_have_cxx_attribute_aligned=yes, cctk_cv_have_cxx_attribute_aligned=no)
+AC_LANG([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[double * foo __attribute__((__aligned__(16)));]])],[cctk_cv_have_cxx_attribute_aligned=yes],[cctk_cv_have_cxx_attribute_aligned=no])
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_attribute_aligned" = "yes" ; then
@@ -1079,7 +1057,7 @@ fi
 AC_DEFUN(CCTK_C_ATTRIBUTE_COLD,
 [AC_CACHE_CHECK([for C __attribute__((__cold__))], cctk_cv_have_c_attribute_cold,
 [cctk_cv_have_c_attribute_cold=no
-AC_TRY_COMPILE(, double * foo __attribute__((__cold__));, cctk_cv_have_c_attribute_cold=yes, cctk_cv_have_c_attribute_cold=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[double * foo __attribute__((__cold__));]])],[cctk_cv_have_c_attribute_cold=yes],[cctk_cv_have_c_attribute_cold=no])
 ])
 if test "$cctk_cv_have_c_attribute_cold" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_COLD)
@@ -1090,8 +1068,8 @@ AC_DEFUN(CCTK_CXX_ATTRIBUTE_COLD,
 [AC_CACHE_CHECK([for C++ __attribute__((__cold__))], cctk_cv_have_cxx_attribute_cold,
 [cctk_cv_have_cxx_attribute_cold=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE(, double * foo __attribute__((__cold__));, cctk_cv_have_cxx_attribute_cold=yes, cctk_cv_have_cxx_attribute_cold=no)
+AC_LANG([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[double * foo __attribute__((__cold__));]])],[cctk_cv_have_cxx_attribute_cold=yes],[cctk_cv_have_cxx_attribute_cold=no])
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_attribute_cold" = "yes" ; then
@@ -1104,7 +1082,7 @@ fi
 AC_DEFUN(CCTK_C_ATTRIBUTE_HOT,
 [AC_CACHE_CHECK([for C __attribute__((__hot__))], cctk_cv_have_c_attribute_hot,
 [cctk_cv_have_c_attribute_hot=no
-AC_TRY_COMPILE(, double * foo __attribute__((__hot__));, cctk_cv_have_c_attribute_hot=yes, cctk_cv_have_c_attribute_hot=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[double * foo __attribute__((__hot__));]])],[cctk_cv_have_c_attribute_hot=yes],[cctk_cv_have_c_attribute_hot=no])
 ])
 if test "$cctk_cv_have_c_attribute_hot" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_HOT)
@@ -1115,8 +1093,8 @@ AC_DEFUN(CCTK_CXX_ATTRIBUTE_HOT,
 [AC_CACHE_CHECK([for C++ __attribute__((__hot__))], cctk_cv_have_cxx_attribute_hot,
 [cctk_cv_have_cxx_attribute_hot=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE(, double * foo __attribute__((__hot__));, cctk_cv_have_cxx_attribute_hot=yes, cctk_cv_have_cxx_attribute_hot=no)
+AC_LANG([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[double * foo __attribute__((__hot__));]])],[cctk_cv_have_cxx_attribute_hot=yes],[cctk_cv_have_cxx_attribute_hot=no])
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_attribute_hot" = "yes" ; then
@@ -1129,7 +1107,7 @@ fi
 AC_DEFUN(CCTK_C_ATTRIBUTE_FORMAT,
 [AC_CACHE_CHECK([for C __attribute__((__format__(printf, 1, 2)))], cctk_cv_have_c_attribute_format,
 [cctk_cv_have_c_attribute_format=no
-AC_TRY_COMPILE(void xyzzy(const char*, ...) __attribute__((__format__(printf, 1, 2)));, xyzzy("%d",42);, cctk_cv_have_c_attribute_format=yes, cctk_cv_have_c_attribute_format=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[void xyzzy(const char*, ...) __attribute__((__format__(printf, 1, 2)));]], [[xyzzy("%d",42);]])],[cctk_cv_have_c_attribute_format=yes],[cctk_cv_have_c_attribute_format=no])
 ])
 if test "$cctk_cv_have_c_attribute_format" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_FORMAT)
@@ -1140,8 +1118,8 @@ AC_DEFUN(CCTK_CXX_ATTRIBUTE_FORMAT,
 [AC_CACHE_CHECK([for C++ __attribute__((__format__(printf, 1, 2)))], cctk_cv_have_cxx_attribute_format,
 [cctk_cv_have_cxx_attribute_format=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE(void xyzzy(const char*, ...) __attribute__((__format__(printf, 1, 2)));, xyzzy("%d",42);, cctk_cv_have_cxx_attribute_format=yes, cctk_cv_have_cxx_attribute_format=no)
+AC_LANG([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[void xyzzy(const char*, ...) __attribute__((__format__(printf, 1, 2)));]], [[xyzzy("%d",42);]])],[cctk_cv_have_cxx_attribute_format=yes],[cctk_cv_have_cxx_attribute_format=no])
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_attribute_format" = "yes" ; then
@@ -1154,7 +1132,7 @@ fi
 AC_DEFUN(CCTK_C_ATTRIBUTE_NORETURN,
 [AC_CACHE_CHECK([for C __attribute__((__noreturn__))], cctk_cv_have_c_attribute_noreturn,
 [cctk_cv_have_c_attribute_noreturn=no
-AC_TRY_COMPILE(void xyzzy(void) __attribute__((__noreturn__));, xyzzy(), cctk_cv_have_c_attribute_noreturn=yes, cctk_cv_have_c_attribute_noreturn=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[void xyzzy(void) __attribute__((__noreturn__));]], [[xyzzy()]])],[cctk_cv_have_c_attribute_noreturn=yes],[cctk_cv_have_c_attribute_noreturn=no])
 ])
 if test "$cctk_cv_have_c_attribute_noreturn" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_NORETURN)
@@ -1165,8 +1143,8 @@ AC_DEFUN(CCTK_CXX_ATTRIBUTE_NORETURN,
 [AC_CACHE_CHECK([for C++ __attribute__((__noreturn__))], cctk_cv_have_cxx_attribute_noreturn,
 [cctk_cv_have_cxx_attribute_noreturn=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE(void xyzzy(void) __attribute__((__noreturn__));, xyzzy(), cctk_cv_have_cxx_attribute_noreturn=yes, cctk_cv_have_cxx_attribute_noreturn=no)
+AC_LANG([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[void xyzzy(void) __attribute__((__noreturn__));]], [[xyzzy()]])],[cctk_cv_have_cxx_attribute_noreturn=yes],[cctk_cv_have_cxx_attribute_noreturn=no])
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_attribute_noreturn" = "yes" ; then
@@ -1179,7 +1157,7 @@ fi
 AC_DEFUN(CCTK_C_ATTRIBUTE_NONNULL,
 [AC_CACHE_CHECK([for C __attribute__((__nonnull__))], cctk_cv_have_c_attribute_nonnull,
 [cctk_cv_have_c_attribute_nonnull=no
-AC_TRY_COMPILE([
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
     void xyzzy1(void *dest, const void *src, int len)
       __attribute__((__nonnull__ (1,2)));
     void xyzzy1(void *dest, const void *src, int len)
@@ -1190,13 +1168,11 @@ AC_TRY_COMPILE([
     void xyzzy2(void *dest, const void *src, int len)
     {
     }
-  ], [
+  ]], [[
     int a, b;
     xyzzy1(&a, &b, 1);
     xyzzy2(&a, &b, 1);
-  ],
-  cctk_cv_have_c_attribute_nonnull=yes,
-  cctk_cv_have_c_attribute_nonnull=no)
+  ]])],[cctk_cv_have_c_attribute_nonnull=yes],[cctk_cv_have_c_attribute_nonnull=no])
 ])
 if test "$cctk_cv_have_c_attribute_nonnull" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_NONNULL)
@@ -1207,8 +1183,8 @@ AC_DEFUN(CCTK_CXX_ATTRIBUTE_NONNULL,
 [AC_CACHE_CHECK([for C++ __attribute__((__nonnull__))], cctk_cv_have_cxx_attribute_nonnull,
 [cctk_cv_have_cxx_attribute_nonnull=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE([
+AC_LANG([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
     void xyzzy1(void *dest, const void *src, int len)
       __attribute__((__nonnull__ (1,2)));
     void xyzzy1(void *dest, const void *src, int len)
@@ -1219,13 +1195,11 @@ AC_TRY_COMPILE([
     void xyzzy2(void *dest, const void *src, int len)
     {
     }
-  ], [
+  ]], [[
     int a, b;
     xyzzy1(&a, &b, 1);
     xyzzy2(&a, &b, 1);
-  ],
-  cctk_cv_have_cxx_attribute_nonnull=yes,
-  cctk_cv_have_cxx_attribute_nonnull=no)
+  ]])],[cctk_cv_have_cxx_attribute_nonnull=yes],[cctk_cv_have_cxx_attribute_nonnull=no])
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_attribute_nonnull" = "yes" ; then
@@ -1238,18 +1212,16 @@ fi
 AC_DEFUN(CCTK_C_ATTRIBUTE_RETURNS_NONNULL,
 [AC_CACHE_CHECK([for C __attribute__((__returns_nonnull__))], cctk_cv_have_c_attribute_returns_nonnull,
 [cctk_cv_have_c_attribute_returns_nonnull=no
-AC_TRY_COMPILE([
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
     void* xyzzy(void) __attribute__((__returns_nonnull__));
     void* xyzzy(void)
     {
       static int a;
       return &a;
     }
-  ], [
+  ]], [[
     void* a = xyzzy();
-  ],
-  cctk_cv_have_c_attribute_returns_nonnull=yes,
-  cctk_cv_have_c_attribute_returns_nonnull=no)
+  ]])],[cctk_cv_have_c_attribute_returns_nonnull=yes],[cctk_cv_have_c_attribute_returns_nonnull=no])
 ])
 if test "$cctk_cv_have_c_attribute_returns_nonnull" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_C_ATTRIBUTE_RETURNS_NONNULL)
@@ -1260,19 +1232,17 @@ AC_DEFUN(CCTK_CXX_ATTRIBUTE_RETURNS_NONNULL,
 [AC_CACHE_CHECK([for C++ __attribute__((__returns_nonnull__))], cctk_cv_have_cxx_attribute_returns_nonnull,
 [cctk_cv_have_cxx_attribute_returns_nonnull=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE([
+AC_LANG([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
     void* xyzzy(void) __attribute__((__returns_nonnull__));
     void* xyzzy(void)
     {
       static int a;
       return &a;
     }
-  ], [
+  ]], [[
     void* a = xyzzy();
-  ],
-  cctk_cv_have_cxx_attribute_returns_nonnull=yes,
-  cctk_cv_have_cxx_attribute_returns_nonnull=no)
+  ]])],[cctk_cv_have_cxx_attribute_returns_nonnull=yes],[cctk_cv_have_cxx_attribute_returns_nonnull=no])
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_attribute_returns_nonnull" = "yes" ; then
@@ -1285,7 +1255,7 @@ fi
 AC_DEFUN(CCTK_C_BUILTIN_EXPECT,
 [AC_CACHE_CHECK([for C __builtin_expect], cctk_cv_have_c_builtin_expect,
 [cctk_cv_have_c_builtin_expect=no
-AC_TRY_LINK(, __builtin_expect(0,0);, cctk_cv_have_c_builtin_expect=yes, cctk_cv_have_c_builtin_expect=no)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[__builtin_expect(0,0);]])],[cctk_cv_have_c_builtin_expect=yes],[cctk_cv_have_c_builtin_expect=no])
 ])
 if test "$cctk_cv_have_c_builtin_expect" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_C_BUILTIN_EXPECT)
@@ -1296,8 +1266,8 @@ AC_DEFUN(CCTK_CXX_BUILTIN_EXPECT,
 [AC_CACHE_CHECK([for C++ __builtin_expect], cctk_cv_have_cxx_builtin_expect,
 [cctk_cv_have_cxx_builtin_expect=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_LINK(, __builtin_expect(0,0);, cctk_cv_have_cxx_builtin_expect=yes, cctk_cv_have_cxx_builtin_expect=no)
+AC_LANG([C++])
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[__builtin_expect(0,0);]])],[cctk_cv_have_cxx_builtin_expect=yes],[cctk_cv_have_cxx_builtin_expect=no])
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_builtin_expect" = "yes" ; then
@@ -1310,7 +1280,7 @@ fi
 AC_DEFUN(CCTK_C_BUILTIN_TRAP,
 [AC_CACHE_CHECK([for C __builtin_trap], cctk_cv_have_c_builtin_trap,
 [cctk_cv_have_c_builtin_trap=no
-AC_TRY_LINK(, __builtin_trap();, cctk_cv_have_c_builtin_trap=yes, cctk_cv_have_c_builtin_trap=no)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[__builtin_trap();]])],[cctk_cv_have_c_builtin_trap=yes],[cctk_cv_have_c_builtin_trap=no])
 ])
 if test "$cctk_cv_have_c_builtin_trap" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_C_BUILTIN_TRAP)
@@ -1321,8 +1291,8 @@ AC_DEFUN(CCTK_CXX_BUILTIN_TRAP,
 [AC_CACHE_CHECK([for C++ __builtin_trap], cctk_cv_have_cxx_builtin_trap,
 [cctk_cv_have_cxx_builtin_trap=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_LINK(, __builtin_trap();, cctk_cv_have_cxx_builtin_trap=yes, cctk_cv_have_cxx_builtin_trap=no)
+AC_LANG([C++])
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[__builtin_trap();]])],[cctk_cv_have_cxx_builtin_trap=yes],[cctk_cv_have_cxx_builtin_trap=no])
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_builtin_trap" = "yes" ; then
@@ -1335,7 +1305,7 @@ fi
 AC_DEFUN(CCTK_C_BUILTIN_UNREACHABLE,
 [AC_CACHE_CHECK([for C __builtin_unreachable], cctk_cv_have_c_builtin_unreachable,
 [cctk_cv_have_c_builtin_unreachable=no
-AC_TRY_LINK(, __builtin_unreachable();, cctk_cv_have_c_builtin_unreachable=yes, cctk_cv_have_c_builtin_unreachable=no)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[__builtin_unreachable();]])],[cctk_cv_have_c_builtin_unreachable=yes],[cctk_cv_have_c_builtin_unreachable=no])
 ])
 if test "$cctk_cv_have_c_builtin_unreachable" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_C_BUILTIN_UNREACHABLE)
@@ -1346,8 +1316,8 @@ AC_DEFUN(CCTK_CXX_BUILTIN_UNREACHABLE,
 [AC_CACHE_CHECK([for C++ __builtin_unreachable], cctk_cv_have_cxx_builtin_unreachable,
 [cctk_cv_have_cxx_builtin_unreachable=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_LINK(, __builtin_unreachable();, cctk_cv_have_cxx_builtin_unreachable=yes, cctk_cv_have_cxx_builtin_unreachable=no)
+AC_LANG([C++])
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[__builtin_unreachable();]])],[cctk_cv_have_cxx_builtin_unreachable=yes],[cctk_cv_have_cxx_builtin_unreachable=no])
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_builtin_unreachable" = "yes" ; then
@@ -1360,10 +1330,9 @@ fi
 AC_DEFUN(CCTK_C_BUILTIN_ASSUME_ALIGNED,
 [AC_CACHE_CHECK([for C __builtin_assume_aligned], cctk_cv_have_c_builtin_assume_aligned,
 [cctk_cv_have_c_builtin_assume_aligned=no
-AC_TRY_LINK(,
-__builtin_assume_aligned((void*)1000, 10);
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[__builtin_assume_aligned((void*)1000, 10);
 __builtin_assume_aligned((void*)1001, 10, 1);
-, cctk_cv_have_c_builtin_assume_aligned=yes, cctk_cv_have_c_builtin_assume_aligned=no)
+]])],[cctk_cv_have_c_builtin_assume_aligned=yes],[cctk_cv_have_c_builtin_assume_aligned=no])
 ])
 if test "$cctk_cv_have_c_builtin_assume_aligned" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_C_BUILTIN_ASSUME_ALIGNED)
@@ -1374,11 +1343,10 @@ AC_DEFUN(CCTK_CXX_BUILTIN_ASSUME_ALIGNED,
 [AC_CACHE_CHECK([for C++ __builtin_assume_aligned], cctk_cv_have_cxx_builtin_assume_aligned,
 [cctk_cv_have_cxx_builtin_assume_aligned=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_LINK(,
-__builtin_assume_aligned((void*)1000, 10);
+AC_LANG([C++])
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[__builtin_assume_aligned((void*)1000, 10);
 __builtin_assume_aligned((void*)1001, 10, 1);
-, cctk_cv_have_cxx_builtin_assume_aligned=yes, cctk_cv_have_cxx_builtin_assume_aligned=no)
+]])],[cctk_cv_have_cxx_builtin_assume_aligned=yes],[cctk_cv_have_cxx_builtin_assume_aligned=no])
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_builtin_assume_aligned" = "yes" ; then
@@ -1392,8 +1360,8 @@ AC_DEFUN(CCTK_CXX_STATIC_ASSERT,
 [AC_CACHE_CHECK([for C++ static_assert], cctk_cv_have_cxx_static_assert,
 [cctk_cv_have_cxx_static_assert=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_LINK(, static_assert(1, "good");, cctk_cv_have_cxx_static_assert=yes, cctk_cv_have_cxx_static_assert=no)
+AC_LANG([C++])
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[static_assert(1, "good");]])],[cctk_cv_have_cxx_static_assert=yes],[cctk_cv_have_cxx_static_assert=no])
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_static_assert" = "yes" ; then
@@ -1411,7 +1379,7 @@ AC_DEFUN(CCTK_CHECK_CXX_STDMATHFUNC,
 AC_MSG_CHECKING([for C++ $1])
 AC_CACHE_VAL(cctk_cv_cxx_$cctk_func,
 [AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
+AC_LANG([C++])
 cctk_cv_cxx_func=no
 for ac_func in "std::$cctk_func" "$cctk_func" "::$cctk_func"; do
 for ac_nargs in 1 2; do
@@ -1419,11 +1387,11 @@ for ac_nargs in 1 2; do
     1) ac_args='(1.0)'; ac_argsf='(1.0f)' ;;
     2) ac_args='(1.0, 1.0)'; ac_argsf='(1.0f, 1.0f)' ;;
   esac
-  AC_TRY_COMPILE([
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 /* See note in cctk_Math.h regarding these include statements */
 #include <cmath>
 #include <math.h>
-], [
+]], [[
 {
   $ac_func $ac_argsf;
   $ac_func $ac_args;
@@ -1433,7 +1401,7 @@ using namespace std;
   $ac_func $ac_argsf;
   $ac_func $ac_args;
 }
-], [cctk_cv_cxx_func="$ac_func"; break 2])
+]])],[cctk_cv_cxx_func="$ac_func"; break 2],[])
 done
 done
 AC_LANG_RESTORE
@@ -1453,11 +1421,8 @@ AC_DEFUN(CCTK_CXX_AUTO_SPECIFIER,
 [AC_CACHE_CHECK([for C++ auto specifier], cctk_cv_have_cxx_auto_specifier,
 [cctk_cv_have_cxx_auto_specifier=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_LINK(,
-  int x; auto y = x,
-  cctk_cv_have_cxx_auto_specifier=yes,
-  cctk_cv_have_cxx_auto_specifier=no)
+AC_LANG([C++])
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[int x; auto y = x]])],[cctk_cv_have_cxx_auto_specifier=yes],[cctk_cv_have_cxx_auto_specifier=no])
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_auto_specifier" = "yes" ; then
@@ -1471,11 +1436,8 @@ AC_DEFUN(CCTK_CXX_LAMBDA,
 [AC_CACHE_CHECK([for C++ lambda expressions], cctk_cv_have_cxx_lambda,
 [cctk_cv_have_cxx_lambda=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_LINK(,
-  [int x; [x](int y) { return x+y; };],
-  cctk_cv_have_cxx_lambda=yes,
-  cctk_cv_have_cxx_lambda=no)
+AC_LANG([C++])
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[int x; [x](int y) { return x+y; };]])],[cctk_cv_have_cxx_lambda=yes],[cctk_cv_have_cxx_lambda=no])
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_lambda" = "yes" ; then
@@ -1489,13 +1451,9 @@ AC_DEFUN(CCTK_CXX_RANGE_BASED_FOR,
 [AC_CACHE_CHECK([for C++ range-based for statements], cctk_cv_have_cxx_range_based_for,
 [cctk_cv_have_cxx_range_based_for=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_LINK(
-  [#include <vector>],
-  [std::vector<int> xs(10);
-   for (int& x: xs) x = 42;],
-  cctk_cv_have_cxx_range_based_for=yes,
-  cctk_cv_have_cxx_range_based_for=no)
+AC_LANG([C++])
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <vector>]], [[std::vector<int> xs(10);
+   for (int& x: xs) x = 42;]])],[cctk_cv_have_cxx_range_based_for=yes],[cctk_cv_have_cxx_range_based_for=no])
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_range_based_for" = "yes" ; then
@@ -1509,15 +1467,15 @@ AC_DEFUN(CCTK_CXX_MATH,
 [AC_CACHE_CHECK([for C++11 math support], cctk_cv_have_cxx_math,
 [cctk_cv_have_cxx_math=no
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE([#include <cmath>],dnl
-  [using namespace std;
+AC_LANG([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <cmath>]], [[dnl
+  using namespace std;
    float fzero = 0.f;
    double dzero = 0.;
    isnan(fzero);
-   isnan(dzero);],dnl
-  cctk_cv_have_cxx_math=yes,dnl
-  cctk_cv_have_cxx_math=no)
+   isnan(dzero);]])],[dnl
+  cctk_cv_have_cxx_math=yes],[dnl
+  cctk_cv_have_cxx_math=no])
 AC_LANG_RESTORE
 ])
 if test "$cctk_cv_have_cxx_matha" = "yes" ; then
@@ -1530,13 +1488,12 @@ fi
 AC_DEFUN(CCTK_CHECK_C99,
 [AC_CACHE_CHECK([for C99 features], cctk_cv_have_c99,
 [cctk_cv_have_c99=no
-AC_TRY_COMPILE(,
-// Test C99 comments
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[// Test C99 comments
 // Test variable declarations in the middle of blocks
 0;
 int x = 1;
 for (int i=0; i<10; ++i) x+=i;
-, cctk_cv_have_c99=yes, cctk_cv_have_c99=no)
+]])],[cctk_cv_have_c99=yes],[cctk_cv_have_c99=no])
 ])
 if test "$cctk_cv_have_c99" = "yes" ; then
    AC_DEFINE(HAVE_CCTK_C99)
@@ -1551,11 +1508,10 @@ AC_DEFUN(CCTK_CHECK_DEFINED,
 cctk_safe=`echo "$1" | sed 'y%./+-%__p_%'`
 AC_MSG_CHECKING([for $1])
 AC_CACHE_VAL(cctk_cv_defined_$cctk_safe,
-[AC_TRY_COMPILE([$2
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[$2
 #ifndef $1
 #error "$1 not defined"
-#endif], [ ], eval "cctk_cv_defined_$cctk_safe=yes",
-  eval "cctk_cv_defined_$cctk_safe=no")])dnl
+#endif]], [[ ]])],[eval "cctk_cv_defined_$cctk_safe=yes"],[eval "cctk_cv_defined_$cctk_safe=no"])])dnl
 if eval "test \"`echo '$cctk_cv_defined_'$cctk_safe`\" = yes"; then
   AC_MSG_RESULT(yes)
   ifelse([$3], , :, [$3])
@@ -1574,9 +1530,8 @@ cctk_safe=`echo "$1" | sed 'y%./+-%__p_%'`
 cctk_lang=AC_LANG
 AC_MSG_CHECKING([ifelse([$2], , [for $1], [$2])])
 AC_CACHE_VAL(cctk_cv_has_${cctk_lang}_prototype_$cctk_safe,
-[AC_TRY_COMPILE([$3
-], [char *p = (char*) $1;], eval "cctk_cv_has_${cctk_lang}_prototype_$cctk_safe=yes",
-  eval "cctk_cv_has_${cctk_lang}_prototype_$cctk_safe=no")])dnl
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[$3
+]], [[char *p = (char*) $1;]])],[eval "cctk_cv_has_${cctk_lang}_prototype_$cctk_safe=yes"],[eval "cctk_cv_has_${cctk_lang}_prototype_$cctk_safe=no"])])dnl
 if eval "test \"`echo '$cctk_cv_has_'$cctk_lang'_prototype_'$cctk_safe`\" = yes"; then
   AC_MSG_RESULT(yes)
   ifelse([$4], , :, [$4])
@@ -1601,7 +1556,7 @@ dnl CCTK_CXX_CHECK_HAS_PROTOTYPE(FUNCTION, [FEATURE-DESCRIPTION [, ADDITIONAL_CO
 AC_DEFUN(CCTK_CXX_CHECK_HAS_PROTOTYPE,
 [dnl short-hand for C++ protype check
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
+AC_LANG([C++])
 CCTK_CHECK_HAS_PROTOTYPE([$1], [ifelse([$2], , [for C++ $1], [$2])],
 [$3], [$4], [$5])dnl
 AC_LANG_RESTORE
@@ -1613,7 +1568,7 @@ AC_DEFUN(CCTK_FORTRAN_CRAY_POINTERS,
 [AC_CACHE_CHECK([for Fortran Cray pointers], cctk_cv_have_fortran_cray_pointers,
 [cctk_cv_have_fortran_cray_pointers=no
 AC_LANG_SAVE
-AC_LANG_FORTRAN77
+AC_LANG([Fortran 77])
 CCTK_TRY_COMPILE(
 [
       subroutine sub(pointers, n)

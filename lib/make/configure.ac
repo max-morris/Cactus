@@ -17,11 +17,11 @@ dnl cygwin.
 dnl Please use autoconf-2.13 to generate a configure script. Newer version of autoconf
 dnl won't work.
 
-AC_PREREQ(2.13)
+AC_PREREQ([2.72])
 
 dnl Starts here
-AC_INIT()
-AC_CONFIG_HEADER(cctk_Config.h)
+AC_INIT
+AC_CONFIG_HEADERS([cctk_Config.h])
 
 
 #######################################################################
@@ -34,7 +34,7 @@ if test -n "$WARN" ; then
   WARN=`echo $WARN | tr '[:upper:]' '[:lower:]'`
   changequote([, ])
   if test "$WARN" != 'yes' -a "$WARN" != 'no' ; then
-    AC_ERROR(Didn't recognize setting of WARN=\"$WARN\" (should be either \"yes\" or \"no\"))
+    AC_MSG_ERROR(Didn't recognize setting of WARN=\"$WARN\" (should be either \"yes\" or \"no\"))
   fi
   WARN_MODE=$WARN
 fi
@@ -66,7 +66,7 @@ if test -n "$DEBUG" -a "$DEBUG" != 'no' ; then
       DEBUG_FLAGS='yes'
       ;;
     *)
-      AC_ERROR(Didn't recognize setting of DEBUG=\"$DEBUG\")
+      AC_MSG_ERROR(Didn't recognize setting of DEBUG=\"$DEBUG\")
       ;;
    esac
 fi
@@ -83,10 +83,10 @@ if test -n "$OPTIMISE" ; then
   OPTIMIZE=`echo $OPTIMIZE | tr '[:upper:]' '[:lower:]'`
   changequote([, ])
   if test -n "$OPTIMIZE" -a "$OPTIMISE" != "$OPTIMIZE" ; then
-    AC_ERROR(OPTIMISE=\"$OPTIMISE\" is inconsistent with OPTIMIZE=\"$OPTIMIZE\"!)
+    AC_MSG_ERROR(OPTIMISE=\"$OPTIMISE\" is inconsistent with OPTIMIZE=\"$OPTIMIZE\"!)
   fi
   if test "$OPTIMISE" != 'yes' -a "$OPTIMISE" != 'no' ; then
-    AC_ERROR(Didn't recognize setting of OPTIMISE=\"$OPTIMISE\" (should be either \"yes\" or \"no\"))
+    AC_MSG_ERROR(Didn't recognize setting of OPTIMISE=\"$OPTIMISE\" (should be either \"yes\" or \"no\"))
   fi
   OPTIMISE_MODE=$OPTIMISE
 elif test -n "$OPTIMIZE"; then
@@ -94,7 +94,7 @@ elif test -n "$OPTIMIZE"; then
   OPTIMISE=`echo $OPTIMIZE | tr '[:upper:]' '[:lower:]'`
   changequote([, ])
   if test "$OPTIMISE" != 'yes' -a "$OPTIMISE" != 'no' ; then
-    AC_ERROR(Didn't recognize setting of OPTIMIZE=\"$OPTIMIZE\" (should be either \"yes\" or \"no\"))
+    AC_MSG_ERROR(Didn't recognize setting of OPTIMIZE=\"$OPTIMIZE\" (should be either \"yes\" or \"no\"))
   fi
   OPTIMISE_MODE=$OPTIMISE
 fi
@@ -110,7 +110,7 @@ if test -n "$PROFILE" ; then
   PROFILE=`echo $PROFILE | tr '[:upper:]' '[:lower:]'`
   changequote([, ])
   if test "$PROFILE" != 'yes' -a "$PROFILE" != 'no' ; then
-    AC_ERROR(Didn't recognize setting of PROFILE=\"$PROFILE\" (should be either \"yes\" or \"no\"))
+    AC_MSG_ERROR(Didn't recognize setting of PROFILE=\"$PROFILE\" (should be either \"yes\" or \"no\"))
   fi
   PROFILE_MODE=$PROFILE
 fi
@@ -126,7 +126,7 @@ if test -n "$OPENMP" ; then
   OPENMP=`echo $OPENMP | tr '[:upper:]' '[:lower:]'`
   changequote([, ])
   if test "$OPENMP" != 'yes' -a "$OPENMP" != 'no' ; then
-    AC_ERROR(Didn't recognize setting of OPENMP=\"$OPENMP\" (should be either \"yes\" or \"no\"))
+    AC_MSG_ERROR(Didn't recognize setting of OPENMP=\"$OPENMP\" (should be either \"yes\" or \"no\"))
   fi
   OPENMP_MODE=$OPENMP
 fi
@@ -517,7 +517,15 @@ fi
 
 # Checks for header files.
 
-AC_HEADER_STDC
+m4_warn([obsolete],
+[The preprocessor macro 'STDC_HEADERS' is obsolete.
+  Except in unusual embedded environments, you can safely include all
+  C89 headers unconditionally.])dnl
+# Autoupdate added the next two lines to ensure that your configure
+# script's behavior did not change.  They are probably safe to remove.
+AC_CHECK_INCLUDES_DEFAULT
+AC_PROG_EGREP
+
 
 # Check for C99
 
@@ -632,12 +640,10 @@ CCTK_CHECK_FUNCS(gethostbyname,
 # Check if we have mode_t available
 AC_MSG_CHECKING([whether mode_t is defined])
 AC_CACHE_VAL(cctk_cv_have_mode_t,
-[AC_TRY_COMPILE([#include <stdio.h>
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include <sys/stat.h>],
-[mode_t foo; return 0], eval "cctk_cv_have_mode_t=yes",
-eval "cctk_cv_have_mode_t=no")
+#include <sys/stat.h>]], [[mode_t foo; return 0]])],[eval "cctk_cv_have_mode_t=yes"],[eval "cctk_cv_have_mode_t=no"])
 ])
 if test "$cctk_cv_have_mode_t" = 'yes'; then
   AC_DEFINE(HAVE_MODE_T)
@@ -696,14 +702,27 @@ CCTK_CHECK_HEADERS(malloc.h)
 CCTK_CHECK_HEADERS(sched.h)
 CCTK_CHECK_HEADERS(execinfo.h)
 
-AC_HEADER_TIME
+m4_warn([obsolete],
+[Update your code to rely only on HAVE_SYS_TIME_H,
+then remove this warning and the obsolete code below it.
+All current systems provide time.h; it need not be checked for.
+Not all systems provide sys/time.h, but those that do, all allow
+you to include it and time.h simultaneously.])dnl
+AC_CHECK_HEADERS_ONCE([sys/time.h])
+# Obsolete code to be removed.
+if test $ac_cv_header_sys_time_h = yes; then
+  AC_DEFINE([TIME_WITH_SYS_TIME],[1],[Define to 1 if you can safely include both <sys/time.h>
+	     and <time.h>.  This macro is obsolete.])
+fi
+# End of obsolete code.
+
 
 #Check type of socklen
 
 # Check if we have socklen_t available
 AC_MSG_CHECKING([whether socklen_t is defined])
 AC_CACHE_VAL(cctk_cv_have_socklen_t,
-[AC_TRY_COMPILE([#include <stdio.h>
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>
 #include <stdlib.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -716,9 +735,7 @@ AC_CACHE_VAL(cctk_cv_have_socklen_t,
 #endif
 #ifdef HAVE_WINSOCK2_H
 #include <winsock2.h>
-#endif],
-[socklen_t foo; return 0], eval "cctk_cv_have_socklen_t=yes",
-eval "cctk_cv_have_socklen_t=no")
+#endif]], [[socklen_t foo; return 0]])],[eval "cctk_cv_have_socklen_t=yes"],[eval "cctk_cv_have_socklen_t=no"])
 ])
 if test "$cctk_cv_have_socklen_t" = 'yes'; then
   AC_DEFINE(HAVE_SOCKLEN_T)
@@ -730,7 +747,7 @@ fi
 # Check if someone has defined SOCKET
 AC_MSG_CHECKING([whether SOCKET is defined])
 AC_CACHE_VAL(cctk_cv_have_SOCKET,
-[AC_TRY_COMPILE([#include <stdio.h>
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>
 #include <stdlib.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -743,9 +760,7 @@ AC_CACHE_VAL(cctk_cv_have_SOCKET,
 #endif
 #ifdef HAVE_WINSOCK2_H
 #include <winsock2.h>
-#endif],
-[SOCKET foo; return 0], eval "cctk_cv_have_SOCKET=yes",
-eval "cctk_cv_have_SOCKET=no")
+#endif]], [[SOCKET foo; return 0]])],[eval "cctk_cv_have_SOCKET=yes"],[eval "cctk_cv_have_SOCKET=no"])
 ])
 if test "$cctk_cv_have_SOCKET" = 'yes'; then
   AC_DEFINE(HAVE_SOCKET_TYPE)
@@ -766,9 +781,9 @@ AC_CHECK_FUNCS([gethrtime read_real_time time_base_to_time clock_gettime mach_ab
 dnl Cray UNICOS _rtc() (real-time clock) intrinsic
 AC_MSG_CHECKING([for _rtc intrinsic])
 rtc_ok=yes
-AC_TRY_LINK([#ifdef HAVE_INTRINSICS_H
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#ifdef HAVE_INTRINSICS_H
 #include <intrinsics.h>
-#endif], [_rtc()], [AC_DEFINE(HAVE__RTC,1,[Define if you have the UNICOS _rtc() intrinsic.])], [rtc_ok=no])
+#endif]], [[_rtc()]])],[AC_DEFINE(HAVE__RTC,1,[Define if you have the UNICOS _rtc() intrinsic.])],[rtc_ok=no])
 AC_MSG_RESULT($rtc_ok)
 
 # Check for memory allocation functions
@@ -780,12 +795,10 @@ CCTK_CHECK_FUNC(malloc_info)
 # Check if M_MMAP_THRESHOLD is defined
 AC_MSG_CHECKING([whether M_MMAP_THRESHOLD is defined])
 AC_CACHE_VAL(cctk_cv_have_M_MMAP_THRESHOLD,
-[AC_TRY_COMPILE([#include <stdlib.h>
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
 #ifdef HAVE_MALLOC_H
 #include <malloc.h>
-#endif],
-[int x=M_MMAP_THRESHOLD; return 0], eval "cctk_cv_have_M_MMAP_THRESHOLD=yes",
-eval "cctk_cv_have_M_MMAP_THRESHOLD=no")
+#endif]], [[int x=M_MMAP_THRESHOLD; return 0]])],[eval "cctk_cv_have_M_MMAP_THRESHOLD=yes"],[eval "cctk_cv_have_M_MMAP_THRESHOLD=no"])
 ])
 if test "$cctk_cv_have_M_MMAP_THRESHOLD" = 'yes'; then
   AC_DEFINE(HAVE_M_MMAP_THRESHOLD_VALUE)
@@ -801,9 +814,7 @@ CCTK_CHECK_FUNCS(getpid)
 # Check if we have __int64
 AC_MSG_CHECKING([if __int64 is defined])
 AC_CACHE_VAL(cctk_cv_have___int64,
-[AC_TRY_COMPILE(,
-[__int64 foo; return 0], eval "cctk_cv_have___int64=yes",
-eval "cctk_cv_have___int64=no")
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[__int64 foo; return 0]])],[eval "cctk_cv_have___int64=yes"],[eval "cctk_cv_have___int64=no"])
 ])
 if test "$cctk_cv_have___int64" = 'yes'; then
   CCTK_INT8_TYPE='__int64'
@@ -815,9 +826,7 @@ fi
 # Check if we have __int128
 AC_MSG_CHECKING([if __int128 is defined])
 AC_CACHE_VAL(cctk_cv_have___int128,
-[AC_TRY_COMPILE(,
-[__int128 foo; return 0], eval "cctk_cv_have___int128=yes",
-eval "cctk_cv_have___int128=no")
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[__int128 foo; return 0]])],[eval "cctk_cv_have___int128=yes"],[eval "cctk_cv_have___int128=no"])
 ])
 if test "$cctk_cv_have___int128" = 'yes'; then
   CCTK_INT16_TYPE='__int128'
@@ -830,7 +839,7 @@ fi
 
 if test "x$CXX" != 'xnone' ; then
   AC_LANG_SAVE
-  AC_LANG_CPLUSPLUS
+  AC_LANG([C++])
   CCTK_CHECK_HEADERS(vector vector.h)
   AC_LANG_RESTORE
 fi
@@ -844,21 +853,19 @@ AC_CACHE_VAL(cctk_cv_have_broken_intel_restrict,
 [dnl
 cctk_cv_have_broken_intel_restrict=no
 # Try C compiler
-AC_TRY_COMPILE(,
-[#if (defined __INTEL_COMPILER                &&                 \
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[#if (defined __INTEL_COMPILER                &&                 \
      __INTEL_COMPILER_BUILD_DATE >= 20120731 &&                 \
      __INTEL_COMPILER_BUILD_DATE <  20130728)
 #error "icpc with failing __restrict__ handling detected"
-#endif], [], [cctk_cv_have_broken_intel_restrict=yes])
+#endif]])],[],[cctk_cv_have_broken_intel_restrict=yes])
 # Try C++ compiler
 AC_LANG_SAVE dnl
-AC_LANG_CPLUSPLUS dnl
-AC_TRY_COMPILE(,
-[#if (defined __INTEL_COMPILER                &&                 \
+AC_LANG([C++]) dnl
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[#if (defined __INTEL_COMPILER                &&                 \
      __INTEL_COMPILER_BUILD_DATE >= 20120731 &&                 \
      __INTEL_COMPILER_BUILD_DATE <  20130728)
 #error "icpc with failing __restrict__ handling detected"
-#endif], [], [cctk_cv_have_broken_intel_restrict=yes])
+#endif]])],[],[cctk_cv_have_broken_intel_restrict=yes])
 AC_LANG_RESTORE
 ])
 if test "x$cctk_cv_have_broken_intel_restrict" = 'xyes'; then
@@ -874,19 +881,17 @@ AC_CACHE_VAL(cctk_cv_have_broken_omp_collapse,
 cctk_cv_have_broken_omp_collapse=no
 # Try C compiler
 # see see http://software.intel.com/en-us/articles/intel-professional-edition-compilers-111-fixes-list/
-AC_TRY_COMPILE(,
-[#if ((defined __IBMC__ && defined _ARCH_450D) || \
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[#if ((defined __IBMC__ && defined _ARCH_450D) || \
       (defined __INTEL_COMPILER && __INTEL_COMPILER_BUILD_DATE < 20100801))
 #error "compiler with failing omp collapse detected"
-#endif], [], [cctk_cv_have_broken_omp_collapse=yes])
+#endif]])],[],[cctk_cv_have_broken_omp_collapse=yes])
 # Try C++ compiler
 AC_LANG_SAVE dnl
-AC_LANG_CPLUSPLUS dnl
-AC_TRY_COMPILE(,
-[#if ((defined __IBMC__ && defined _ARCH_450D) || \
+AC_LANG([C++]) dnl
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[#if ((defined __IBMC__ && defined _ARCH_450D) || \
       (defined __INTEL_COMPILER && __INTEL_COMPILER_BUILD_DATE < 20100801))
 #error "compiler with failing omp collapse detected"
-#endif], [], [cctk_cv_have_broken_omp_collapse=yes])
+#endif]])],[],[cctk_cv_have_broken_omp_collapse=yes])
 AC_LANG_RESTORE
 # Try Fortran compiler, there is no preprocessor so I need to call the
 # compiler and check its version output.
@@ -1059,13 +1064,11 @@ CCTK_FORTRAN_COMPLEX32
 
 dnl Do we whave __cxa_demangle
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
+AC_LANG([C++])
 CCTK_CHECK_HEADERS(cxxabi.h)
 AC_MSG_CHECKING([for __cxa_demangle])
 AC_CACHE_VAL(cctk_cv_have___cxa_demangle,
-[AC_TRY_COMPILE([#include <cxxabi.h>],
-[abi::__cxa_demangle(0,0,0,0)], eval "cctk_cv_have___cxa_demangle=yes",
-eval "cctk_cv_have___cxa_demangle=no")
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <cxxabi.h>]], [[abi::__cxa_demangle(0,0,0,0)]])],[eval "cctk_cv_have___cxa_demangle=yes"],[eval "cctk_cv_have___cxa_demangle=no"])
 ])
 if test "x$cctk_cv_have___cxa_demangle" = xyes; then
   AC_DEFINE(HAVE___CXA_DEMANGLE)
@@ -1108,10 +1111,7 @@ CCTK_CHECK_FUNCS(mkstemp, , [CCTK_CHECK_LIB_FUNC(c, mkstemp)])
 dnl Do we have va_copy(3)
 AC_MSG_CHECKING([for va_copy])
 AC_CACHE_VAL(cctk_cv_have_va_copy,
-[AC_TRY_LINK(
-[#include <stdarg.h>],
-[va_list src, dest; va_copy(dest, src); return 0], eval "cctk_cv_have_va_copy=yes",
-eval "cctk_cv_have_va_copy=no")
+[AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdarg.h>]], [[va_list src, dest; va_copy(dest, src); return 0]])],[eval "cctk_cv_have_va_copy=yes"],[eval "cctk_cv_have_va_copy=no"])
 ])
 if test "$cctk_cv_have_va_copy" = 'yes'; then
   AC_DEFINE(HAVE_VA_COPY)
@@ -1128,7 +1128,7 @@ if test -n "$PTHREADS" ; then
   PTHREADS=`echo $PTHREADS | tr '[:upper:]' '[:lower:]'`
   changequote([, ])
   if test "$PTHREADS" != 'yes' -a "$PTHREADS" != 'no' ; then
-    AC_ERROR(Didn't recognize setting of PTHREADS=\"$PTHREADS\" (should be either \"yes\" or \"no\"))
+    AC_MSG_ERROR(Didn't recognize setting of PTHREADS=\"$PTHREADS\" (should be either \"yes\" or \"no\"))
   fi
   PTHREADS_MODE=$PTHREADS
 fi
@@ -1212,7 +1212,7 @@ esac
 CCTK_INT1_TYPE='signed char'
 
 if test "x$DISABLE_INT16" != 'xyes' -a "x$DISABLE_INT16" != 'xno' -a "x$DISABLE_INT16" != 'x'; then
-    AC_ERROR([Didn't recognise setting of DISABLE_INT16=\"$DISABLE_INT16\"; should be either \"yes\" or \"no\" or \"\" (empty)])
+    AC_MSG_ERROR(Didn't recognise setting of DISABLE_INT16=\"$DISABLE_INT16\"; should be either \"yes\" or \"no\" or \"\" (empty))
 fi
 
 if test -n "$CCTK_INT16_TYPE" -a "x$DISABLE_INT16" != 'xyes' ; then
@@ -1269,7 +1269,7 @@ case "x$ac_cv_sizeof_float" in
 esac
 
 if test "x$DISABLE_REAL16" != 'xyes' -a "x$DISABLE_REAL16" != 'xno' -a "x$DISABLE_REAL16" != 'x'; then
-    AC_ERROR([Didn't recognise setting of DISABLE_REAL16=\"$DISABLE_REAL16\"; should be either \"yes\" or \"no\" or \"\" (empty)])
+    AC_MSG_ERROR(Didn't recognise setting of DISABLE_REAL16=\"$DISABLE_REAL16\"; should be either \"yes\" or \"no\" or \"\" (empty))
 fi
 
 if test -n "$CCTK_REAL16_TYPE" -a \( "x$F90" = "x$F90_NONE" -o \( "x$cctk_cv_have_fortran_real16" = 'xyes' -a "x$cctk_cv_have_fortran_complex32" = 'xyes' -a "x$DISABLE_REAL16" != 'xyes' \) \); then
@@ -1328,7 +1328,7 @@ if test -n "$C_LINE_DIRECTIVES" ; then
   C_LINE_DIRECTIVES=`echo $C_LINE_DIRECTIVES | tr '[:upper:]' '[:lower:]'`
   changequote([, ])
   if test "$C_LINE_DIRECTIVES" != 'yes' -a "$C_LINE_DIRECTIVES" != 'no' ; then
-    AC_ERROR(Didn't recognize setting of C_LINE_DIRECTIVES=\"$C_LINE_DIRECTIVES\" (should be either \"yes\" or \"no\"))
+    AC_MSG_ERROR(Didn't recognize setting of C_LINE_DIRECTIVES=\"$C_LINE_DIRECTIVES\" (should be either \"yes\" or \"no\"))
   fi
 else
   C_LINE_DIRECTIVES='no'
@@ -1338,7 +1338,7 @@ if test -n "$F_LINE_DIRECTIVES"; then
   F_LINE_DIRECTIVES=`echo $F_LINE_DIRECTIVES | tr '[:upper:]' '[:lower:]'`
   changequote([, ])
   if test "$F_LINE_DIRECTIVES" != 'yes' -a "$F_LINE_DIRECTIVES" != 'no' ; then
-    AC_ERROR(Didn't recognize setting of F_LINE_DIRECTIVES=\"$F_LINE_DIRECTIVES\" (should be either \"yes\" or \"no\"))
+    AC_MSG_ERROR(Didn't recognize setting of F_LINE_DIRECTIVES=\"$F_LINE_DIRECTIVES\" (should be either \"yes\" or \"no\"))
   fi
 else
   F_LINE_DIRECTIVES='no'
@@ -1430,9 +1430,7 @@ if test  -z "$BEGIN_WHOLE_ARCHIVE_FLAGS" &&
   AC_CACHE_VAL(cctk_cv_have_whole_archive,
   [ac_save_LDFLAGS="$LDFLAGS"
   LDFLAGS="-Wl,--whole-archive -Wl,--no-whole-archive"
-  AC_TRY_LINK([],
-  [return 0], eval "cctk_cv_have_whole_archive=yes",
-  eval "cctk_cv_have_whole_archive=no")
+  AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[return 0]])],[eval "cctk_cv_have_whole_archive=yes"],[eval "cctk_cv_have_whole_archive=no"])
   LDFLAGS=$ac_save_LDFLAGS
   ])
   if test "$cctk_cv_have_whole_archive" = 'yes'; then
@@ -1453,9 +1451,7 @@ if test -z "$CACTUSLIBLINKLINE" ; then
   AC_CACHE_VAL(cctk_cv_have_filelist,
   [ac_save_LDFLAGS="$LDFLAGS"
   LDFLAGS="-filelist /dev/null,/"
-  AC_TRY_LINK([],
-  [return 0], eval "cctk_cv_have_filelist=yes",
-  eval "cctk_cv_have_filelist=no")
+  AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[return 0]])],[eval "cctk_cv_have_filelist=yes"],[eval "cctk_cv_have_filelist=no"])
   LDFLAGS=$ac_save_LDFLAGS
   ])
   if test "$cctk_cv_have_filelist" = 'yes'; then
@@ -1596,8 +1592,9 @@ CCTK_WriteLine cctk_Extradefs.h '#endif /*_CCTK_EXTRADEFS_H*/'
 
 dnl Run any other scripts necessary
 
-AC_OUTPUT_COMMANDS(,$PERL -s $PERL_CONFIGURE_SCRIPT -compiler_f77="$F77" -opts_f77="$F77FLAGS" -compiler_f90="$F90" -opts_f90="$F90FLAGS" .)
+AC_CONFIG_COMMANDS([default-1],[[]],[[$PERL -s $PERL_CONFIGURE_SCRIPT -compiler_f77="$F77" -opts_f77="$F77FLAGS" -compiler_f90="$F90" -opts_f90="$F90FLAGS" .]])
 
 dnl Output everything
 CCTK_FinishFiles
-AC_OUTPUT(make.config.defn make.config.deps make.config.rules)
+AC_CONFIG_FILES([make.config.defn make.config.deps make.config.rules])
+AC_OUTPUT
