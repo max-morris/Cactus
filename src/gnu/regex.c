@@ -47,12 +47,7 @@
 # endif  /* GCC.  */
 #endif  /* Not PARAMS.  */
 
-#if defined STDC_HEADERS && !defined emacs
 # include <stddef.h>
-#else
-/* We need this for `regex.h', and perhaps for the Emacs include files.  */
-# include <sys/types.h>
-#endif
 
 #define WIDE_CHAR_SUPPORT (HAVE_WCTYPE_H && HAVE_WCHAR_H && HAVE_BTOWC)
 
@@ -117,12 +112,7 @@
    even if config.h says that we can.  */
 # undef REL_ALLOC
 
-# if defined STDC_HEADERS || defined _LIBC
-#  include <stdlib.h>
-# else
-char *malloc ();
-char *realloc ();
-# endif
+#include <stdlib.h>
 
 /* When used in Emacs's lib-src, we need to get bzero and bcopy somehow.
    If nothing else has been done, use the method below.  */
@@ -138,22 +128,12 @@ char *realloc ();
    This is used in most programs--a few other programs avoid this
    by defining INHIBIT_STRING_HEADER.  */
 # ifndef INHIBIT_STRING_HEADER
-#  if defined HAVE_STRING_H || defined STDC_HEADERS || defined _LIBC
-#   include <string.h>
-#   ifndef bzero
-#    ifndef _LIBC
-#     define bzero(s, n)	(memset (s, '\0', n), (s))
-#    else
-#     define bzero(s, n)	__bzero (s, n)
-#    endif
-#   endif
-#  else
-#   include <strings.h>
-#   ifndef memcmp
-#    define memcmp(s1, s2, n)	bcmp (s1, s2, n)
-#   endif
-#   ifndef memcpy
-#    define memcpy(d, s, n)	(bcopy (s, d, n), (d))
+#  include <string.h>
+#  ifndef bzero
+#   ifndef _LIBC
+#    define bzero(s, n)	(memset (s, '\0', n), (s))
+#   else
+#    define bzero(s, n)	__bzero (s, n)
 #   endif
 #  endif
 # endif
@@ -220,24 +200,8 @@ init_syntax_once ()
 /* isalpha etc. are used for the character classes.  */
 #include <ctype.h>
 
-/* Jim Meyering writes:
-
-   "... Some ctype macros are valid only for character codes that
-   isascii says are ASCII (SGI's IRIX-4.0.5 is one such system --when
-   using /bin/cc or gcc but without giving an ansi option).  So, all
-   ctype uses should be through macros like ISPRINT...  If
-   STDC_HEADERS is defined, then autoconf has verified that the ctype
-   macros don't need to be guarded with references to isascii. ...
-   Defining isascii to 1 should let any compiler worth its salt
-   eliminate the && through constant folding."
-   Solaris defines some of these symbols so we must undefine them first.  */
-
 #undef ISASCII
-#if defined STDC_HEADERS || (!defined isascii && !defined HAVE_ISASCII)
-# define ISASCII(c) 1
-#else
-# define ISASCII(c) isascii(c)
-#endif
+#define ISASCII(c) 1
 
 #ifdef isblank
 # define ISBLANK(c) (ISASCII (c) && isblank (c))

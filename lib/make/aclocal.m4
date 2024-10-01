@@ -89,12 +89,13 @@ dnl try determining the size of a type first by executing a command then by
 dnl bisecting using compile failures. This is similar to what modern autoconf
 dnl would do.
 AC_DEFUN(CCTK_CHECK_SIZEOF,
-[changequote(<<, >>)dnl
+[
+AC_LANG_SAVE
+AC_LANG([C])
 dnl The name to #define.
-define(<<AC_TYPE_NAME>>, translit(sizeof_$1, [a-z *], [A-Z_P]))dnl
+m4_define([AC_TYPE_NAME], translit(sizeof_$1, [[a-z *]], [[A-Z_P]]))dnl
 dnl The cache variable name.
-define(<<AC_CV_NAME>>, translit(ac_cv_sizeof_$1, [ *], [_p]))dnl
-changequote([, ])dnl
+m4_define([AC_CV_NAME], translit(ac_cv_sizeof_$1, [[ *]], [[_p]]))dnl
 AC_MSG_CHECKING(size of $1)
 AC_CACHE_VAL(AC_CV_NAME,[dnl
 if test "$cross_compiling" = yes; then
@@ -103,7 +104,7 @@ cctk_lower_bound=1
 cctk_upper_bound=2
 cctk_upper_bound_found=no
 while test $cctk_upper_bound_found = no; do
-  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stddef.h>]], [[dnl
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stddef.h>]], [[
   int array[sizeof($1) < $cctk_upper_bound ? 1 : -1]]])],[dnl
   cctk_upper_bound_found=yes],[dnl
   cctk_lower_bound=$cctk_upper_bound
@@ -112,7 +113,7 @@ done
 # then bisect to actual value
 while test $cctk_lower_bound -ne $(expr $cctk_upper_bound - 1); do
   cctk_size_guess=$(expr \( $cctk_lower_bound + $cctk_upper_bound \) / 2)
-  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stddef.h>]], [[dnl
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stddef.h>]], [[
   int array[sizeof($1) < $cctk_size_guess ? 1 : -1]]])],[dnl
   cctk_upper_bound=$cctk_size_guess],[dnl
   cctk_lower_bound=$cctk_size_guess])
@@ -121,21 +122,20 @@ AC_CV_NAME=$cctk_lower_bound
 else
 # more or less what AC_CHECK_SIZE does but using AC_TRY_RUN_NATIVE to avoid a
 # warning
-AC_TRY_RUN_NATIVE([#include <stdio.h>
-#include <stddef.h>
-int main(void) {
+AC_RUN_IFELSE([AC_LANG_PROGRAM([#include <stdio.h>
+#include <stddef.h>], [
   FILE *fh=fopen("conftestval", "w");
   if(!fh) return 1;
   if(fprintf(fh, "%d\n", (int)sizeof($1)) < 0) return 1;
-  if(fclose(fh)) return 1;
-  return 0;
-}], AC_CV_NAME=`cat conftestval`, [AC_MSG_ERROR(Could not determine size of type $1 even though I am not cross-compiling.)])
+  if(fclose(fh)) return 1;]
+)], AC_CV_NAME=`cat conftestval`, AC_MSG_ERROR(Could not determine size of type $1 even though I am not cross-compiling.), [])
 fi
 ])dnl
+AC_LANG_RESTORE
 AC_MSG_RESULT($AC_CV_NAME)
 AC_DEFINE_UNQUOTED(AC_TYPE_NAME, $AC_CV_NAME)
-undefine([AC_TYPE_NAME])dnl
-undefine([AC_CV_NAME])dnl
+m4_undefine([AC_TYPE_NAME])
+m4_undefine([AC_CV_NAME])
 ])
 
 dnl A version of AC_TRY_COMPILER(TEST-PROGRAM, WORKING-VAR, CROSS-VAR) which,
@@ -152,7 +152,7 @@ dnl
 dnl CCTK_TRY_COMPILER(TEST-PROGRAM, WORKING-VAR, CROSS-VAR)
 AC_DEFUN(CCTK_TRY_COMPILER,
 [cat > conftest.$ac_ext << EOF
-ifelse(AC_LANG, [FORTRAN77], ,
+AC_LANG_CASE([Fortran 77], ,
 [
 [#]line __oline__ "configure"
 #include "confdefs.h"
@@ -168,8 +168,7 @@ if AC_TRY_EVAL(ac_link) && test -s conftest${ac_exeext}; then
     [$3]=yes
   fi
 else
-  echo "configure: failed program was:" >&AS_MESSAGE_LOG_FD
-  cat conftest.$ac_ext >&AS_MESSAGE_LOG_FD
+  _AC_MSG_LOG_CONFTEST
   [$2]=no
 fi
 rm -fr conftest*])
@@ -179,7 +178,7 @@ dnl CCTK_TRY_LINK_2(INCLUDES, FUNCTION-BODY, OTHER-FUNCTION_BODY,
 dnl                [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 AC_DEFUN(CCTK_TRY_LINK_2,
 [cat > conftest.$ac_ext <<EOF
-ifelse(AC_LANG, [FORTRAN77],
+AC_LANG_CASE([Fortran 77],
 [
       program main
       call [$2]
@@ -191,12 +190,12 @@ dnl [#]line __oline__ "[$]0"
 [#]line __oline__ "configure"
 #include "confdefs.h"
 [$1]
-int main() {
+int main(void) {
 [$2]
 ; return 0; }
 ])EOF
 cat > conftest2.$ac_ext <<EOF
-ifelse(AC_LANG, [FORTRAN77],
+AC_LANG_CASE([Fortran 77],
 [
       subroutine main2
       call [$3]
@@ -215,8 +214,7 @@ if AC_TRY_EVAL(ac_link conftest2.$ac_ext) && test -s conftest${ac_exeext}; then
   ifelse([$4], , :, [rm -rf conftest*
   $4])
 else
-  echo "configure: failed program was:" >&AS_MESSAGE_LOG_FD
-  cat conftest.$ac_ext >&AS_MESSAGE_LOG_FD
+  _AC_MSG_LOG_CONFTEST
 ifelse([$5], , , [  rm -rf conftest*
   $5
 ])dnl
@@ -246,7 +244,7 @@ if eval "test -n \"$cctk_cv_nulldevice\"" ; then
   AC_MSG_RESULT($cctk_cv_nulldevice)
   AC_DEFINE_UNQUOTED(NULL_DEVICE, "$cctk_cv_nulldevice")
 else
-  AC_MSG_RESULT("not found")
+  AC_MSG_RESULT(not found)
 fi
 ])
 
@@ -323,19 +321,17 @@ AC_DEFUN(CCTK_PROG_CC_WORKS,
 AC_LANG_SAVE
 AC_LANG([C])
 rm -fr conftest*
-CCTK_TRY_COMPILER([int main(){return(0);} int PilotMain(){return(0);}], ac_cv_prog_cc_works, ac_cv_prog_cc_cross)
+CCTK_TRY_COMPILER([int main(void){return(0);} int PilotMain(void){return(0);}], ac_cv_prog_cc_works, ac_cv_prog_cc_cross)
 AC_LANG_RESTORE
 AC_MSG_RESULT($ac_cv_prog_cc_works)
 if test $ac_cv_prog_cc_works = no; then
-  AC_MSG_ERROR([installation or configuration problem: C compiler cannot create executables (see configs/${EXE#cactus_}/config-data/config.log for details).])
+  AC_MSG_ERROR([installation or configuration problem: C compiler cannot create executables (see configs/[${EXE#cactus_}]/config-data/config.log for details).])
 fi
-changequote({, })
-CROSS_COMPILE=`echo $CROSS_COMPILE | tr '[:upper:]' '[:lower:]'`
-changequote([, ])
+CROSS_COMPILE=`echo $CROSS_COMPILE | tr '[[[:upper:]]]' '[[[:lower:]]]'`
 AC_MSG_CHECKING([whether the C compiler ($CC $CFLAGS $LDFLAGS) is a cross-compiler])
 AC_MSG_RESULT($ac_cv_prog_cc_cross)
 if test $ac_cv_prog_cc_cross = yes -a "x$CROSS_COMPILE" != xyes; then
-  AC_MSG_ERROR([Could not run executable generated by C compiler (see configs/${EXE#cactus_}/config-data/config.log for details). If this is a cross configuration please set CROSS_COMPILE=yes.])
+  AC_MSG_ERROR([Could not run executable generated by C compiler (see configs/[${EXE#cactus_}]/config-data/config.log for details). If this is a cross configuration please set CROSS_COMPILE=yes.])
 fi
 cross_compiling=$ac_cv_prog_cc_cross
 ])
@@ -349,12 +345,12 @@ CCTK_TRY_COMPILER([int main(){return(0);} extern "C" int PilotMain(){return(0);}
 AC_LANG_RESTORE
 AC_MSG_RESULT($ac_cv_prog_cxx_works)
 if test $ac_cv_prog_cxx_works = no; then
-  AC_MSG_ERROR([installation or configuration problem: C++ compiler cannot create executables (see configs/${EXE#cactus_}/config-data/config.log for details).])
+  AC_MSG_ERROR([installation or configuration problem: C++ compiler cannot create executables (see configs/[${EXEcactus_}]/config-data/config.log for details).])
 fi
 AC_MSG_CHECKING([whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) is a cross-compiler])
 AC_MSG_RESULT($ac_cv_prog_cxx_cross)
 if test $ac_cv_prog_cxx_cross = yes -a "x$CROSS_COMPILE" != xyes; then
-  AC_MSG_ERROR([Could not run executable generated by C++ compiler (see configs/<configname>/config-data/config.log for details). If this is a cross configuration please set CROSS_COMPILE=yes.])
+  AC_MSG_ERROR(Could not run executable generated by C++ compiler (see configs/<configname>/config-data/config.log for details). If this is a cross configuration please set CROSS_COMPILE=yes.)
 fi
 cross_compiling=$ac_cv_prog_cxx_cross
 ])
@@ -371,15 +367,13 @@ CCTK_TRY_COMPILER([
 AC_LANG_RESTORE
 AC_MSG_RESULT($ac_cv_prog_f90_works)
 if test $ac_cv_prog_f90_works = no; then
-  AC_MSG_ERROR([installation or configuration problem: Fortran compiler cannot create executables (see configs/${EXE#cactus_}/config-data/config.log for details).])
+  AC_MSG_ERROR([installation or configuration problem: Fortran compiler cannot create executables (see configs/[${EXE#cactus_}]/config-data/config.log for details).])
 fi
-changequote({, })
-CROSS_COMPILE=`echo $CROSS_COMPILE | tr '[:upper:]' '[:lower:]'`
-changequote([, ])
+CROSS_COMPILE=`echo $CROSS_COMPILE | tr '[[[:upper:]]]' '[[[:lower:]]]'`
 AC_MSG_CHECKING([whether the Fortran compiler ($F77 $F77FLAGS $LDFLAGS) is a cross-compiler])
 AC_MSG_RESULT($ac_cv_prog_f90_cross)
 if test $ac_cv_prog_f90_cross = yes -a "x$CROSS_COMPILE" != xyes; then
-  AC_MSG_ERROR([Could not run executable generated by Fortran compiler (see configs/${EXE#cactus_}/config-data/config.log for details). If this is a cross configuration please set CROSS_COMPILE=yes.])
+  AC_MSG_ERROR([Could not run executable generated by Fortran compiler (see configs/[${EXE#cactus_}]/config-data/config.log for details). If this is a cross configuration please set CROSS_COMPILE=yes.])
 fi
 cross_compiling=$ac_cv_prog_f90_cross
 ])
@@ -419,14 +413,6 @@ else
 fi
 ])
 
-# CCTK_CHECK_FUNCS(FUNCTION..., [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
-# ---------------------------------------------------------------------
-AC_DEFUN([CCTK_CHECK_FUNCS],
-[ac_link='${CC-cc} -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext `CCTK_Wrap "$LIBDIR_PREFIX" "$LIBDIR_SUFFIX" "$LIBDIRS"` `CCTK_Wrap "$LIBLINK_PREFIX" "$LIBLINK_SUFFIX" "$LIBS"` >&5'
-dnl AC_CHECK_FUNCS does not properly quote its last argument
-AC_CHECK_FUNCS([$1],[$2],[[$3]])
-])
-
 # CCTK_CHECK_FUNC(FUNCTION, [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
 # ---------------------------------------------------------------------
 AC_DEFUN([CCTK_CHECK_FUNC],
@@ -440,7 +426,7 @@ AC_CHECK_FUNC([$1],[$2],[$3])
 #              [OTHER-LIBRARIES])
 # ------------------------------------------------------
 AC_DEFUN(CCTK_CHECK_LIB,
-[AC_MSG_CHECKING([for $2 in library $1])
+[AC_MSG_CHECKING(for $2 in library $1)
 dnl Use a cache variable name containing both the library and function name,
 dnl because the test really is for library $1 defining function $2, not
 dnl just for library $1.  Separate tests with the same $1 and different $2s
@@ -450,29 +436,27 @@ AC_CACHE_VAL(ac_cv_lib_$ac_lib_var,
 [ac_link='${CC-cc} -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext `CCTK_Wrap "$LIBDIR_PREFIX" "$LIBDIR_SUFFIX" "$LIBDIRS"` `CCTK_Wrap "$LIBLINK_PREFIX" "$LIBLINK_SUFFIX" "$LIBS"` >&5'
 ac_save_LIBS="$LIBS"
 LIBS="$1 $5 $LIBS"
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[dnl
-ifelse(AC_LANG, FORTRAN77, ,
-ifelse($2, main, , dnl Avoid conflicting decl of main.
-/* Override any gcc2 internal prototype to avoid an error.  */
-ifelse(AC_LANG, CPLUSPLUS, #ifdef __cplusplus
-extern "C"
-#endif
-)dnl
-/* We use char because int might match the return type of a gcc2
-    builtin and then its argument prototype would still apply.  */
 dnl We need a space before the parentheses to avoid accidentally calling
 dnl an m4 function, if $2 expands to an m4 function.
+AC_LINK_IFELSE([AC_LANG_PROGRAM([
+AC_LANG_CASE([Fortran 77], ,
+ifelse($2, main, ,
+/* Override any gcc2 internal prototype to avoid an error.  */
+AC_LANG_CASE([C++], #ifdef __cplusplus
+extern "C"
+#endif
+)
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
 char $2 ();
-))]], [[$2()]])],[eval "ac_cv_lib_$ac_lib_var=yes"],[eval "ac_cv_lib_$ac_lib_var=no"])
+))], [[$2()]])],[eval "ac_cv_lib_$ac_lib_var=yes"],[eval "ac_cv_lib_$ac_lib_var=no"])
 LIBS="$ac_save_LIBS"
 ])dnl
 if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
   AC_MSG_RESULT(yes)
   ifelse([$3], ,
-[changequote(, )dnl
-  ac_tr_lib=HAVE_LIB`echo $1 | sed -e 's/[^a-zA-Z0-9_]/_/g' \
+[ ac_tr_lib=HAVE_LIB`echo $1 | sed -e 's/[[[^a-zA-Z0-9_]]]/_/g' \
     -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
-changequote([, ])dnl
   AC_DEFINE_UNQUOTED($ac_tr_lib)
   LIBS="$1 $LIBS"
 ], [$3])
@@ -485,12 +469,11 @@ fi
 
 AC_DEFUN(CCTK_CHECK_LIB_FUNC,
 [CCTK_CHECK_LIB([$1], [$2],
-[ifelse([$3], , [changequote(, )dnl
-  cctk_tr_lib=HAVE_LIB`echo $1 | sed -e 's/[^a-zA-Z0-9_]/_/g' \
+[ifelse([$3], , [dnl
+  cctk_tr_lib=HAVE_LIB`echo $1 | sed -e 's/[[[^a-zA-Z0-9_]]]/_/g' \
     -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
-  cctk_tr_func=HAVE_`echo $2 | sed -e 's/[^a-zA-Z0-9_]/_/g' \
+  cctk_tr_func=HAVE_`echo $2 | sed -e 's/[[[^a-zA-Z0-9_]]]/_/g' \
     -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
-changequote([, ])dnl
   AC_DEFINE_UNQUOTED($cctk_tr_lib)
   AC_DEFINE_UNQUOTED($cctk_tr_func)
   LIBS="$1 $LIBS"
@@ -516,24 +499,22 @@ AC_CACHE_VAL(ac_cv_lib_$ac_lib_var,
 [ac_link='${CC-cc} -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext `CCTK_Wrap "$LIBDIR_PREFIX" "$LIBDIR_SUFFIX" "$LIBDIRS"` `CCTK_Wrap "$LIBLINK_PREFIX" "$LIBLINK_SUFFIX" "$LIBS"` >&5'
 ac_save_LIBS="$LIBS"
 LIBS="$2 $7 $LIBS"
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[dnl
-ifelse(AC_LANG, FORTRAN77, ,
-ifelse($3, main, , dnl Avoid conflicting decl of main.
-ifelse(AC_LANG, CPLUSPLUS, #ifdef __cplusplus
+AC_LINK_IFELSE([AC_LANG_PROGRAM([
+AC_LANG_CASE([Fortran 77], ,
+ifelse($3, main, ,
+AC_LANG_CASE([C++], #ifdef __cplusplus
 extern "C"
 #endif
-)dnl
+)
 #include <$1>
-))]], [[$3 $4]])],[eval "ac_cv_lib_$ac_lib_var=yes"],[eval "ac_cv_lib_$ac_lib_var=no"])
+))], [[$3 $4]])],[eval "ac_cv_lib_$ac_lib_var=yes"],[eval "ac_cv_lib_$ac_lib_var=no"])
 LIBS="$ac_save_LIBS"
-])dnl
+])
 if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
   AC_MSG_RESULT(yes)
   ifelse([$5], ,
-[changequote(, )dnl
-  ac_tr_lib=HAVE_LIB`echo $2 | sed -e 's/[^a-zA-Z0-9_]/_/g' \
+[ ac_tr_lib=HAVE_LIB`echo $2 | sed -e 's/[[[^a-zA-Z0-9_]]]/_/g' \
     -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
-changequote([, ])dnl
   AC_DEFINE_UNQUOTED($ac_tr_lib)
   LIBS="$2 $LIBS"
 ], [$5])
@@ -572,6 +553,8 @@ dnl those work, otherwise define restrict to be empty.
 AC_DEFUN(CCTK_CHECK_C_RESTRICT,
 [AC_CACHE_CHECK([for C restrict], cctk_cv_c_restrict,
 [cctk_cv_c_restrict=no
+AC_LANG_SAVE
+AC_LANG([C])
 for ac_kw in restrict __restrict__ __restrict; do
   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 double * $ac_kw p1;
@@ -593,6 +576,7 @@ double * $ac_kw v1;
 double * $ac_kw v2[3];
 ]])],[cctk_cv_c_restrict=$ac_kw; break],[])
 done
+AC_LANG_RESTORE
 ])
 case "$cctk_cv_c_restrict" in
   restrict | yes) ;;
@@ -685,7 +669,7 @@ AC_DEFUN(CCTK_CHECK_C_STATIC_INLINE,
 [AC_CACHE_CHECK([for C static inline], cctk_cv_c_static_inline,
 [cctk_cv_c_static_inline=no
 for ac_kw in 'static inline' 'static __inline__' 'static __inline' static; do
-  CCTK_TRY_LINK_2(, [;} $ac_kw int ifoo(){} foo(){ifoo();], [;} $ac_kw int ifoo(){} foo2(){ifoo();], [cctk_cv_c_static_inline=$ac_kw; break])
+  CCTK_TRY_LINK_2(, [;} $ac_kw int ifoo(){} int foo(){ifoo();], [;} $ac_kw int ifoo(){} int foo2(){ifoo();], [cctk_cv_c_static_inline=$ac_kw; break])
 done
 ])
 case "$cctk_cv_c_static_inline" in
@@ -714,13 +698,13 @@ if test "$cctk_cv_have_c__Pragma" = "yes" ; then
 fi
 ])
 
-dnl The autoconf 2.13 function AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],[],[]) does not work for Fortran.
+dnl The autoconf function AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],[],[]) does not work for Fortran.
 dnl This version is corrected and should work for both C and Fortran.
 dnl CCTK_TRY_COMPILE(INCLUDES, FUNCTION-BODY,
 dnl             [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 AC_DEFUN(CCTK_TRY_COMPILE,
 [cat > conftest.$ac_ext <<EOF
-ifelse(AC_LANG, [FORTRAN77],
+AC_LANG_CASE([Fortran 77],
 [[$1]
       program main
 [$2]
@@ -731,7 +715,7 @@ dnl [#]line __oline__ "[$]0"
 [#]line __oline__ "configure"
 #include "confdefs.h"
 [$1]
-int main() {
+int main(void) {
 [$2]
 ; return 0; }
 ])EOF
@@ -739,8 +723,7 @@ if AC_TRY_EVAL(ac_compile); then
   ifelse([$3], , :, [rm -rf conftest*
   $3])
 else
-  echo "configure: failed program was:" >&AS_MESSAGE_LOG_FD
-  cat conftest.$ac_ext >&AS_MESSAGE_LOG_FD
+  _AC_MSG_LOG_CONFTEST
 ifelse([$4], , , [  rm -rf conftest*
   $4
 ])dnl
@@ -1468,7 +1451,7 @@ AC_DEFUN(CCTK_CXX_MATH,
 [cctk_cv_have_cxx_math=no
 AC_LANG_SAVE
 AC_LANG([C++])
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <cmath>]], [[dnl
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <cmath>]], [[
   using namespace std;
    float fzero = 0.f;
    double dzero = 0.;
@@ -1527,7 +1510,7 @@ dnl CCTK_CHECK_HAS_PROTOTYPE(FUNCTION, [FEATURE-DESCRIPTION [, ADDITIONAL_CODE [
 AC_DEFUN(CCTK_CHECK_HAS_PROTOTYPE,
 [dnl Do the transliteration at runtime so arg 1 can be a shell variable.
 cctk_safe=`echo "$1" | sed 'y%./+-%__p_%'`
-cctk_lang=AC_LANG
+AC_LANG_CASE([C], cctk_lang=C, [C++], cctk_lang=CPLUSPLUS, [Fortran 77], cctk_lang=FORTRAN77)
 AC_MSG_CHECKING([ifelse([$2], , [for $1], [$2])])
 AC_CACHE_VAL(cctk_cv_has_${cctk_lang}_prototype_$cctk_safe,
 [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[$3

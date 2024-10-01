@@ -14,30 +14,13 @@ AC_REVISION($Header$)
 
 dnl It looks like older versions of Autoconf don't quite work properly under
 dnl cygwin.
-dnl Please use autoconf-2.13 to generate a configure script. Newer version of autoconf
-dnl won't work.
+dnl Please use autoconf to generate a configure script.
 
 AC_PREREQ([2.72])
 
 dnl Starts here
 AC_INIT
 AC_CONFIG_HEADERS([cctk_Config.h])
-
-
-#######################################################################
-# determine WARN_MODE from the WARN option
-# if this option isn't set WARN_MODE will default to 'no'
-
-WARN_MODE='no'
-if test -n "$WARN" ; then
-  changequote({, })
-  WARN=`echo $WARN | tr '[:upper:]' '[:lower:]'`
-  changequote([, ])
-  if test "$WARN" != 'yes' -a "$WARN" != 'no' ; then
-    AC_MSG_ERROR(Didn't recognize setting of WARN=\"$WARN\" (should be either \"yes\" or \"no\"))
-  fi
-  WARN_MODE=$WARN
-fi
 
 
 #######################################################################
@@ -66,7 +49,7 @@ if test -n "$DEBUG" -a "$DEBUG" != 'no' ; then
       DEBUG_FLAGS='yes'
       ;;
     *)
-      AC_MSG_ERROR(Didn't recognize setting of DEBUG=\"$DEBUG\")
+      AC_MSG_ERROR(Didn't recognize setting of DEBUG="$DEBUG")
       ;;
    esac
 fi
@@ -83,10 +66,10 @@ if test -n "$OPTIMISE" ; then
   OPTIMIZE=`echo $OPTIMIZE | tr '[:upper:]' '[:lower:]'`
   changequote([, ])
   if test -n "$OPTIMIZE" -a "$OPTIMISE" != "$OPTIMIZE" ; then
-    AC_MSG_ERROR(OPTIMISE=\"$OPTIMISE\" is inconsistent with OPTIMIZE=\"$OPTIMIZE\"!)
+    AC_MSG_ERROR(OPTIMISE="$OPTIMISE" is inconsistent with OPTIMIZE="$OPTIMIZE"!)
   fi
   if test "$OPTIMISE" != 'yes' -a "$OPTIMISE" != 'no' ; then
-    AC_MSG_ERROR(Didn't recognize setting of OPTIMISE=\"$OPTIMISE\" (should be either \"yes\" or \"no\"))
+    AC_MSG_ERROR(Didn't recognize setting of OPTIMISE="$OPTIMISE" (should be either "yes" or "no"))
   fi
   OPTIMISE_MODE=$OPTIMISE
 elif test -n "$OPTIMIZE"; then
@@ -94,7 +77,7 @@ elif test -n "$OPTIMIZE"; then
   OPTIMISE=`echo $OPTIMIZE | tr '[:upper:]' '[:lower:]'`
   changequote([, ])
   if test "$OPTIMISE" != 'yes' -a "$OPTIMISE" != 'no' ; then
-    AC_MSG_ERROR(Didn't recognize setting of OPTIMIZE=\"$OPTIMIZE\" (should be either \"yes\" or \"no\"))
+    AC_MSG_ERROR(Didn't recognize setting of OPTIMIZE="$OPTIMIZE" (should be either "yes" or "no"))
   fi
   OPTIMISE_MODE=$OPTIMISE
 fi
@@ -110,7 +93,7 @@ if test -n "$PROFILE" ; then
   PROFILE=`echo $PROFILE | tr '[:upper:]' '[:lower:]'`
   changequote([, ])
   if test "$PROFILE" != 'yes' -a "$PROFILE" != 'no' ; then
-    AC_MSG_ERROR(Didn't recognize setting of PROFILE=\"$PROFILE\" (should be either \"yes\" or \"no\"))
+    AC_MSG_ERROR(Didn't recognize setting of PROFILE="$PROFILE" (should be either "yes" or "no"))
   fi
   PROFILE_MODE=$PROFILE
 fi
@@ -126,7 +109,7 @@ if test -n "$OPENMP" ; then
   OPENMP=`echo $OPENMP | tr '[:upper:]' '[:lower:]'`
   changequote([, ])
   if test "$OPENMP" != 'yes' -a "$OPENMP" != 'no' ; then
-    AC_MSG_ERROR(Didn't recognize setting of OPENMP=\"$OPENMP\" (should be either \"yes\" or \"no\"))
+    AC_MSG_ERROR(Didn't recognize setting of OPENMP="$OPENMP" (should be either "yes" or "no"))
   fi
   OPENMP_MODE=$OPENMP
 fi
@@ -184,14 +167,14 @@ if test -z "$CC" ; then
 fi
 
 CCTK_PROG_CC_WORKS
-AC_PROG_CC_GNU
+AC_PROG_CC
 
 if test -z "$CXX" ; then
   AC_CHECK_PROGS(CXX, g++-mp-4.4 g++-mp-4.2 g++-mp-4.2 c++ g++ gcc CC cxx cc++ cl xlC)
 fi
 
 CCTK_PROG_CXX_WORKS
-AC_PROG_CXX_GNU
+AC_PROG_CXX
 
 if test -z "$F90" ; then
   AC_CHECK_PROGS(F90, f90 pgf90 xlf90 ifort gfortran-mp-4.4 gfortran-mp-4.3 gfortran-mp-4.2 gfortran)
@@ -499,7 +482,7 @@ if test -z "$F90" || test "x$F90" = xnone ; then
   F77="$F90_NONE"
 else
   F77="$F90"
-  # autoconf2.13 only knows about F77 so we cannot check F90
+  # autoconf only knows about F77 so we cannot check F90
   if ! test "x${FFLAGS+y}" = x ; then
     ac_save_FFLAGS="$FFLAGS"
   fi
@@ -517,10 +500,6 @@ fi
 
 # Checks for header files.
 
-m4_warn([obsolete],
-[The preprocessor macro 'STDC_HEADERS' is obsolete.
-  Except in unusual embedded environments, you can safely include all
-  C89 headers unconditionally.])dnl
 # Autoupdate added the next two lines to ensure that your configure
 # script's behavior did not change.  They are probably safe to remove.
 AC_CHECK_INCLUDES_DEFAULT
@@ -630,11 +609,11 @@ dnl Checks for library functions.
 
 # Do we have gethostbyname(3) ?
 # For Solaris we should search in libnsl.so
-CCTK_CHECK_FUNCS(gethostbyname,
+AC_CHECK_FUNCS(gethostbyname,
                  ,
-                 CCTK_CHECK_LIB(nsl,
+                 [CCTK_CHECK_LIB(nsl,
                                 gethostbyname,
-                                AC_DEFINE(HAVE_GETHOSTBYNAME))
+                                [AC_DEFINE(HAVE_GETHOSTBYNAME)])]
 )
 
 # Check if we have mode_t available
@@ -701,21 +680,6 @@ CCTK_CHECK_HEADERS(signal.h)
 CCTK_CHECK_HEADERS(malloc.h)
 CCTK_CHECK_HEADERS(sched.h)
 CCTK_CHECK_HEADERS(execinfo.h)
-
-m4_warn([obsolete],
-[Update your code to rely only on HAVE_SYS_TIME_H,
-then remove this warning and the obsolete code below it.
-All current systems provide time.h; it need not be checked for.
-Not all systems provide sys/time.h, but those that do, all allow
-you to include it and time.h simultaneously.])dnl
-AC_CHECK_HEADERS_ONCE([sys/time.h])
-# Obsolete code to be removed.
-if test $ac_cv_header_sys_time_h = yes; then
-  AC_DEFINE([TIME_WITH_SYS_TIME],[1],[Define to 1 if you can safely include both <sys/time.h>
-	     and <time.h>.  This macro is obsolete.])
-fi
-# End of obsolete code.
-
 
 #Check type of socklen
 
@@ -788,9 +752,9 @@ AC_MSG_RESULT($rtc_ok)
 
 # Check for memory allocation functions
 
-CCTK_CHECK_FUNCS(mallinfo)
-CCTK_CHECK_FUNCS(mallopt)
-CCTK_CHECK_FUNC(malloc_info)
+AC_CHECK_FUNCS(mallinfo)
+AC_CHECK_FUNCS(mallopt)
+AC_CHECK_FUNC(malloc_info)
 
 # Check if M_MMAP_THRESHOLD is defined
 AC_MSG_CHECKING([whether M_MMAP_THRESHOLD is defined])
@@ -807,8 +771,8 @@ else
   AC_MSG_RESULT(no)
 fi
 
-CCTK_CHECK_FUNCS(sched_getaffinity)
-CCTK_CHECK_FUNCS(getpid)
+AC_CHECK_FUNCS(sched_getaffinity)
+AC_CHECK_FUNCS(getpid)
 
 
 # Check if we have __int64
@@ -917,7 +881,7 @@ dnl #######################################################################
 
 dnl Do we need to build the GNU getopt and regex stuff ?
 
-CCTK_CHECK_FUNCS(getopt_long_only)
+AC_CHECK_FUNCS(getopt_long_only)
 
 AC_SUBST(BUILD_GETOPT)
 
@@ -1080,20 +1044,20 @@ AC_LANG_RESTORE
 
 dnl Do we have dladdr(3) and the structure it uses?
 CCTK_CHECK_MEMBER(Dl_info, dli_sname,
-  [CCTK_CHECK_FUNCS(dladdr, , [CCTK_CHECK_LIB_FUNC(dl, dladdr)])], 
+  [AC_CHECK_FUNCS(dladdr, , [CCTK_CHECK_LIB_FUNC(dl, dladdr)])],
   ,
   [#define _GNU_SOURCE 1
    #include <dlfcn.h>] )
 
 
 dnl Do we have backtrace(3)
-CCTK_CHECK_FUNCS(backtrace, , )
+AC_CHECK_FUNCS(backtrace, , )
 
 dnl Do we have backtrace_symbols(3)
-CCTK_CHECK_FUNCS(backtrace_symbols, , )
+AC_CHECK_FUNCS(backtrace_symbols, , )
 
 dnl Do we have crypt(3)
-CCTK_CHECK_FUNCS(crypt, , [CCTK_CHECK_LIB_FUNC(crypt, crypt)])
+AC_CHECK_FUNCS(crypt, , [CCTK_CHECK_LIB_FUNC(crypt, crypt)])
 
 dnl Do we have certain math functions or macros?
 CCTK_CHECK_HEADER_LIB_FUNC(math.h, m, finite, (1.0))
@@ -1106,7 +1070,7 @@ CCTK_CHECK_HEADER_LIB_FUNC(math.h, m, isnormal, (1.0))
 CCTK_CHECK_HEADER_LIB_FUNC(math.h, m, signbit, (1.0))
 
 dnl Do we have mkstemp(3)
-CCTK_CHECK_FUNCS(mkstemp, , [CCTK_CHECK_LIB_FUNC(c, mkstemp)])
+AC_CHECK_FUNCS(mkstemp, , [CCTK_CHECK_LIB_FUNC(c, mkstemp)])
 
 dnl Do we have va_copy(3)
 AC_MSG_CHECKING([for va_copy])
@@ -1128,7 +1092,7 @@ if test -n "$PTHREADS" ; then
   PTHREADS=`echo $PTHREADS | tr '[:upper:]' '[:lower:]'`
   changequote([, ])
   if test "$PTHREADS" != 'yes' -a "$PTHREADS" != 'no' ; then
-    AC_MSG_ERROR(Didn't recognize setting of PTHREADS=\"$PTHREADS\" (should be either \"yes\" or \"no\"))
+    AC_MSG_ERROR(Didn't recognize setting of PTHREADS="$PTHREADS" (should be either "yes" or "no"))
   fi
   PTHREADS_MODE=$PTHREADS
 fi
@@ -1212,7 +1176,7 @@ esac
 CCTK_INT1_TYPE='signed char'
 
 if test "x$DISABLE_INT16" != 'xyes' -a "x$DISABLE_INT16" != 'xno' -a "x$DISABLE_INT16" != 'x'; then
-    AC_MSG_ERROR(Didn't recognise setting of DISABLE_INT16=\"$DISABLE_INT16\"; should be either \"yes\" or \"no\" or \"\" (empty))
+    AC_MSG_ERROR(Didn't recognise setting of DISABLE_INT16="$DISABLE_INT16"; should be either "yes" or "no" or "" (empty))
 fi
 
 if test -n "$CCTK_INT16_TYPE" -a "x$DISABLE_INT16" != 'xyes' ; then
@@ -1269,7 +1233,7 @@ case "x$ac_cv_sizeof_float" in
 esac
 
 if test "x$DISABLE_REAL16" != 'xyes' -a "x$DISABLE_REAL16" != 'xno' -a "x$DISABLE_REAL16" != 'x'; then
-    AC_MSG_ERROR(Didn't recognise setting of DISABLE_REAL16=\"$DISABLE_REAL16\"; should be either \"yes\" or \"no\" or \"\" (empty))
+    AC_MSG_ERROR(Didn't recognise setting of DISABLE_REAL16="$DISABLE_REAL16"; should be either "yes" or "no" or "" (empty))
 fi
 
 if test -n "$CCTK_REAL16_TYPE" -a \( "x$F90" = "x$F90_NONE" -o \( "x$cctk_cv_have_fortran_real16" = 'xyes' -a "x$cctk_cv_have_fortran_complex32" = 'xyes' -a "x$DISABLE_REAL16" != 'xyes' \) \); then
@@ -1328,7 +1292,7 @@ if test -n "$C_LINE_DIRECTIVES" ; then
   C_LINE_DIRECTIVES=`echo $C_LINE_DIRECTIVES | tr '[:upper:]' '[:lower:]'`
   changequote([, ])
   if test "$C_LINE_DIRECTIVES" != 'yes' -a "$C_LINE_DIRECTIVES" != 'no' ; then
-    AC_MSG_ERROR(Didn't recognize setting of C_LINE_DIRECTIVES=\"$C_LINE_DIRECTIVES\" (should be either \"yes\" or \"no\"))
+    AC_MSG_ERROR(Didn't recognize setting of C_LINE_DIRECTIVES="$C_LINE_DIRECTIVES" (should be either "yes" or "no"))
   fi
 else
   C_LINE_DIRECTIVES='no'
@@ -1338,7 +1302,7 @@ if test -n "$F_LINE_DIRECTIVES"; then
   F_LINE_DIRECTIVES=`echo $F_LINE_DIRECTIVES | tr '[:upper:]' '[:lower:]'`
   changequote([, ])
   if test "$F_LINE_DIRECTIVES" != 'yes' -a "$F_LINE_DIRECTIVES" != 'no' ; then
-    AC_MSG_ERROR(Didn't recognize setting of F_LINE_DIRECTIVES=\"$F_LINE_DIRECTIVES\" (should be either \"yes\" or \"no\"))
+    AC_MSG_ERROR(Didn't recognize setting of F_LINE_DIRECTIVES="$F_LINE_DIRECTIVES" (should be either "yes" or "no"))
   fi
 else
   F_LINE_DIRECTIVES='no'

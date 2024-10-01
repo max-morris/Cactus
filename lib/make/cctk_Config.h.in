@@ -5,9 +5,6 @@
    byte first (like Motorola and SPARC, unlike Intel and VAX).  */
 #undef WORDS_BIGENDIAN
 
-/* Define if standard C headers are available. */
-#undef STDC_HEADERS
-
 /* Modifier for Fortran function definitions. */
 #undef CCTK_FCALL
 
@@ -97,8 +94,6 @@
 #undef HAVE_EXECINFO_H
 #undef HAVE_SCHED_GETAFFINITY
 #undef HAVE_GETPID
-
-#undef TIME_WITH_SYS_TIME
 
 /* Which format does the C++ STL on this machine provide. */
 #undef HAVE_VECTOR
