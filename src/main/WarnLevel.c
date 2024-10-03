@@ -587,6 +587,8 @@ int CCTK_VWarn (int level,
     if (level <= warning_level)
     {
 
+      fflush (stdout);
+
       if (highlight_warning_messages)
       {
         bold_stderr (ON);
@@ -631,6 +633,8 @@ int CCTK_VWarn (int level,
       vfprintf (stderr, format, ap);
       va_end (ap);
       fprintf (stderr, "\n");
+
+      fflush (stderr);
 
     }
 
@@ -682,6 +686,8 @@ int CCTK_VWarn (int level,
       vfprintf (stdout, format, ap);
       va_end (ap);
       fprintf (stdout, "\n");
+
+      fflush (stdout);
 
     }
 
