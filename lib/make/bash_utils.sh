@@ -87,13 +87,29 @@ function pkg_config {
   else
     $PKGCONFIG --atleast-version="$MINVERSION" "$LIBNAME" > /dev/null 2>&1 || return 0
   fi
+
   # NOTE: This breaks if pkg-config returns quotes strings, i.e., path names
   #       with strings in them. It doesn't seems to happen in practice.
   #       If it does: let us know what pkg-config prints in that case, and we
   #       can try to fix it.
-  local     LIBS=$($PKGCONFIG --libs-only-l   "$STATIC" "$LIBNAME" | perl -pe 's/(^| )+-l/\1/g')
-  local LIB_DIRS=$($PKGCONFIG --libs-only-L   "$STATIC" "$LIBNAME" | perl -pe 's/(^| )+-L/\1/g')
   local INC_DIRS=$($PKGCONFIG --cflags-only-I "$STATIC" "$LIBNAME" | perl -pe 's/(^| )+-I/\1/g')
+  local LIB_DIRS=$($PKGCONFIG --libs-only-L   "$STATIC" "$LIBNAME" | perl -pe 's/(^| )+-L/\1/g')
+  # pkg-config sometimes returns incorrect -l options with the full path of the
+  # library file instead of just the library name. So we look for any library
+  # files that contain a / (by testing if ${lib} changes when we remove a
+  # trailing `/*` pattern) and if so add both a the library name itself to LIBS
+  # and the directory the library is in to LIB_DIRS
+  local     LIBS=""
+  local ALLLIBS=$($PKGCONFIG --libs-only-l   "$STATIC" "$LIBNAME" | perl -pe 's/(^| )+-l/\1/g')
+  local lib
+  for lib in $ALLLIBS; do
+    if [ "${lib%/*}" != "$lib" ] ; then
+      LIB_DIRS="$LIB_DIRS ${lib%/*}"
+      lib=${lib##*/lib}
+      lib=${lib%.*}
+    fi
+    LIBS="$LIBS $lib"
+  done
 
   set_make_vars "$PREFIX" "$LIBS" "$LIB_DIRS" "$INC_DIRS"
 
