@@ -77,7 +77,7 @@ sub CreateVariableBindings
     push(@data, '                                    CCTK_ArrayGroupSizeI(GH, dir, CCTK_JOIN_TOKENS(cctki_gi_, CCTK_THORN).group) : &_cctk_zero');
     push(@data, '');
     push(@data, '#define PASS_GROUPLEN(thorn, group) CCTK_JOIN_TOKENS(cctki_gi_, CCTK_THORN).group >= 0 ? \\');
-    push(@data, '                                    CCTKi_GroupLengthAsPointer(#thorn "::" #group) : &_cctk_zero');
+    push(@data, '                                    CCTKi_GroupLengthAsPointerI(CCTK_JOIN_TOKENS(cctki_gi_, CCTK_THORN).group) : &_cctk_zero');
     push(@data, '');
     push(@data, '#define PASS_REFERENCE(var, level)  CCTKi_VarDataPtrI(GH, level, CCTK_JOIN_TOKENS(cctki_vi_, CCTK_THORN).var)');
     push(@data, '');
