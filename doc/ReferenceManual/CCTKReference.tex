@@ -12429,7 +12429,7 @@ int CallFunction(void *fun, cFunctionData *fdata, void *data) {
 }
 
 int count = 0;
-int ierr = CCTK_ScheduleTraverse("MoL_PostStep", CallFunction, &count);
+int ierr = CCTK_ScheduleTraverse("MoL_PostStep", &count, CallFunction);
 printf("There were %d functions scheduled\n", count);
 \end{verbatim}
 \end{Example}
