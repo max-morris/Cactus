@@ -268,7 +268,7 @@ sub get_friends_of_me
   foreach my $other_implementation (sort keys %$implementations_ref)
   {
 
-    $interface_data_ref->{"IMPLEMENTATION \U$other_implementation\E THORNS"} =~ m:(\w+):;
+    $interface_data_ref->{"IMPLEMENTATION \U$other_implementation\E THORNS"} =~ m:([\w/]+):;
 
     my $thorn = $1;
 
@@ -286,7 +286,7 @@ sub get_implementation_friends
 {
   my($implementation, $interface_data_ref, $friends_ref) = @_;
 
-  $interface_data_ref->{"IMPLEMENTATION \U$implementation\E THORNS"} =~ m:(\w+):;
+  $interface_data_ref->{"IMPLEMENTATION \U$implementation\E THORNS"} =~ m:([\w/]+):;
 
   my $thorn = $1;
 
@@ -314,7 +314,7 @@ sub get_implementation_ancestors
   my(%info);
   die "main::cctk_home not defined" unless defined($main::cctk_home);
 
-  $interface_data_ref->{"IMPLEMENTATION \U$implementation\E THORNS"} =~ m:(\w+):;
+  $interface_data_ref->{"IMPLEMENTATION \U$implementation\E THORNS"} =~  m:([\w/]+):;
 
   my $thorn = $1;
 

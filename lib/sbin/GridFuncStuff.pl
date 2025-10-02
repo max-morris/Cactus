@@ -383,7 +383,7 @@ sub GetThornArguments
     }
     else
     {
-      $rhinterface_db->{"IMPLEMENTATION \U$imp\E THORNS"} =~ m:([^ ]*):;
+      $rhinterface_db->{"IMPLEMENTATION \U$imp\E THORNS"} =~ m:([\w/]+):;
 
       $thorn = $1;
     }
