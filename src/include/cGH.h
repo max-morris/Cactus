@@ -40,6 +40,10 @@ typedef struct _cGH
 #endif
   int cctk_patch;
   int cctk_npatches;
+#ifndef CCTK_HAVE_CGH_PATCH_IS_CARTESIAN
+#define CCTK_HAVE_CGH_PATCH_IS_CARTESIAN
+#endif
+  int cctk_patch_is_cartesian;
 #ifndef CCTK_HAVE_CGH_COMPONENT
 #define CCTK_HAVE_CGH_COMPONENT
 #endif
