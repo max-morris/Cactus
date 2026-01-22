@@ -167,33 +167,32 @@ cGH *CactusDefaultSetupGH(tFleshConfig *config, int convergence_level)
     {
       cctk_dim = 1;
     }
-    thisGH->cctk_iteration    = 0;
-    thisGH->cctk_gsh          = malloc(cctk_dim*sizeof(int));
-    thisGH->cctk_lsh          = malloc(cctk_dim*sizeof(int));
-    thisGH->cctk_lbnd         = malloc(cctk_dim*sizeof(int));
-    thisGH->cctk_ubnd         = malloc(cctk_dim*sizeof(int));
-    thisGH->cctk_level        = 0;
-    thisGH->cctk_patch        = 0;
-    thisGH->cctk_npatches     = 1;
-    thisGH->cctk_component    = 0;
-    thisGH->cctk_tile_min     = malloc(cctk_dim*sizeof(int));
-    thisGH->cctk_tile_max     = malloc(cctk_dim*sizeof(int));
-
-    thisGH->cctk_ash          = malloc(cctk_dim*sizeof(int));
-    thisGH->cctk_to           = malloc(cctk_dim*sizeof(int));
-    thisGH->cctk_from         = malloc(cctk_dim*sizeof(int));
-    thisGH->cctk_bbox         = malloc(2*cctk_dim*sizeof(int));
-    thisGH->cctk_nghostzones  = malloc(2*cctk_dim*sizeof(int));
-    thisGH->cctk_levfac       = malloc(cctk_dim*sizeof(int));
-    thisGH->cctk_levoff       = malloc(cctk_dim*sizeof(int));
-    thisGH->cctk_levoffdenom  = malloc(cctk_dim*sizeof(int));
-    thisGH->cctk_delta_space  = malloc(cctk_dim*sizeof(CCTK_REAL));
+    thisGH->cctk_iteration          = 0;
+    thisGH->cctk_gsh                = malloc(cctk_dim*sizeof(int));
+    thisGH->cctk_lsh                = malloc(cctk_dim*sizeof(int));
+    thisGH->cctk_lbnd               = malloc(cctk_dim*sizeof(int));
+    thisGH->cctk_ubnd               = malloc(cctk_dim*sizeof(int));
+    thisGH->cctk_level              = 0;
+    thisGH->cctk_patch              = 0;
+    thisGH->cctk_npatches           = 1;
+    thisGH->cctk_component          = 0;
+    thisGH->cctk_patch_is_cartesian = 0;
+    thisGH->cctk_tile_min           = malloc(cctk_dim*sizeof(int));
+    thisGH->cctk_tile_max           = malloc(cctk_dim*sizeof(int));
+    thisGH->cctk_ash                = malloc(cctk_dim*sizeof(int));
+    thisGH->cctk_to                 = malloc(cctk_dim*sizeof(int));
+    thisGH->cctk_from               = malloc(cctk_dim*sizeof(int));
+    thisGH->cctk_bbox               = malloc(2*cctk_dim*sizeof(int));
+    thisGH->cctk_nghostzones        = malloc(2*cctk_dim*sizeof(int));
+    thisGH->cctk_levfac             = malloc(cctk_dim*sizeof(int));
+    thisGH->cctk_levoff             = malloc(cctk_dim*sizeof(int));
+    thisGH->cctk_levoffdenom        = malloc(cctk_dim*sizeof(int));
+    thisGH->cctk_delta_space        = malloc(cctk_dim*sizeof(CCTK_REAL));
     /* FIXME : Next line goes when coords are done properly */
-    thisGH->cctk_origin_space = malloc(cctk_dim*sizeof(CCTK_REAL));
-
-    thisGH->cctk_delta_time = 1;
-    thisGH->cctk_timefac = 1;
-    thisGH->cctk_convlevel = 0;
+    thisGH->cctk_origin_space       = malloc(cctk_dim*sizeof(CCTK_REAL));
+    thisGH->cctk_delta_time         = 1;
+    thisGH->cctk_timefac            = 1;
+    thisGH->cctk_convlevel          = 0;
 
     thisGH->current_scheduled_function = NULL;
 
