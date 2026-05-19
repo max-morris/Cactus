@@ -45,21 +45,20 @@ CCTK_FILEVERSION(util_Time_c);
 
 int Util_CurrentTime(int len, char *now)
 {
-  int retval;
+  size_t retval;
   time_t timep;
   const char *fmt = "%X%z";
 
-  timep = time(NULL);
-  strftime(now, len, fmt, localtime(&timep));
+  if (len <= 0) return 0;
 
-  retval = strlen(now);
-  retval=retval > len ? 0 : retval;
+  timep = time(NULL);
+  retval = strftime(now, (size_t) len, fmt, localtime(&timep));
 
 #ifdef DEBUG_TIME
-  printf("CurrentTime = %s\n",now);
+  printf("CurrentTime = %s\n", now);
 #endif
 
-  return retval;
+  return (int) retval;
 }
 
 
@@ -81,21 +80,20 @@ int Util_CurrentTime(int len, char *now)
 
 int Util_CurrentDate(int len, char *now)
 {
-  int retval;
+  size_t retval;
   time_t timep;
   const char *fmt = "%b %d %Y";
 
-  timep = time(NULL);
-  strftime(now, 50, fmt, localtime(&timep));
+  if (len <= 0) return 0;
 
-  retval = strlen(now);
-  retval=retval > len ? 0 : retval;
+  timep = time(NULL);
+  retval = strftime(now, (size_t) len, fmt, localtime(&timep));
 
 #ifdef DEBUG_TIME
-  printf("CurrentDate = %s\n",thedate);
+  printf("CurrentDate = %s\n", now);
 #endif
 
-  return retval;
+  return (int) retval;
 }
 
 
