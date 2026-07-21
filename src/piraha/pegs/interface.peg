@@ -30,8 +30,8 @@ FRIEND = (?i:friend):{-n}({name}({-n},?{-n}{name})*)?
 what = (?i:SOURCE|HEADER)?
 INCLUDE = (?i:INCLUDE(S)? {what}: {filename} in {filename})
 
-ret_type = (?i:void|CCTK_(INT{num}?|REAL|COMPLEX|POINTER_TO_CONST|POINTER))
-arg_type = (?i:CCTK_(STRING|INT{num}?|REAL|COMPLEX|POINTER_TO_CONST|POINTER)|STRING)
+ret_type = (?i:void|CCTK_(INT{num}?|REAL{rnum}?|COMPLEX|POINTER_TO_CONST|POINTER))
+arg_type = (?i:CCTK_(STRING|INT{num}?|REAL{rnum}?|COMPLEX|POINTER_TO_CONST|POINTER)|STRING)
 intent = (?i:IN(OUT|)|OUT)
 array = (?i:array)
 cctk_fpointer = (?i:CCTK_FPOINTER)

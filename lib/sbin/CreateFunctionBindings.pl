@@ -717,9 +717,9 @@ sub ParseArgument
   {
     $Argument->{"Function Pointer"} = 0;
   }
-  if ($type !~ /(\bCCTK_INT$)|(\bCCTK_REAL$)|(\bCCTK_COMPLEX$)|(\bCCTK_POINTER$)|(\bCCTK_POINTER_TO_CONST$)|(\bCCTK_STRING$)/)
+  if ($type !~ /(\bCCTK_INT$)|(\bCCTK_REAL(2|4|8|16)?$)|(\bCCTK_COMPLEX$)|(\bCCTK_POINTER$)|(\bCCTK_POINTER_TO_CONST$)|(\bCCTK_STRING$)/)
   {
-    my $message = "Thorn $Thorn, Function $Function:\nAn argument in an aliased function must be one of the allowed CCTK types.\nThese are CCTK_INT, CCTK_REAL, CCTK_COMPLEX, CCTK_POINTER, CCTK_POINTER_TO_CONST, or CCTK_STRING.\nThe argument ".$Argument->{"Name"}." has type \"$type\".";
+    my $message = "Thorn $Thorn, Function $Function:\nAn argument in an aliased function must be one of the allowed CCTK types.\nThese are CCTK_INT, CCTK_REAL, CCTK_REAL2, CCTK_REAL4, CCTK_REAL8, CCTK_REAL16, CCTK_COMPLEX, CCTK_POINTER, CCTK_POINTER_TO_CONST, or CCTK_STRING.\nThe argument ".$Argument->{"Name"}." has type \"$type\".";
     if ($type =~ /:/)
     {
       $message .= "\n(The older \"${type}ARRAY\" should be replaced with \"$type ARRAY\".)";
@@ -1811,6 +1811,36 @@ sub ThornMasterIncludes
 }
 
 #/*@@
+#  @routine    FunctionHasReal2
+#  @date       Mon Jul 20 2026
+#  @author     mixed-precision workflow
+#  @desc
+#  CCTK_REAL2 has no Fortran-side type spelling (see cctk_Types.h, where it
+#  is typedef'd only under the CCODE guard, never under FCODE). This
+#  mirrors that "C-only" property for aliased functions: it returns true
+#  if a Function's Return Type, or any of its non-function-pointer
+#  Arguments' Type, is CCTK_REAL2, in which case no Fortran interface
+#  declaration for that function should be emitted (only the CCODE
+#  prototype, which is unaffected).
+#  @enddesc
+#@@*/
+
+sub FunctionHasReal2
+{
+  my ($Function) = @_;
+
+  return 1 if ($Function->{"Return Type"} eq 'CCTK_REAL2');
+
+  foreach my $arg (@{$Function->{"Arguments"}})
+  {
+    next if ($arg->{"Function Pointer"});
+    return 1 if ($arg->{"Type"} eq 'CCTK_REAL2');
+  }
+
+  return 0;
+}
+
+#/*@@
 #  @routine    UsesPrototypes
 #  @date       Sun Feb 16 02:27:29 2003
 #  @author     Ian Hawke
@@ -1893,6 +1923,7 @@ sub UsesPrototypes
     next if (! $Function);
 
     next if (! $Function->{"Used"});
+    next if (&FunctionHasReal2($Function));
 
     my $args = $Function->{"Arguments"};
     my $line;
@@ -1967,6 +1998,7 @@ sub UsesPrototypes
     next if (! $Function);
 
     next if (! $Function->{"Used"});
+    next if (&FunctionHasReal2($Function));
 
     push(@data, "  external $Function->{\"Name\"} &&\\");
     push(@data, "  $Function->{\"Return Type\"} $Function->{\"Name\"} &&\\")
