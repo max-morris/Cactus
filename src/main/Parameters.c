@@ -864,6 +864,38 @@ char *CCTK_ParameterValString (const char *param_name, const char *thorn)
         retval = strdup (buffer);
         break;
 
+#ifdef HAVE_CCTK_REAL2
+      case PARAMETER_REAL2:
+        snprintf (buffer, sizeof buffer,
+                  "%.20g", (double) *(const CCTK_REAL2 *) param_data);
+        retval = strdup (buffer);
+        break;
+#endif
+
+#ifdef HAVE_CCTK_REAL4
+      case PARAMETER_REAL4:
+        snprintf (buffer, sizeof buffer,
+                  "%.20g", (double) *(const CCTK_REAL4 *) param_data);
+        retval = strdup (buffer);
+        break;
+#endif
+
+#ifdef HAVE_CCTK_REAL8
+      case PARAMETER_REAL8:
+        snprintf (buffer, sizeof buffer,
+                  "%.20g", (double) *(const CCTK_REAL8 *) param_data);
+        retval = strdup (buffer);
+        break;
+#endif
+
+#ifdef HAVE_CCTK_REAL16
+      case PARAMETER_REAL16:
+        snprintf (buffer, sizeof buffer,
+                  "%.20g", (double) *(const CCTK_REAL16 *) param_data);
+        retval = strdup (buffer);
+        break;
+#endif
+
       default:
         CCTK_VWarn (3, __LINE__, __FILE__, "Cactus",
                     "CCTK_ParameterValString: Unknown type %d for parameter "
@@ -1457,6 +1489,22 @@ static t_param *ParameterNew (const char *thorn,
                                     break;
               case PARAMETER_REAL : newparam->array[i].data = &(((CCTK_REAL *)data)[i]);
                                     break;
+#ifdef HAVE_CCTK_REAL2
+              case PARAMETER_REAL2 : newparam->array[i].data = &(((CCTK_REAL2 *)data)[i]);
+                                    break;
+#endif
+#ifdef HAVE_CCTK_REAL4
+              case PARAMETER_REAL4 : newparam->array[i].data = &(((CCTK_REAL4 *)data)[i]);
+                                    break;
+#endif
+#ifdef HAVE_CCTK_REAL8
+              case PARAMETER_REAL8 : newparam->array[i].data = &(((CCTK_REAL8 *)data)[i]);
+                                    break;
+#endif
+#ifdef HAVE_CCTK_REAL16
+              case PARAMETER_REAL16 : newparam->array[i].data = &(((CCTK_REAL16 *)data)[i]);
+                                    break;
+#endif
               default :
                 /* All remaining types are strings */
                 newparam->array[i].data = &(((CCTK_CHAR **)data)[i]);
@@ -1637,6 +1685,22 @@ static int ParameterGetType (const char *type)
   else if (! Util_StrCmpi (type, "BOOLEAN"))
   {
     retval = PARAMETER_BOOLEAN;
+  }
+  else if (! Util_StrCmpi (type, "REAL2"))
+  {
+    retval = PARAMETER_REAL2;
+  }
+  else if (! Util_StrCmpi (type, "REAL4"))
+  {
+    retval = PARAMETER_REAL4;
+  }
+  else if (! Util_StrCmpi (type, "REAL8"))
+  {
+    retval = PARAMETER_REAL8;
+  }
+  else if (! Util_StrCmpi (type, "REAL16"))
+  {
+    retval = PARAMETER_REAL16;
   }
   else
   {
@@ -1909,6 +1973,18 @@ static int ParameterSetAccumulator(t_param *param)
       break;
 
     case PARAMETER_REAL :
+#ifdef HAVE_CCTK_REAL2
+    case PARAMETER_REAL2 :
+#endif
+#ifdef HAVE_CCTK_REAL4
+    case PARAMETER_REAL4 :
+#endif
+#ifdef HAVE_CCTK_REAL8
+    case PARAMETER_REAL8 :
+#endif
+#ifdef HAVE_CCTK_REAL16
+    case PARAMETER_REAL16 :
+#endif
       xy[0].type = rval;
       xy[0].value.rval = atof(param->props->defval);
       break;
@@ -1937,6 +2013,34 @@ static int ParameterSetAccumulator(t_param *param)
             xy[1].type = rval;
             xy[1].value.rval = *((CCTK_REAL *)param->accumulates_from[i]->data);;
             break;
+
+#ifdef HAVE_CCTK_REAL2
+          case PARAMETER_REAL2 :
+            xy[1].type = rval;
+            xy[1].value.rval = (CCTK_REAL)*((CCTK_REAL2 *)param->accumulates_from[i]->data);
+            break;
+#endif
+
+#ifdef HAVE_CCTK_REAL4
+          case PARAMETER_REAL4 :
+            xy[1].type = rval;
+            xy[1].value.rval = (CCTK_REAL)*((CCTK_REAL4 *)param->accumulates_from[i]->data);
+            break;
+#endif
+
+#ifdef HAVE_CCTK_REAL8
+          case PARAMETER_REAL8 :
+            xy[1].type = rval;
+            xy[1].value.rval = (CCTK_REAL)*((CCTK_REAL8 *)param->accumulates_from[i]->data);
+            break;
+#endif
+
+#ifdef HAVE_CCTK_REAL16
+          case PARAMETER_REAL16 :
+            xy[1].type = rval;
+            xy[1].value.rval = (CCTK_REAL)*((CCTK_REAL16 *)param->accumulates_from[i]->data);
+            break;
+#endif
 
           default :
             retval = -8;
@@ -2021,6 +2125,18 @@ static int ParameterSetSimple (t_param *param, const char *value)
     case PARAMETER_INT:
       retval = ParameterSetInteger (param, value); break;
     case PARAMETER_REAL:
+#ifdef HAVE_CCTK_REAL2
+    case PARAMETER_REAL2:
+#endif
+#ifdef HAVE_CCTK_REAL4
+    case PARAMETER_REAL4:
+#endif
+#ifdef HAVE_CCTK_REAL8
+    case PARAMETER_REAL8:
+#endif
+#ifdef HAVE_CCTK_REAL16
+    case PARAMETER_REAL16:
+#endif
       retval = ParameterSetReal (param, value); break;
     case PARAMETER_BOOLEAN:
       retval = ParameterSetBoolean (param, value); break;
@@ -2370,7 +2486,36 @@ static int ParameterSetReal (t_param *param, const char *value)
         if(Util_DoubleInRange (inval, range->range))
         {
 #endif
-          *(CCTK_REAL *) param->data = inval;
+          /* Range checking is always done in double precision (promoting
+           * narrower widths is fine); storage happens at the parameter's
+           * declared width. */
+          switch (param->props->type)
+          {
+#ifdef HAVE_CCTK_REAL2
+            case PARAMETER_REAL2:
+              *(CCTK_REAL2 *) param->data = (CCTK_REAL2) inval;
+              break;
+#endif
+#ifdef HAVE_CCTK_REAL4
+            case PARAMETER_REAL4:
+              *(CCTK_REAL4 *) param->data = (CCTK_REAL4) inval;
+              break;
+#endif
+#ifdef HAVE_CCTK_REAL8
+            case PARAMETER_REAL8:
+              *(CCTK_REAL8 *) param->data = (CCTK_REAL8) inval;
+              break;
+#endif
+#ifdef HAVE_CCTK_REAL16
+            case PARAMETER_REAL16:
+              *(CCTK_REAL16 *) param->data = (CCTK_REAL16) inval;
+              break;
+#endif
+            case PARAMETER_REAL:
+            default:
+              *(CCTK_REAL *) param->data = inval;
+              break;
+          }
           retval = 0;
           break;
 #ifndef CCTK_PARAMUNCHECKED
@@ -2699,6 +2844,34 @@ static int SetVarEvaluator(int nvars, const char * const *vars, uExpressionValue
               vals[i].value.rval = *(const CCTK_REAL *)paramval;
               ierr = 0;
               break;
+#ifdef HAVE_CCTK_REAL2
+            case PARAMETER_REAL2:
+              vals[i].type = rval;
+              vals[i].value.rval = (CCTK_REAL)*(const CCTK_REAL2 *)paramval;
+              ierr = 0;
+              break;
+#endif
+#ifdef HAVE_CCTK_REAL4
+            case PARAMETER_REAL4:
+              vals[i].type = rval;
+              vals[i].value.rval = (CCTK_REAL)*(const CCTK_REAL4 *)paramval;
+              ierr = 0;
+              break;
+#endif
+#ifdef HAVE_CCTK_REAL8
+            case PARAMETER_REAL8:
+              vals[i].type = rval;
+              vals[i].value.rval = (CCTK_REAL)*(const CCTK_REAL8 *)paramval;
+              ierr = 0;
+              break;
+#endif
+#ifdef HAVE_CCTK_REAL16
+            case PARAMETER_REAL16:
+              vals[i].type = rval;
+              vals[i].value.rval = (CCTK_REAL)*(const CCTK_REAL16 *)paramval;
+              ierr = 0;
+              break;
+#endif
             case PARAMETER_INT:
               vals[i].type = ival;
               vals[i].value.ival = *(const CCTK_INT *)paramval;
@@ -2711,7 +2884,7 @@ static int SetVarEvaluator(int nvars, const char * const *vars, uExpressionValue
               break;
             default:
               CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
-                          "SetVarEvaluator: cannot handle type %d for parameter '%s::%s'. Only REAL, INT and BOOLEAN are supported.",
+                          "SetVarEvaluator: cannot handle type %d for parameter '%s::%s'. Only REAL (of any width), INT and BOOLEAN are supported.",
                           type, thorn, name);
               ierr = -1;
               break;

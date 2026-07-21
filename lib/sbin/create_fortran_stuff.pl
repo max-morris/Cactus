@@ -159,6 +159,13 @@ sub CreateFortranCommonDeclaration
   {
     my $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
 
+    # CCTK_REAL2 (16-bit float) has no Fortran counterpart (gfortran has no
+    # REAL*2), so such parameters are simply omitted from the Fortran
+    # bindings. A Fortran thorn that actually tries to use one will fail to
+    # build with an undefined-variable error, but every other parameter in
+    # this common block is unaffected.
+    next if($type eq 'REAL2');
+
     my $type_string = &get_fortran_type_string($type);
 
     my $array_size = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E array_size"};
@@ -215,6 +222,18 @@ sub get_fortran_type_string
   elsif($type eq 'REAL')
   {
     $type_string = 'CCTK_REAL';
+  }
+  elsif($type eq 'REAL4')
+  {
+    $type_string = 'CCTK_REAL4';
+  }
+  elsif($type eq 'REAL8')
+  {
+    $type_string = 'CCTK_REAL8';
+  }
+  elsif($type eq 'REAL16')
+  {
+    $type_string = 'CCTK_REAL16';
   }
   else
   {

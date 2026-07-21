@@ -278,7 +278,11 @@ sub order_params
     {
       push(@int_params, $parameter);
     }
-    elsif($type eq 'REAL')
+    elsif($type eq 'REAL'  ||
+          $type eq 'REAL2' ||
+          $type eq 'REAL4' ||
+          $type eq 'REAL8' ||
+          $type eq 'REAL16')
     {
       push(@float_params, $parameter);
     }
