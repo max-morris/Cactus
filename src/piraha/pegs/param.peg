@@ -34,6 +34,11 @@ lbound = [\(\[]?
 rbound = [\)\]]?
 realrange = {lbound}{realbound} :(?!:) {realbound}{rbound} |{realbound}
 
+# Optional width suffix on REAL parameters, mirroring interface.peg's rnum
+# ([248]|16), so param.ccl can declare CCTK_REAL2/4/8/16 parameters.
+rnum = [248]|16
+realtype = (?i:(CCTK_|)REAL{rnum}?)
+
 boolraw = (?i:true|t|yes|y|false|f|no|n|1|0)
 bool = {-boolraw}|"{-boolraw}"|:(?!:)
 
@@ -70,7 +75,7 @@ intpar = (?i:
   )
 
 realguts = (?i:
-	(CCTK_|)REAL {name_num}
+	{realtype} {name_num}
 	{description}
   {gutpars}
   )

@@ -53,5 +53,9 @@ void CCTKi_ParameterAccumulatorBase(const char *thorn,
 #define PARAMETER_INTEGER  704
 #define PARAMETER_REAL     705
 #define PARAMETER_BOOLEAN  706
+#define PARAMETER_REAL2    707
+#define PARAMETER_REAL4    708
+#define PARAMETER_REAL8    709
+#define PARAMETER_REAL16   710
 
 #endif

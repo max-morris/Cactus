@@ -52,14 +52,25 @@ static const char *cctk_parameter_scopes[] = {"GLOBAL",
 #define PARAMETER_INTEGER   704 /* parameter is integer  */
 #define PARAMETER_REAL      705 /* parameter is float    */
 #define PARAMETER_BOOLEAN   706 /* parameter is bool     */
+/* Sized real parameter types: appended after the original six so that
+ * existing PARAMETER_* values (and any code/ABI depending on them) never
+ * change. */
+#define PARAMETER_REAL2     707 /* parameter is 16-bit float  */
+#define PARAMETER_REAL4     708 /* parameter is 32-bit float  */
+#define PARAMETER_REAL8     709 /* parameter is 64-bit float  */
+#define PARAMETER_REAL16    710 /* parameter is 128-bit float */
 
 #ifdef NEED_PARAMETER_TYPE_STRINGS
-static const char *cctk_parameter_type_names[] = {"KEYWORD", 
-                                                  "STRING", 
-                                                  "SENTENCE", 
-                                                  "INTEGER", 
-                                                  "REAL", 
-                                                  "BOOLEAN"};
+static const char *cctk_parameter_type_names[] = {"KEYWORD",
+                                                  "STRING",
+                                                  "SENTENCE",
+                                                  "INTEGER",
+                                                  "REAL",
+                                                  "BOOLEAN",
+                                                  "REAL2",
+                                                  "REAL4",
+                                                  "REAL8",
+                                                  "REAL16"};
 #endif /* NEED_PARAMETER_TYPE_STRINGS */
 
 /* parameter set mask flags */

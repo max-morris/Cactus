@@ -153,7 +153,14 @@ sub parse_param_ccl
         $n=1;
       }
       my $guts = $gr->group($n);
-      my $name_num = $guts->group(0,"name_num");
+      # realguts leads with a "realtype" group (e.g. "REAL4") which int/
+      # keyword/string/bool guts don't have; skip over it if present so
+      # the following indices line up for every parameter type.
+      my $goff = 0;
+      if($guts->has(0,"realtype")) {
+        $goff = 1;
+      }
+      my $name_num = $guts->group($goff,"name_num");
       my $name = $name_num->group(0,"name")->substring();
       my $as_name = $name;
       my $num;
@@ -162,10 +169,10 @@ sub parse_param_ccl
         $parameter_db{"\U$thorn $as_name\E array_size"} = $num;
       }
       my $gutpars;
-      if($guts->has(2,"gutpars")) {
-        $gutpars = $guts->group(2);
+      if($guts->has($goff+2,"gutpars")) {
+        $gutpars = $guts->group($goff+2);
       } else {
-        $gutpars = $guts->group(1,"gutpars");
+        $gutpars = $guts->group($goff+1,"gutpars");
       }
       my %keys = ();
       for my $child (@{$gutpars->{children}}) {
@@ -194,7 +201,7 @@ sub parse_param_ccl
           $parameter_db{"\U$thorn $as_name\E accumulator-base"}=$val;
         }
       }
-      my $desc = $guts->group(1,"description")->substring();
+      my $desc = $guts->group($goff+1,"description")->substring();
       $desc =~ s/\\\n//g;
       if($desc eq "" and $uses_or_extends eq "") {
 
@@ -304,7 +311,12 @@ sub parse_param_ccl
           }
         }
         $parameter_db{"\U$thorn $as_name\E ranges"} = $item_count-1;
-        $parameter_db{"\U$thorn $as_name\E type"} = "REAL";
+        my $realtype = "REAL";
+        if($guts->has(0,"realtype")) {
+          $realtype = uc($guts->group(0,"realtype")->substring());
+          $realtype =~ s/^CCTK_//;
+        }
+        $parameter_db{"\U$thorn $as_name\E type"} = $realtype;
 
         if($gr->has(-1,"real")) {
             $default = $gr->group(-1,"real")->substring();
