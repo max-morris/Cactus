@@ -6,7 +6,7 @@ name = (?i:[a-z_][a-z0-9_]*)
 filename = (?i:([/.a-z0-9_]|\\[^])*)
 accname = {-name}(::{-name})*
 inum = 16|[1248]
-rnum = [48]|16
+rnum = [248]|16
 cnum = 8|16|32
 
 num = [0-9]+

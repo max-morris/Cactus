@@ -128,6 +128,10 @@ sub get_c_type_string
   {
     $type_string = 'CCTK_REAL';
   }
+  elsif($type eq 'REAL2')
+  {
+    $type_string = 'CCTK_REAL2';
+  }
   elsif($type eq 'REAL4')
   {
     $type_string = 'CCTK_REAL4';
