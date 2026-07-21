@@ -867,6 +867,10 @@ int CCTK_VarTypeNumber (const char *type)
   {
     retval = CCTK_VARIABLE_REAL16;
   }
+  else if (! strcmp (type, "REAL2"))
+  {
+    retval = CCTK_VARIABLE_REAL2;
+  }
   else if (! strcmp (type, "COMPLEX"))
   {
     retval = CCTK_VARIABLE_COMPLEX;
@@ -955,6 +959,10 @@ const char *CCTK_VarTypeName (int vtype)
 
     case CCTK_VARIABLE_REAL8:
       retval = "CCTK_VARIABLE_REAL8";
+      break;
+
+    case CCTK_VARIABLE_REAL2:
+      retval = "CCTK_VARIABLE_REAL2";
       break;
 
     case CCTK_VARIABLE_COMPLEX:
@@ -1933,6 +1941,12 @@ int CCTK_VarTypeSize (int vtype)
 
     case CCTK_VARIABLE_COMPLEX8:
       var_size = sizeof (CCTK_COMPLEX8);
+      break;
+#endif
+
+#ifdef HAVE_CCTK_REAL2
+    case CCTK_VARIABLE_REAL2:
+      var_size = sizeof (CCTK_REAL2);
       break;
 #endif
 

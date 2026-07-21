@@ -55,6 +55,9 @@ typedef CCTK_REAL8_TYPE CCTK_REAL8;
 #ifdef HAVE_CCTK_REAL4
 typedef CCTK_REAL4_TYPE CCTK_REAL4;
 #endif
+#ifdef HAVE_CCTK_REAL2
+typedef CCTK_REAL2_TYPE CCTK_REAL2;
+#endif
 
 /* Declarations for complex types */
 

@@ -23,6 +23,7 @@
 #define CCTK_VARIABLE_REAL4            131
 #define CCTK_VARIABLE_REAL8            132
 #define CCTK_VARIABLE_REAL16           133
+#define CCTK_VARIABLE_REAL2            134
 #define CCTK_VARIABLE_COMPLEX          140
 #define CCTK_VARIABLE_COMPLEX8         141
 #define CCTK_VARIABLE_COMPLEX16        142

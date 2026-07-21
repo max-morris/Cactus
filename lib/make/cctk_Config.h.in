@@ -150,6 +150,7 @@
 #undef HAVE_CCTK_REAL16
 #undef HAVE_CCTK_REAL8
 #undef HAVE_CCTK_REAL4
+#undef HAVE_CCTK_REAL2
 
 /******************************************************************************/
 
@@ -171,6 +172,7 @@
 #undef CCTK_REAL16_TYPE
 #undef CCTK_REAL8_TYPE
 #undef CCTK_REAL4_TYPE
+#undef CCTK_REAL2_TYPE
 
 /* Disable 'restrict' for compiler versions known to be broken */
 #undef CCTK_DISABLE_RESTRICT

@@ -9435,6 +9435,47 @@ else
 printf '%s\n' "no" >&6; }
 fi
 
+# Check if we have _Float16 (16-bit IEEE binary16; requires GCC >= 12 on
+# x86-64; arithmetic is software-promoted).  There is no corresponding
+# Fortran type, so CCTK_REAL2 is a C/C++-only feature.
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking if _Float16 is defined and usable" >&5
+printf %s "checking if _Float16 is defined and usable... " >&6; }
+if test ${cctk_cv_have__Float16+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main (void)
+{
+_Float16 cctk_f16_a = 1, cctk_f16_b = 2; volatile _Float16 cctk_f16_c = cctk_f16_a + cctk_f16_b; return (int)cctk_f16_c;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  eval "cctk_cv_have__Float16=yes"
+else case e in #(
+  e) eval "cctk_cv_have__Float16=no" ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+ ;;
+esac
+fi
+
+if test "$cctk_cv_have__Float16" = 'yes'; then
+  CCTK_REAL2_TYPE='_Float16'
+  { printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf '%s\n' "yes" >&6; }
+else
+  { printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf '%s\n' "no" >&6; }
+fi
+
 # C++ STL stuff
 
 if test "x$CXX" != 'xnone' ; then
@@ -14141,6 +14182,19 @@ if test -n "$CCTK_REAL4_TYPE" -a \( "x$F90" = "x$F90_NONE" -o \( "x$cctk_cv_have
   printf '%s\n' "#define CCTK_REAL4_TYPE $CCTK_REAL4_TYPE" >>confdefs.h
 
   printf '%s\n' "#define HAVE_CCTK_REAL4 1" >>confdefs.h
+
+fi
+
+if test "x$DISABLE_REAL2" != 'xyes' -a "x$DISABLE_REAL2" != 'xno' -a "x$DISABLE_REAL2" != 'x'; then
+    as_fn_error $? "Didn't recognise setting of DISABLE_REAL2=\"$DISABLE_REAL2\"; should be either \"yes\" or \"no\" or \"\" (empty)" "$LINENO" 5
+fi
+
+# CCTK_REAL2 (_Float16) has no Fortran counterpart, so it is enabled
+# purely based on the C/C++ compiler probe above (no F90 gating).
+if test -n "$CCTK_REAL2_TYPE" -a "x$DISABLE_REAL2" != 'xyes'; then
+  printf '%s\n' "#define CCTK_REAL2_TYPE $CCTK_REAL2_TYPE" >>confdefs.h
+
+  printf '%s\n' "#define HAVE_CCTK_REAL2 1" >>confdefs.h
 
 fi
 

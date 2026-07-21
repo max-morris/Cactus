@@ -833,6 +833,20 @@ else
   AC_MSG_RESULT(no)
 fi
 
+# Check if we have _Float16 (16-bit IEEE binary16; requires GCC >= 12 on
+# x86-64; arithmetic is software-promoted).  There is no corresponding
+# Fortran type, so CCTK_REAL2 is a C/C++-only feature.
+AC_MSG_CHECKING([if _Float16 is defined and usable])
+AC_CACHE_VAL(cctk_cv_have__Float16,
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[_Float16 cctk_f16_a = 1, cctk_f16_b = 2; volatile _Float16 cctk_f16_c = cctk_f16_a + cctk_f16_b; return (int)cctk_f16_c;]])],[eval "cctk_cv_have__Float16=yes"],[eval "cctk_cv_have__Float16=no"])
+])
+if test "$cctk_cv_have__Float16" = 'yes'; then
+  CCTK_REAL2_TYPE='_Float16'
+  AC_MSG_RESULT(yes)
+else
+  AC_MSG_RESULT(no)
+fi
+
 # C++ STL stuff
 
 if test "x$CXX" != 'xnone' ; then
@@ -1285,6 +1299,17 @@ fi
 if test -n "$CCTK_REAL4_TYPE" -a \( "x$F90" = "x$F90_NONE" -o \( "x$cctk_cv_have_fortran_real4" = 'xyes' -a "x$cctk_cv_have_fortran_complex8" = 'xyes' \) \); then
   AC_DEFINE_UNQUOTED(CCTK_REAL4_TYPE, $CCTK_REAL4_TYPE)
   AC_DEFINE(HAVE_CCTK_REAL4)
+fi
+
+if test "x$DISABLE_REAL2" != 'xyes' -a "x$DISABLE_REAL2" != 'xno' -a "x$DISABLE_REAL2" != 'x'; then
+    AC_MSG_ERROR(Didn't recognise setting of DISABLE_REAL2="$DISABLE_REAL2"; should be either "yes" or "no" or "" (empty))
+fi
+
+# CCTK_REAL2 (_Float16) has no Fortran counterpart, so it is enabled
+# purely based on the C/C++ compiler probe above (no F90 gating).
+if test -n "$CCTK_REAL2_TYPE" -a "x$DISABLE_REAL2" != 'xyes'; then
+  AC_DEFINE_UNQUOTED(CCTK_REAL2_TYPE, $CCTK_REAL2_TYPE)
+  AC_DEFINE(HAVE_CCTK_REAL2)
 fi
 
 
