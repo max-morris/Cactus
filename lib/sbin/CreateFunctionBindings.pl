@@ -1115,6 +1115,8 @@ sub AliasedFunctions
     if ($Function)
     {
       $debug and print "provided Function is ",$Function->{"Name"},"\n";
+      my $hasreal2 = &FunctionHasReal2($Function);
+      push(@data,"#ifdef HAVE_CCTK_REAL2") if ($hasreal2);
       push(@data,"/*");
       push(@data," * The function pointers to be set");
       push(@data," */");
@@ -1148,6 +1150,7 @@ sub AliasedFunctions
       push(@data,&printRegisterAliasedPrototypes("Fortran",$Function));
       push(@data,&printRegisterAliased("Fortran",$Function));
       push(@data,"");
+      push(@data,"#endif /* HAVE_CCTK_REAL2 */") if ($hasreal2);
     }
   }
   return join ("\n",@data);
@@ -1892,6 +1895,9 @@ sub UsesPrototypes
     $debug and print "  Function is ", $Function->{"Name"},"\n";
     next if (! $Function);
 
+    my $hasreal2 = &FunctionHasReal2($Function);
+    push(@data, '#ifdef HAVE_CCTK_REAL2') if ($hasreal2);
+
     if ($Function->{"Used"})
     {
       my @cargs = &printArgList("C",$Function->{"Arguments"});
@@ -1903,6 +1909,8 @@ sub UsesPrototypes
       push(@data, "$Function->{\"Return Type\"} $Function->{\"Provider\"}(@cargs);");
     }
     push(@data, '');
+
+    push(@data, '#endif /* HAVE_CCTK_REAL2 */') if ($hasreal2);
   }
 
   push(@data, '#ifdef __cplusplus');
@@ -2074,6 +2082,8 @@ sub ProvidedFunctions
     {
       if ($Function->{"Provided"})
       {
+        my $hasreal2 = &FunctionHasReal2($Function);
+        push(@data,"#ifdef HAVE_CCTK_REAL2") if ($hasreal2);
         my $rettype = $Function->{"Return Type"};
         my $providetype = $Function->{"Provider Language"};
         my @args = &printArgList($providetype,$Function->{"Arguments"});
@@ -2172,6 +2182,7 @@ sub ProvidedFunctions
 #            print "\n";
 #            print @{$WrapperFunctionList{$nameC}{"Calling Sequence"}};
 #            print "\n";
+        push(@data,"#endif /* HAVE_CCTK_REAL2 */") if ($hasreal2);
       }
     }
   }
@@ -2185,8 +2196,11 @@ sub ProvidedFunctions
     $Function = $FunctionList{$FunctionKey};
     if ($Function && $Function->{"Provided"})
     {
+      my $hasreal2 = &FunctionHasReal2($Function);
+      push(@data,"#ifdef HAVE_CCTK_REAL2") if ($hasreal2);
       push(@data,&printRegisterAliasedPrototypes("C",$Function));
       push(@data,&printRegisterAliasedPrototypes("Fortran",$Function));
+      push(@data,"#endif /* HAVE_CCTK_REAL2 */") if ($hasreal2);
     }
   }
 
@@ -2205,6 +2219,8 @@ sub ProvidedFunctions
     {
       if ($Function->{"Provided"})
       {
+        my $hasreal2 = &FunctionHasReal2($Function);
+        push(@data,"#ifdef HAVE_CCTK_REAL2") if ($hasreal2);
         my $type = $Function->{"Provider Language"};
         my @args = &printArgList($type,$Function->{"Arguments"});
         my $name = $Function->{"Name"};
@@ -2227,6 +2243,7 @@ sub ProvidedFunctions
         push(@data,"    CCTK_Error(__LINE__, __FILE__, \"Bindings\",");
         push(@data,"               \"Aliased function $name already registered! It is provided by the function $provider.\");");
         push(@data,"  }");
+        push(@data,"#endif /* HAVE_CCTK_REAL2 */") if ($hasreal2);
       }
     }
   }
