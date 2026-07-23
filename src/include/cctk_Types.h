@@ -56,7 +56,48 @@ typedef CCTK_REAL8_TYPE CCTK_REAL8;
 typedef CCTK_REAL4_TYPE CCTK_REAL4;
 #endif
 #ifdef HAVE_CCTK_REAL2
+/* GPU Validation Plan step 0 (mixed-precision project): CCTK_REAL2_TYPE is
+ * `_Float16` (see configure), which nvcc rejects outright -- both its host
+ * and device compilation passes -- as of CUDA 12.2 ("identifier
+ * \"_Float16\" is undefined"), confirmed on a real A100 (sm_80). CUDA's
+ * native `__half` type, by contrast, was confirmed to work correctly in
+ * device code on that same machine. So under nvcc (i.e. in any .cu/.cxx
+ * translation unit nvcc compiles -- CarpetX's CUDA build compiles all of
+ * its C++ TUs with nvcc), map CCTK_REAL2 to `__half` instead of
+ * `_Float16`; every other compiler keeps `_Float16` exactly as before this
+ * change (byte-for-byte no-op there).
+ *
+ * `_Float16` and `__half` are both IEEE-754 binary16 (1 sign + 5 exponent
+ * + 10 mantissa bits), with identical size and alignment (enforced by the
+ * static assertion below), so host TUs (compiled by gcc, using
+ * `_Float16`) and nvcc TUs (using `__half`) interoperate correctly through
+ * memory -- grid function storage, MPI buffers, checkpoint files, and any
+ * other byte-level transfer of CCTK_REAL2 data -- without ever needing to
+ * interoperate through a cross-TU function call that takes or returns a
+ * CCTK_REAL2 by value. flesh's own C code never performs CCTK_REAL2
+ * arithmetic outside such byte-level (void* / reinterpret) paths (see
+ * src/main/Parameters.c and src/main/Groups.c, the only flesh sources that
+ * reference CCTK_REAL2 at all) and, being C, is never itself compiled by
+ * nvcc -- only CarpetX's C++ translation units are -- so this switch does
+ * not change what compiler processes flesh's own sources; it only changes
+ * what CCTK_REAL2 resolves to when *this shared header* is included from a
+ * TU that nvcc is compiling.
+ */
+#ifdef __CUDACC__
+#include <cuda_fp16.h>
+typedef __half CCTK_REAL2;
+#else
 typedef CCTK_REAL2_TYPE CCTK_REAL2;
+#endif
+#ifdef __cplusplus
+static_assert(sizeof(CCTK_REAL2) == 2,
+             "CCTK_REAL2 must be exactly 2 bytes (IEEE-754 binary16), "
+             "whether it is `_Float16` or `__half`");
+#else
+_Static_assert(sizeof(CCTK_REAL2) == 2,
+              "CCTK_REAL2 must be exactly 2 bytes (IEEE-754 binary16), "
+              "whether it is `_Float16` or `__half`");
+#endif
 #endif
 
 /* Declarations for complex types */
