@@ -52,13 +52,6 @@ static const char *cctk_parameter_scopes[] = {"GLOBAL",
 #define PARAMETER_INTEGER   704 /* parameter is integer  */
 #define PARAMETER_REAL      705 /* parameter is float    */
 #define PARAMETER_BOOLEAN   706 /* parameter is bool     */
-/* Sized real parameter types: appended after the original six so that
- * existing PARAMETER_* values (and any code/ABI depending on them) never
- * change. */
-#define PARAMETER_REAL2     707 /* parameter is 16-bit float  */
-#define PARAMETER_REAL4     708 /* parameter is 32-bit float  */
-#define PARAMETER_REAL8     709 /* parameter is 64-bit float  */
-#define PARAMETER_REAL16    710 /* parameter is 128-bit float */
 
 #ifdef NEED_PARAMETER_TYPE_STRINGS
 static const char *cctk_parameter_type_names[] = {"KEYWORD",
@@ -66,11 +59,7 @@ static const char *cctk_parameter_type_names[] = {"KEYWORD",
                                                   "SENTENCE",
                                                   "INTEGER",
                                                   "REAL",
-                                                  "BOOLEAN",
-                                                  "REAL2",
-                                                  "REAL4",
-                                                  "REAL8",
-                                                  "REAL16"};
+                                                  "BOOLEAN"};
 #endif /* NEED_PARAMETER_TYPE_STRINGS */
 
 /* parameter set mask flags */
@@ -127,7 +116,19 @@ typedef struct PARAM_PROPS
   int      array_index;
 
   char    *accumulator_expression;
-  
+
+  /* Declared storage width, in bytes, of a PARAMETER_REAL parameter (2, 4,
+   * 8 or 16 for an explicitly-sized "REALn" parameter; sizeof(CCTK_REAL)
+   * for a plain "REAL" parameter). Not meaningful for other types. This
+   * field is appended at the end of the struct (rather than sorted in
+   * with the rest) so that existing code built against an older
+   * cParamData layout keeps working unchanged; only code that explicitly
+   * knows about it needs to look at it. See CCTK_ParameterGet(): for a
+   * parameter whose realsize differs from sizeof(CCTK_REAL), the pointer
+   * it returns does *not* point at this declared-width storage but at a
+   * flesh-maintained CCTK_REAL-widened shadow copy. */
+  int      realsize;
+
 } cParamData;
 
 
@@ -150,7 +151,14 @@ int CCTK_ParameterSet (const char *name,      /* The name of the parameter  */
                        const char *thorn,     /* The originating thorn      */
                        const char *value);    /* The value of the parameter */
 
-/* get the data pointer to and type of a parameter's value */
+/* get the data pointer to and type of a parameter's value.
+ * NOTE: for a PARAMETER_REAL parameter declared at a non-default width
+ * (an explicitly-sized "REALn" parameter whose cParamData::realsize is
+ * not sizeof(CCTK_REAL)), the returned pointer refers to a flesh-
+ * maintained CCTK_REAL-widened shadow copy of the value, not to the
+ * declared-width storage itself -- so existing callers that dereference
+ * it as "const CCTK_REAL *" keep working. DECLARE_CCTK_PARAMETERS in
+ * thorn code still exposes the parameter at its declared width. */
 const void *CCTK_ParameterGet (const char *name,  /* The name of the parameter*/
                                const char *thorn, /* The originating thorn    */
                                int *type);        /* Holds type of parameter  */

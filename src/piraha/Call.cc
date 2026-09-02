@@ -256,13 +256,6 @@ read_write& read_write_status(const std::string& thorn,const std::string& name) 
   return read_write_status(key);
 }
 
-// True for PARAMETER_REAL and all of its sized variants (REAL2/4/8/16).
-static bool is_real_param_type(int t) {
-    return t == PARAMETER_REAL  || t == PARAMETER_REAL2 ||
-           t == PARAMETER_REAL4 || t == PARAMETER_REAL8 ||
-           t == PARAMETER_REAL16;
-}
-
 // If the value was already defined in this parameter file, look
 // it up in the map. Otherwise, get it from Cactus.
 std::shared_ptr<Value> find_val(std::shared_ptr<Group> gr,std::string thorn,std::string name) {
@@ -285,30 +278,6 @@ std::shared_ptr<Value> find_val(std::shared_ptr<Group> gr,std::string thorn,std:
             ret->type = PIR_REAL;
             ret->ddata = *(const CCTK_REAL*)result;
             break;
-#ifdef HAVE_CCTK_REAL2
-        case PARAMETER_REAL2:
-            ret->type = PIR_REAL;
-            ret->ddata = (CCTK_REAL)*(const CCTK_REAL2*)result;
-            break;
-#endif
-#ifdef HAVE_CCTK_REAL4
-        case PARAMETER_REAL4:
-            ret->type = PIR_REAL;
-            ret->ddata = (CCTK_REAL)*(const CCTK_REAL4*)result;
-            break;
-#endif
-#ifdef HAVE_CCTK_REAL8
-        case PARAMETER_REAL8:
-            ret->type = PIR_REAL;
-            ret->ddata = (CCTK_REAL)*(const CCTK_REAL8*)result;
-            break;
-#endif
-#ifdef HAVE_CCTK_REAL16
-        case PARAMETER_REAL16:
-            ret->type = PIR_REAL;
-            ret->ddata = (CCTK_REAL)*(const CCTK_REAL16*)result;
-            break;
-#endif
         case PARAMETER_INT:
             ret->type = PIR_INT;
             ret->idata = *(const CCTK_INT*)result;
@@ -968,7 +937,7 @@ void check_types(const char *thorn,int line,std::shared_ptr<Value> svm,int t) {
         ok = true;
     else if(v == PIR_BOOL && t == PARAMETER_BOOLEAN)
         ok = true;
-    else if((v == PIR_INT || v == PIR_REAL) && is_real_param_type(t))
+    else if((v == PIR_INT || v == PIR_REAL) && t == PARAMETER_REAL)
         ok = true;
     if(!ok) {
         std::string par = get_parfile();
@@ -989,18 +958,6 @@ void check_types(const char *thorn,int line,std::shared_ptr<Value> svm,int t) {
                 break;
             case PARAMETER_REAL:
                 msg << "REAL";
-                break;
-            case PARAMETER_REAL2:
-                msg << "REAL2";
-                break;
-            case PARAMETER_REAL4:
-                msg << "REAL4";
-                break;
-            case PARAMETER_REAL8:
-                msg << "REAL8";
-                break;
-            case PARAMETER_REAL16:
-                msg << "REAL16";
                 break;
             default:
                 msg << "type(" << t << ")";
@@ -1191,7 +1148,7 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
                         assert(smv);
                         smv->integerize();
                         if(data != NULL) {
-                            if(is_real_param_type(data->type))
+                            if(data->type == PARAMETER_REAL)
                                 smv->integerize();
                             if(data->type == PARAMETER_BOOLEAN)
                                 smv->booleanize(gr);
@@ -1216,7 +1173,7 @@ extern "C" int cctk_PirahaParser(const char *buffer,unsigned long buffersize,int
                             std::shared_ptr<Value> smv = meval(aexpr,0);
                             val = smv->copy();
                             if(data != NULL) {
-                                if(is_real_param_type(data->type))
+                                if(data->type == PARAMETER_REAL)
                                     smv->integerize();
                                 if(data->type == PARAMETER_BOOLEAN)
                                     smv->booleanize(gr);

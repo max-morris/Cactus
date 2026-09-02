@@ -59,6 +59,22 @@ typedef struct PARAM
   struct PARAM **accumulator_bases;
 
   struct PARAM *array;
+
+  /* For a PARAMETER_REAL parameter, a flesh-maintained CCTK_REAL-widened
+   * copy of the value currently held in `data` (which is stored at the
+   * parameter's declared width, props->realsize). Kept up to date by
+   * ParameterRefreshShadow() every time `data` is written (currently only
+   * in ParameterSetReal(), which every parameter-setting path -- initial
+   * default, parameter-file, steering, accumulators -- funnels through).
+   * CCTK_ParameterGet() hands out a pointer to this shadow (rather than
+   * to `data`) whenever props->realsize != sizeof(CCTK_REAL), since
+   * existing flesh-external consumers dereference a PARAMETER_REAL
+   * pointer as `const CCTK_REAL *`. Thorn code itself never sees this --
+   * DECLARE_CCTK_PARAMETERS still exposes the parameter at its declared
+   * width via the generated struct member. Unused (but kept valid) for
+   * non-real parameters and for real parameters whose declared width
+   * already equals sizeof(CCTK_REAL). */
+  CCTK_REAL shadow;
 } t_param;
 
 /* what is a list of parameters:
@@ -145,7 +161,8 @@ static cParamData *ParamDataNew(char *thorn,
                                 int   steerable,
                                 int   array_size,
                                 int   array_index,
-                                char *accumulator_expression);
+                                char *accumulator_expression,
+                                int   realsize);
 
 static const void *ParameterGetSimple (const t_param *param, int *type);
 
@@ -158,6 +175,8 @@ static t_paramtreenode *ParameterPTreeNodeFind (t_sktree *tree,
 
 static int ParameterGetScope (const char *scope);
 static int ParameterGetType (const char *type);
+static int ParameterGetRealSize (const char *type);
+static void ParameterRefreshShadow (t_param *param);
 
 static int ParameterInsert (t_sktree **tree, t_param *newparam);
 
@@ -859,42 +878,16 @@ char *CCTK_ParameterValString (const char *param_name, const char *thorn)
         break;
 
       case PARAMETER_REAL:
+        /* param_data always points at a CCTK_REAL-widened value here --
+         * either the storage itself (declared "REAL", or a sized "REALn"
+         * whose width happens to match CCTK_REAL), or the shadow copy
+         * CCTK_ParameterGet() maintains for narrower/wider declared
+         * widths -- so a single case handles every real width and the
+         * value round-trips exactly for binary16/32 (verified). */
         snprintf (buffer, sizeof buffer,
                   "%.20g", (double) *(const CCTK_REAL *) param_data);
         retval = strdup (buffer);
         break;
-
-#ifdef HAVE_CCTK_REAL2
-      case PARAMETER_REAL2:
-        snprintf (buffer, sizeof buffer,
-                  "%.20g", (double) *(const CCTK_REAL2 *) param_data);
-        retval = strdup (buffer);
-        break;
-#endif
-
-#ifdef HAVE_CCTK_REAL4
-      case PARAMETER_REAL4:
-        snprintf (buffer, sizeof buffer,
-                  "%.20g", (double) *(const CCTK_REAL4 *) param_data);
-        retval = strdup (buffer);
-        break;
-#endif
-
-#ifdef HAVE_CCTK_REAL8
-      case PARAMETER_REAL8:
-        snprintf (buffer, sizeof buffer,
-                  "%.20g", (double) *(const CCTK_REAL8 *) param_data);
-        retval = strdup (buffer);
-        break;
-#endif
-
-#ifdef HAVE_CCTK_REAL16
-      case PARAMETER_REAL16:
-        snprintf (buffer, sizeof buffer,
-                  "%.20g", (double) *(const CCTK_REAL16 *) param_data);
-        retval = strdup (buffer);
-        break;
-#endif
 
       default:
         CCTK_VWarn (3, __LINE__, __FILE__, "Cactus",
@@ -1424,6 +1417,7 @@ static t_param *ParameterNew (const char *thorn,
       newparam->props->n_set       = 0;
       newparam->props->array_size  = arraysize;
       newparam->props->array_index = -1;
+      newparam->props->realsize    = ParameterGetRealSize(type);
 
       if(accumulator_expression)
       {
@@ -1473,7 +1467,8 @@ static t_param *ParameterNew (const char *thorn,
                                                     newparam->props->steerable,
                                                     newparam->props->array_size,
                                                     i,
-                                                    newparam->props->accumulator_expression);
+                                                    newparam->props->accumulator_expression,
+                                                    newparam->props->realsize);
 
             newparam->array[i].n_accumulator_sources = 0;
             newparam->array[i].accumulates_from      = NULL;
@@ -1487,24 +1482,14 @@ static t_param *ParameterNew (const char *thorn,
               case PARAMETER_BOOLEAN : /*Fall through */
               case PARAMETER_INT  : newparam->array[i].data = &(((CCTK_INT *)data)[i]);
                                     break;
-              case PARAMETER_REAL : newparam->array[i].data = &(((CCTK_REAL *)data)[i]);
-                                    break;
-#ifdef HAVE_CCTK_REAL2
-              case PARAMETER_REAL2 : newparam->array[i].data = &(((CCTK_REAL2 *)data)[i]);
-                                    break;
-#endif
-#ifdef HAVE_CCTK_REAL4
-              case PARAMETER_REAL4 : newparam->array[i].data = &(((CCTK_REAL4 *)data)[i]);
-                                    break;
-#endif
-#ifdef HAVE_CCTK_REAL8
-              case PARAMETER_REAL8 : newparam->array[i].data = &(((CCTK_REAL8 *)data)[i]);
-                                    break;
-#endif
-#ifdef HAVE_CCTK_REAL16
-              case PARAMETER_REAL16 : newparam->array[i].data = &(((CCTK_REAL16 *)data)[i]);
-                                    break;
-#endif
+              case PARAMETER_REAL :
+                /* `data` is an array of the declared-width storage type;
+                 * index it in units of realsize bytes rather than
+                 * sizeof(CCTK_REAL), since a sized "REALn" array
+                 * parameter's element width need not match CCTK_REAL. */
+                newparam->array[i].data =
+                  (char *) data + (size_t) i * (size_t) newparam->props->realsize;
+                break;
               default :
                 /* All remaining types are strings */
                 newparam->array[i].data = &(((CCTK_CHAR **)data)[i]);
@@ -1593,7 +1578,8 @@ static cParamData *ParamDataNew(char *thorn,
                                 int   steerable,
                                 int   array_size,
                                 int   array_index,
-                                char *accumulator_expression)
+                                char *accumulator_expression,
+                                int   realsize)
 {
   cParamData *props;
 
@@ -1614,6 +1600,7 @@ static cParamData *ParamDataNew(char *thorn,
     props->array_index = array_index;
 
     props->accumulator_expression = accumulator_expression;
+    props->realsize    = realsize;
   }
 
   return props;
@@ -1686,21 +1673,19 @@ static int ParameterGetType (const char *type)
   {
     retval = PARAMETER_BOOLEAN;
   }
-  else if (! Util_StrCmpi (type, "REAL2"))
+  else if (! Util_StrCmpi (type, "REAL2")  ||
+           ! Util_StrCmpi (type, "REAL4")  ||
+           ! Util_StrCmpi (type, "REAL8")  ||
+           ! Util_StrCmpi (type, "REAL16"))
   {
-    retval = PARAMETER_REAL2;
-  }
-  else if (! Util_StrCmpi (type, "REAL4"))
-  {
-    retval = PARAMETER_REAL4;
-  }
-  else if (! Util_StrCmpi (type, "REAL8"))
-  {
-    retval = PARAMETER_REAL8;
-  }
-  else if (! Util_StrCmpi (type, "REAL16"))
-  {
-    retval = PARAMETER_REAL16;
+    /* Explicitly-sized real parameters ("REALn" in the bindings, i.e. the
+     * type string CCTKi_ParameterCreate() is called with) are reported to
+     * the outside world as plain PARAMETER_REAL -- the same public type
+     * code as an ordinary "REAL" parameter -- so existing code that
+     * switches on cParamData::type keeps working unchanged. The declared
+     * storage width is tracked separately, see ParameterGetRealSize() and
+     * cParamData::realsize. */
+    retval = PARAMETER_REAL;
   }
   else
   {
@@ -1708,6 +1693,109 @@ static int ParameterGetType (const char *type)
   }
 
   return (retval);
+}
+
+
+/*@@
+   @routine    ParameterGetRealSize
+   @date       2026
+   @desc
+   Returns the declared storage width, in bytes, for a real-valued
+   parameter type string ("REAL", "REAL2", "REAL4", "REAL8" or "REAL16",
+   as emitted into CCTKi_ParameterCreate()'s "type" argument by the
+   generated bindings). Returns sizeof(CCTK_REAL) for plain "REAL".
+   Returns 0 for a type string which is not a recognised real type (the
+   caller should not use cParamData::realsize for non-PARAMETER_REAL
+   parameters).
+   @enddesc
+@@*/
+static int ParameterGetRealSize (const char *type)
+{
+  int retval;
+
+  if (! Util_StrCmpi (type, "REAL"))
+  {
+    retval = sizeof (CCTK_REAL);
+  }
+#ifdef HAVE_CCTK_REAL2
+  else if (! Util_StrCmpi (type, "REAL2"))
+  {
+    retval = sizeof (CCTK_REAL2);
+  }
+#endif
+#ifdef HAVE_CCTK_REAL4
+  else if (! Util_StrCmpi (type, "REAL4"))
+  {
+    retval = sizeof (CCTK_REAL4);
+  }
+#endif
+#ifdef HAVE_CCTK_REAL8
+  else if (! Util_StrCmpi (type, "REAL8"))
+  {
+    retval = sizeof (CCTK_REAL8);
+  }
+#endif
+#ifdef HAVE_CCTK_REAL16
+  else if (! Util_StrCmpi (type, "REAL16"))
+  {
+    retval = sizeof (CCTK_REAL16);
+  }
+#endif
+  else
+  {
+    retval = 0;
+  }
+
+  return (retval);
+}
+
+
+/*@@
+   @routine    ParameterRefreshShadow
+   @date       2026
+   @desc
+   Brings a PARAMETER_REAL parameter's CCTK_REAL-widened shadow copy
+   (t_param::shadow) up to date with the value currently held in its
+   declared-width storage (t_param::data). Must be called after every
+   write to `data`. A no-op for non-real parameters.
+   @enddesc
+@@*/
+static void ParameterRefreshShadow (t_param *param)
+{
+  if (param->props->type != PARAMETER_REAL)
+  {
+    return;
+  }
+
+  switch (param->props->realsize)
+  {
+#ifdef HAVE_CCTK_REAL2
+    case 2:
+      param->shadow = (CCTK_REAL) *(const CCTK_REAL2 *) param->data;
+      break;
+#endif
+#ifdef HAVE_CCTK_REAL4
+    case 4:
+      param->shadow = (CCTK_REAL) *(const CCTK_REAL4 *) param->data;
+      break;
+#endif
+#ifdef HAVE_CCTK_REAL8
+    case 8:
+      param->shadow = (CCTK_REAL) *(const CCTK_REAL8 *) param->data;
+      break;
+#endif
+#ifdef HAVE_CCTK_REAL16
+    case 16:
+      param->shadow = (CCTK_REAL) *(const CCTK_REAL16 *) param->data;
+      break;
+#endif
+    default:
+      /* realsize == sizeof(CCTK_REAL): `data` already holds a CCTK_REAL
+       * (this covers plain "REAL" parameters, and any "REALn" parameter
+       * whose declared width happens to equal sizeof(CCTK_REAL)). */
+      param->shadow = *(const CCTK_REAL *) param->data;
+      break;
+  }
 }
 
 
@@ -1774,6 +1862,20 @@ static const void *ParameterGetSimple (const t_param *param, int *type)
   if (type)
   {
     *type = param->props->type;
+  }
+
+  /* An explicitly-sized real parameter whose declared width differs from
+   * sizeof(CCTK_REAL) is stored at its declared (narrower or wider)
+   * width; hand out a pointer to the CCTK_REAL-widened shadow instead, so
+   * that callers which dereference a PARAMETER_REAL pointer as
+   * "const CCTK_REAL *" (the overwhelming majority of existing code) keep
+   * working. For every other parameter (including a plain "REAL" or a
+   * "REALn" parameter whose width matches CCTK_REAL) this is exactly the
+   * pre-existing behaviour: return the storage pointer itself. */
+  if (param->props->type == PARAMETER_REAL &&
+      param->props->realsize != (int) sizeof (CCTK_REAL))
+  {
+    return (&param->shadow);
   }
 
   return (param->data);
@@ -1973,18 +2075,6 @@ static int ParameterSetAccumulator(t_param *param)
       break;
 
     case PARAMETER_REAL :
-#ifdef HAVE_CCTK_REAL2
-    case PARAMETER_REAL2 :
-#endif
-#ifdef HAVE_CCTK_REAL4
-    case PARAMETER_REAL4 :
-#endif
-#ifdef HAVE_CCTK_REAL8
-    case PARAMETER_REAL8 :
-#endif
-#ifdef HAVE_CCTK_REAL16
-    case PARAMETER_REAL16 :
-#endif
       xy[0].type = rval;
       xy[0].value.rval = atof(param->props->defval);
       break;
@@ -2010,37 +2100,15 @@ static int ParameterSetAccumulator(t_param *param)
             break;
 
           case PARAMETER_REAL :
+            /* accumulates_from[i]->data is the declared-width storage,
+             * which need not be CCTK_REAL-wide for a sized "REALn"
+             * parameter; go through ParameterGetSimple() rather than
+             * dereferencing `data` directly, so we pick up the
+             * CCTK_REAL-widened shadow where one is needed. */
             xy[1].type = rval;
-            xy[1].value.rval = *((CCTK_REAL *)param->accumulates_from[i]->data);;
+            xy[1].value.rval =
+              *(const CCTK_REAL *) ParameterGetSimple (param->accumulates_from[i], NULL);
             break;
-
-#ifdef HAVE_CCTK_REAL2
-          case PARAMETER_REAL2 :
-            xy[1].type = rval;
-            xy[1].value.rval = (CCTK_REAL)*((CCTK_REAL2 *)param->accumulates_from[i]->data);
-            break;
-#endif
-
-#ifdef HAVE_CCTK_REAL4
-          case PARAMETER_REAL4 :
-            xy[1].type = rval;
-            xy[1].value.rval = (CCTK_REAL)*((CCTK_REAL4 *)param->accumulates_from[i]->data);
-            break;
-#endif
-
-#ifdef HAVE_CCTK_REAL8
-          case PARAMETER_REAL8 :
-            xy[1].type = rval;
-            xy[1].value.rval = (CCTK_REAL)*((CCTK_REAL8 *)param->accumulates_from[i]->data);
-            break;
-#endif
-
-#ifdef HAVE_CCTK_REAL16
-          case PARAMETER_REAL16 :
-            xy[1].type = rval;
-            xy[1].value.rval = (CCTK_REAL)*((CCTK_REAL16 *)param->accumulates_from[i]->data);
-            break;
-#endif
 
           default :
             retval = -8;
@@ -2125,18 +2193,6 @@ static int ParameterSetSimple (t_param *param, const char *value)
     case PARAMETER_INT:
       retval = ParameterSetInteger (param, value); break;
     case PARAMETER_REAL:
-#ifdef HAVE_CCTK_REAL2
-    case PARAMETER_REAL2:
-#endif
-#ifdef HAVE_CCTK_REAL4
-    case PARAMETER_REAL4:
-#endif
-#ifdef HAVE_CCTK_REAL8
-    case PARAMETER_REAL8:
-#endif
-#ifdef HAVE_CCTK_REAL16
-    case PARAMETER_REAL16:
-#endif
       retval = ParameterSetReal (param, value); break;
     case PARAMETER_BOOLEAN:
       retval = ParameterSetBoolean (param, value); break;
@@ -2486,36 +2542,68 @@ static int ParameterSetReal (t_param *param, const char *value)
         if(Util_DoubleInRange (inval, range->range))
         {
 #endif
-          /* Range checking is always done in double precision (promoting
-           * narrower widths is fine); storage happens at the parameter's
-           * declared width. */
-          switch (param->props->type)
+          /* Range checking above is always done in double precision
+           * (promoting narrower widths is fine); storage happens at the
+           * parameter's declared width, tracked in props->realsize (every
+           * real width is reported as PARAMETER_REAL; see
+           * ParameterGetType()). */
+          switch (param->props->realsize)
           {
 #ifdef HAVE_CCTK_REAL2
-            case PARAMETER_REAL2:
+            case 2:
               *(CCTK_REAL2 *) param->data = (CCTK_REAL2) inval;
               break;
 #endif
 #ifdef HAVE_CCTK_REAL4
-            case PARAMETER_REAL4:
+            case 4:
               *(CCTK_REAL4 *) param->data = (CCTK_REAL4) inval;
               break;
 #endif
 #ifdef HAVE_CCTK_REAL8
-            case PARAMETER_REAL8:
+            case 8:
               *(CCTK_REAL8 *) param->data = (CCTK_REAL8) inval;
               break;
 #endif
 #ifdef HAVE_CCTK_REAL16
-            case PARAMETER_REAL16:
+            case 16:
               *(CCTK_REAL16 *) param->data = (CCTK_REAL16) inval;
               break;
 #endif
-            case PARAMETER_REAL:
             default:
+              /* realsize == sizeof(CCTK_REAL) */
               *(CCTK_REAL *) param->data = inval;
               break;
           }
+
+          /* Bring the CCTK_REAL-widened shadow copy up to date, then use
+           * it to catch silent narrowing: storing an in-range double at a
+           * narrower declared width (REAL2, REAL4, or a REAL8/REAL16
+           * build's REAL4) can overflow to +-inf, underflow to zero, or
+           * simply round to a value outside the parameter's own declared
+           * range -- none of which the range check above (done before
+           * narrowing) can see. This also catches the common case of an
+           * unbounded ("*:*") range, where the range check can never
+           * fail no matter how badly the value was mangled. */
+          ParameterRefreshShadow (param);
+          {
+            const double stored = (double) param->shadow;
+            const int narrowing_lost_value =
+              (isfinite (inval) && !isfinite (stored)) ||
+              (inval != 0.0 && stored == 0.0);
+
+            if (narrowing_lost_value || !Util_DoubleInRange (stored, range->range))
+            {
+              CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
+                          "ParameterSetReal: parameter '%s::%s' was set to "
+                          "'%s' (%.20g), but storing it at its declared "
+                          "width (%d bytes) produced %.20g, which is "
+                          "outside its declared range and/or has lost the "
+                          "original value entirely",
+                          param->props->thorn, param->props->name, value,
+                          inval, param->props->realsize, stored);
+            }
+          }
+
           retval = 0;
           break;
 #ifndef CCTK_PARAMUNCHECKED
@@ -2840,38 +2928,16 @@ static int SetVarEvaluator(int nvars, const char * const *vars, uExpressionValue
           switch(type)
           {
             case PARAMETER_REAL:
+              /* CCTK_ParameterGet() always hands back a pointer at
+               * CCTK_REAL width here -- either the storage itself, or a
+               * widened shadow copy for a sized "REALn" parameter whose
+               * declared width differs -- regardless of the parameter's
+               * declared width, so a single case covers every real
+               * parameter. */
               vals[i].type = rval;
               vals[i].value.rval = *(const CCTK_REAL *)paramval;
               ierr = 0;
               break;
-#ifdef HAVE_CCTK_REAL2
-            case PARAMETER_REAL2:
-              vals[i].type = rval;
-              vals[i].value.rval = (CCTK_REAL)*(const CCTK_REAL2 *)paramval;
-              ierr = 0;
-              break;
-#endif
-#ifdef HAVE_CCTK_REAL4
-            case PARAMETER_REAL4:
-              vals[i].type = rval;
-              vals[i].value.rval = (CCTK_REAL)*(const CCTK_REAL4 *)paramval;
-              ierr = 0;
-              break;
-#endif
-#ifdef HAVE_CCTK_REAL8
-            case PARAMETER_REAL8:
-              vals[i].type = rval;
-              vals[i].value.rval = (CCTK_REAL)*(const CCTK_REAL8 *)paramval;
-              ierr = 0;
-              break;
-#endif
-#ifdef HAVE_CCTK_REAL16
-            case PARAMETER_REAL16:
-              vals[i].type = rval;
-              vals[i].value.rval = (CCTK_REAL)*(const CCTK_REAL16 *)paramval;
-              ierr = 0;
-              break;
-#endif
             case PARAMETER_INT:
               vals[i].type = ival;
               vals[i].value.ival = *(const CCTK_INT *)paramval;
@@ -2884,7 +2950,7 @@ static int SetVarEvaluator(int nvars, const char * const *vars, uExpressionValue
               break;
             default:
               CCTK_VWarn (0, __LINE__, __FILE__, "Cactus",
-                          "SetVarEvaluator: cannot handle type %d for parameter '%s::%s'. Only REAL (of any width), INT and BOOLEAN are supported.",
+                          "SetVarEvaluator: cannot handle type %d for parameter '%s::%s'. Only REAL, INT and BOOLEAN are supported.",
                           type, thorn, name);
               ierr = -1;
               break;
