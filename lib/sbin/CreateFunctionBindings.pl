@@ -1688,6 +1688,11 @@ sub IsFunctionAliased
   push(@data, '');
 
   # Insert function protypes:
+  # %names maps a used aliased function's name to whether it (or one of
+  # its arguments) is CCTK_REAL2 -- IsAliased<name>() is only defined
+  # (see AliasedFunctions()) when HAVE_CCTK_REAL2, so its prototype and
+  # dispatch entry below must be guarded the same way, or a config
+  # without HAVE_CCTK_REAL2 fails to link (undefined reference).
   my %names;
   foreach $thornFunctionList (sort values %FunctionDatabase)
   {
@@ -1697,14 +1702,16 @@ sub IsFunctionAliased
       {
         if ($Function->{"Used"})
         {
-          $names{$Function->{"Name"}} = undef;
+          $names{$Function->{"Name"}} = &FunctionHasReal2($Function);
         }
       }
     }
   }
   foreach my $name (sort keys %names)
   {
+    push(@data, "#ifdef HAVE_CCTK_REAL2") if ($names{$name});
     push(@data, "CCTK_INT IsAliased$name(void);");
+    push(@data, "#endif /* HAVE_CCTK_REAL2 */") if ($names{$name});
   }
 
   push(@data,"CCTK_INT CCTK_IsFunctionAliased(const char *function);");
@@ -1716,14 +1723,18 @@ sub IsFunctionAliased
   push(@data,"  (void) (function + 0);");
   push(@data,"");
 
-  my $else = "";
+  # Deliberately independent "if" statements rather than an "else if"
+  # chain: the function names are unique so this is equivalent, and it
+  # means a #ifdef HAVE_CCTK_REAL2/#endif around one entry never leaves a
+  # dangling "else" when that entry is compiled out.
   foreach my $name (sort keys %names)
   {
-    push(@data, "  ${else}if (! strcmp(function, \"$name\"))");
+    push(@data, "#ifdef HAVE_CCTK_REAL2") if ($names{$name});
+    push(@data, "  if (! strcmp(function, \"$name\"))");
     push(@data, "  {");
     push(@data, "    retval = IsAliased".$name."();");
     push(@data, "  }");
-    $else = "else ";
+    push(@data, "#endif /* HAVE_CCTK_REAL2 */") if ($names{$name});
   }
 
   push(@data,"  return retval;");
@@ -1821,10 +1832,15 @@ sub ThornMasterIncludes
 #  CCTK_REAL2 has no Fortran-side type spelling (see cctk_Types.h, where it
 #  is typedef'd only under the CCODE guard, never under FCODE). This
 #  mirrors that "C-only" property for aliased functions: it returns true
-#  if a Function's Return Type, or any of its non-function-pointer
-#  Arguments' Type, is CCTK_REAL2, in which case no Fortran interface
-#  declaration for that function should be emitted (only the CCODE
-#  prototype, which is unaffected).
+#  if a Function's Return Type, or any of its Arguments' Type, is
+#  CCTK_REAL2, in which case no Fortran interface declaration for that
+#  function should be emitted (only the CCODE prototype, which is
+#  unaffected). A CCTK_FPOINTER argument's own Type is its *return* type
+#  (see ParseArgument); ArgumentsHaveReal2() below also recurses into its
+#  argument list (arbitrarily deep, for a function pointer that itself
+#  takes a function-pointer argument), since a CCTK_REAL2 anywhere in that
+#  inner signature is exactly as Fortran-unrepresentable as one directly
+#  in $Function's own signature.
 #  @enddesc
 #@@*/
 
@@ -1834,10 +1850,21 @@ sub FunctionHasReal2
 
   return 1 if ($Function->{"Return Type"} eq 'CCTK_REAL2');
 
-  foreach my $arg (@{$Function->{"Arguments"}})
+  return &ArgumentsHaveReal2($Function->{"Arguments"});
+}
+
+sub ArgumentsHaveReal2
+{
+  my ($Arguments) = @_;
+
+  foreach my $arg (@$Arguments)
   {
-    next if ($arg->{"Function Pointer"});
     return 1 if ($arg->{"Type"} eq 'CCTK_REAL2');
+
+    if ($arg->{"Function Pointer"})
+    {
+      return 1 if (&ArgumentsHaveReal2($arg->{"Name"}{"Arguments"}));
+    }
   }
 
   return 0;
