@@ -9437,9 +9437,15 @@ fi
 
 # Check if we have _Float16 (16-bit IEEE binary16; requires GCC >= 12 on
 # x86-64; arithmetic is software-promoted).  There is no corresponding
-# Fortran type, so CCTK_REAL2 is a C/C++-only feature.
-{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking if _Float16 is defined and usable" >&5
-printf %s "checking if _Float16 is defined and usable... " >&6; }
+# Fortran type, so CCTK_REAL2 is a C/C++-only feature. However,
+# src/include/cctk_Types.h typedefs CCTK_REAL2 unconditionally under
+# "#ifdef HAVE_CCTK_REAL2" for *every* CCODE translation unit -- C and
+# C++ alike -- so the C++ compiler has to accept _Float16 too, or a
+# whole-build failure results the moment any C++ TU includes that
+# header (not just TUs that use CCTK_REAL2). Probe both compilers and
+# only enable CCTK_REAL2 when they agree.
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking if _Float16 is defined and usable in C" >&5
+printf %s "checking if _Float16 is defined and usable in C... " >&6; }
 if test ${cctk_cv_have__Float16+y}
 then :
   printf %s "(cached) " >&6
@@ -9466,14 +9472,59 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
  ;;
 esac
 fi
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $cctk_cv_have__Float16" >&5
+printf '%s\n' "$cctk_cv_have__Float16" >&6; }
 
-if test "$cctk_cv_have__Float16" = 'yes'; then
+cctk_cv_have__Float16_cxx=yes
+if test "$cctk_cv_have__Float16" = 'yes' -a "x$CXX" != 'xnone'; then
+
+  ac_ext=cpp
+ac_cpp='$CXXCPP $CPPFLAGS'
+ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
+
+  { printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking if _Float16 is defined and usable in C++" >&5
+printf %s "checking if _Float16 is defined and usable in C++... " >&6; }
+if test ${cctk_cv_have__Float16_cxx+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main (void)
+{
+_Float16 cctk_f16_a = 1, cctk_f16_b = 2; volatile _Float16 cctk_f16_c = cctk_f16_a + cctk_f16_b; return (int)cctk_f16_c;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_compile "$LINENO"
+then :
+  eval "cctk_cv_have__Float16_cxx=yes"
+else case e in #(
+  e) eval "cctk_cv_have__Float16_cxx=no" ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+ ;;
+esac
+fi
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $cctk_cv_have__Float16_cxx" >&5
+printf '%s\n' "$cctk_cv_have__Float16_cxx" >&6; }
+
+  ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+fi
+
+if test "$cctk_cv_have__Float16" = 'yes' -a "$cctk_cv_have__Float16_cxx" = 'yes'; then
   CCTK_REAL2_TYPE='_Float16'
-  { printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-printf '%s\n' "yes" >&6; }
-else
-  { printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: no" >&5
-printf '%s\n' "no" >&6; }
 fi
 
 # C++ STL stuff

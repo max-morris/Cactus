@@ -835,16 +835,32 @@ fi
 
 # Check if we have _Float16 (16-bit IEEE binary16; requires GCC >= 12 on
 # x86-64; arithmetic is software-promoted).  There is no corresponding
-# Fortran type, so CCTK_REAL2 is a C/C++-only feature.
-AC_MSG_CHECKING([if _Float16 is defined and usable])
+# Fortran type, so CCTK_REAL2 is a C/C++-only feature. However,
+# src/include/cctk_Types.h typedefs CCTK_REAL2 unconditionally under
+# "#ifdef HAVE_CCTK_REAL2" for *every* CCODE translation unit -- C and
+# C++ alike -- so the C++ compiler has to accept _Float16 too, or a
+# whole-build failure results the moment any C++ TU includes that
+# header (not just TUs that use CCTK_REAL2). Probe both compilers and
+# only enable CCTK_REAL2 when they agree.
+AC_MSG_CHECKING([if _Float16 is defined and usable in C])
 AC_CACHE_VAL(cctk_cv_have__Float16,
 [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[_Float16 cctk_f16_a = 1, cctk_f16_b = 2; volatile _Float16 cctk_f16_c = cctk_f16_a + cctk_f16_b; return (int)cctk_f16_c;]])],[eval "cctk_cv_have__Float16=yes"],[eval "cctk_cv_have__Float16=no"])
 ])
-if test "$cctk_cv_have__Float16" = 'yes'; then
+AC_MSG_RESULT($cctk_cv_have__Float16)
+
+cctk_cv_have__Float16_cxx=yes
+if test "$cctk_cv_have__Float16" = 'yes' -a "x$CXX" != 'xnone'; then
+  AC_LANG_PUSH([C++])
+  AC_MSG_CHECKING([if _Float16 is defined and usable in C++])
+  AC_CACHE_VAL(cctk_cv_have__Float16_cxx,
+  [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[_Float16 cctk_f16_a = 1, cctk_f16_b = 2; volatile _Float16 cctk_f16_c = cctk_f16_a + cctk_f16_b; return (int)cctk_f16_c;]])],[eval "cctk_cv_have__Float16_cxx=yes"],[eval "cctk_cv_have__Float16_cxx=no"])
+  ])
+  AC_MSG_RESULT($cctk_cv_have__Float16_cxx)
+  AC_LANG_POP([C++])
+fi
+
+if test "$cctk_cv_have__Float16" = 'yes' -a "$cctk_cv_have__Float16_cxx" = 'yes'; then
   CCTK_REAL2_TYPE='_Float16'
-  AC_MSG_RESULT(yes)
-else
-  AC_MSG_RESULT(no)
 fi
 
 # C++ STL stuff
