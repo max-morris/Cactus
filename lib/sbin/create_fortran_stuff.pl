@@ -159,13 +159,13 @@ sub CreateFortranCommonDeclaration
   {
     my $type = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E type"};
 
-    # CCTK_REAL2 (16-bit float) has no Fortran counterpart (gfortran has no
-    # REAL*2), so such parameters are simply omitted from the Fortran
-    # bindings. A Fortran thorn that actually tries to use one will fail to
-    # build with an undefined-variable error, but every other parameter in
-    # this common block is unaffected.
-    next if($type eq 'REAL2');
-
+    # CCTK_REAL2 (16-bit float) has no Fortran floating-point counterpart
+    # (gfortran has no REAL*2), but the slot must still be kept so that
+    # every later member of this COMMON block lands at the offset the C
+    # struct/order_params() puts it at. cctk_Types.h declares CCTK_REAL2
+    # as INTEGER*2 under FCODE for exactly this: a same-size opaque
+    # placeholder. Arithmetic on such a parameter is simply not available
+    # from Fortran.
     my $type_string = &get_fortran_type_string($type);
 
     my $array_size = $rhparameter_db->{"\U$rhparameters->{$parameter} $parameter\E array_size"};
@@ -222,6 +222,10 @@ sub get_fortran_type_string
   elsif($type eq 'REAL')
   {
     $type_string = 'CCTK_REAL';
+  }
+  elsif($type eq 'REAL2')
+  {
+    $type_string = 'CCTK_REAL2';
   }
   elsif($type eq 'REAL4')
   {

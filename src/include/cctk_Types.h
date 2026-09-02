@@ -213,6 +213,17 @@ typedef CCTK_INT1_TYPE CCTK_INT1;
 #  define CCTK_COMPLEX8   COMPLEX*8
 #endif
 
+#ifdef HAVE_CCTK_REAL2
+/* Fortran has no IEEE-754 binary16 ("half precision") type, so CCTK_REAL2
+ * is declared as a same-size opaque 2-byte bag (INTEGER*2) rather than a
+ * usable floating-point type. This keeps the storage slot -- and hence
+ * the layout of any COMMON block a CCTK_REAL2 parameter or grid variable
+ * appears in -- correct in Fortran, at the cost of making the value
+ * unusable for arithmetic from Fortran (only C/C++ can read or write it
+ * as a real number, via CCTK_REAL2's C definition above). */
+#  define CCTK_REAL2 INTEGER*2
+#endif
+
 /* Should be unsigned, but Fortran doesn't have that */
 #define CCTK_BYTE INTEGER*1
 #define HAVE_CCTK_BYTE 1
