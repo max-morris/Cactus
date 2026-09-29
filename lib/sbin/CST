@@ -166,6 +166,10 @@ my %parameter_database = &create_parameter_database(%source_thorns);
 print "Parsing schedule files...\n";
 my %schedule_database = &create_schedule_database(%source_thorns);
 
+# Catch thorns that need CCTK_REAL2 on a configuration without it, before
+# their bindings fail to compile
+&CheckREAL2Support($config_dir, \%interface_database, \%parameter_database, \%source_thorns);
+
 &CheckCSTErrors();
 
 # Run any configuration scripts.

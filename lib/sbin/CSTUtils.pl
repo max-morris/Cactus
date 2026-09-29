@@ -109,6 +109,77 @@ sub CST_PrintErrors
 
 
 #/*@@
+#  @routine   CheckREAL2Support
+#  @desc
+#  Report a CST error for every thorn that declares a CCTK_REAL2 parameter
+#  or grid variable when this configuration has no CCTK_REAL2 type.
+#  configure only defines HAVE_CCTK_REAL2 when both the C and C++ compilers
+#  accept _Float16 (GCC >= 12 on x86-64), and turns it off without error
+#  otherwise. The parameter and variable bindings spell out CCTK_REAL2
+#  unconditionally, so without this check the first sign of trouble is a
+#  compiler error ("unknown type name 'CCTK_REAL2'") deep inside a generated
+#  bindings file. REAL2 aliased functions are not checked: their bindings
+#  are already guarded by HAVE_CCTK_REAL2.
+#  @enddesc
+#@@*/
+
+sub CheckREAL2Support
+{
+  my ($config_dir, $interface_db, $parameter_db, $thorns) = @_;
+
+  # Without a cctk_Config.h there is nothing to check against.
+  my $config_h = "$config_dir/cctk_Config.h";
+  open(my $fh, '<', $config_h) or return;
+  my $have_real2 = grep { /^\s*#\s*define\s+HAVE_CCTK_REAL2\b/ } <$fh>;
+  close($fh);
+  return if ($have_real2);
+
+  foreach my $thorn (sort keys %$thorns)
+  {
+    my @params;
+    foreach my $block ('GLOBAL', 'RESTRICTED', 'PRIVATE')
+    {
+      my $vars = $parameter_db->{"\U$thorn $block\E variables"};
+      next unless defined($vars);
+      foreach my $param (split(' ', $vars))
+      {
+        my $type = $parameter_db->{"\U$thorn $param\E type"};
+        push(@params, $param) if (defined($type) and $type eq 'REAL2');
+      }
+    }
+
+    my @groups;
+    foreach my $block ('PUBLIC', 'PROTECTED', 'PRIVATE')
+    {
+      my $grps = $interface_db->{"\U$thorn $block GROUPS\E"};
+      next unless defined($grps);
+      foreach my $group (split(' ', $grps))
+      {
+        my $vtype = $interface_db->{"\U$thorn GROUP $group VTYPE\E"};
+        push(@groups, $group) if (defined($vtype) and $vtype eq 'REAL2');
+      }
+    }
+
+    next unless (@params or @groups);
+
+    my $message = "Thorn $thorn uses CCTK_REAL2, but this configuration " .
+                  "has no CCTK_REAL2 type (HAVE_CCTK_REAL2 is not defined " .
+                  "in $config_h).";
+    $message .= "\n     REAL2 parameters in $thorns->{$thorn}/param.ccl: " .
+                join(', ', @params) if (@params);
+    $message .= "\n     REAL2 groups in $thorns->{$thorn}/interface.ccl: " .
+                join(', ', @groups) if (@groups);
+    my $hint = "CCTK_REAL2 is _Float16, which both the C and C++ compilers " .
+               "must support (GCC >= 12 on x86-64). Either remove $thorn " .
+               "from the thorn list, or reconfigure with newer compilers " .
+               "(and without DISABLE_REAL2=yes). The _Float16 checks are " .
+               "logged in $config_dir/config.log.";
+    &CST_error(0, $message, $hint);
+  }
+}
+
+
+#/*@@
 #  @routine    read_file
 #  @date       Wed Sep 16 11:54:38 1998
 #  @author     Tom Goodale
